@@ -7,7 +7,7 @@
                s.4B (rent not due in advance, initial rent in the permitted pre-tenancy period), s.8 and
                Schedule 2 (grounds for possession; Grounds 1 and 1A not in the first 12 months, 4 months'
                notice; Ground 8: 3 months' or 13 weeks' arrears at notice and hearing, 4 weeks' notice),
-               s.13 (rent increase notice, 2 months, 52 weeks / first anniversary rules, rent review clauses of
+               s.13 (rent increase notice, 2 months, 52 / 53 weeks rules s.13(3A)-(3B), rent review clauses of
                no effect, s.13(4A)), s.14 (tribunal, initial rent challenge within 6 months), s.15
                (assignment and subletting), s.16A and s.16B (pets, response by the 28th day), s.16D
                (written statement of terms); s.21 repealed. Tenancy reforms in force 1 May 2026 for
@@ -31,7 +31,7 @@
                30 days), s.91 and s.92 (fitness and repair), s.123 (rent variation of a periodic standard
                contract, 2 months' notice, then not less than 1 year after the last new rent), s.173 to s.175
                (landlord's notice, 6 months, not in the first 6 months of occupation); Renting Homes (Fitness
-               for Human Habitation) (Wales) Regulations 2022; Renting Homes (Fees etc.) (Wales) Act 2019;
+               for Human Habitation) (Wales) Regulations 2022; Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019;
                Housing (Wales) Act 2014 Part 1 (Rent Smart Wales); gov.wales Renting Homes FAQ for landlords.
                Scotland: Private Housing (Tenancies) (Scotland) Act 2016: s.1 (private residential tenancy),
                s.10 (written terms by the day the tenancy starts), s.22 (rent increase, 3 months' notice,
@@ -50,8 +50,14 @@
                quit of 4 weeks / 8 weeks / 12 weeks (communities-ni.gov.uk landlord's checklist, nidirect);
                Landlord Registration Scheme Regulations (Northern Ireland) 2014.
                UK GDPR and Data Protection Act 2018 (ico.org.uk).
-               Verified 2026-10-04 against legislation.gov.uk, gov.uk, gov.wales, gov.scot, mygov.scot,
-               communities-ni.gov.uk and nidirect.gov.uk (pages read on that date).
+               Sources consulted 2026-10-04: legislation.gov.uk, gov.uk, gov.wales, gov.scot, mygov.scot,
+               communities-ni.gov.uk and nidirect.gov.uk; provisions not re-read on that date are listed as
+               unverified in the pack report. Fix round 1 (2026-10-04): s.13(4A) as substituted by RRA 2025
+               s.6; s.13(3A)/(3B) 52/53 weeks; Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019 (short
+               title amended by RRA 2025 s.45 from 1 June 2026, W.S.I. 2026/6 art. 2); Tenant Fees Act 2019
+               Sch 1 paras 5, 7, 9; NI tenant notice 4 / 12 weeks (PTA (NI) 2022 s.11, communities-ni.gov.uk);
+               Rent (Scotland) Act 1984 s.90(3); Smoke, Heat and Carbon Monoxide Alarms for Private Tenancies
+               Regulations (Northern Ireland) 2024 (NISR 2024/123).
                Pending: England - private rented sector database and landlord redress scheme (Renters' Rights
                Act 2025 Part 2, rollout from late 2026 and 2028), Decent Homes Standard and Awaab's Law for the
                private sector (Part 3, not in force); Scotland - Housing (Scotland) Act 2025 pet and
@@ -183,15 +189,18 @@
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
   <th:block th:if="${countryCode == 'GB' and regionCode == 'ENG'}">
-    <p>The rent may be increased only by a notice in the prescribed form under section 13 of the Housing Act
-      1988, by a determination of the First-tier Tribunal (Property Chamber), or by an agreement in writing
-      between the landlord and the tenant varying the rent (section 13 subsection 4A of that Act). A term of
-      this or any other agreement providing for a rent review or an automatic increase has no effect.</p>
+    <p>The rent for a rent period may be greater than the rent for the previous period only by virtue of a
+      notice in the prescribed form under section 13 of the Housing Act 1988 (or an agreement between the
+      landlord and the tenant following such a notice), a determination of the First-tier Tribunal (Property
+      Chamber) under section 14 of that Act, or an agreement in writing varying the rent that follows such a
+      tribunal determination and sets a rent lower than the rent payable as a result of the determination
+      (section 13 subsection 4A of that Act). Any other term of this or any other agreement providing for a rent
+      review or an increase of the rent has no effect.</p>
     <p>The notice must be served at least 2 months before the new rent takes effect, and the new rent must start
       at the beginning of a new period of the tenancy. It may not take effect earlier than 52 weeks after the
       first period of the tenancy began and, where the rent has previously been increased by such a notice or a
-      tribunal determination, not earlier than the first anniversary of the date on which the last increased
-      rent took effect.</p>
+      tribunal determination, not earlier than 52 weeks (or 53 weeks in the cases set out in section 13
+      subsection 3B of that Act) after the date on which the last increased rent took effect.</p>
     <p>The tenant may refer the notice to the First-tier Tribunal before the new rent takes effect; the tribunal
       determines the open-market rent and cannot set a rent higher than the rent proposed in the notice. Within
       the first 6 months of the tenancy the tenant may also apply to the tribunal for a determination of the
@@ -260,9 +269,10 @@
   <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Within 30 days starting with the day on which the
     deposit is paid, the landlord must comply with the initial requirements of an authorised deposit scheme and
     give the contract-holder the required information (section 45 of the Renting Homes (Wales) Act 2016). The
-    deposit is a permitted payment under the Renting Homes (Fees etc.) (Wales) Act 2019; where a limit for
+    deposit is a permitted payment under the Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019; where a limit for
     deposits is prescribed under that Act, any amount above it is a prohibited payment.</p>
-  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The deposit may not exceed 2 months&rsquo; rent.
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The deposit may not exceed 2 months&rsquo; rent; a
+    larger deposit is a prohibited premium (section 90 subsection 3 of the Rent (Scotland) Act 1984).
     Within 30 working days of the beginning of the tenancy the landlord must pay the deposit to an approved
     tenancy deposit scheme and give the tenant the information required by the Tenancy Deposit Schemes
     (Scotland) Regulations 2011.</p>
@@ -300,7 +310,7 @@
       Tenant Fees Act 2019). No other fee or charge for late payment is payable.</p>
   </th:block>
   <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Any payment in the event of the contract-holder&rsquo;s
-    default is payable only insofar as it is permitted by the Renting Homes (Fees etc.) (Wales) Act 2019 and
+    default is payable only insofar as it is permitted by the Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019 and
     the regulations made under it.</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">Interest or charges for late payment are payable
     only insofar as Scots law permits them.</p>
@@ -319,18 +329,21 @@
     than a permitted payment under Schedule 1 to the Tenant Fees Act 2019: rent, a refundable tenancy deposit
     within the statutory limit, a refundable holding deposit of no more than 1 week&rsquo;s rent, a payment in
     respect of the variation, assignment or novation of the tenancy (no more than £50 or the reasonable costs
-    incurred, if higher), a payment on termination of the tenancy at the tenant&rsquo;s request, payments for
-    utilities, communication services, the television licence and council tax, and default fees for late
-    payment of rent and for replacing a lost key or other security device. Any other payment is a prohibited
-    payment.</p>
+    incurred, if higher), a payment for the early termination of the tenancy at the tenant&rsquo;s request (no more
+    than the landlord&rsquo;s loss or the agent&rsquo;s reasonable costs), payments for utilities, communication
+    services, the television licence and council tax, payments for energy efficiency improvements under a green
+    deal plan, damages for breach of the tenancy agreement, and default fees for late payment of rent and for
+    replacing a lost key or other security device. Any payment that Schedule 1 to that Act does not permit is a
+    prohibited payment.</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The landlord and any letting agent may not require
     the contract-holder to make any payment in connection with the contract other than a permitted payment
-    under the Renting Homes (Fees etc.) (Wales) Act 2019, such as rent, a security deposit, a holding deposit of
+    under the Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019, such as rent, a security deposit, a holding deposit of
     no more than 1 week&rsquo;s rent, payments in the event of default, and payments for utilities,
-    communication services, the television licence and council tax. Any other payment is a prohibited
-    payment.</p>
-  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">Under the Rent (Scotland) Act 1984, the landlord or
-    any agent may not require a premium or other payment as a condition of the grant, renewal or continuance of
+    communication services, the television licence and council tax. Any payment that the Act does not
+    permit is a prohibited payment. Since 1 June 2026 that Act, as amended by the Renters&rsquo; Rights Act 2025,
+    also prohibits discrimination relating to children or benefits status in the letting of dwellings.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">Under Part VIII of the Rent (Scotland) Act 1984, the
+    landlord or any agent may not require a premium or other payment as a condition of the grant, renewal or continuance of
     the tenancy, other than the rent and a refundable deposit.</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The tenant pays no sums in connection with the
     tenancy other than the rent, the deposit within the statutory limit and the bills set out in this
@@ -338,7 +351,7 @@
   <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">Fees
     and other payments in connection with the tenancy, apart from the rent and the deposit, may be required
     only insofar as the law of the nation in which the dwelling is located permits them; England (Tenant Fees
-    Act 2019) and Wales (Renting Homes (Fees etc.) (Wales) Act 2019) prohibit every payment that is not a
+    Act 2019) and Wales (Renting Homes (Fees, Discrimination etc.) (Wales) Act 2019) prohibit every payment that is not a
     permitted payment.</p>
 </div>
 
@@ -428,8 +441,9 @@
     more than 5 years, for fire detection by interlinked alarms and for carbon monoxide detection.</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord has gas appliances checked for safety at
     least every 12 months as required by the Gas Safety (Installation and Use) Regulations (Northern Ireland)
-    2004, provides the fire, smoke and carbon monoxide alarms required under section 8 of the Private Tenancies
-    Act (Northern Ireland) 2022, and has the electrical installations inspected as required under section 10 of
+    2004, provides the smoke, heat and carbon monoxide alarms required under section 8 of the Private
+    Tenancies Act (Northern Ireland) 2022 and the Smoke, Heat and Carbon Monoxide Alarms for Private Tenancies
+    Regulations (Northern Ireland) 2024, and has the electrical installations inspected as required under section 10 of
     that Act.</p>
   <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
     landlord complies with the gas safety, electrical safety and smoke and carbon monoxide alarm requirements of
@@ -566,7 +580,9 @@
       4 weeks&rsquo; notice where the tenancy has existed for no more than 12 months, at least 8 weeks&rsquo;
       notice where it has existed for more than 12 months but no more than 10 years, and at least
       12 weeks&rsquo; notice where it has existed for more than 10 years. The tenant&rsquo;s notice to quit must
-      give at least the period required by the Private Tenancies (Northern Ireland) Order 2006.</p>
+      give at least 4 weeks&rsquo; notice in writing, or at least 12 weeks&rsquo; notice where the tenancy has
+      existed for more than 10 years (Private Tenancies (Northern Ireland) Order 2006, as amended by section 11 of
+      the Private Tenancies Act (Northern Ireland) 2022).</p>
     <p>If the tenant does not leave, the landlord may recover possession only by an order of the court.</p>
   </th:block>
   <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
@@ -603,7 +619,7 @@
     Tribunal (Property Chamber).</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">This agreement is governed by the law of England and
     Wales as it applies in Wales. Disputes are decided by the county court or, where the Renting Homes (Wales)
-    Act 2016 so provides, by the Residential Property Tribunal for Wales.</p>
+    Act 2016 so provides, by the Residential Property Tribunal Wales.</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">This agreement is governed by Scots law. Disputes
     about the tenancy are decided by the First-tier Tribunal for Scotland (Housing and Property Chamber).</p>
   <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">This agreement is governed by the law of Northern

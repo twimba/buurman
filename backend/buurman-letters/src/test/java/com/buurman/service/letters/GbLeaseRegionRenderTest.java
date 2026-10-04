@@ -185,29 +185,69 @@ class GbLeaseRegionRenderTest {
         });
   }
 
+  private static final String GENERAL_PERIODIC =
+      "The tenancy is periodic and continues from rent period to rent period until it is ended in"
+          + " accordance with the law of the nation";
+  private static final String GENERAL_FIXED =
+      "insofar as the law of the nation in which the dwelling is located permits a fixed term";
+
   @ParameterizedTest(name = "{0} fixedTerm={1}")
-  @CsvSource({"ENG, true", "ENG, false", "SCT, true", "WLS, true", "WLS, false", "NIR, true"})
-  @DisplayName("residential term: no fixed term in England or Scotland, fixed term in Wales and NI")
-  void residentialTerm(String region, boolean fixedTerm) {
+  @CsvSource(
+      delimiter = '|',
+      nullValues = "NULL",
+      value = {
+        "ENG|true|has no legal effect in England|NONE|true",
+        "ENG|false|The tenancy is a periodic tenancy and continues from rent period|"
+            + "has no legal effect|false",
+        "SCT|true|does not end the tenancy|NONE|true",
+        "SCT|false|A private residential tenancy has no end date|does not end the tenancy|false",
+        "WLS|true|This contract is a fixed term standard contract|"
+            + "This contract is a periodic standard contract|true",
+        "WLS|false|This contract is a periodic standard contract|"
+            + "This contract is a fixed term standard contract|false",
+        "NIR|true|The tenancy is granted for a fixed term|ended by notice to quit or"
+            + " otherwise|true",
+        "NIR|false|ended by notice to quit or otherwise|The tenancy is granted for a fixed"
+            + " term|false",
+        "NULL|true|" + GENERAL_FIXED + "|" + GENERAL_PERIODIC + "|true",
+        "NULL|false|" + GENERAL_PERIODIC + "|" + GENERAL_FIXED + "|false"
+      })
+  @DisplayName("residential term: every nation and the general text, fixed term and periodic")
+  void residentialTerm(
+      String region, boolean fixedTerm, String present, String absent, boolean endDatePrinted) {
     String html = render("residential", "term", "GB", region, fixedTerm, Map.of());
-    switch (region) {
-      case "ENG" -> {
-        assertThat(html).contains("The tenancy is a periodic tenancy");
-        if (fixedTerm) {
-          assertThat(html).contains("has no legal effect in England").contains("31 October 2027");
-        } else {
-          assertThat(html).doesNotContain("has no legal effect").doesNotContain("31 October 2027");
-        }
-      }
-      case "SCT" -> assertThat(html).contains("does not end the tenancy");
-      case "WLS" ->
-          assertThat(html)
-              .contains(fixedTerm ? "fixed term standard contract" : "periodic standard contract");
-      default ->
-          assertThat(html)
-              .contains("The tenancy is granted for a fixed term")
-              .contains("31 October 2027");
+    assertThat(html).contains(present).doesNotContain("${");
+    if (!"NONE".equals(absent)) {
+      assertThat(html).doesNotContain(absent);
     }
+    if (endDatePrinted) {
+      assertThat(html).contains("31 October 2027");
+    } else {
+      assertThat(html).doesNotContain("31 October 2027");
+    }
+  }
+
+  @ParameterizedTest(name = "{0} fixedTerm={1}")
+  @CsvSource(
+      value = {"ENG, true", "ENG, false", "SCT, true", "SCT, false", "NULL, true", "NULL, false"},
+      nullValues = "NULL")
+  @DisplayName("commercial term: fixed term with end date, or periodic tenancy")
+  void commercialTerm(String region, boolean fixedTerm) {
+    String html = render("commercial", "term", "GB", region, fixedTerm, Map.of());
+    if (fixedTerm) {
+      assertThat(html)
+          .contains("The lease is granted for a fixed term")
+          .contains("31 October 2027")
+          .doesNotContain("granted as a periodic tenancy");
+    } else {
+      assertThat(html)
+          .contains("The lease is granted as a periodic tenancy")
+          .doesNotContain("granted for a fixed term")
+          .doesNotContain("31 October 2027");
+    }
+    assertThat(html.contains("registered at HM Land Registry"))
+        .as("Land Registry sentence only in England and Wales")
+        .isEqualTo("ENG".equals(region));
   }
 
   @Test
@@ -216,7 +256,10 @@ class GbLeaseRegionRenderTest {
     for (String region : List.of("ENG", "WLS", "SCT", "NIR", "XX")) {
       String html =
           render("residential", "deposit", "GB", region, false, Map.of("handover-inspection", 7));
-      assertThat(html).as(region).contains("data-ref=\"handover-inspection\"").contains("7");
+      assertThat(html)
+          .as(region)
+          .contains("data-ref=\"handover-inspection\"")
+          .contains("(see article <span>7</span>)");
     }
   }
 
