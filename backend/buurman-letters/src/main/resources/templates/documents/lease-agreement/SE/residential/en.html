@@ -15,7 +15,8 @@
                energideklaration for byggnader, consolidated to SFS 2026:747: 5, 6 b, 7, 13 §§. Rantelagen
                (1975:635) (cited generally). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679);
                Lag (2018:218) med kompletterande bestammelser till EU:s dataskyddsforordning.
-               Pending: Lag (2026:1327) (new 12 kap. 1 c §, newly arrived immigrants act) and Lag (2026:1498) (new
+               Pending: Lag (2026:1327) (amends 12 kap. 1 c §: act number 2026:772, newly arrived immigrants act)
+               and Lag (2026:1498) (new
                12 kap. 22 a §, county administrative boards) enter into force 2027-01-01; neither changes the
                clauses of this document. Lag (2026:747) changes 4 a § of the energy declaration act on 2027-01-01
                (not cited).
@@ -56,6 +57,13 @@
 </div>
 
 <div th:fragment="clause-premises" data-clause="premises">
+  <p><strong>Landlord&rsquo;s declaration (mandatory).</strong> The landlord declares that the letting is not governed
+    by the Private Letting Act (privatuthyrningslagen, 2026:772) because (tick the option that applies): [__] the
+    landlord is a legal person; [__] the landlord regularly lets more than 2 dwellings that are not part of the
+    landlord&rsquo;s own home; [__] the landlord holds the dwelling under a tenancy (hyresrätt); [__] the letting is
+    for holiday purposes (Private Letting Act, Chapter 1, section 1 and section 3, paragraph 1). A lease excluded on
+    the second or third ground remains excluded even if the circumstances change (Private Letting Act, Chapter 1,
+    section 3, paragraph 2). If none of the options applies, this agreement must not be used.</p>
   <p>The landlord lets to the tenant the dwelling at
     <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the dwelling&rdquo;.</p>
   <p>Property designation, flat number, floor, number of rooms and living area: ______________________________.
@@ -67,12 +75,11 @@
     of the Land Code have no effect against the tenant or against a person entitled to take the tenant&rsquo;s
     place, unless otherwise provided (Land Code, Chapter 12, section 1 d). The lease must be drawn up in writing if
     the landlord or the tenant so requests (Land Code, Chapter 12, section 2, paragraph 1).</p>
-  <p>This agreement is intended for a first-hand letting of a whole dwelling that is not part of the
-    landlord&rsquo;s own home. It is not intended for leases governed by the Private Letting Act
-    (privatuthyrningslagen, 2026:772) instead of Chapter 12 of the Land Code (Land Code, Chapter 12, section 1 c).
-    That Act applies where a natural person or an estate lets a home, unless the landlord regularly lets more than
-    2 dwellings that are not part of the landlord&rsquo;s own home, holds the dwelling under a tenancy (hyresrätt) or
-    the letting is for holiday purposes (Private Letting Act, Chapter 1, section 1 and section 3).</p>
+    <p>This agreement is intended for the letting of a whole dwelling that is not part of the landlord&rsquo;s own home.
+    Leases governed by the Private Letting Act are subject to that Act instead of Chapter 12 of the Land Code (Land
+    Code, Chapter 12, section 1 c). That Act applies to agreements by which a natural person or an estate lets
+    premises for payment to be used, wholly or to a not insignificant extent, as a home, subject to the exceptions
+    stated in the declaration above (Private Letting Act, Chapter 1, section 1).</p>
 </div>
 
 <div th:fragment="clause-term" data-clause="term">
@@ -108,7 +115,9 @@
     equivalent in terms of their utility value (bruksvärde) (Land Code, Chapter 12, section 55, paragraph 1). In that
     assessment, rents for dwellings set in negotiated agreements under the Tenancy Negotiation Act
     (hyresförhandlingslagen, 1978:304) are to be taken into account primarily (Land Code, Chapter 12, section 55,
-    paragraph 2).</p>
+    paragraph 2).
+    The rules on review of the rent apply subject to the exceptions set out in Chapter 12, section 53 of the Land
+    Code.</p>
   <p>This agreement contains no negotiation clause (förhandlingsklausul) under the Tenancy Negotiation Act and is not
     intended for a rent set in a negotiated agreement under section 19 a or section 19 b of that Act (presumptive
     rent, presumtionshyra).</p>
@@ -124,7 +133,9 @@
     lease to be changed, that party must notify the other party in writing. If no agreement can be reached, the
     party is entitled to apply to the Regional Rent Tribunal (hyresnämnden) for a change of the terms; the
     application may be made at the earliest 1 month after the notice was given to the other party (Land Code,
-    Chapter 12, section 54, paragraph 1).</p>
+    Chapter 12, section 54, paragraph 1). This applies subject to the
+    exceptions set out in Chapter 12, section 53 of the Land Code, among others for a dwelling for holiday
+    purposes where the application is made before the tenancy has lasted 9 months in a row.</p>
   <p>A decision of the Regional Rent Tribunal changing the terms of the lease counts as an agreement on the terms of
     the continued letting (Land Code, Chapter 12, section 54, paragraph 3). Such a decision may not cover the period
     before the points in time set out in Chapter 12, section 55 e of the Land Code.</p>
@@ -147,7 +158,8 @@
     tenant on the basis of individual metering, the charge for that cost must be calculated on the basis of the
     metered consumption (Land Code, Chapter 12, section 19, paragraph 4). Where an agreement has been made in breach
     of these provisions, the rent is payable in an amount that is reasonable having regard primarily to the
-    parties&rsquo; intentions and the other circumstances when the agreement was made (Land Code, Chapter 12, section 19, paragraph 5).</p>
+    parties&rsquo; intentions and the other circumstances when the agreement was made (Land Code, Chapter 12,
+    section 19, paragraph 5).</p>
 </div>
 
 <div th:fragment="clause-deposit" data-clause="deposit">
@@ -206,7 +218,9 @@
   <p>The tenant may not allow outside persons to live in the dwelling to an extent that the landlord should not
     reasonably have to accept (Land Code, Chapter 12, section 41). The tenant has the right to carry out painting,
     wallpapering and comparable work in the dwelling at the tenant&rsquo;s own expense; if this reduces the utility
-    value of the dwelling, the landlord is entitled to compensation for the damage (Land Code, Chapter 12, section 24 a, paragraph 1). The parties may agree that this right is not to apply, wholly or in part, only in the cases
+    value of the dwelling, the landlord is entitled to compensation for the damage (Land Code, Chapter 12,
+    section 24 a, paragraph 1). The parties may agree that this right is not to apply, wholly or in part, only in
+    the cases
     set out in Chapter 12, section 24 a, paragraph 2, of the Land Code.</p>
 </div>
 
@@ -263,7 +277,8 @@
   <p>The owner of a building that is let, wholly or in part, under a right of use must ensure that an energy
     performance certificate (energideklaration) has been drawn up for the building (section 5, paragraph 1, point 3,
     of the Energy Performance of Buildings Act (2006:985)). The owner must ensure that the most recent energy
-    performance certificate is shown to a prospective user and handed over to a new user (section 13, paragraph 1,
+    performance certificate is displayed in a clearly visible place in the building, shown to a prospective user and
+    handed over to a new user (section 13, paragraph 1,
     of the Energy Performance of Buildings Act). An energy performance certificate may be used for 10 years after it
     was drawn up (section 6 b of the same Act). Exceptions may follow from regulations issued under section 7 of the
     same Act.</p>
@@ -287,7 +302,8 @@
 
 <div th:fragment="clause-termination" data-clause="termination">
   <p th:if="${!fixedTerm}">Unless a longer notice period has been agreed, the lease may be terminated with effect
-    from the turn of the month that falls immediately after 3 months from the notice (Land Code, Chapter 12, section 4, paragraph 1, point 1). Longer notice period agreed for the landlord: ______________.</p>
+    from the turn of the month that falls immediately after 3 months from the notice (Land Code, Chapter 12,
+    section 4, paragraph 1, point 1). Longer notice period agreed for the landlord: ______________.</p>
   <p th:if="${fixedTerm}">If the lease must be terminated by notice in order to end and no longer notice period has
     been agreed, notice must be given at the latest 1 day in advance if the term is at most 2 weeks, 1 week in
     advance if the term is longer than 2 weeks but at most 3 months, and 3 months in advance if the term is longer
@@ -303,7 +319,8 @@
     paragraph 2). Written notices are served or sent by registered letter in the manner set out in Chapter 12,
     section 8 of the Land Code.</p>
   <p>The tenant has security of tenure (besittningsskydd): if the landlord has given notice, the tenant is entitled
-    to an extension of the lease, except in the cases set out in Chapter 12, section 46, paragraph 1, of the Land
+    to an extension of the lease, except in the cases set out in Chapter 12, section 45, paragraph 1, and
+    section 46, paragraph 1, of the Land
     Code. If there is a dispute about the extension, the notice has no effect unless the landlord refers the dispute
     to the Regional Rent Tribunal no later than 1 month after the end of the term, or the tenant has moved out by the
     end of the term anyway (Land Code, Chapter 12, section 49, paragraph 1).</p>
@@ -312,10 +329,13 @@
     Chapter 12, section 45 a, paragraph 1, of the Land Code. This agreement contains no such agreement.</p>
   <p>The landlord may terminate the lease early if the tenancy is forfeited (förverkad) on one of the grounds set out
     in Chapter 12, section 42, paragraph 1, of the Land Code, among others if the tenant is more than 1 week late in
-    paying the rent after the due date, subject to the exceptions following from Chapter 12, section 55 e of the
-    Land Code, and the lease then ends immediately, unless otherwise provided by Chapter 12, section 44 of the Land
+    paying the rent after the due date, subject to the exceptions following from Chapter 12, section 55 e,
+    paragraphs 5-7, of the Land Code, and the lease then ends immediately, unless otherwise provided by Chapter 12,
+    section 44 of the Land
     Code (Land Code, Chapter 12, section 6, paragraph 1). The tenancy is not forfeited if what the tenant is
-    responsible for is of minor significance (Land Code, Chapter 12, section 42, paragraph 5).</p>
+    responsible for is of minor significance, or if forfeiture is unreasonable because what the tenant is
+    responsible for results from a close relative or former close relative having subjected the tenant or a
+    member of the tenant&rsquo;s household to a crime (Land Code, Chapter 12, section 42, paragraph 5).</p>
   <p>If the landlord has terminated the lease because of late payment of the rent, the tenant may not be evicted
     from the dwelling on account of the delay if the rent is paid within 3 weeks after the tenant has been served
     with a notification that the tenant will regain the tenancy by paying the rent and a notice of the termination
