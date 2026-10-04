@@ -260,6 +260,8 @@ final class LeaseNumberWords {
                   + "|sytten|atten|nitten|tjue\\p{L}*|tyve|tretti\\p{L}*|tredve|førti\\p{L}*"
                   + "|femti\\p{L}*|seksti\\p{L}*|sytti\\p{L}*|åtti\\p{L}*|nitti\\p{L}*|hundre"
                   + "|tusen|dobbelt(?:e)?|dobbel|det doble",
+              // the numeral forms: "ett" (neuter) and the stressed "én" are never the article
+              "ett|én",
               "(?:en|ei|et) (?:måned(?:s|en)?|uke|uka|år(?:s)?|kvartal|halvår)",
               "(?:innen|etter|før|per|pr\\.|hver|minst|høyst|maksimalt|senest|mer enn|mindre enn"
                   + "|lenger enn|kortere enn) en dag",
