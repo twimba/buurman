@@ -8,7 +8,9 @@
                Gesetz vom 17.07.2025, BGBl. 2025 I Nr. 163); designated areas are set per municipality by the
                Laender, so no regionCode branch is made.
                Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV) § 7; Kohlendioxidkosten-
-               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5; Bundesmeldegesetz
+               aufteilungsgesetz (CO2KostAufG); Gebaeudemodernisierungsgesetz (GModG, formerly Gebaeudeenergiegesetz GEG; renamed by the law
+               published 28.07.2026, BGBl. 2026 I Nr. 226, in force 29.07.2026; www.gmodg.bund.de GModG news page;
+               § 80 Abs. 4 and 5 and § 79 Abs. 4 re-read 2026-10-04 at www.gesetze-im-internet.de/geg/__80.html); Bundesmeldegesetz
                (BMG) § 17 and § 19; Zivilprozessordnung (ZPO) § 29a; Gerichtsverfassungsgesetz (GVG) § 23.
                DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
@@ -54,7 +56,8 @@
       Ablauf des <strong th:text="${endDate}">Mietende</strong></span>. Ein Mietverhältnis über Wohnraum kann
       nur dann auf bestimmte Zeit eingegangen werden, wenn der Vermieter nach Ablauf der Mietzeit die Räume für
       sich, seine Familienangehörigen oder Angehörige seines Haushalts nutzen, sie in zulässiger Weise beseitigen
-      oder wesentlich verändern oder instand setzen oder sie an einen zur Dienstleistung Verpflichteten vermieten
+      oder so wesentlich verändern oder instand setzen, dass die Maßnahmen durch eine Fortsetzung des
+      Mietverhältnisses erheblich erschwert würden, oder sie an einen zur Dienstleistung Verpflichteten vermieten
       will und er dem Mieter den Grund der Befristung bei Vertragsschluss schriftlich mitteilt; anderenfalls gilt
       das Mietverhältnis als auf unbestimmte Zeit geschlossen (§ 575 Abs. 1 BGB).</p>
     <p>Grund der Befristung: ______________________________________________</p>
@@ -107,7 +110,7 @@
     (§ 556 Abs. 3 BGB). Auf Verlangen gewährt der Vermieter Einsicht in die Abrechnungsbelege.</p>
   <p>Nach einer Abrechnung kann jede Partei durch Erklärung in Textform eine Anpassung der Vorauszahlungen auf
     eine angemessene Höhe vornehmen (§ 560 Abs. 4 BGB). Die Kosten der Heizung und Warmwasserversorgung werden
-    nach der Heizkostenverordnung überwiegend nach dem erfassten Verbrauch verteilt; Kohlendioxidkosten werden
+    nach der Heizkostenverordnung mindestens zur Hälfte nach dem erfassten Verbrauch verteilt; Kohlendioxidkosten werden
     nach dem Kohlendioxidkostenaufteilungsgesetz zwischen den Parteien aufgeteilt.</p>
 </div>
 
@@ -126,8 +129,8 @@
     erhöhen die Sicherheit (§ 551 Abs. 3 BGB). Eine zum Nachteil des Mieters abweichende Vereinbarung ist
     unwirksam (§ 551 Abs. 4 BGB). Nach Beendigung des Mietverhältnisses rechnet der Vermieter über die
     Sicherheit innerhalb angemessener Frist ab und zahlt den nicht benötigten Betrag zurück.<span
-    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Für die
-    Feststellung von Schäden gilt die Rückgabe der Mietsache (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Schäden werden
+    bei der Rückgabe der Mietsache festgestellt (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
 
 <div th:fragment="clause-payment" data-clause="payment">
@@ -161,8 +164,9 @@
     der Mieter das Mietverhältnis außerordentlich mit der gesetzlichen Frist kündigen, sofern nicht in der Person
     des Dritten ein wichtiger Grund vorliegt (§ 540 Abs. 1 BGB).</p>
   <p>Entsteht für den Mieter nach Abschluss dieses Vertrags ein berechtigtes Interesse, einen Teil des Wohnraums
-    einem Dritten zum Gebrauch zu überlassen, so kann er vom Vermieter die Erlaubnis hierzu verlangen, soweit ihm
-    nicht ein wichtiger Grund entgegensteht (§ 553 Abs. 1 BGB). Überlässt der Mieter den Gebrauch einem Dritten,
+    einem Dritten zum Gebrauch zu überlassen, so kann er vom Vermieter die Erlaubnis hierzu verlangen; dies gilt nicht, wenn in
+    der Person des Dritten ein wichtiger Grund vorliegt, der Wohnraum übermäßig belegt würde oder dem Vermieter die
+    Überlassung aus sonstigen Gründen nicht zugemutet werden kann (§ 553 Abs. 1 BGB). Überlässt der Mieter den Gebrauch einem Dritten,
     so hat er ein dem Dritten bei dem Gebrauch zur Last fallendes Verschulden zu vertreten
     (§ 540 Abs. 2 BGB).</p>
 </div>
@@ -198,7 +202,7 @@
 <div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
   <p>Der Vermieter hat dem Mieter spätestens bei der Besichtigung einen Energieausweis oder eine Kopie davon
     vorgelegt und übergibt ihm unverzüglich nach Abschluss dieses Vertrags den Energieausweis oder eine Kopie
-    davon (§ 80 Abs. 4 und 5 GEG).</p>
+    davon (§ 80 Abs. 4 und 5 GModG).</p>
 </div>
 
 <div th:fragment="clause-registration" data-clause="registration">
@@ -223,11 +227,13 @@
     3. Werktag eines Kalendermonats zum Ablauf des übernächsten Monats zulässig (§ 573c Abs. 1 Satz 1 BGB). Für den
     Vermieter verlängert sich die Kündigungsfrist nach 5 und 8 Jahren seit der Überlassung des Wohnraums um
     jeweils 3 Monate (§ 573c Abs. 1 Satz 2 BGB).</p>
-  <p>Der Vermieter kann nur kündigen, wenn er ein berechtigtes Interesse an der Beendigung des Mietverhältnisses
+  <p>Der Vermieter kann nach Maßgabe der §§ 573 ff. BGB nur kündigen, wenn er ein berechtigtes Interesse an der Beendigung des Mietverhältnisses
     hat, insbesondere in den Fällen des § 573 Abs. 2 BGB; die Gründe sind im Kündigungsschreiben anzugeben
     (§ 573 Abs. 3 BGB). Der Vermieter soll den Mieter rechtzeitig auf die Möglichkeit, die Form und die Frist
     des Widerspruchs nach den §§ 574 bis 574b BGB hinweisen (§ 568 Abs. 2 BGB); der Widerspruch ist in Textform
-    spätestens 2 Monate vor Beendigung des Mietverhältnisses zu erklären (§ 574b Abs. 2 BGB).</p>
+    spätestens 2 Monate vor Beendigung des Mietverhältnisses zu erklären (§ 574b Abs. 2 BGB). Hat der
+    Vermieter nicht rechtzeitig hingewiesen, so kann der Mieter den Widerspruch noch im ersten Termin des
+    Räumungsrechtsstreits erklären.</p>
   <p th:if="${fixedTerm}">Ist das Mietverhältnis wirksam auf bestimmte Zeit geschlossen<span
     class="clause-ref" data-ref="term" th:if="${refs['term']}"> (siehe Artikel <span th:text="${refs['term']}"></span>)</span>,
     so ist die ordentliche Kündigung während der vereinbarten Mietzeit für beide Parteien ausgeschlossen; das

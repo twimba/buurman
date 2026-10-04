@@ -9,7 +9,9 @@
                concluded before that date until 31.12.2025 (transition per secondary sources ihk.de, haufe.de).
                Preisklauselgesetz (PrKG) § 3 and § 8; Umsatzsteuergesetz (UStG) § 4 and § 9;
                Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV); Kohlendioxidkosten-
-               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5;
+               aufteilungsgesetz (CO2KostAufG); Gebaeudemodernisierungsgesetz (GModG, formerly Gebaeudeenergiegesetz GEG; renamed by the law
+               published 28.07.2026, BGBl. 2026 I Nr. 226, in force 29.07.2026; www.gmodg.bund.de GModG news page;
+               § 80 Abs. 4 and 5 and § 79 Abs. 4 re-read 2026-10-04 at www.gesetze-im-internet.de/geg/__80.html);
                Zivilprozessordnung (ZPO) § 29a.
                DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
@@ -111,7 +113,7 @@
     bis zum Ablauf des 12. Monats nach Ende des Abrechnungszeitraums mit. Auf Verlangen gewährt der Vermieter
     Einsicht in die Abrechnungsbelege. Nach einer Abrechnung kann jede Partei durch Erklärung in Textform eine
     Anpassung der Vorauszahlungen auf eine angemessene Höhe vornehmen.</p>
-  <p>Die Kosten der Heizung und Warmwasserversorgung werden nach der Heizkostenverordnung überwiegend nach dem
+  <p>Die Kosten der Heizung und Warmwasserversorgung werden nach der Heizkostenverordnung mindestens zur Hälfte nach dem
     erfassten Verbrauch verteilt; Kohlendioxidkosten werden nach dem Kohlendioxidkostenaufteilungsgesetz
     zwischen den Parteien aufgeteilt.</p>
 </div>
@@ -138,8 +140,8 @@
     und erhöhen die Sicherheit.</p>
   <p>Nach Beendigung des Mietverhältnisses rechnet der Vermieter über die Sicherheit innerhalb angemessener Frist
     ab und gibt den nicht benötigten Betrag oder die Bürgschaftsurkunde zurück.<span class="clause-ref"
-    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Für die Feststellung von Schäden gilt
-    die Rückgabe der Mietsache (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Schäden werden bei der Rückgabe der
+    Mietsache festgestellt (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
 
 <div th:fragment="clause-payment" data-clause="payment">
@@ -207,7 +209,7 @@
 <div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
   <p>Der Vermieter hat dem Mieter spätestens bei der Besichtigung einen Energieausweis oder eine Kopie davon
     vorgelegt und übergibt ihm unverzüglich nach Abschluss dieses Vertrags den Energieausweis oder eine Kopie
-    davon (§ 80 Abs. 4 und 5 GEG).</p>
+    davon (§ 80 Abs. 4 und 5 GModG).</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
@@ -229,7 +231,7 @@
     Ablauf des nächsten Kalendervierteljahres zulässig (§ 580a Abs. 2 BGB).</p>
   <p th:if="${fixedTerm}">Während der vereinbarten Mietzeit<span class="clause-ref" data-ref="term"
     th:if="${refs['term']}"> (siehe Artikel <span th:text="${refs['term']}"></span>)</span> ist die ordentliche
-    Kündigung ausgeschlossen. Gilt dieser Vertrag nach § 550 BGB als auf unbestimmte Zeit geschlossen, so ist die
+    Kündigung ausgeschlossen. Gilt dieser Vertrag nach § 578 Abs. 1, § 550 BGB als auf unbestimmte Zeit geschlossen, so ist die
     ordentliche Kündigung spätestens am 3. Werktag eines Kalendervierteljahres zum Ablauf des nächsten
     Kalendervierteljahres zulässig (§ 580a Abs. 2 BGB).</p>
   <p>Jede Partei kann das Mietverhältnis aus wichtigem Grund außerordentlich fristlos kündigen

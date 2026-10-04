@@ -8,7 +8,9 @@
                Gesetz vom 17.07.2025, BGBl. 2025 I Nr. 163); designated areas are set per municipality by the
                Laender, so no regionCode branch is made.
                Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV) § 7; Kohlendioxidkosten-
-               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5; Bundesmeldegesetz
+               aufteilungsgesetz (CO2KostAufG); Gebaeudemodernisierungsgesetz (GModG, formerly Gebaeudeenergiegesetz GEG; renamed by the law
+               published 28.07.2026, BGBl. 2026 I Nr. 226, in force 29.07.2026; www.gmodg.bund.de GModG news page;
+               § 80 Abs. 4 and 5 and § 79 Abs. 4 re-read 2026-10-04 at www.gesetze-im-internet.de/geg/__80.html); Bundesmeldegesetz
                (BMG) § 17 and § 19; Zivilprozessordnung (ZPO) § 29a; Gerichtsverfassungsgesetz (GVG) § 23.
                DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
@@ -58,7 +60,7 @@
       <strong th:text="${endDate}">end date</strong></span>. A tenancy of residential premises may be entered
       into for a fixed term only if, after the end of the lease term, the landlord intends to use the premises
       for himself, his family members or members of his household, to remove them lawfully or to alter or repair
-      them substantially, or to let them to a person obliged to render services, and the landlord informs the
+      them so substantially that continuing the tenancy would make the works considerably more difficult, or to let them to a person obliged to render services, and the landlord informs the
       tenant in writing of the reason for the fixed term when the agreement is concluded; otherwise the tenancy
       is deemed concluded for an indefinite period (§ 575 para. 1 BGB).</p>
     <p>Reason for the fixed term: ______________________________________________</p>
@@ -112,7 +114,7 @@
     objections to the statement no later than the end of the 12th month after receiving it
     (§ 556 para. 3 BGB). On request, the landlord grants inspection of the supporting documents.</p>
   <p>After a settlement, either party may adjust the advance payments to a reasonable amount by a declaration
-    in text form (Textform) (§ 560 para. 4 BGB). The costs of heating and hot water are allocated predominantly
+    in text form (Textform) (§ 560 para. 4 BGB). The costs of heating and hot water are allocated at least half
     according to recorded consumption under the Heating Costs Ordinance (Heizkostenverordnung); carbon dioxide
     costs are shared between the parties under the Carbon Dioxide Cost Allocation Act
     (Kohlendioxidkostenaufteilungsgesetz).</p>
@@ -133,7 +135,7 @@
     tenant&rsquo;s disadvantage is invalid (§ 551 para. 4 BGB). After the tenancy ends, the landlord settles the
     security within a reasonable period and repays the amount not required.<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is
-    assessed on the return of the leased property (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+    established on the return of the leased property (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
 
 <div th:fragment="clause-payment" data-clause="payment">
@@ -165,11 +167,12 @@
 <div th:fragment="clause-subletting" data-clause="subletting">
   <p>The tenant is not entitled, without the landlord&rsquo;s permission, to let a third party use the leased
     property, in particular to sublet it. If the landlord refuses permission, the tenant may terminate the
-    tenancy extraordinarily with the statutory notice period, unless there is a compelling reason relating to
+    tenancy extraordinarily with the statutory notice period, unless there is good cause relating to
     the person of the third party (§ 540 para. 1 BGB).</p>
   <p>If, after this agreement is concluded, the tenant acquires a legitimate interest in letting a third party
-    use part of the dwelling, the tenant may demand the landlord&rsquo;s permission, unless a compelling reason
-    stands in the way (§ 553 para. 1 BGB). If the tenant lets a third party use the property, the tenant is
+    use part of the dwelling, the tenant may demand the landlord&rsquo;s permission; this does not apply if there is
+    good cause relating to the person of the third party, if the dwelling would be overcrowded or if the landlord
+    cannot otherwise reasonably be expected to permit the use (§ 553 para. 1 BGB). If the tenant lets a third party use the property, the tenant is
     responsible for any fault of the third party in that use (§ 540 para. 2 BGB).</p>
 </div>
 
@@ -202,7 +205,7 @@
 <div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
   <p>The landlord presented an energy performance certificate (Energieausweis) or a copy of it to the tenant
     no later than at the viewing and hands the energy performance certificate or a copy of it to the tenant
-    without undue delay after this agreement is concluded (§ 80 paras. 4 and 5 GEG, Building Energy Act).</p>
+    without undue delay after this agreement is concluded (§ 80 paras. 4 and 5 GModG, Building Modernisation Act, Gebäudemodernisierungsgesetz).</p>
 </div>
 
 <div th:fragment="clause-registration" data-clause="registration">
@@ -224,14 +227,16 @@
 
 <div th:fragment="clause-termination" data-clause="termination">
   <p>Notice of termination (Kündigung) must be given in written form (§ 568 para. 1 BGB). Ordinary notice is
-    permissible no later than the 3rd working day of a calendar month with effect from the end of the month
+    permissible no later than the 3rd working day of a calendar month to take effect at the end of the month
     after next (§ 573c para. 1 sentence 1 BGB). For the landlord the notice period is extended by 3 months each
     after 5 and 8 years since the dwelling was handed over (§ 573c para. 1 sentence 2 BGB).</p>
-  <p>The landlord may give notice only if the landlord has a legitimate interest in ending the tenancy, in
+  <p>In accordance with §§ 573 ff. BGB, the landlord may give notice only if the landlord has a legitimate interest in ending the tenancy, in
     particular in the cases of § 573 para. 2 BGB; the reasons must be stated in the notice letter
     (§ 573 para. 3 BGB). The landlord should inform the tenant in good time of the possibility, form and time
     limit of an objection under §§ 574 to 574b BGB (§ 568 para. 2 BGB); the objection must be declared in text
-    form no later than 2 months before the tenancy ends (§ 574b para. 2 BGB).</p>
+    form no later than 2 months before the tenancy ends (§ 574b para. 2 BGB). If the landlord did not give that
+    information in good time, the tenant may still declare the objection at the first hearing of the eviction
+    proceedings.</p>
   <p th:if="${fixedTerm}">If the tenancy has validly been concluded for a fixed term<span
     class="clause-ref" data-ref="term" th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span>,
     ordinary notice is excluded for both parties during the agreed lease term; the right to extraordinary notice

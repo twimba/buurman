@@ -9,7 +9,9 @@
                concluded before that date until 31.12.2025 (transition per secondary sources ihk.de, haufe.de).
                Preisklauselgesetz (PrKG) § 3 and § 8; Umsatzsteuergesetz (UStG) § 4 and § 9;
                Betriebskostenverordnung (BetrKV) § 2; Heizkostenverordnung (HeizkostenV); Kohlendioxidkosten-
-               aufteilungsgesetz (CO2KostAufG); Gebaeudeenergiegesetz (GEG) § 80 Abs. 4 and 5;
+               aufteilungsgesetz (CO2KostAufG); Gebaeudemodernisierungsgesetz (GModG, formerly Gebaeudeenergiegesetz GEG; renamed by the law
+               published 28.07.2026, BGBl. 2026 I Nr. 226, in force 29.07.2026; www.gmodg.bund.de GModG news page;
+               § 80 Abs. 4 and 5 and § 79 Abs. 4 re-read 2026-10-04 at www.gesetze-im-internet.de/geg/__80.html);
                Zivilprozessordnung (ZPO) § 29a.
                DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04 against gesetze-im-internet.de (section texts read on that date).
@@ -74,7 +76,7 @@
     th:if="${endDate != null}"> and ends at the end of <strong th:text="${endDate}">end date</strong></span>.
     Ordinary notice is excluded for both parties during the agreed lease term.</p>
   <p>A lease of business premises concluded for longer than 1 year and not in text form is deemed concluded for
-    an indefinite period; notice may then be given at the earliest with effect from the end of 1 year after the
+    an indefinite period; notice may then be given at the earliest to take effect at the end of 1 year after the
     leased property was handed over (§ 578 para. 1 BGB, § 550 BGB). The parties therefore conclude this
     agreement and all amendments and side agreements in text form and attach any annexes recognisably to this
     agreement.</p>
@@ -118,7 +120,7 @@
     than the end of the 12th month after the end of the settlement period. On request, the landlord grants
     inspection of the supporting documents. After a settlement, either party may adjust the advance payments to
     a reasonable amount by a declaration in text form.</p>
-  <p>The costs of heating and hot water are allocated predominantly according to recorded consumption under the
+  <p>The costs of heating and hot water are allocated at least half according to recorded consumption under the
     Heating Costs Ordinance (Heizkostenverordnung); carbon dioxide costs are shared between the parties under
     the Carbon Dioxide Cost Allocation Act (Kohlendioxidkostenaufteilungsgesetz).</p>
 </div>
@@ -141,13 +143,13 @@
     tenant&rsquo;s obligations (rent security, Mietsicherheit) in the amount agreed in text form between the
     parties.</p>
   <p>No statutory upper limit applies to the rent security for business premises. The security is due at the
-    start of the tenancy and may be provided as a cash deposit or by an unlimited, directly enforceable guarantee
+    start of the tenancy and may be provided as a cash deposit or by an open-ended (unlimited in time), directly enforceable guarantee
     (selbstschuldnerische Bürgschaft) of a credit institution authorised in the European Union. The landlord
     invests a cash deposit separately from the landlord&rsquo;s own assets with a credit institution at a
     customary interest rate; the interest belongs to the tenant and increases the security.</p>
   <p>After the tenancy ends, the landlord settles the security within a reasonable period and returns the amount
     not required or the guarantee document.<span class="clause-ref"
-    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is assessed on the return of
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Damage is established on the return of
     the leased property (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
 
@@ -193,7 +195,7 @@
 <div th:fragment="clause-subletting" data-clause="subletting">
   <p>The tenant is not entitled, without the landlord&rsquo;s permission, to let a third party use the leased
     property, in particular to sublet it. If the landlord refuses permission, the tenant may terminate the
-    tenancy extraordinarily with the statutory notice period, unless there is a compelling reason relating to
+    tenancy extraordinarily with the statutory notice period, unless there is good cause relating to
     the person of the third party (§ 540 para. 1 BGB).</p>
   <p>If the tenant lets a third party use the property, the tenant is responsible for any fault of the third
     party in that use (§ 540 para. 2 BGB). A transfer of the tenancy to a third party requires an agreement of
@@ -216,7 +218,7 @@
 <div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
   <p>The landlord presented an energy performance certificate (Energieausweis) or a copy of it to the tenant
     no later than at the viewing and hands the energy performance certificate or a copy of it to the tenant
-    without undue delay after this agreement is concluded (§ 80 paras. 4 and 5 GEG, Building Energy Act).</p>
+    without undue delay after this agreement is concluded (§ 80 paras. 4 and 5 GModG, Building Modernisation Act, Gebäudemodernisierungsgesetz).</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
@@ -235,11 +237,11 @@
 <div th:fragment="clause-termination" data-clause="termination">
   <p>Every notice of termination (Kündigung) must be given in written form.</p>
   <p th:if="${!fixedTerm}">Ordinary notice is permissible no later than the 3rd working day of a calendar
-    quarter with effect from the end of the next calendar quarter (§ 580a para. 2 BGB).</p>
+    quarter to take effect at the end of the next calendar quarter (§ 580a para. 2 BGB).</p>
   <p th:if="${fixedTerm}">During the agreed lease term<span class="clause-ref" data-ref="term"
     th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span> ordinary notice is
-    excluded. If this agreement is deemed concluded for an indefinite period under § 550 BGB, ordinary notice is
-    permissible no later than the 3rd working day of a calendar quarter with effect from the end of the next
+    excluded. If this agreement is deemed concluded for an indefinite period under § 578 para. 1, § 550 BGB, ordinary notice is
+    permissible no later than the 3rd working day of a calendar quarter to take effect at the end of the next
     calendar quarter (§ 580a para. 2 BGB).</p>
   <p>Either party may terminate the tenancy extraordinarily without notice for good cause
     (§ 543 para. 1 BGB, § 578 para. 2 BGB, § 569 para. 2 BGB). The parties may end the tenancy by mutual
