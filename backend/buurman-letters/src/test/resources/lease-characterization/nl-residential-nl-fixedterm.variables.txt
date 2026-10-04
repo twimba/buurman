@@ -105,6 +105,7 @@ generatedDate=String:15 januari 2026
 landlordName=String:Verhuur Voorbeeld BV
 landlordNoticeDays=Integer:90
 languageUsed=String:nl
+noNationalVersion=Boolean:false
 paymentDueDay=Integer:25
 paymentFrequency=String:per maand
 primaryContactName=String:Maria Jansen
