@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import com.buurman.domain.LeaseKind;
+import com.buurman.util.DocumentLanguages;
 
 class LeaseDocumentLocatorTest {
 
@@ -192,11 +193,49 @@ class LeaseDocumentLocatorTest {
         .as("nl is not national for this fake table")
         .isFalse();
     assertThat(
+            new LeaseDocumentLocator(Map.of("ZZ", List.of("en")))
+                .locate("ZZ", LeaseKind.RESIDENTIAL, "en")
+                .orElseThrow()
+                .authoritative())
+        .as("English is authoritative where it is the first national language (GB, IE, US)")
+        .isTrue();
+    assertThat(
             new LeaseDocumentLocator(Map.of("ZZ", List.of("nl", "en")))
                 .locate("ZZ", LeaseKind.RESIDENTIAL, "en")
                 .orElseThrow()
                 .authoritative())
-        .as("English is national where the table says so (GB, IE, US style)")
-        .isTrue();
+        .as("a second national language is a translation, not the authoritative document")
+        .isFalse();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("nationalLanguageTable")
+  @DisplayName("only the FIRST listed national language is authoritative; CZ has none")
+  void onlyFirstNationalLanguageIsAuthoritative(String country, List<String> national) {
+    for (String lang : DocumentLanguages.ORDERED) {
+      boolean expected = !national.isEmpty() && national.get(0).equals(lang);
+      assertThat(defaults.isAuthoritative(country, lang))
+          .as("%s/%s authoritative", country, lang)
+          .isEqualTo(expected);
+    }
+  }
+
+  @Test
+  @DisplayName(
+      "registry: a located document is authoritative exactly for the entry's authoritative"
+          + " language")
+  void locatedAuthoritativeFlagMatchesRegistry() {
+    for (LeaseDocumentRegistry.Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      boolean nationalCountry = !defaults.nationalLanguages(entry.countryCode()).isEmpty();
+      for (String lang : entry.enforcedLanguages()) {
+        var doc = defaults.locate(entry.countryCode(), entry.kind(), lang).orElseThrow();
+        assertThat(doc.languageUsed()).isEqualTo(lang);
+        // CZ and other countries without a national language: even the registry's authoritative
+        // (English) document is flagged non-authoritative at runtime and shows the courtesy notice
+        assertThat(doc.authoritative())
+            .as("%s/%s", entry.key(), lang)
+            .isEqualTo(nationalCountry && lang.equals(entry.authoritativeLanguage()));
+      }
+    }
   }
 }

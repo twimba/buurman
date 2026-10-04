@@ -115,15 +115,15 @@ class LeaseDocumentRegistryTest {
   }
 
   @Test
-  @DisplayName("the authoritative language is one of the country's national languages")
-  void authoritativeLanguageIsNational() {
+  @DisplayName("the authoritative language is the first national language of the country")
+  void authoritativeLanguageIsFirstNational() {
     LeaseDocumentLocator locator = new LeaseDocumentLocator();
     for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
       List<String> national = locator.nationalLanguages(entry.countryCode());
       if (!national.isEmpty()) {
-        assertThat(national)
+        assertThat(entry.authoritativeLanguage())
             .as("%s authoritative language", entry.key())
-            .contains(entry.authoritativeLanguage());
+            .isEqualTo(national.get(0));
       }
     }
   }

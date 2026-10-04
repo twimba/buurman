@@ -28,9 +28,9 @@ public class LeaseDocumentLocator {
   private static final Pattern COUNTRY_PATTERN = Pattern.compile("[A-Z]{2}");
 
   /**
-   * National languages per country in preference order (a document in one of them is the
-   * authoritative one). Czechia has none among the supported document languages: English is the
-   * only fallback there.
+   * National languages per country in preference order; the order is meaningful: the FIRST language
+   * is the authoritative one, the others are translations. Czechia has none among the supported
+   * document languages: English is the only fallback there.
    */
   private static final Map<String, List<String>> DEFAULT_NATIONAL_LANGUAGES =
       Map.ofEntries(
@@ -71,8 +71,8 @@ public class LeaseDocumentLocator {
    * @param templatePath template name relative to {@code templates/documents/}, without {@code
    *     .html}
    * @param languageUsed the language of the document actually found
-   * @param authoritative whether {@code languageUsed} is a national language of the country (else
-   *     the document is a courtesy translation)
+   * @param authoritative whether {@code languageUsed} is the first national language of the country
+   *     (else the document is a courtesy translation)
    */
   public record LeaseDocument(String templatePath, String languageUsed, boolean authoritative) {}
 
@@ -80,7 +80,6 @@ public class LeaseDocumentLocator {
     if (kind == null || countryCode == null || !COUNTRY_PATTERN.matcher(countryCode).matches()) {
       return Optional.empty();
     }
-    List<String> national = nationalLanguages(countryCode);
     List<String> chain = languageChain(countryCode, requestedLang);
 
     return kind.fallbackChain().stream()
@@ -91,8 +90,21 @@ public class LeaseDocumentLocator {
                     .map(
                         lang ->
                             new LeaseDocument(
-                                path(countryCode, k, lang), lang, national.contains(lang))))
+                                path(countryCode, k, lang),
+                                lang,
+                                isAuthoritative(countryCode, lang))))
         .findFirst();
+  }
+
+  /**
+   * Whether a document in {@code language} is the authoritative one of the country: the FIRST
+   * listed national language only. Documents in the other national languages (BE fr, CH fr/it, FI
+   * sv, LU de, CA fr) are translations and carry the courtesy notice; for a country without a
+   * national language (CZ) not even the English document is authoritative. Region-dependent
+   * authority (Quebec: French by region) needs a pack-level ruling and is not handled here.
+   */
+  boolean isAuthoritative(String countryCode, String language) {
+    return nationalLanguages(countryCode).stream().findFirst().filter(language::equals).isPresent();
   }
 
   /** The country's national languages in preference order; empty when it has none. */
