@@ -1,0 +1,348 @@
+<!--
+  legal-basis: Code de commerce, livre Ier, titre IV, chapitre V (du bail commercial), consolidated text as published on
+               www.legifrance.gouv.fr (version en vigueur au 2026-10-04): art. L. 145-1, L. 145-4, L. 145-5,
+               L. 145-9, L. 145-10, L. 145-14, L. 145-16, L. 145-16-1, L. 145-16-2, L. 145-17, L. 145-31,
+               L. 145-32-1, L. 145-33, L. 145-34, L. 145-35, L. 145-37, L. 145-38, L. 145-38-1, L. 145-39,
+               L. 145-40, L. 145-40-1, L. 145-40-2, L. 145-41, L. 145-46-1, L. 145-47, L. 145-48; R. 145-35,
+               R. 145-36, R. 145-37 (decret n° 2014-1317 du 3 novembre 2014); R. 145-23.
+               Loi n° 2014-626 du 18 juin 2014 (Pinel). Loi n° 2026-403 du 26 mai 2026 de simplification de la vie
+               economique, art. 62 (JORF 27/05/2026, in force 28/05/2026): new L. 145-32-1 (monthly payment on
+               request for retail, wholesale, commercial or artisanal service premises), new L. 145-38-1 (index
+               variation corridor), L. 145-40 (guarantees capped at 1 quarter's rent for L. 145-32-1 premises,
+               leases concluded or renewed from promulgation; restitution within 3 months of the return of the
+               keys), L. 145-41 (court delays conditional on capacity to pay), L. 145-46-1 (scope narrowed).
+               Code monetaire et financier art. L. 112-1, L. 112-2 (indexation); INSEE indices ILC / ILAT.
+               Code civil art. 606, 1231-6, 1719, 1720, 1731.
+               Code general des impots art. 260 and 261 D (VAT option on bare professional premises; BOFiP
+               BOI-TVA-CHAMP-50-10, bofip.impots.gouv.fr).
+               Code de la construction et de l'habitation art. L. 126-29 (DPE annexed to the lease); code de
+               l'environnement art. L. 125-5 (etat des risques) and L. 125-9 (annexe environnementale above 2 000 m2).
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi n° 78-17 du 6 janvier 1978.
+               Verified 2026-10-04 against www.legifrance.gouv.fr (article and section pages read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "9 ans" is "9 years" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects French law (code de commerce, statut des baux commerciaux).
+  Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles.
+  Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of
+  this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">Bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>forme, siège social et numéro d'immatriculation (SIREN et registre)&nbsp;: ______________________________</p>
+  <p>numéro d'identification à la taxe sur la valeur ajoutée&nbsp;: ______________________________</p>
+  <p>représenté par&nbsp;: ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Preneur</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le preneur&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les preneurs soussignés, ci-après (ensemble)
+    &laquo;&nbsp;le preneur&nbsp;&raquo;,</p>
+  <p>forme, siège social et numéro d'immatriculation (SIREN et registre)&nbsp;: ______________________________</p>
+  <p>numéro d'identification à la taxe sur la valeur ajoutée&nbsp;: ______________________________</p>
+  <p>représenté par&nbsp;: ______________________________,</p>
+  <p>il est conclu le présent bail commercial. Lorsque plusieurs personnes sont preneurs, elles sont tenues
+    solidairement de l'ensemble des obligations résultant du présent bail.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur donne à bail au preneur, qui l'accepte, les locaux situés <strong th:text="${propertyAddress}">Adresse</strong>,
+    d'une surface d'environ ________ m², comprenant&nbsp;: ______________________________, ci-après
+    &laquo;&nbsp;les locaux&nbsp;&raquo;.</p>
+  <p>Les parties soumettent le présent bail au statut des baux commerciaux (articles L. 145-1 à L. 145-60 du code
+    de commerce). Le bénéfice de ce statut suppose notamment que le preneur exploite dans les locaux un fonds dont
+    il est propriétaire et soit immatriculé dans les conditions prévues à l'article L. 145-1 du code de commerce.
+    Les clauses du présent bail qui font échec aux dispositions d'ordre public de ce statut sont réputées non
+    écrites.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Les locaux sont destinés exclusivement à l'exercice de l'activité suivante&nbsp;: ______________________________
+    (destination des lieux). Toute autre activité requiert l'accord préalable et écrit du bailleur.</p>
+  <p>Le preneur peut adjoindre à l'activité prévue des activités connexes ou complémentaires selon la procédure
+    prévue à l'article L. 145-47 du code de commerce, et demander l'autorisation d'exercer des activités
+    différentes dans les conditions de l'article L. 145-48 du code de commerce. Le preneur fait son affaire des
+    autorisations administratives nécessaires à son activité.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail prend effet le <strong th:text="${startDate}">date de prise d'effet</strong>.</p>
+  <p th:if="${fixedTerm}">Il est conclu pour une durée déterminée<span th:if="${endDate != null}"> et prend fin le
+    <strong th:text="${endDate}">date de fin</strong></span>&nbsp;; cette durée ne peut être inférieure à 9 ans
+    (article L. 145-4 du code de commerce).</p>
+  <p th:if="${!fixedTerm}">Il est conclu pour une durée de 9 ans, durée minimale prévue par l'article L. 145-4 du
+    code de commerce.</p>
+  <p>Le preneur a la faculté de donner congé à l'expiration de chaque période de 3 ans, au moins 6 mois à
+    l'avance, par lettre recommandée avec demande d'avis de réception ou par acte extrajudiciaire. Les baux
+    conclus pour une durée supérieure à 9 ans, les baux des locaux construits en vue d'une seule utilisation, les
+    baux des locaux à usage exclusif de bureaux et ceux des locaux de stockage visés par le code général des
+    impôts peuvent comporter des stipulations contraires. Le preneur admis à faire valoir ses droits à la retraite
+    ou au bénéfice d'une pension d'invalidité, ou ses ayants droit en cas de décès, dispose également de cette
+    faculté dans les conditions prévues par l'article L. 145-4 du code de commerce.</p>
+  <p>Le bailleur ne dispose de la même faculté que s'il entend invoquer les articles L. 145-18, L. 145-21,
+    L. 145-23-1 et L. 145-24 du code de commerce, notamment afin de construire, de reconstruire ou de surélever
+    l'immeuble existant, dans les formes et délai de l'article L. 145-9 du code de commerce.</p>
+  <p>À défaut de congé ou de demande de renouvellement, le bail se prolonge tacitement au-delà du terme fixé&nbsp;;
+    au cours de cette prolongation, le congé doit être donné au moins 6 mois à l'avance et pour le dernier jour du
+    trimestre civil (article L. 145-9 du code de commerce). Le présent bail n'est pas un bail dérogatoire au sens
+    de l'article L. 145-5 du code de commerce.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer hors taxes et hors charges est fixé à <strong th:text="${rentAmount}">Montant</strong> (terme
+    <span th:text="${paymentFrequency}">mensuel</span>).<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> La taxe sur la valeur ajoutée s'y ajoute le cas échéant (voir l'article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Le preneur verse en outre des
+    provisions sur charges (voir l'article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Le loyer initial est fixé librement par les parties. Lors du renouvellement, le loyer du bail renouvelé est
+    fixé selon les articles L. 145-33 et L. 145-34 du code de commerce&nbsp;: à moins d'une modification notable
+    des éléments de la valeur locative, son taux de variation ne peut excéder la variation de l'indice trimestriel
+    des loyers commerciaux ou de l'indice trimestriel des loyers des activités tertiaires intervenue depuis la
+    fixation initiale du loyer du bail expiré. Ce plafonnement ne s'applique pas lorsque, par l'effet d'une tacite
+    prolongation, la durée du bail excède 12 ans, ni aux baux conclus pour une durée supérieure à 9 ans.</p>
+  <p>En cas de modification notable des éléments de la valeur locative ou s'il est fait exception au plafonnement
+    par suite d'une clause relative à la durée du bail, la variation de loyer qui en découle ne peut conduire à
+    des augmentations annuelles supérieures à 10 % du loyer acquitté au cours de l'année précédente
+    (article L. 145-34 du code de commerce).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">L'indexation du loyer obéit aux stipulations du présent bail (voir l'article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Le loyer est indexé chaque année, à la date anniversaire de la prise d'effet du bail, en fonction de la
+    variation de l'indice des loyers commerciaux (ILC) ou, pour les activités tertiaires autres que commerciales
+    ou artisanales, de l'indice des loyers des activités tertiaires (ILAT), publiés par l'Institut national de la
+    statistique et des études économiques (INSEE). Indice retenu et trimestre de l'indice de base&nbsp;: ______________________________</p>
+  <p>L'indice choisi doit être en relation directe avec l'objet du bail ou avec l'activité de l'une des parties
+    (article L. 112-2 du code monétaire et financier), et la période de variation de l'indice prise en compte ne
+    peut être supérieure à la durée s'écoulant entre chaque révision (article L. 112-1 du code monétaire et
+    financier). Les parties peuvent encadrer la variation annuelle de l'indice, à la hausse et à la baisse, dans
+    les conditions de l'article L. 145-38-1 du code de commerce&nbsp;; encadrement convenu, le cas
+    échéant&nbsp;: ______________________________</p>
+  <p>Lorsque, par le jeu de cette clause d'échelle mobile, le loyer se trouve augmenté ou diminué de plus d'un
+    quart (25 %) par rapport au prix précédemment fixé contractuellement ou par décision judiciaire, chaque partie
+    peut demander la révision du loyer (article L. 145-39 du code de commerce). Indépendamment de cette clause,
+    la révision légale du loyer peut être demandée 3 ans au moins après la date d'entrée en jouissance du preneur
+    ou après le point de départ du bail renouvelé, dans les conditions des articles L. 145-37 et L. 145-38 du code
+    de commerce.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>L'inventaire précis et limitatif des catégories de charges, impôts, taxes et redevances liés au présent bail,
+    avec l'indication de leur répartition entre le bailleur et le preneur, est le suivant (article L. 145-40-2 du
+    code de commerce)&nbsp;: ______________________________. Dans un ensemble immobilier comportant plusieurs
+    locataires, la répartition des charges et du coût des travaux entre les locataires est fonction de la surface
+    exploitée&nbsp;: ______________________________</p>
+  <p>Ne peuvent être imputés au preneur&nbsp;: les dépenses relatives aux grosses réparations mentionnées à
+    l'article 606 du code civil ainsi que les honoraires liés à leur réalisation&nbsp;; les dépenses relatives aux
+    travaux ayant pour objet de remédier à la vétusté ou de mettre en conformité avec la réglementation le bien
+    loué ou l'immeuble, dès lors qu'ils relèvent des grosses réparations&nbsp;; les impôts, notamment la
+    contribution économique territoriale, taxes et redevances dont le redevable légal est le bailleur ou le
+    propriétaire du local ou de l'immeuble, sauf la taxe foncière et les taxes additionnelles à la taxe foncière
+    ainsi que les impôts, taxes et redevances liés à l'usage du local ou de l'immeuble ou à un service dont le
+    preneur bénéficie directement ou indirectement&nbsp;; les honoraires du bailleur liés à la gestion des
+    loyers&nbsp;; dans un ensemble immobilier, les charges, impôts, taxes, redevances et le coût des travaux
+    relatifs à des locaux vacants ou imputables à d'autres locataires (article R. 145-35 du code de
+    commerce).</p>
+  <p>Le preneur verse des provisions sur charges d'un montant de ________ euros par terme, régularisées chaque
+    année. Le bailleur communique au preneur un état récapitulatif annuel, incluant la liquidation et la
+    régularisation des comptes de charges, au plus tard le 30 septembre de l'année suivant celle au titre de
+    laquelle il est établi ou, pour les immeubles en copropriété, dans le délai de 3 mois à compter de la
+    reddition des charges de copropriété sur l'exercice annuel (article R. 145-36 du code de commerce).</p>
+  <p>Lors de la conclusion du bail, puis tous les 3 ans, le bailleur communique au preneur un état prévisionnel des
+    travaux qu'il envisage de réaliser dans les 3 années suivantes, assorti d'un budget prévisionnel, et un état
+    récapitulatif des travaux qu'il a réalisés dans les 3 années précédentes, précisant leur coût
+    (article L. 145-40-2 du code de commerce). Il informe le preneur des charges, impôts, taxes et redevances
+    nouveaux en cours de bail.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>La location de locaux nus à usage professionnel est en principe exonérée de la taxe sur la valeur ajoutée
+    (article 261 D du code général des impôts). Le bailleur peut opter pour le paiement de la taxe sur les loyers
+    lorsque les locaux sont loués pour les besoins de l'activité du preneur&nbsp;; lorsque le preneur n'est pas
+    assujetti à la taxe, l'option n'est possible que si le bail en fait expressément mention (article 260 du code
+    général des impôts).</p>
+  <p>Option exercée par le bailleur (oui ou non)&nbsp;: ________. En cas d'option, le preneur paie, en sus du loyer
+    et des charges, la taxe sur la valeur ajoutée au taux en vigueur.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Le preneur verse au bailleur, lors de la signature du bail, un dépôt de
+    garantie de <strong th:text="${depositAmount}">Montant</strong>.</p>
+  <p th:if="${depositAmount == null}">Le preneur verse au bailleur, lors de la signature du bail, un dépôt de
+    garantie du montant convenu par écrit entre les parties.</p>
+  <p>Lorsque les locaux sont destinés à l'exercice d'une activité de commerce de détail ou de gros ou de
+    prestations de services à caractère commercial ou artisanal (article L. 145-32-1 du code de commerce), les
+    sommes versées à titre de garantie et la valeur des garanties de toute nature demandées au preneur ne peuvent
+    excéder le montant des loyers dus au titre de 1 trimestre et ne portent pas intérêt au profit du preneur (article L. 145-40 du
+    code de commerce, applicable aux baux conclus ou renouvelés à compter de la promulgation de la loi
+    n° 2026-403 du 26 mai 2026). Dans les autres cas, les sommes versées d'avance, même à titre de garantie,
+    portent intérêt au profit du preneur, au taux pratiqué par la Banque de France pour les avances sur titres,
+    pour les sommes excédant celle qui correspond au prix du loyer de plus de 2 termes.</p>
+  <p>Le dépôt de garantie est restitué au preneur dans un délai raisonnable ne pouvant excéder 3 mois à compter
+    de la remise des clés au bailleur ou à son mandataire, en main propre ou par lettre recommandée avec demande
+    d'avis de réception, déduction faite des sommes restant dues au bailleur et des sommes dont celui-ci pourrait
+    être tenu en lieu et place du preneur, sous réserve qu'elles soient dûment justifiées&nbsp;; les autres
+    garanties sont restituées dans un délai de 6 mois. En cas de mutation des locaux loués, l'obligation de restitution est transmise au nouveau bailleur.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> L'état des lieux de sortie est établi dans les conditions du présent
+    bail (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le preneur paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> et les provisions sur charges</span> d'avance, par terme
+    <span th:text="${paymentFrequency}">mensuel</span>,
+    <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong> de chaque
+      période de paiement</span><span th:if="${paymentDueDay == null}">aux échéances convenues entre les parties</span>,
+    par virement sur le compte désigné par le bailleur.</p>
+  <p>Lorsque les locaux sont destinés à l'exercice d'une activité de commerce de détail ou de gros ou de
+    prestations de services à caractère commercial ou artisanal, le paiement mensuel du loyer est de droit si le
+    preneur le demande et ne présente pas d'arriéré de loyer et de charges non contesté&nbsp;; la demande prend
+    effet à compter de l'échéance suivante (article L. 145-32-1 du code de commerce).</p>
+  <p>Toute somme due et non payée à son échéance porte intérêt au taux légal à compter de la mise en demeure
+    (article 1231-6 du code civil).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur délivre les locaux en bon état de réparations de toute espèce, les entretient en état de servir à
+    l'usage pour lequel ils ont été loués et en fait jouir paisiblement le preneur pendant la durée du bail
+    (articles 1719 et 1720 du code civil). Sauf stipulation contraire du présent bail, il fait toutes les
+    réparations qui peuvent devenir nécessaires, autres que les locatives&nbsp;; en tout état de cause, les
+    dépenses relatives aux grosses réparations mentionnées à l'article 606 du code civil ne peuvent être imputées
+    au preneur (article R. 145-35 du code de commerce).</p>
+  <p>Le preneur assure l'entretien courant et les réparations locatives des locaux et de ses équipements,
+    informe sans délai le bailleur de tout désordre affectant les locaux et restitue les locaux en bon état
+    d'entretien, sous réserve de l'usure normale. Il laisse exécuter les travaux nécessaires dont le bailleur l'a
+    informé, en préservant autant que possible son exploitation.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Le preneur ne réalise aucuns travaux affectant le gros œuvre, la structure ou les équipements communs de
+    l'immeuble, ni aucuns travaux de transformation ou d'aménagement des locaux, sans l'accord préalable et écrit
+    du bailleur&nbsp;; il fait son affaire des autorisations administratives nécessaires et en supporte le
+    coût.</p>
+  <p>Sauf convention contraire écrite, les travaux et aménagements réalisés par le preneur restent acquis au
+    bailleur en fin de bail sans indemnité, à moins que le bailleur n'exige la remise des locaux dans leur état
+    d'origine aux frais du preneur.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Le preneur peut céder son droit au bail à l'acquéreur de son fonds de commerce ou de son entreprise&nbsp;;
+    toute convention tendant à le lui interdire est réputée non écrite (article L. 145-16 du code de commerce).
+    Toute autre cession du droit au bail requiert l'accord préalable et écrit du bailleur. Le bailleur est appelé à
+    l'acte de cession, dont un exemplaire lui est remis.</p>
+  <p>Si la cession s'accompagne d'une clause de garantie du cédant au bénéfice du bailleur, celui-ci informe le
+    cédant de tout défaut de paiement du cessionnaire dans le délai de 1 mois à compter de la date à laquelle la
+    somme aurait dû être acquittée (article L. 145-16-1 du code de commerce), et ne peut se prévaloir de cette
+    clause que durant 3 ans à compter de la cession (article L. 145-16-2 du code de commerce).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Toute sous-location totale ou partielle est interdite, sauf stipulation contraire du présent bail ou accord
+    du bailleur&nbsp;; en cas de sous-location autorisée, le bailleur est appelé à concourir à l'acte
+    (article L. 145-31 du code de commerce). Lorsque le loyer de la sous-location est supérieur au prix de la
+    location principale, le bailleur a la faculté d'exiger une augmentation correspondante du loyer de la location
+    principale.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Le bailleur assure l'immeuble contre les risques usuels. Le preneur assure, pendant toute la durée du bail,
+    ses aménagements, son mobilier, son matériel et ses marchandises ainsi que sa responsabilité civile
+    d'exploitant et les risques locatifs auprès d'une compagnie notoirement solvable, et en justifie à la demande du
+    bailleur.</p>
+</div>
+
+<div th:fragment="clause-diagnostics" data-clause="diagnostics">
+  <p>Le diagnostic de performance énergétique est joint au présent bail à des fins d'information
+    (article L. 126-29 du code de la construction et de l'habitation). Sont également annexés, le cas échéant,
+    l'état des risques prévu à l'article L. 125-5 du code de l'environnement et les informations relatives à la
+    présence d'amiante prévues par le code de la santé publique.</p>
+  <p>Lorsque le bail porte sur des locaux de plus de 2 000 m² à usage de bureaux ou de commerces, une annexe
+    environnementale est jointe au bail&nbsp;; les parties s'y communiquent les informations utiles relatives aux
+    consommations énergétiques des locaux (article L. 125-9 du code de l'environnement).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Un état des lieux est établi contradictoirement et amiablement par les parties, ou par un tiers mandaté par
+    elles, lors de la prise de possession des locaux par le preneur, lors de la cession du droit au bail, de la
+    cession ou de la mutation à titre gratuit du fonds et lors de la restitution des locaux&nbsp;; il est joint au
+    bail ou conservé par chacune des parties. À défaut, il est établi par un commissaire de justice, à
+    l'initiative de la partie la plus diligente, à frais partagés par moitié entre le bailleur et le preneur
+    (article L. 145-40-1 du code de commerce).</p>
+  <p>Le bailleur qui n'a pas fait toutes diligences pour la réalisation de l'état des lieux ne peut invoquer la
+    présomption de l'article 1731 du code civil. Le preneur restitue les locaux libres de toute occupation, avec
+    l'ensemble des clés.<span class="clause-ref" data-ref="alterations" th:if="${refs['alterations']}"> Le sort
+    des aménagements du preneur obéit aux stipulations du présent bail (voir l'article <span th:text="${refs['alterations']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La restitution du dépôt de garantie suit la
+    remise des clés (voir l'article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>Le preneur bénéficie d'un droit au renouvellement du bail dans les conditions des articles L. 145-8 et
+    suivants du code de commerce. Le bailleur peut refuser le renouvellement mais doit alors, sauf exceptions
+    prévues par la loi, notamment l'existence d'un motif grave et légitime à l'encontre du preneur
+    (article L. 145-17 du code de commerce), payer au preneur une indemnité d'éviction égale au préjudice causé
+    par le défaut de renouvellement (article L. 145-14 du code de commerce).</p>
+  <p>Le congé est donné par acte extrajudiciaire, au moins 6 mois à l'avance&nbsp;; à peine de nullité, il précise
+    les motifs pour lesquels il est donné et indique que le preneur qui entend le contester ou demander le paiement
+    d'une indemnité d'éviction doit saisir le tribunal avant l'expiration d'un délai de 2 ans à compter de la date
+    pour laquelle le congé a été donné (article L. 145-9 du code de commerce).</p>
+  <p>À défaut de congé, le preneur qui veut obtenir le renouvellement en fait la demande soit dans les 6 mois qui
+    précèdent l'expiration du bail, soit à tout moment au cours de sa prolongation&nbsp;; le bailleur qui ne fait pas
+    connaître son refus dans les 3 mois de la notification de la demande est réputé avoir accepté le principe du
+    renouvellement (article L. 145-10 du code de commerce).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>Lorsque les locaux sont destinés à l'exercice d'une activité de commerce de détail ou de gros ou de
+    prestations de services à caractère commercial ou artisanal et que le propriétaire envisage de les vendre, il
+    en informe le preneur par lettre recommandée avec demande d'avis de réception ou par remise en main propre
+    contre récépissé ou émargement. Cette notification vaut offre de vente au profit du preneur, qui dispose d'un
+    délai de 1 mois à compter de sa réception pour se prononcer&nbsp;; en cas d'acceptation, il dispose d'un délai
+    de 2 mois pour la réalisation de la vente, porté à 4 mois s'il notifie son intention de recourir à un prêt
+    (article L. 145-46-1 du code de commerce).</p>
+  <p>Ce droit de préférence ne s'applique pas dans les cas exclus par cet article, notamment la cession unique de
+    plusieurs locaux d'un ensemble commercial et la cession d'un local au conjoint du bailleur ou à un ascendant ou
+    un descendant du bailleur ou de son conjoint.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Le bail prend fin dans les conditions prévues par le code de commerce, notamment par congé ou par l'exercice
+    de la faculté de résiliation à l'expiration de chaque période de 3 ans<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (voir l'article <span th:text="${refs['term']}"></span>)</span>. Les parties peuvent
+    également y mettre fin d'un commun accord.</p>
+  <p>Le présent bail est résilié de plein droit, à défaut de paiement à son échéance d'un terme de loyer, des
+    charges ou du dépôt de garantie, ou à défaut d'exécution de l'une des clauses du bail, 1 mois après un
+    commandement demeuré infructueux&nbsp;; à peine de nullité, le commandement mentionne ce délai
+    (article L. 145-41 du code de commerce). Le juge saisi peut, en accordant des délais, suspendre la réalisation
+    et les effets de cette clause&nbsp;; l'octroi de délais est subordonné à la capacité du preneur à régler la dette
+    locative et à la reprise du versement intégral du loyer courant avant la première audience.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La restitution des
+    locaux donne lieu à un état des lieux de sortie (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Chaque partie traite les données à caractère personnel de l'autre partie, de ses représentants et de ses
+    interlocuteurs uniquement dans la mesure nécessaire à la conclusion et à l'exécution du présent bail et au
+    respect de ses obligations légales, conformément au règlement général sur la protection des données (RGPD,
+    règlement (UE) 2016/679) et à la loi n° 78-17 du 6 janvier 1978 relative à l'informatique, aux fichiers et aux
+    libertés, et ne les conserve pas au-delà de la durée nécessaire à ces finalités.</p>
+  <p>Les personnes concernées peuvent exercer les droits que leur confère le RGPD, notamment les droits d'accès,
+    de rectification et d'effacement, et peuvent introduire une réclamation auprès de la Commission nationale de
+    l'informatique et des libertés (CNIL).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent bail est soumis au droit français.</p>
+  <p>Les litiges relatifs au loyer du bail renouvelé, aux charges et aux travaux peuvent être soumis à la
+    commission départementale de conciliation avant toute action en justice (article L. 145-35 du code de
+    commerce). Les litiges relatifs au présent bail relèvent du tribunal judiciaire du lieu de situation de
+    l'immeuble&nbsp;; les contestations relatives à la fixation du prix du bail révisé ou renouvelé sont portées
+    devant le président de ce tribunal ou le juge qui le remplace (article R. 145-23 du code de commerce). Si une stipulation du présent bail est réputée non écrite,
+    les autres stipulations conservent leur effet.</p>
+</div>
+
+</body>
+</html>

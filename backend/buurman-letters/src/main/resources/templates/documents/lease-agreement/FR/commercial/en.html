@@ -1,0 +1,351 @@
+<!--
+  legal-basis: Code de commerce, livre Ier, titre IV, chapitre V (du bail commercial), consolidated text as published on
+               www.legifrance.gouv.fr (version en vigueur au 2026-10-04): art. L. 145-1, L. 145-4, L. 145-5,
+               L. 145-9, L. 145-10, L. 145-14, L. 145-16, L. 145-16-1, L. 145-16-2, L. 145-17, L. 145-31,
+               L. 145-32-1, L. 145-33, L. 145-34, L. 145-35, L. 145-37, L. 145-38, L. 145-38-1, L. 145-39,
+               L. 145-40, L. 145-40-1, L. 145-40-2, L. 145-41, L. 145-46-1, L. 145-47, L. 145-48; R. 145-35,
+               R. 145-36, R. 145-37 (decret n° 2014-1317 du 3 novembre 2014); R. 145-23.
+               Loi n° 2014-626 du 18 juin 2014 (Pinel). Loi n° 2026-403 du 26 mai 2026 de simplification de la vie
+               economique, art. 62 (JORF 27/05/2026, in force 28/05/2026): new L. 145-32-1 (monthly payment on
+               request for retail, wholesale, commercial or artisanal service premises), new L. 145-38-1 (index
+               variation corridor), L. 145-40 (guarantees capped at 1 quarter's rent for L. 145-32-1 premises,
+               leases concluded or renewed from promulgation; restitution within 3 months of the return of the
+               keys), L. 145-41 (court delays conditional on capacity to pay), L. 145-46-1 (scope narrowed).
+               Code monetaire et financier art. L. 112-1, L. 112-2 (indexation); INSEE indices ILC / ILAT.
+               Code civil art. 606, 1231-6, 1719, 1720, 1731.
+               Code general des impots art. 260 and 261 D (VAT option on bare professional premises; BOFiP
+               BOI-TVA-CHAMP-50-10, bofip.impots.gouv.fr).
+               Code de la construction et de l'habitation art. L. 126-29 (DPE annexed to the lease); code de
+               l'environnement art. L. 125-5 (etat des risques) and L. 125-9 (annexe environnementale above 2 000 m2).
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi n° 78-17 du 6 janvier 1978.
+               Verified 2026-10-04 against www.legifrance.gouv.fr (article and section pages read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "9 ans" is "9 years" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of fr.html; the French text is authoritative. It states French law (code de
+  commerce, statut des baux commerciaux) in English and is not the law of any other country. Draft text, not vetted
+  by legal counsel. Only prose differs from fr.html: fragments, th: expressions and attributes are identical
+  (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies
+  article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (bailleur),</p>
+  <p>legal form, registered office and registration number (SIREN and register): ______________________________</p>
+  <p>value added tax identification number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (preneur),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (preneur),</p>
+  <p>legal form, registered office and registration number (SIREN and register): ______________________________</p>
+  <p>value added tax identification number: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>the present commercial lease (bail commercial) is concluded. Where several persons are tenants, they are
+    jointly and severally liable for all obligations arising from this lease.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the premises located at <strong th:text="${propertyAddress}">address</strong>,
+    with an area of approximately ________ m², comprising: ______________________________, hereinafter
+    &ldquo;the premises&rdquo;.</p>
+  <p>The parties submit this lease to the statutory regime of commercial leases (statut des baux commerciaux,
+    articles L. 145-1 to L. 145-60 of the Commercial Code, code de commerce). The benefit of that regime requires
+    in particular that the tenant operates in the premises a business (fonds) that he owns and is registered under
+    the conditions laid down in article L. 145-1 of the Commercial Code.
+    Terms of this lease that defeat the mandatory provisions of that regime are deemed unwritten (réputées non
+    écrites).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The premises are intended exclusively for the following activity: ______________________________
+    (permitted use, destination des lieux). Any other activity requires the landlord&rsquo;s prior written consent.</p>
+  <p>The tenant may add related or complementary activities to the agreed activity in accordance with the procedure
+    laid down in article L. 145-47 of the Commercial Code, and may request authorisation to carry on different
+    activities under the conditions of article L. 145-48 of the Commercial Code. The tenant is responsible for
+    obtaining the administrative authorisations required for his activity.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">It is concluded for a fixed term<span th:if="${endDate != null}"> and ends on
+    <strong th:text="${endDate}">end date</strong></span>; that term may not be less than 9 years
+    (article L. 145-4 of the Commercial Code).</p>
+  <p th:if="${!fixedTerm}">It is concluded for a term of 9 years, the minimum term laid down in article L. 145-4 of
+    the Commercial Code.</p>
+  <p>The tenant may give notice at the end of each 3-year period, at least 6 months in
+    advance, by registered letter with acknowledgement of receipt or by bailiff&rsquo;s writ (acte extrajudiciaire).
+    Leases concluded for a term of more than 9 years, leases of premises built for a single use, leases of premises
+    used exclusively as offices and leases of storage premises referred to in the General Tax Code may contain
+    contrary terms. A tenant admitted to retirement benefits or to an invalidity pension, or his heirs in the event
+    of death, also has this right under the conditions laid down in article L. 145-4 of the Commercial Code.</p>
+  <p>The landlord has the same right only if he intends to rely on articles L. 145-18, L. 145-21,
+    L. 145-23-1 and L. 145-24 of the Commercial Code, in particular in order to build, rebuild or raise the
+    existing building, in the form and within the period of article L. 145-9 of the Commercial Code.</p>
+  <p>Failing notice or a request for renewal, the lease is tacitly prolonged beyond the agreed term;
+    during that prolongation, notice must be given at least 6 months in advance and for the last day of a calendar
+    quarter (article L. 145-9 of the Commercial Code). This lease is not a derogatory short-term lease (bail
+    dérogatoire) within the meaning of article L. 145-5 of the Commercial Code.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent excluding taxes and charges is set at <strong th:text="${rentAmount}">amount</strong> (payable
+    <span th:text="${paymentFrequency}">monthly</span>).<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Value added tax is added where applicable (see article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays
+    advance payments on charges (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The initial rent is set freely by the parties. On renewal, the rent of the renewed lease is set in
+    accordance with articles L. 145-33 and L. 145-34 of the Commercial Code: unless there is a material change in
+    the factors determining the rental value, its rate of change may not exceed the change in the quarterly
+    commercial rent index or in the quarterly tertiary activities rent index since the initial setting of the rent
+    of the expired lease. This cap does not apply where, as a result of tacit prolongation, the term of the lease
+    exceeds 12 years, nor to leases concluded for a term of more than 9 years.</p>
+  <p>In the event of a material change in the factors determining the rental value, or if the cap is disapplied
+    by reason of a clause on the term of the lease, the resulting change in rent may not lead to
+    annual increases of more than 10 % of the rent paid during the previous year
+    (article L. 145-34 of the Commercial Code).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The indexation of the rent is governed by the terms of this lease (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is indexed each year, on the anniversary of the date on which the lease took effect, according to
+    the change in the commercial rent index (indice des loyers commerciaux, ILC) or, for tertiary activities other
+    than commercial or artisanal ones, the tertiary activities rent index (indice des loyers des activités
+    tertiaires, ILAT), published by the National Institute of Statistics and Economic Studies (INSEE). Index
+    chosen and quarter of the base index: ______________________________</p>
+  <p>The index chosen must be directly related to the subject matter of the lease or to the activity of one of
+    the parties (article L. 112-2 of the Monetary and Financial Code), and the period of index variation taken into
+    account may not exceed the time elapsing between reviews (article L. 112-1 of the Monetary and
+    Financial Code). The parties may limit the annual variation of the index, upwards and downwards, under
+    the conditions of article L. 145-38-1 of the Commercial Code; agreed limit, where
+    applicable: ______________________________</p>
+  <p>Where, as a result of this sliding-scale clause, the rent is increased or reduced by more than a
+    quarter (25 %) compared with the price previously set by contract or by court decision, either party
+    may request a review of the rent (article L. 145-39 of the Commercial Code). Independently of this clause,
+    the statutory review of the rent may be requested at least 3 years after the date on which the tenant took
+    possession or after the starting date of the renewed lease, under the conditions of articles L. 145-37 and
+    L. 145-38 of the Commercial Code.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The precise and exhaustive inventory of the categories of charges, taxes, levies and fees related to this lease,
+    with an indication of how they are allocated between the landlord and the tenant, is as follows (article
+    L. 145-40-2 of the Commercial Code): ______________________________. In a property complex with several
+    tenants, the charges and the cost of works are allocated between the tenants according to the area
+    occupied: ______________________________</p>
+  <p>The following may not be charged to the tenant: expenditure on major repairs referred to in
+    article 606 of the Civil Code and the fees relating to their performance; expenditure on
+    works intended to remedy dilapidation or to bring the let property or the building into compliance with
+    regulations, where they constitute major repairs; taxes, in particular the territorial economic
+    contribution (contribution économique territoriale), levies and fees for which the landlord or the owner of the
+    premises or of the building is legally liable, except the property tax (taxe foncière) and the taxes additional
+    to it, and taxes, levies and fees related to the use of the premises or of the building or to a service from
+    which the tenant benefits directly or indirectly; the landlord&rsquo;s fees for managing the
+    rents; in a property complex, the charges, taxes, levies, fees and the cost of works
+    relating to vacant premises or attributable to other tenants (article R. 145-35 of the Commercial
+    Code).</p>
+  <p>The tenant pays advance payments on charges of ________ euros per instalment, adjusted each
+    year. The landlord sends the tenant an annual summary statement, including the settlement and
+    adjustment of the charge accounts, no later than 30 September of the year following the year for
+    which it is drawn up or, for buildings in co-ownership, within 3 months of the
+    rendering of the co-ownership accounts for the financial year (article R. 145-36 of the Commercial Code).</p>
+  <p>On conclusion of the lease, and then every 3 years, the landlord sends the tenant a forecast of the
+    works he plans to carry out in the following 3 years, with a provisional budget, and a
+    summary of the works he carried out in the previous 3 years, stating their cost
+    (article L. 145-40-2 of the Commercial Code). He informs the tenant of any new charges, taxes, levies and fees
+    during the lease.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of bare premises for professional use is in principle exempt from value added tax
+    (article 261 D of the General Tax Code). The landlord may opt to charge the tax on the rents
+    where the premises are let for the needs of the tenant&rsquo;s activity; where the tenant is not
+    liable to the tax, the option is possible only if the lease expressly mentions it (article 260 of the General
+    Tax Code).</p>
+  <p>Option exercised by the landlord (yes or no): ________. If the option is exercised, the tenant pays, in addition
+    to the rent and charges, value added tax at the applicable rate.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On signing the lease, the tenant pays the landlord a security deposit
+    (dépôt de garantie) of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">On signing the lease, the tenant pays the landlord a security deposit
+    (dépôt de garantie) of the amount agreed in writing between the parties.</p>
+  <p>Where the premises are intended for a retail or wholesale trade activity or for the provision of
+    commercial or artisanal services (article L. 145-32-1 of the Commercial Code), the
+    sums paid as security and the value of guarantees of any kind required from the tenant may not
+    exceed the amount of the rent due for 1 quarter and bear no interest for the tenant (article L. 145-40 of the
+    Commercial Code, applicable to leases concluded or renewed from the promulgation of Law
+    No. 2026-403 of 26 May 2026). In other cases, sums paid in advance, even as security,
+    bear interest for the tenant, at the rate applied by the Banque de France to advances on securities,
+    on the amount exceeding the rent for more than 2 terms.</p>
+  <p>The security deposit is returned to the tenant within a reasonable period not exceeding 3 months from
+    the return of the keys to the landlord or the landlord&rsquo;s agent, by hand or by registered letter with
+    acknowledgement of receipt, after deduction of the sums still owed to the landlord and of the sums for which the landlord may
+    be liable in place of the tenant, provided that they are duly justified; other
+    guarantees are returned within a period of 6 months. If the let premises change hands, the obligation to return is transferred to the new landlord.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The check-out inventory is drawn up as provided in this
+    lease (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the advance payments on charges</span> in advance, in instalments payable
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the due dates agreed between the parties</span>,
+    by transfer to the account designated by the landlord.</p>
+  <p>Where the premises are intended for a retail or wholesale trade activity or for the provision of
+    commercial or artisanal services, monthly payment of the rent is a right if the
+    tenant requests it and has no undisputed arrears of rent and charges; the request takes
+    effect from the next due date (article L. 145-32-1 of the Commercial Code).</p>
+  <p>Any sum due and not paid on its due date bears interest at the statutory rate from the formal notice
+    (mise en demeure) (article 1231-6 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord hands over the premises in a good state of repair of every kind, maintains them in a condition fit
+    for the use for which they were let and ensures the tenant&rsquo;s peaceful enjoyment during the term of the lease
+    (articles 1719 and 1720 of the Civil Code). Unless otherwise provided in this lease, he carries out all
+    repairs that may become necessary, other than tenant&rsquo;s repairs; in any event, the
+    expenditure on major repairs referred to in article 606 of the Civil Code may not be charged
+    to the tenant (article R. 145-35 of the Commercial Code).</p>
+  <p>The tenant carries out the routine maintenance and the tenant&rsquo;s repairs of the premises and of his equipment,
+    informs the landlord without delay of any defect affecting the premises and returns the premises in a good state
+    of maintenance, subject to normal wear and tear. He allows the necessary works of which the landlord has informed
+    him to be carried out, preserving his business operations as far as possible.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant carries out no works affecting the structural work, the structure or the common equipment of
+    the building, nor any works converting or fitting out the premises, without the landlord&rsquo;s prior
+    written consent; he is responsible for obtaining the required administrative authorisations and bears their
+    cost.</p>
+  <p>Unless otherwise agreed in writing, the works and fittings carried out by the tenant remain the property of the
+    landlord at the end of the lease without compensation, unless the landlord requires the premises to be restored to their
+    original condition at the tenant&rsquo;s expense.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may assign the lease (droit au bail) to the purchaser of his business (fonds de commerce) or of his undertaking;
+    any agreement intended to prevent this is deemed unwritten (article L. 145-16 of the Commercial Code).
+    Any other assignment of the lease requires the landlord&rsquo;s prior written consent. The landlord is called to
+    the deed of assignment, of which he receives a copy.</p>
+  <p>If the assignment is accompanied by a guarantee clause by the assignor for the benefit of the landlord, the latter informs the
+    assignor of any payment default by the assignee within 1 month from the date on which the
+    sum should have been paid (article L. 145-16-1 of the Commercial Code), and may rely on that
+    clause only for 3 years from the assignment (article L. 145-16-2 of the Commercial Code).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Any total or partial subletting is prohibited, unless otherwise provided in this lease or agreed by
+    the landlord; in the case of authorised subletting, the landlord is called to take part in the deed
+    (article L. 145-31 of the Commercial Code). Where the rent of the sublease exceeds the rent of the main
+    lease, the landlord may require a corresponding increase of the rent of the main
+    lease.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building against the usual risks. The tenant insures, throughout the term of the lease,
+    his fittings, furniture, equipment and goods as well as his operator&rsquo;s civil liability
+    and the tenant&rsquo;s risks with a reputably solvent insurer, and provides proof of this at the
+    landlord&rsquo;s request.</p>
+</div>
+
+<div th:fragment="clause-diagnostics" data-clause="diagnostics">
+  <p>The energy performance diagnosis (diagnostic de performance énergétique) is attached to this lease for information
+    (article L. 126-29 of the Construction and Housing Code). Where applicable, the following are also annexed:
+    the risk statement provided for in article L. 125-5 of the Environment Code and the information on the
+    presence of asbestos required by the Public Health Code.</p>
+  <p>Where the lease covers premises of more than 2 000 m² used as offices or shops, an environmental
+    annex (annexe environnementale) is attached to the lease; in it the parties exchange the useful information on the
+    energy consumption of the premises (article L. 125-9 of the Environment Code).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>An inventory of condition (état des lieux) is drawn up jointly and amicably by the parties, or by a third party appointed by
+    them, when the tenant takes possession of the premises, on assignment of the lease, on the
+    assignment or gratuitous transfer of the business and when the premises are returned; it is attached to the
+    lease or kept by each party. Failing that, it is drawn up by a judicial officer (commissaire de justice), at the
+    initiative of the first party to act, with the costs shared equally between the landlord and the tenant
+    (article L. 145-40-1 of the Commercial Code).</p>
+  <p>A landlord who has not taken all steps to have the inventory drawn up may not rely on the
+    presumption of article 1731 of the Civil Code. The tenant returns the premises free of any occupation, with
+    all keys.<span class="clause-ref" data-ref="alterations" th:if="${refs['alterations']}"> The fate
+    of the tenant&rsquo;s fittings is governed by the terms of this lease (see article <span th:text="${refs['alterations']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the security deposit follows the
+    return of the keys (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>The tenant has a right to renewal of the lease under the conditions of articles L. 145-8 et
+    seq. of the Commercial Code. The landlord may refuse renewal but must then, save for exceptions
+    provided by law, in particular a serious and legitimate ground against the tenant
+    (article L. 145-17 of the Commercial Code), pay the tenant an eviction indemnity (indemnité d&rsquo;éviction) equal to the loss caused
+    by the refusal to renew (article L. 145-14 of the Commercial Code).</p>
+  <p>Notice is given by bailiff&rsquo;s writ (acte extrajudiciaire), at least 6 months in advance; on pain of nullity, it states
+    the grounds on which it is given and indicates that a tenant who intends to contest it or to claim payment
+    of an eviction indemnity must bring the matter before the court before the expiry of a period of 2 years from the date
+    for which notice was given (article L. 145-9 of the Commercial Code).</p>
+  <p>Failing notice, a tenant who wishes to obtain renewal requests it either within the 6 months
+    preceding the expiry of the lease or at any time during its prolongation; a landlord who does not
+    make known his refusal within 3 months of notification of the request is deemed to have accepted the principle of
+    renewal (article L. 145-10 of the Commercial Code).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>Where the premises are intended for a retail or wholesale trade activity or for the provision of
+    commercial or artisanal services and the owner plans to sell them, the owner
+    informs the tenant by registered letter with acknowledgement of receipt or by delivery by hand
+    against a receipt or signature. That notification constitutes an offer of sale to the tenant, who has a
+    period of 1 month from its receipt to decide; in the event of acceptance, the tenant has a period
+    of 2 months to complete the sale, extended to 4 months if he gives notice of his intention to take out a loan
+    (article L. 145-46-1 of the Commercial Code).</p>
+  <p>This right of first refusal (droit de préférence) does not apply in the cases excluded by that article, in particular the single sale of
+    several premises of a commercial complex and the sale of premises to the landlord&rsquo;s spouse or to an ascendant or
+    a descendant of the landlord or of the landlord&rsquo;s spouse.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The lease ends under the conditions laid down by the Commercial Code, in particular by notice or by exercise
+    of the right to terminate at the end of each 3-year period<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span>. The parties may
+    also end it by mutual consent.</p>
+  <p>This lease is terminated automatically (résilié de plein droit) in the event of failure to pay an instalment of rent, the
+    charges or the security deposit on its due date, or failure to perform any term of the lease, 1 month after a
+    payment demand or formal demand (commandement) that has remained unsuccessful; on pain of nullity, the demand states that period
+    (article L. 145-41 of the Commercial Code). The court seised may, by granting time, suspend the operation
+    and effects of this clause; the grant of time is conditional on the tenant&rsquo;s ability to pay the rent
+    arrears and on the resumption of full payment of the current rent before the first hearing.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    premises gives rise to a check-out inventory (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party, of its representatives and of its
+    contact persons only to the extent necessary for the conclusion and performance of this lease and for
+    compliance with its legal obligations, in accordance with the General Data Protection Regulation (GDPR,
+    Regulation (EU) 2016/679) and Law No. 78-17 of 6 January 1978 on information technology, data files and civil
+    liberties, and does not keep the data longer than necessary for those purposes.</p>
+  <p>The data subjects may exercise the rights conferred on them by the GDPR, in particular the rights of access,
+    rectification and erasure, and may lodge a complaint with the French data protection authority (Commission nationale de
+    l&rsquo;informatique et des libertés, CNIL).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by French law.</p>
+  <p>Disputes relating to the rent of the renewed lease, to charges and to works may be referred to the
+    departmental conciliation commission (commission départementale de conciliation) before any court action (article L. 145-35 of the Commercial
+    Code). Disputes relating to this lease fall within the jurisdiction of the judicial court (tribunal judiciaire) of the place where
+    the building is located; disputes about the setting of the price of the reviewed or renewed lease are brought
+    before the president of that court or the judge acting in his place (article R. 145-23 of the Commercial Code). If a term of this lease is deemed unwritten,
+    the other terms remain in effect.</p>
+</div>
+
+</body>
+</html>

@@ -54,8 +54,9 @@ import com.buurman.util.DocumentLanguages;
  * <ul>
  *   <li>NL (present): {@link #DUTCH_CITATION} {@code \d+:\d+[a-z]?} for "7:271 lid 2".
  *   <li>DE: {@code §\s*\d+[a-z]?} for "§ 556d Abs. 2" (and {@code Art\.\s*\d+} for "Art. 229").
- *   <li>FR: {@code art\.?\s*\d+(?:-\d+)?} for "art. 15-1, al. 2"; the paragraph digit after "al."
- *       is the digit the gate pairs.
+ *   <li>FR (present): {@link #FRENCH_CITATION}, the number after "art."/"article(s)" with an
+ *       optional code prefix, for "article 15-1, al. 2" and "article L. 145-4"; the paragraph digit
+ *       after "al." is the digit the gate pairs.
  * </ul>
  *
  * Write the paragraph as a DIGIT after the reference in the same sentence in every language (see
@@ -320,8 +321,86 @@ public final class LeaseDocumentRegistry {
           GERMAN_MARKERS,
           Optional.of(GERMAN_CITATION));
 
+  /**
+   * The French statute citation format: the article number after "art." / "article(s)", with an
+   * optional code prefix ("L. 145-4", "R. 145-35"): {@code article 22}, {@code art. 17-1}, {@code
+   * article L. 145-40-2}. Only the number is the token, so "article" and "Article" pair alike.
+   */
+  public static final Pattern FRENCH_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|articles?)\\s{1,20})(?:[LRD]\\.\\s{0,3})?\\d+(?:-\\d+)*",
+          Pattern.CASE_INSENSITIVE);
+
+  /** French marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> FRENCH_MARKERS =
+      List.of("le bailleur", "le locataire", "le preneur", "voir l'article", "conformément");
+
+  /** Mirror of V094__seed_fr_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry FR_RESIDENTIAL =
+      new Entry(
+          "FR",
+          LeaseKind.RESIDENTIAL,
+          "fr",
+          List.of("fr", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("works", false, false, 12),
+              new ClauseSpec("diagnostics", true, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("handover-inspection", false, false, 15),
+              new ClauseSpec("termination", true, false, 16),
+              new ClauseSpec("annexes", true, false, 17),
+              new ClauseSpec("data-protection", false, false, 18),
+              new ClauseSpec("disputes", false, false, 19)),
+          FRENCH_MARKERS,
+          Optional.of(FRENCH_CITATION));
+
+  /** Mirror of V094__seed_fr_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry FR_COMMERCIAL =
+      new Entry(
+          "FR",
+          LeaseKind.COMMERCIAL,
+          "fr",
+          List.of("fr", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", true, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("subletting", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("diagnostics", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("renewal", false, false, 18),
+              new ClauseSpec("pre-emption", false, false, 19),
+              new ClauseSpec("termination", true, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          FRENCH_MARKERS,
+          Optional.of(FRENCH_CITATION));
+
   /** Every shipped (country, kind); add new entries here. */
-  public static final List<Entry> ENTRIES = List.of(NL_RESIDENTIAL, DE_RESIDENTIAL, DE_COMMERCIAL);
+  public static final List<Entry> ENTRIES =
+      List.of(NL_RESIDENTIAL, DE_RESIDENTIAL, DE_COMMERCIAL, FR_RESIDENTIAL, FR_COMMERCIAL);
 
   /** The entry for a country and kind. */
   public static Optional<Entry> find(String countryCode, LeaseKind kind) {

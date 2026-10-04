@@ -1,0 +1,370 @@
+<!--
+  legal-basis: Loi n° 89-462 du 6 juillet 1989 tendant a ameliorer les rapports locatifs, titre Ier (logements nus
+               loues a titre de residence principale), consolidated text as published on www.legifrance.gouv.fr
+               (version en vigueur au 2026-10-04): art. 2, 3, 3-2, 3-3, 4, 6, 7, 8, 8-1, 10, 11, 15, 17, 17-1,
+               17-2, 18, 20, 21, 22, 23, 24.
+               Contrat type: decret n° 2015-587 du 29 mai 2015, annexe 1 as rewritten by decret n° 2026-596 du
+               6 juillet 2026 (in force 01/10/2026 for contracts concluded or renewed from that date: mandatory
+               clause resolutoire, optional insurance / peaceful-use / main-residence triggers).
+               Notice d'information: arrete du 29 mai 2015 (modified by arrete du 16 fevrier 2023).
+               Charges recuperables: decret n° 87-713 du 26 aout 1987; reparations locatives: decret n° 87-712 du
+               26 aout 1987.
+               Rent on re-letting in zones tendues: decret n° 2017-1198 du 27 juillet 2017, applied from 01/08/2026
+               to 31/07/2027 by decret n° 2026-644 du 20 juillet 2026 (JORF 22/07/2026).
+               Encadrement du niveau des loyers: art. 140 loi n° 2018-1021 du 23 novembre 2018 (ELAN) as extended by
+               loi n° 2022-217 du 21 fevrier 2022 (3DS), experiment ends 25/11/2026 unless extended (www.anil.org page
+               updated 23/07/2026); regionCode branch for the catalog's FR-* territories (FR-PARIS, FR-LILLE-EPCI,
+               FR-LYON, FR-MONTPELLIER, FR-BORDEAUX, FR-PLAINE-COMMUNE, FR-EST-ENSEMBLE, FR-PAYS-BASQUE,
+               FR-GRENOBLE-METRO), general conditional text for any other or unknown region.
+               Decence / energy classes: art. 6 loi 89-462 (classes A-F from 01/01/2025, A-E from 01/01/2028, A-D
+               from 01/01/2034 in metropolitan France); art. 17-1 (no revision for classes F and G, code de la
+               construction et de l'habitation art. L. 173-1-1).
+               Code civil art. 1231-6, 1724, 1731. Code de l'organisation judiciaire art. L. 213-4-4.
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi n° 78-17 du 6 janvier 1978.
+               Verified 2026-10-04 against www.legifrance.gouv.fr (article pages read on that date).
+               Pending: projet de loi relatif a la relance du logement (Senat 08/07/2026, Assemblee nationale
+               committee 23/09/2026: letting of F/G dwellings while renovation works are committed); prorogation of
+               the art. 140 ELAN experiment beyond 25/11/2026 - re-verify the rent and diagnostics clauses.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "1 mois de loyer" is "1 month's rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects French law (loi du 6 juillet 1989) for an unfurnished dwelling
+  let as the tenant's main residence. Each clause-<key> fragment holds only the clause body; the shell supplies
+  article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">Bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>domicile ou siège social du bailleur&nbsp;: ______________________________</p>
+  <p>qualité du bailleur (personne physique, société civile familiale ou personne morale)&nbsp;: ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Locataire</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les locataires soussignés, ci-après (ensemble)
+    &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p>il est conclu le présent contrat de location d'un logement nu à usage de résidence principale, régi par la
+    loi n° 89-462 du 6 juillet 1989 tendant à améliorer les rapports locatifs, ci-après &laquo;&nbsp;la loi du
+    6 juillet 1989&nbsp;&raquo;.</p>
+  <p>Lorsque plusieurs locataires sont parties au présent contrat, ils sont tenus solidairement et
+    indivisiblement de l'ensemble des obligations qui en résultent. Lorsque l'un d'eux donne congé, sa solidarité
+    et celle de la personne qui s'est portée caution pour lui prennent fin à la date d'effet du congé si un nouveau
+    colocataire figure au bail et, à défaut, au plus tard à l'expiration d'un délai de 6 mois après la date
+    d'effet du congé (article 8-1 de la loi du 6 juillet 1989).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur donne en location au locataire, qui l'accepte, le logement situé
+    <strong th:text="${propertyAddress}">Adresse</strong>, ci-après &laquo;&nbsp;le logement&nbsp;&raquo;,
+    désigné comme suit&nbsp;:</p>
+  <p>type d'habitat (immeuble collectif ou individuel) et régime juridique (monopropriété ou copropriété)&nbsp;: ______________________________</p>
+  <p>période de construction et identifiant fiscal du logement&nbsp;: ______________________________</p>
+  <p>surface habitable&nbsp;: ________ m²&nbsp;; nombre de pièces principales&nbsp;: ________</p>
+  <p>autres parties du logement et équipements (cuisine, installations sanitaires, modalités individuelles ou
+    collectives de production de chauffage et d'eau chaude sanitaire)&nbsp;: ______________________________</p>
+  <p>locaux et équipements accessoires à usage privatif, et parties, équipements et accessoires de l'immeuble à
+    usage commun&nbsp;: ______________________________</p>
+  <p>Le logement est loué nu, à usage d'habitation, pour constituer la résidence principale du locataire,
+    c'est-à-dire un logement occupé au moins 8 mois par an, sauf obligation professionnelle, raison de santé ou cas
+    de force majeure (article 2 de la loi du 6 juillet 1989). Les dispositions du titre Ier de la loi du 6 juillet
+    1989 sont d'ordre public et prévalent sur toute stipulation contraire du présent contrat.</p>
+  <p>Le contrat de location est établi par écrit et respecte le contrat type défini par le décret n° 2015-587 du
+    29 mai 2015 (article 3 de la loi du 6 juillet 1989)&nbsp;; les mentions de ce contrat type qui ne figurent
+    pas au présent contrat sont complétées par les parties en annexe. Chaque partie peut exiger de l'autre, à
+    tout moment, l'établissement d'un contrat conforme à cet article.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le contrat prend effet le <strong th:text="${startDate}">date de prise d'effet</strong>.</p>
+  <p>Il est conclu pour une durée au moins égale à 3 ans lorsque le bailleur est une personne physique ou un
+    bailleur défini à l'article 13 de la loi du 6 juillet 1989, et à 6 ans lorsque le bailleur est une personne
+    morale (article 10 de la loi du 6 juillet 1989).</p>
+  <p th:if="${fixedTerm}">Les parties ont fixé la durée du contrat<span th:if="${endDate != null}">, qui arrive à
+    son terme le <strong th:text="${endDate}">date de fin</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Les parties retiennent la durée minimale prévue ci-dessus, selon la qualité du
+    bailleur.</p>
+  <p>Par dérogation, lorsqu'un événement précis justifie que le bailleur personne physique ait à reprendre le
+    logement pour des raisons professionnelles ou familiales, les parties peuvent conclure un contrat d'une durée
+    inférieure à 3 ans mais d'au moins 1 an&nbsp;; le contrat mentionne alors les raisons et l'événement invoqués,
+    et le bailleur confirme la réalisation de l'événement au moins 2 mois avant le terme du contrat. Si
+    l'événement ne s'est pas produit ou n'est pas confirmé, le contrat est réputé conclu pour 3 ans
+    (article 11 de la loi du 6 juillet 1989).</p>
+  <p>Raisons et événement invoqués, le cas échéant&nbsp;: ______________________________</p>
+  <p>Si le bailleur ne donne pas congé dans les conditions de forme et de délai prévues par la loi, le contrat
+    parvenu à son terme est reconduit tacitement ou renouvelé. En cas de reconduction tacite, la durée du contrat
+    reconduit est de 3 ans pour les bailleurs personnes physiques et les bailleurs définis à l'article 13, et de
+    6 ans pour les bailleurs personnes morales (article 10 de la loi du 6 juillet 1989).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer hors charges est fixé à <strong th:text="${rentAmount}">Montant</strong> (terme
+    <span th:text="${paymentFrequency}">mensuel</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Le locataire verse en outre des provisions sur charges (voir l'article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Si le logement est situé dans une commune où s'applique le décret pris en application de l'article 18 de
+    la loi du 6 juillet 1989 (zone tendue), le loyer du présent contrat ne peut excéder le dernier loyer appliqué
+    au précédent locataire, sauf dans les cas et limites prévus par ce décret (décret n° 2017-1198 du
+    27 juillet 2017, applicable jusqu'au 31 juillet 2027 en vertu du décret n° 2026-644 du 20 juillet 2026).</p>
+  <p>Montant et date de versement du dernier loyer appliqué au précédent locataire, si celui-ci a quitté le
+    logement moins de 18 mois avant la signature du présent contrat&nbsp;: ______________________________</p>
+  <p th:if="${countryCode == 'FR' and regionCode != null and #strings.startsWith(regionCode, 'FR-')}">Le logement
+    est situé dans un territoire où s'applique le dispositif expérimental d'encadrement du niveau des loyers prévu
+    à l'article 140 de la loi ELAN (loi n° 2018-1021 du 23 novembre 2018), applicable jusqu'au
+    25 novembre 2026 sauf prorogation. Si ce dispositif s'applique à la date de conclusion du présent contrat, le
+    loyer de base ne peut excéder le loyer de référence majoré fixé par arrêté préfectoral&nbsp;; un complément de
+    loyer ne peut être appliqué que pour des caractéristiques de localisation ou de confort déterminantes et dans
+    les conditions prévues par ce texte, et le locataire peut le contester devant la commission départementale de
+    conciliation dans un délai de 3 mois à compter de la signature du contrat. Loyer de référence&nbsp;: ________
+    euros par m²&nbsp;; loyer de référence majoré&nbsp;: ________ euros par m²&nbsp;; complément de loyer et
+    caractéristiques le justifiant, le cas échéant&nbsp;: ______________________________</p>
+  <p th:if="${!(countryCode == 'FR' and regionCode != null and #strings.startsWith(regionCode, 'FR-'))}">Si le
+    logement est situé dans un territoire où s'applique le dispositif expérimental d'encadrement du niveau des
+    loyers prévu à l'article 140 de la loi ELAN (loi n° 2018-1021 du 23 novembre 2018), le loyer de base ne peut
+    excéder le loyer de référence majoré fixé par arrêté préfectoral, sauf complément de loyer justifié dans les
+    conditions prévues par ce texte, et le contrat mentionne le loyer de référence et le loyer de référence
+    majoré. Des règles locales peuvent ainsi s'appliquer.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">La révision du loyer obéit aux stipulations du présent contrat (voir l'article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Le loyer est révisé chaque année à la date convenue entre les parties ou, à défaut, au terme de chaque année
+    du contrat. L'augmentation qui en résulte ne peut excéder la variation de l'indice de référence des loyers
+    (IRL) publié par l'Institut national de la statistique et des études économiques (INSEE)&nbsp;; à défaut de
+    clause fixant le trimestre de référence, celui-ci est le trimestre du dernier indice publié à la date de
+    signature du contrat (article 17-1 de la loi du 6 juillet 1989).</p>
+  <p>Date de révision et trimestre de référence de l'IRL convenus&nbsp;: ______________________________</p>
+  <p>Le bailleur qui ne manifeste pas sa volonté d'appliquer la révision dans un délai de 1 an suivant sa date de
+    prise d'effet est réputé y avoir renoncé pour l'année écoulée&nbsp;; s'il la manifeste dans ce délai, la
+    révision prend effet à compter de sa demande.</p>
+  <p>La révision et la majoration de loyer prévues à l'article 17-1 de la loi du 6 juillet 1989 ne peuvent pas
+    être appliquées lorsque le logement est de la classe F ou de la classe G au sens de l'article L. 173-1-1 du
+    code de la construction et de l'habitation. Toute autre augmentation du loyer n'est possible que dans les cas
+    et conditions prévus par la loi, notamment lors du renouvellement d'un loyer manifestement sous-évalué
+    (article 17-2 de la loi du 6 juillet 1989).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>En sus du loyer, le locataire rembourse au bailleur les charges récupérables, dont la liste est fixée par le
+    décret n° 87-713 du 26 août 1987&nbsp;: services rendus liés à l'usage des différents éléments de la chose
+    louée, dépenses d'entretien courant et menues réparations sur les éléments d'usage commun, et impositions qui
+    correspondent à des services dont le locataire profite directement (article 23 de la loi du 6 juillet
+    1989).</p>
+  <p>Les charges sont payées par provisions, d'un montant de ________ euros par terme, qui font l'objet d'une
+    régularisation annuelle. Le bailleur communique au locataire, 1 mois avant cette régularisation, le décompte
+    par nature de charges ainsi que, dans les immeubles collectifs, le mode de répartition entre les
+    locataires&nbsp;; durant 6 mois à compter de cet envoi, les pièces justificatives sont tenues à la disposition
+    du locataire.</p>
+  <p>Lorsque la régularisation n'a pas été effectuée avant le terme de l'année civile suivant l'année de leur
+    exigibilité, le paiement par le locataire est effectué par douzième s'il en fait la demande.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Le locataire verse au bailleur, lors de la signature du contrat, un dépôt de
+    garantie de <strong th:text="${depositAmount}">Montant</strong>.</p>
+  <p th:if="${depositAmount == null}">Le locataire verse au bailleur, lors de la signature du contrat, un dépôt de
+    garantie du montant convenu par écrit entre les parties.</p>
+  <p>Le dépôt de garantie ne peut être supérieur à 1 mois de loyer en principal&nbsp;; il ne porte pas intérêt au
+    profit du locataire et ne peut faire l'objet d'aucune révision durant l'exécution du contrat, éventuellement
+    renouvelé. Aucun dépôt de garantie ne peut être prévu lorsque le loyer est payable d'avance pour une période
+    supérieure à 2 mois&nbsp;; toutefois, si le locataire demande le bénéfice du paiement mensuel du loyer, le
+    bailleur peut exiger un dépôt de garantie (article 22 de la loi du 6 juillet 1989).</p>
+  <p>Le dépôt de garantie est restitué dans un délai maximal de 2 mois à compter de la remise en main propre, ou
+    par lettre recommandée avec demande d'avis de réception, des clés au bailleur ou à son mandataire, déduction
+    faite, le cas échéant, des sommes restant dues au bailleur et des sommes dont celui-ci pourrait être tenu en
+    lieu et place du locataire, sous réserve qu'elles soient dûment justifiées. Ce délai est de 1 mois lorsque
+    l'état des lieux de sortie est conforme à l'état des lieux d'entrée. Dans un immeuble collectif, le bailleur
+    peut conserver, lorsqu'elle est dûment justifiée, une provision ne pouvant excéder 20 % du montant du dépôt
+    jusqu'à l'arrêté annuel des comptes de l'immeuble&nbsp;; le solde est restitué dans le mois qui suit
+    l'approbation définitive de ces comptes.</p>
+  <p>À défaut de restitution dans les délais prévus, le dépôt de garantie restant dû est majoré d'une somme égale
+    à 10 % du loyer mensuel en principal pour chaque période mensuelle commencée en retard, sauf si le défaut de
+    restitution résulte de l'absence de transmission par le locataire de l'adresse de son nouveau domicile. En
+    cas de mutation du logement, la restitution incombe au nouveau bailleur.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> L'état des lieux de sortie est
+    établi dans les conditions du présent contrat (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le locataire paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> et les provisions sur charges</span> par terme
+    <span th:text="${paymentFrequency}">mensuel</span>,
+    <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong> de chaque
+      période de paiement</span><span th:if="${paymentDueDay == null}">à la date convenue entre les parties</span>,
+    par virement sur le compte désigné par le bailleur ou par tout autre moyen convenu. Le paiement mensuel est de
+    droit lorsque le locataire en fait la demande (article 7 de la loi du 6 juillet 1989).</p>
+  <p>Le paiement par prélèvement automatique sur le compte du locataire ne peut lui être imposé (article 4 de la
+    loi du 6 juillet 1989). Le bailleur transmet gratuitement une quittance au locataire qui en fait la demande
+    (article 21 de la loi du 6 juillet 1989).</p>
+  <p>Aucune amende ni pénalité ne peut être mise à la charge du locataire en cas d'infraction aux clauses du
+    contrat (article 4 de la loi du 6 juillet 1989)&nbsp;; les sommes impayées portent intérêt au taux légal à
+    compter de la mise en demeure (article 1231-6 du code civil).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Le locataire use paisiblement du logement suivant la destination prévue au présent contrat et l'occupe à
+    titre de résidence principale (article 7 de la loi du 6 juillet 1989). Il respecte le règlement intérieur de
+    l'immeuble et, le cas échéant, les extraits du règlement de copropriété qui lui ont été communiqués. Il peut
+    héberger les personnes de son choix (article 4 de la loi du 6 juillet 1989).</p>
+  <p>Le locataire ne transforme pas les locaux et équipements loués sans l'accord écrit du bailleur&nbsp;; à
+    défaut de cet accord, le bailleur peut exiger, au départ du locataire, leur remise en l'état ou conserver à son
+    bénéfice les transformations effectuées sans que le locataire puisse réclamer une indemnité des frais engagés,
+    et peut exiger aux frais du locataire la remise immédiate des lieux en l'état lorsque les transformations
+    mettent en péril le bon fonctionnement des équipements ou la sécurité du local. Les travaux d'adaptation du
+    logement aux personnes en situation de handicap ou de perte d'autonomie et certains travaux de rénovation
+    énergétique relèvent d'une procédure particulière prévue au même article.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Le locataire ne peut ni céder le contrat de location, ni sous-louer le logement sauf avec l'accord écrit du
+    bailleur, y compris sur le prix du loyer. Le prix du loyer au mètre carré de surface habitable des locaux
+    sous-loués ne peut excéder celui payé par le locataire principal. Le locataire transmet au sous-locataire
+    l'autorisation écrite du bailleur et la copie du bail en cours (article 8 de la loi du 6 juillet 1989).</p>
+  <p>En cas de cessation du contrat principal, le sous-locataire ne peut se prévaloir d'aucun droit à l'encontre
+    du bailleur, ni d'aucun titre d'occupation.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur est obligé de remettre au locataire un logement décent, en bon état d'usage et de réparation,
+    ainsi que les équipements mentionnés au contrat en bon état de fonctionnement&nbsp;; d'assurer au locataire la
+    jouissance paisible du logement et de le garantir des vices ou défauts de nature à y faire obstacle&nbsp;; et
+    d'entretenir les locaux en état de servir à l'usage prévu par le contrat et d'y faire toutes les réparations,
+    autres que locatives, nécessaires au maintien en état et à l'entretien normal des locaux loués (article 6 de
+    la loi du 6 juillet 1989).</p>
+  <p>Le locataire prend à sa charge l'entretien courant du logement, des équipements mentionnés au contrat et les
+    menues réparations ainsi que l'ensemble des réparations locatives définies par le décret n° 87-712 du
+    26 août 1987, sauf si elles sont occasionnées par vétusté, malfaçon, vice de construction, cas fortuit ou force
+    majeure. Il répond des dégradations et pertes qui surviennent pendant la durée du contrat dans les locaux dont
+    il a la jouissance exclusive, à moins qu'il ne prouve qu'elles ont eu lieu par cas de force majeure, par la
+    faute du bailleur ou par le fait d'un tiers qu'il n'a pas introduit dans le logement (article 7 de la loi du
+    6 juillet 1989).</p>
+  <p>Le locataire permet l'accès aux lieux pour la préparation et l'exécution des travaux prévus à l'article 7 de
+    la loi du 6 juillet 1989, notamment les travaux d'amélioration, d'entretien normal, d'amélioration de la
+    performance énergétique et de mise en conformité avec les caractéristiques de décence&nbsp;; aucuns travaux ne
+    peuvent être réalisés les samedis, dimanches et jours fériés sans son accord exprès. Si les réparations
+    durent plus de 21 jours, le loyer est diminué à proportion du temps et de la partie du logement dont le
+    locataire a été privé (article 1724 du code civil).</p>
+</div>
+
+<div th:fragment="clause-works" data-clause="works">
+  <p>Nature et montant des travaux effectués dans le logement depuis la fin du dernier contrat de location ou
+    depuis le dernier renouvellement du bail (article 3 de la loi du 6 juillet 1989)&nbsp;: ______________________________</p>
+  <p>Travaux d'amélioration que le bailleur s'engage à réaliser, modalités d'exécution et majoration de loyer
+    convenue, le cas échéant&nbsp;: ______________________________. Cette majoration, fixée par le contrat ou par
+    un avenant, ne peut faire l'objet d'une action en diminution de loyer&nbsp;; elle ne peut pas être appliquée
+    lorsque le logement est de la classe F ou de la classe G (article 17-1 de la loi du 6 juillet 1989).</p>
+  <p>Travaux réalisés par le locataire, durée de la diminution de loyer correspondante et modalités de son
+    dédommagement en cas de départ anticipé, le cas échéant&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-diagnostics" data-clause="diagnostics">
+  <p>Un dossier de diagnostic technique, fourni par le bailleur, est annexé au présent contrat (article 3-3 de la
+    loi du 6 juillet 1989). Il comprend, dans les cas et conditions prévus par les textes applicables, le
+    diagnostic de performance énergétique, le constat de risque d'exposition au plomb, une copie d'un état
+    mentionnant l'absence ou la présence de matériaux ou produits de la construction contenant de l'amiante,
+    l'état de l'installation intérieure d'électricité et de gaz, l'état des risques prévu à l'article L. 125-5 du
+    code de l'environnement et le document relatif à l'exposition au bruit des aérodromes.</p>
+  <p>Classe énergétique du logement selon le diagnostic de performance énergétique&nbsp;: ________&nbsp;; montant
+    estimé des dépenses annuelles d'énergie pour un usage standard et année de référence des prix&nbsp;: ______________________________</p>
+  <p>Le logement doit être décent. En France métropolitaine, son niveau de performance énergétique doit être
+    compris entre la classe A et la classe F depuis le 1er janvier 2025, entre la classe A et la classe E à
+    compter du 1er janvier 2028 et entre la classe A et la classe D à compter du 1er janvier 2034 (article 6 de la
+    loi du 6 juillet 1989)&nbsp;; d'autres échéances s'appliquent en Guadeloupe, en Martinique, en Guyane, à La
+    Réunion et à Mayotte. Le locataire ne peut se prévaloir à l'encontre du bailleur des recommandations
+    accompagnant le diagnostic de performance énergétique, qui n'ont qu'une valeur indicative.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Le locataire s'assure contre les risques dont il doit répondre en sa qualité de locataire et en justifie
+    lors de la remise des clés puis chaque année, à la demande du bailleur (article 7 de la loi du 6 juillet
+    1989). Le locataire choisit librement son assureur (article 4 de la loi du 6 juillet 1989).</p>
+  <p>À défaut de remise de l'attestation d'assurance, le bailleur peut, à l'expiration d'un délai de 1 mois après
+    une mise en demeure non suivie d'effet, souscrire une assurance pour le compte du locataire et en récupérer le
+    montant auprès de lui, majoré dans la limite fixée par décret&nbsp;; cette mise en demeure informe le locataire
+    de cette intention et vaut renonciation à la mise en œuvre de la clause de résiliation de plein droit pour
+    défaut d'assurance.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Un état des lieux est établi contradictoirement et amiablement par les parties, ou par un tiers mandaté par
+    elles, lors de la remise et de la restitution des clés, et joint au contrat&nbsp;; un exemplaire est remis à
+    chaque partie (article 3-2 de la loi du 6 juillet 1989). Si l'état des lieux ne peut être établi amiablement,
+    il est établi par un commissaire de justice, à l'initiative de la partie la plus diligente, à frais partagés
+    par moitié entre le bailleur et le locataire.</p>
+  <p>Le locataire peut demander au bailleur, dans un délai de 10 jours à compter de son établissement, de
+    compléter l'état des lieux d'entrée&nbsp;; pour les éléments de chauffage, cette demande peut être faite au
+    cours du premier mois de la période de chauffe. À défaut d'état des lieux ou de remise d'un exemplaire, la
+    présomption de l'article 1731 du code civil ne peut être invoquée par celle des parties qui a fait obstacle à
+    son établissement ou à sa remise.<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La
+    restitution du dépôt de garantie suit l'état des lieux de sortie (voir l'article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Le locataire peut donner congé à tout moment, avec un préavis de 3 mois, réduit à 1 mois dans les cas prévus
+    à l'article 15 de la loi du 6 juillet 1989, notamment lorsque le logement est situé dans une zone tendue au
+    sens du I de l'article 17 de cette loi&nbsp;; le locataire qui se prévaut d'un délai réduit précise le motif
+    invoqué et le justifie au moment de l'envoi du congé, à défaut de quoi le préavis de 3 mois s'applique.</p>
+  <p>Le bailleur ne peut donner congé que pour le terme du contrat, avec un préavis de 6 mois, et ce congé doit
+    être justifié soit par sa décision de reprendre ou de vendre le logement, soit par un motif légitime et
+    sérieux, notamment l'inexécution par le locataire de l'une des obligations lui incombant. À peine de nullité,
+    le congé indique le motif allégué et, en cas de reprise, les nom et adresse du bénéficiaire de la reprise
+    ainsi que la nature du lien existant entre le bailleur et le bénéficiaire (article 15 de la loi du 6 juillet
+    1989). Le congé pour vendre vaut offre de vente au profit du locataire. Le locataire âgé et aux ressources
+    modestes bénéficie d'une protection particulière dans les conditions d'âge et de ressources prévues à
+    l'article 15 de la loi du 6 juillet 1989.</p>
+  <p>Le congé est notifié par lettre recommandée avec demande d'avis de réception, signifié par acte de
+    commissaire de justice ou remis en main propre contre récépissé ou émargement&nbsp;; le délai de préavis court
+    à compter du jour de la réception de la lettre recommandée, de la signification de l'acte ou de la remise en
+    main propre. Pendant le délai de préavis, le locataire n'est redevable du loyer et des charges que pour le
+    temps où il a réellement occupé le logement si le congé émane du bailleur&nbsp;; s'il émane du locataire,
+    celui-ci est redevable du loyer et des charges pour tout le délai de préavis, sauf si le logement se trouve
+    occupé avant la fin du préavis par un autre locataire en accord avec le bailleur.</p>
+  <p>Le présent contrat est résilié de plein droit pour défaut de paiement du loyer ou des charges aux termes
+    convenus ou pour non-versement du dépôt de garantie, 6 semaines après un commandement de payer demeuré
+    infructueux (article 24 de la loi du 6 juillet 1989). Il est également résilié de plein droit pour défaut
+    d'assurance des risques locatifs, 1 mois après un commandement demeuré infructueux (article 7 de la loi du
+    6 juillet 1989), et pour non-respect de l'obligation d'user paisiblement des locaux loués résultant de troubles
+    de voisinage constatés par une décision de justice passée en force de chose jugée (article 4 de la loi du
+    6 juillet 1989). Le juge peut accorder des délais de paiement et suspendre les effets de la clause dans les
+    conditions prévues par la loi. Les parties peuvent mettre fin au contrat d'un commun accord.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La restitution des
+    lieux donne lieu à un état des lieux de sortie (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-annexes" data-clause="annexes">
+  <p>Sont annexés au présent contrat&nbsp;: une notice d'information relative aux droits et obligations des
+    locataires et des bailleurs ainsi qu'aux voies de conciliation et de recours qui leur sont ouvertes
+    (article 3 de la loi du 6 juillet 1989, arrêté du 29 mai 2015)&nbsp;; le dossier de diagnostic technique&nbsp;;
+    l'état des lieux d'entrée, dès son établissement&nbsp;; le cas échéant, les extraits du règlement de copropriété
+    concernant la destination de l'immeuble, la jouissance et l'usage des parties privatives et communes, et
+    précisant la quote-part afférente au lot loué dans chacune des catégories de charges&nbsp;; le cas échéant, une
+    copie de l'autorisation préalable de mise en location&nbsp;; le cas échéant, les références aux loyers
+    habituellement constatés dans le voisinage, lorsque la fixation du loyer en dépend.</p>
+  <p>Autres annexes convenues&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Le bailleur traite les données à caractère personnel du locataire uniquement dans la mesure nécessaire à la
+    conclusion et à l'exécution du présent contrat et au respect de ses obligations légales, conformément au
+    règlement général sur la protection des données (RGPD, règlement (UE) 2016/679) et à la loi n° 78-17 du
+    6 janvier 1978 relative à l'informatique, aux fichiers et aux libertés. Il ne conserve pas ces données au-delà
+    de la durée nécessaire à ces finalités.</p>
+  <p>Le locataire peut exercer auprès du bailleur les droits que lui confère le RGPD, notamment les droits
+    d'accès, de rectification et d'effacement, et peut introduire une réclamation auprès de la Commission
+    nationale de l'informatique et des libertés (CNIL).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent contrat est soumis au droit français.</p>
+  <p>Les parties peuvent soumettre les litiges entrant dans le champ de l'article 20 de la loi du 6 juillet 1989
+    à la commission départementale de conciliation avant toute action en justice. Les litiges relatifs au présent
+    contrat relèvent du juge des contentieux de la protection du tribunal judiciaire dans le ressort duquel est
+    situé le logement (article L. 213-4-4 du code de l'organisation judiciaire). Les stipulations du présent
+    contrat contraires aux dispositions d'ordre public de la loi du 6 juillet 1989 sont sans effet&nbsp;; les
+    dispositions légales s'appliquent à leur place.</p>
+</div>
+
+</body>
+</html>
