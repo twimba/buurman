@@ -609,6 +609,89 @@ public final class LeaseDocumentRegistry {
   // ===== GB entries (country pack) =====
   // Constants, citation pattern and foreign markers for GB go here, only inside these markers.
 
+  /**
+   * The United Kingdom statute citation format: the number after "section(s)" / "s." / "ss." /
+   * "regulation(s)" / "reg." / "article(s)" / "paragraph(s)" / "ground(s)", with an optional
+   * capital-letter suffix: {@code section 13}, {@code s.21}, {@code section 4A}, {@code regulation
+   * 36}, {@code Ground 1A}. GB is English only (no translation is compared), so the pattern only
+   * documents the format for the fidelity gate should a translation ever be added.
+   */
+  public static final Pattern UK_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:sections?|s\\.|ss\\.|regulations?|reg\\.|articles?|art\\.|paragraphs?"
+              + "|para\\.|grounds?)\\s{0,20})\\d+[A-Z]*",
+          Pattern.CASE_INSENSITIVE);
+
+  /**
+   * Mirror of V098__seed_gb_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
+   * no fidelity comparison and no foreign markers; nation branches on regionCode ENG/WLS/SCT/NIR.
+   */
+  private static final Entry GB_RESIDENTIAL =
+      new Entry(
+          "GB",
+          LeaseKind.RESIDENTIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("fees", false, false, 9),
+              new ClauseSpec("use", false, false, 10),
+              new ClauseSpec("subletting", false, false, 11),
+              new ClauseSpec("maintenance", true, false, 12),
+              new ClauseSpec("safety", true, false, 13),
+              new ClauseSpec("energy-certificate", false, false, 14),
+              new ClauseSpec("registration", false, false, 15),
+              new ClauseSpec("right-to-rent", false, false, 16),
+              new ClauseSpec("statutory-information", true, false, 17),
+              new ClauseSpec("handover-inspection", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("notices", false, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          List.of(),
+          Optional.of(UK_CITATION));
+
+  /** Mirror of V098__seed_gb_lease_clauses.sql (COMMERCIAL rows). English only. */
+  private static final Entry GB_COMMERCIAL =
+      new Entry(
+          "GB",
+          LeaseKind.COMMERCIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("security-of-tenure", true, false, 5),
+              new ClauseSpec("rent", true, false, 6),
+              new ClauseSpec("rent-adjustment", false, false, 7),
+              new ClauseSpec("service-costs", false, false, 8),
+              new ClauseSpec("vat", false, false, 9),
+              new ClauseSpec("deposit", false, false, 10),
+              new ClauseSpec("payment", true, false, 11),
+              new ClauseSpec("maintenance", false, false, 12),
+              new ClauseSpec("alterations", false, false, 13),
+              new ClauseSpec("assignment", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("break-option", false, false, 17),
+              new ClauseSpec("handover-inspection", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("notices", false, false, 20),
+              new ClauseSpec("guarantor", false, false, 21),
+              new ClauseSpec("data-protection", false, false, 22),
+              new ClauseSpec("disputes", false, false, 23)),
+          List.of(),
+          Optional.of(UK_CITATION));
+
   // ===== end GB =====
 
   // ===== GR entries (country pack) =====
@@ -701,6 +784,8 @@ public final class LeaseDocumentRegistry {
     // ===== end FI ENTRIES =====
 
     // ===== GB ENTRIES (country pack) =====
+    entries.add(GB_RESIDENTIAL);
+    entries.add(GB_COMMERCIAL);
 
     // ===== end GB ENTRIES =====
 

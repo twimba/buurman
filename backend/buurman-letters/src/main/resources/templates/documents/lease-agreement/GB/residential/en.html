@@ -1,0 +1,618 @@
+<!--
+  legal-basis: United Kingdom residential tenancy law, which differs by nation; the nation is read from the
+               contract region (catalog codes ENG, WLS, SCT, NIR, the ISO 3166-2:GB subdivision suffixes) and
+               a general text is printed when the region is unknown.
+               England: Housing Act 1988 Part I as amended by the Renters' Rights Act 2025 (2025 c. 26):
+               s.1 (assured tenancy), s.4A (periodic tenancies, rent period 28 days or shorter or monthly),
+               s.4B (rent not due in advance, initial rent in the permitted pre-tenancy period), s.8 and
+               Schedule 2 (grounds for possession; Grounds 1 and 1A not in the first 12 months, 4 months'
+               notice; Ground 8: 3 months' or 13 weeks' arrears at notice and hearing, 4 weeks' notice),
+               s.13 (rent increase notice, 2 months, 52 weeks / first anniversary rules, rent review clauses of
+               no effect, s.13(4A)), s.14 (tribunal, initial rent challenge within 6 months), s.15
+               (assignment and subletting), s.16A and s.16B (pets, response by the 28th day), s.16D
+               (written statement of terms); s.21 repealed. Tenancy reforms in force 1 May 2026 for
+               assured tenancies that are not social housing: The Renters' Rights Act 2025 (Commencement No. 2
+               and Transitional and Saving Provisions) Regulations 2026 (S.I. 2026/421), reg. 2 and 3.
+               The Assured Tenancies (Private Rented Sector) (Written Statement of Terms etc. and Information
+               Sheet) (England) Regulations 2026 (S.I. 2026/324); The Renters' Rights Act Information Sheet
+               2026 (MHCLG, assets.publishing.service.gov.uk) for the tenant's notice of at least 2 months.
+               Tenant Fees Act 2019 Schedule 1 (para 2 deposit cap 5 weeks / 6 weeks at annual rent of
+               £50,000 or more; para 3 holding deposit 1 week; para 4 default fee interest 3% above Bank of
+               England base rate after 14 days). Housing Act 2004 ss.212-215 (tenancy deposit protection,
+               30 days), Parts 2 and 3 (licensing). Landlord and Tenant Act 1985 s.9A (fitness for human
+               habitation), s.11 (repairs). Gas Safety (Installation and Use) Regulations 1998 reg. 36;
+               Electrical Safety Standards in the Private Rented Sector (England) Regulations 2020; Smoke and
+               Carbon Monoxide Alarm (England) Regulations 2015 as amended in 2022; Energy Performance of
+               Buildings (England and Wales) Regulations 2012; Energy Efficiency (Private Rented Property)
+               (England and Wales) Regulations 2015 (minimum band E); Immigration Act 2014 s.22 (right to
+               rent, England only).
+               Wales: Renting Homes (Wales) Act 2016 as amended by the Renting Homes (Amendment) (Wales) Act
+               2021: s.31 (written statement within 14 days of the occupation date), s.45 (deposit scheme,
+               30 days), s.91 and s.92 (fitness and repair), s.123 (rent variation of a periodic standard
+               contract, 2 months' notice, then not less than 1 year after the last new rent), s.173 to s.175
+               (landlord's notice, 6 months, not in the first 6 months of occupation); Renting Homes (Fitness
+               for Human Habitation) (Wales) Regulations 2022; Renting Homes (Fees etc.) (Wales) Act 2019;
+               Housing (Wales) Act 2014 Part 1 (Rent Smart Wales); gov.wales Renting Homes FAQ for landlords.
+               Scotland: Private Housing (Tenancies) (Scotland) Act 2016: s.1 (private residential tenancy),
+               s.10 (written terms by the day the tenancy starts), s.22 (rent increase, 3 months' notice,
+               once in 12 months), s.24 (referral to a rent officer), Schedule 3 (eviction grounds), notice to
+               leave of 28 or 84 days, tenant's notice of 28 days (mygov.scot); Private Residential Tenancies
+               (Statutory Terms) (Scotland) Regulations 2017; Tenancy Deposit Schemes (Scotland) Regulations
+               2011 (30 working days); deposit limit of 2 months' rent (gov.scot model agreement); Housing
+               (Scotland) Act 2006 ss.13-14 (repairing standard); Antisocial Behaviour etc. (Scotland) Act
+               2004 Part 8 (landlord registration); Housing (Scotland) Act 2025 (rent control areas: none
+               designated; pets and personalisation rights not yet in force, gov.scot tenant rights page).
+               Northern Ireland: Private Tenancies (Northern Ireland) Order 2006 as amended by the Private
+               Tenancies Act (Northern Ireland) 2022: s.1 (tenancy information notice, 28 days), s.3 (cash
+               receipts), ss.4-6 (deposit cap 1 month's rent, protection 28 days, information 35 days), s.7
+               (rent increase: not within 12 months of the grant or of the last increase, 3 months' written
+               notice; in force 1 April 2025), s.8 (alarms), s.10 (electrical safety); landlord's notice to
+               quit of 4 weeks / 8 weeks / 12 weeks (communities-ni.gov.uk landlord's checklist, nidirect);
+               Landlord Registration Scheme Regulations (Northern Ireland) 2014.
+               UK GDPR and Data Protection Act 2018 (ico.org.uk).
+               Verified 2026-10-04 against legislation.gov.uk, gov.uk, gov.wales, gov.scot, mygov.scot,
+               communities-ni.gov.uk and nidirect.gov.uk (pages read on that date).
+               Pending: England - private rented sector database and landlord redress scheme (Renters' Rights
+               Act 2025 Part 2, rollout from late 2026 and 2028), Decent Homes Standard and Awaab's Law for the
+               private sector (Part 3, not in force); Scotland - Housing (Scotland) Act 2025 pet and
+               personalisation requests, first-year rent freeze and 30-day rent referral (1 April 2027);
+               Northern Ireland - new notice to quit periods (Department for Communities consultation
+               5 January to 29 March 2026; regulations not verified as made).
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("2 months' notice", never "two months"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (United Kingdom); there is no translation. Draft text, not
+  vetted by legal counsel. Reflects the residential tenancy law of the 4 nations of the United Kingdom, not the
+  law of any other country. Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded; they sit
+  outside the nation branches so that they render for every nation. Never hard-code article numbers of this
+  agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This agreement is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>for the letting of the dwelling described below as the tenant&rsquo;s home. Where the tenant consists of
+    several persons, each of them is jointly and severally liable for all obligations of the tenant under this
+    agreement.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Where the dwelling is in Wales, the tenant is the
+    contract-holder and this agreement is an occupation contract within the meaning of the Renting Homes (Wales)
+    Act 2016; references in this agreement to the tenant and to the tenancy are to be read accordingly.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the dwelling at <strong th:text="${propertyAddress}">address</strong>,
+    together with the fixtures, fittings and any furniture listed in the inventory, hereinafter &ldquo;the
+    dwelling&rdquo;.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The dwelling is in England. This agreement creates
+    an assured tenancy within the meaning of section 1 of the Housing Act 1988, as amended by the Renters&rsquo;
+    Rights Act 2025, where the statutory conditions are met: the dwelling is let as a separate dwelling, the
+    tenant is an individual (or each joint tenant is an individual) and at least 1 of them occupies it as their
+    only or principal home, and the tenancy is not excluded by Schedule 1 to that Act. Since 1 May 2026 an
+    assured tenancy of a dwelling in England let by a private landlord cannot be an assured shorthold
+    tenancy.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The dwelling is in Wales. This agreement is a
+    standard occupation contract (standard contract) under the Renting Homes (Wales) Act 2016. The fundamental
+    provisions and the supplementary provisions of that Act are incorporated as terms of this contract; they may
+    be omitted or changed only as that Act permits, and a term that is incompatible with a fundamental provision
+    is of no effect except where that Act allows it.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The dwelling is in Scotland. This agreement creates
+    a private residential tenancy under section 1 of the Private Housing (Tenancies) (Scotland) Act 2016 where
+    the statutory conditions are met: the dwelling is let to an individual as a separate dwelling, the tenant
+    occupies it as their only or principal home, and the tenancy is not excluded by Schedule 1 to that Act.
+    The statutory terms prescribed by the Private Residential Tenancies (Statutory Terms) (Scotland)
+    Regulations 2017 form part of this agreement.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The dwelling is in Northern Ireland. This agreement
+    creates a private tenancy within the meaning of the Private Tenancies (Northern Ireland) Order 2006, as
+    amended by the Private Tenancies Act (Northern Ireland) 2022.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    law that governs this agreement depends on the nation of the United Kingdom in which the dwelling is
+    located: in England the Housing Act 1988 (assured tenancies), in Wales the Renting Homes (Wales) Act 2016
+    (occupation contracts), in Scotland the Private Housing (Tenancies) (Scotland) Act 2016 (private
+    residential tenancies) and in Northern Ireland the Private Tenancies (Northern Ireland) Order 2006. The
+    rules differ materially between the nations; the rules of the nation in which the dwelling is located
+    apply.</p>
+  <p>Where a statutory provision that cannot be excluded or varied by agreement conflicts with this agreement,
+    the statutory provision prevails.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'ENG'}">
+    <p>The tenancy is a periodic tenancy and continues from rent period to rent period until it is ended in
+      accordance with the law. Under section 4A of the Housing Act 1988, terms that provide for a fixed term are
+      of no effect, and terms on the rent period are of no effect unless each rent period is 28 days or shorter
+      or is monthly.</p>
+    <p th:if="${fixedTerm}">An end date or fixed term recorded for this contract<span th:if="${endDate != null}">
+      (<strong th:text="${endDate}">end date</strong>)</span> has no legal effect in England; the tenancy does
+      not end on that date.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'WLS'}">
+    <p th:if="${!fixedTerm}">This contract is a periodic standard contract and continues from period to period
+      until it is ended in accordance with the Renting Homes (Wales) Act 2016.</p>
+    <p th:if="${fixedTerm}">This contract is a fixed term standard contract<span th:if="${endDate != null}">
+      ending on <strong th:text="${endDate}">end date</strong></span>. If the contract-holder remains in
+      occupation after the end of the fixed term, a periodic standard contract arises as provided by the
+      Renting Homes (Wales) Act 2016.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'SCT'}">
+    <p>A private residential tenancy has no end date: it continues until it is ended in accordance with the
+      Private Housing (Tenancies) (Scotland) Act 2016.</p>
+    <p th:if="${fixedTerm}">An end date or fixed term recorded for this contract<span th:if="${endDate != null}">
+      (<strong th:text="${endDate}">end date</strong>)</span> does not end the tenancy.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'NIR'}">
+    <p th:if="${!fixedTerm}">The tenancy is a periodic tenancy and continues from period to period until it is
+      ended by notice to quit or otherwise in accordance with the law.</p>
+    <p th:if="${fixedTerm}">The tenancy is granted for a fixed term<span th:if="${endDate != null}"> ending on
+      <strong th:text="${endDate}">end date</strong></span>. If the tenant remains in possession after the end
+      of the fixed term, the tenancy continues as provided by the Private Tenancies (Northern Ireland) Order
+      2006.</p>
+  </th:block>
+  <th:block th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">
+    <p th:if="${!fixedTerm}">The tenancy is periodic and continues from rent period to rent period until it is
+      ended in accordance with the law of the nation in which the dwelling is located.</p>
+    <p th:if="${fixedTerm}">The tenancy is granted for a fixed term<span th:if="${endDate != null}"> ending on
+      <strong th:text="${endDate}">end date</strong></span>, insofar as the law of the nation in which the
+      dwelling is located permits a fixed term. It does not in England, where every assured tenancy is periodic
+      (section 4A of the Housing Act 1988), nor for a private residential tenancy in Scotland, which has no end
+      date.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Bills and council tax or rates are dealt with separately (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">In England the rent period may not be longer than
+    1 month: a rent period is valid only if it is 28 days or shorter or is monthly (section 4A of the Housing
+    Act 1988). Where the agreed period is longer, the tenancy has monthly rent periods and the monthly rent is
+    calculated as that Act provides.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'ENG'}">
+    <p>The rent may be increased only by a notice in the prescribed form under section 13 of the Housing Act
+      1988, by a determination of the First-tier Tribunal (Property Chamber), or by an agreement in writing
+      between the landlord and the tenant varying the rent (section 13 subsection 4A of that Act). A term of
+      this or any other agreement providing for a rent review or an automatic increase has no effect.</p>
+    <p>The notice must be served at least 2 months before the new rent takes effect, and the new rent must start
+      at the beginning of a new period of the tenancy. It may not take effect earlier than 52 weeks after the
+      first period of the tenancy began and, where the rent has previously been increased by such a notice or a
+      tribunal determination, not earlier than the first anniversary of the date on which the last increased
+      rent took effect.</p>
+    <p>The tenant may refer the notice to the First-tier Tribunal before the new rent takes effect; the tribunal
+      determines the open-market rent and cannot set a rent higher than the rent proposed in the notice. Within
+      the first 6 months of the tenancy the tenant may also apply to the tribunal for a determination of the
+      rent (section 14 of that Act).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'WLS'}">
+    <p>For a periodic standard contract, the landlord may vary the rent by giving the contract-holder notice
+      specifying the new rent and the date from which it is payable; that date must be at least 2 months after
+      the day on which the notice is given and, after a first variation, not less than 1 year after the last
+      date on which a new rent took effect (section 123 of the Renting Homes (Wales) Act 2016). For a fixed term
+      standard contract the rent may be varied only as the terms of the contract and that Act allow.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'SCT'}">
+    <p>The landlord may increase the rent no more than once in any period of 12 months, by giving the tenant at
+      least 3 months&rsquo; notice in the prescribed form (section 22 of the Private Housing (Tenancies)
+      (Scotland) Act 2016). The tenant may refer the proposed increase to a rent officer within the time limit
+      stated in the notice (section 24 of that Act).</p>
+    <p>Where the dwelling is in a rent control area designated under the Housing (Scotland) Act 2025, any
+      increase is also subject to the limits that apply in that area.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'NIR'}">
+    <p>The landlord may not increase the rent within 12 months of the grant of the tenancy, nor within 12 months
+      of the last increase, and must give the tenant at least 3 months&rsquo; written notice of any increase
+      (section 7 of the Private Tenancies Act (Northern Ireland) 2022). An increase made in breach of those
+      rules has no effect.</p>
+  </th:block>
+  <th:block th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">
+    <p>The rent may be increased only in the manner, with the notice and at the intervals that the law of the
+      nation in which the dwelling is located permits: in England by a notice under section 13 of the Housing
+      Act 1988, in Wales by a notice under the Renting Homes (Wales) Act 2016, in Scotland by a rent-increase
+      notice under the Private Housing (Tenancies) (Scotland) Act 2016 and in Northern Ireland as provided by
+      the Private Tenancies Act (Northern Ireland) 2022. In each nation the increase requires prior written
+      notice and is limited in frequency.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Unless stated otherwise below, the tenant pays directly to the supplier or authority concerned the charges
+    for gas, electricity, water and sewerage, communication services and the television licence used at the
+    dwelling during the tenancy.</p>
+  <p th:if="${!(countryCode == 'GB' and regionCode == 'NIR')}">Council tax for the dwelling is payable by the
+    tenant unless stated otherwise below.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">Domestic rates for the dwelling are payable as
+    stated below; where they are included in the rent, the landlord pays them.</p>
+  <p>Bills payable by the tenant to the landlord, with the amount or how it is calculated:
+    ______________________________</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">In England the landlord or a letting agent may
+    require such payments only insofar as they are permitted payments under the Tenant Fees Act 2019.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays a tenancy deposit of
+    <strong th:text="${depositAmount}">amount</strong> as security for the performance of the tenant&rsquo;s
+    obligations.</p>
+  <p th:if="${depositAmount == null}">The tenant pays a tenancy deposit in the amount agreed in writing between
+    the parties as security for the performance of the tenant&rsquo;s obligations.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The deposit may not exceed 5 weeks&rsquo; rent where
+    the annual rent is less than £50,000, or 6 weeks&rsquo; rent where the annual rent is £50,000 or more
+    (paragraph 2 of Schedule 1 to the Tenant Fees Act 2019); any amount above that limit is a prohibited
+    payment and must be repaid. Within 30 days of receiving the deposit the landlord must comply with the
+    initial requirements of an authorised tenancy deposit scheme and give the tenant, and any person who paid
+    the deposit on the tenant&rsquo;s behalf, the prescribed information (section 213 of the Housing Act 2004).
+    If the landlord fails to do so, the court may order the landlord to pay the tenant an amount of 1 to 3 times
+    the deposit (section 214 of that Act), and the landlord&rsquo;s right to recover possession may be
+    restricted.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Within 30 days starting with the day on which the
+    deposit is paid, the landlord must comply with the initial requirements of an authorised deposit scheme and
+    give the contract-holder the required information (section 45 of the Renting Homes (Wales) Act 2016). The
+    deposit is a permitted payment under the Renting Homes (Fees etc.) (Wales) Act 2019; where a limit for
+    deposits is prescribed under that Act, any amount above it is a prohibited payment.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The deposit may not exceed 2 months&rsquo; rent.
+    Within 30 working days of the beginning of the tenancy the landlord must pay the deposit to an approved
+    tenancy deposit scheme and give the tenant the information required by the Tenancy Deposit Schemes
+    (Scotland) Regulations 2011.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The deposit may not exceed 1 month&rsquo;s rent. The
+    landlord must protect the deposit in an approved tenancy deposit scheme within 28 days of receiving it and
+    give the tenant the prescribed information within 35 days of receiving it (Private Tenancies (Northern
+    Ireland) Order 2006, as amended by sections 4 to 6 of the Private Tenancies Act (Northern Ireland)
+    2022).</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">In
+    every nation of the United Kingdom the landlord must protect the deposit in a government-approved tenancy
+    deposit scheme within the period, and give the tenant the information, that the law of the nation
+    prescribes; England, Scotland and Northern Ireland also limit the amount of the deposit.</p>
+  <p>At the end of the tenancy the deposit is repaid, less any amounts properly due to the landlord under this
+    agreement. A dispute about the deposit may be referred to the dispute resolution service of the scheme
+    that protects it.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The condition of the dwelling at the end of the tenancy is assessed
+    against the inventory (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span> <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of
+    each rent period,</span><span
+    th:if="${paymentDueDay == null}">on the first day of each rent period,</span> by bank transfer to the
+    account designated in writing by the landlord.</p>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'ENG'}">
+    <p>Rent is not due before the start of the rent period for which it is payable (section 4B of the Housing
+      Act 1988). The only exception is the initial rent, that is the rent for the first rent period and for any
+      later rent period ending within 28 days of the first day of the first rent period, which may be paid
+      after this agreement is entered into and before the tenancy begins. The landlord may not invite,
+      encourage or accept a payment of rent before this agreement is entered into.</p>
+    <p>If rent remains unpaid for 14 days or more after its due date, the landlord may charge interest on the
+      unpaid rent at an annual rate of 3% above the Bank of England base rate (paragraph 4 of Schedule 1 to the
+      Tenant Fees Act 2019). No other fee or charge for late payment is payable.</p>
+  </th:block>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Any payment in the event of the contract-holder&rsquo;s
+    default is payable only insofar as it is permitted by the Renting Homes (Fees etc.) (Wales) Act 2019 and
+    the regulations made under it.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">Interest or charges for late payment are payable
+    only insofar as Scots law permits them.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord gives the tenant a written receipt,
+    free of charge, for any rent paid in cash (section 3 of the Private Tenancies Act (Northern Ireland)
+    2022).</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">Rent
+    in advance, interest and charges for late payment are payable only insofar as the law of the nation in
+    which the dwelling is located permits them; in England rent may not fall due before the rent period to
+    which it relates (section 4B of the Housing Act 1988).</p>
+</div>
+
+<div th:fragment="clause-fees" data-clause="fees">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The landlord and any letting agent may not require
+    the tenant, or anyone on the tenant&rsquo;s behalf, to make any payment in connection with the tenancy other
+    than a permitted payment under Schedule 1 to the Tenant Fees Act 2019: rent, a refundable tenancy deposit
+    within the statutory limit, a refundable holding deposit of no more than 1 week&rsquo;s rent, a payment in
+    respect of the variation, assignment or novation of the tenancy (no more than £50 or the reasonable costs
+    incurred, if higher), a payment on termination of the tenancy at the tenant&rsquo;s request, payments for
+    utilities, communication services, the television licence and council tax, and default fees for late
+    payment of rent and for replacing a lost key or other security device. Any other payment is a prohibited
+    payment.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The landlord and any letting agent may not require
+    the contract-holder to make any payment in connection with the contract other than a permitted payment
+    under the Renting Homes (Fees etc.) (Wales) Act 2019, such as rent, a security deposit, a holding deposit of
+    no more than 1 week&rsquo;s rent, payments in the event of default, and payments for utilities,
+    communication services, the television licence and council tax. Any other payment is a prohibited
+    payment.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">Under the Rent (Scotland) Act 1984, the landlord or
+    any agent may not require a premium or other payment as a condition of the grant, renewal or continuance of
+    the tenancy, other than the rent and a refundable deposit.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The tenant pays no sums in connection with the
+    tenancy other than the rent, the deposit within the statutory limit and the bills set out in this
+    agreement, unless the law permits a further payment.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">Fees
+    and other payments in connection with the tenancy, apart from the rent and the deposit, may be required
+    only insofar as the law of the nation in which the dwelling is located permits them; England (Tenant Fees
+    Act 2019) and Wales (Renting Homes (Fees etc.) (Wales) Act 2019) prohibit every payment that is not a
+    permitted payment.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling as a private home only, takes reasonable care of it and its contents, and does
+    not cause or allow nuisance, annoyance or anti-social behaviour to neighbours or other occupiers, or use the
+    dwelling for illegal or immoral purposes.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The tenant may keep a pet at the dwelling if the
+    tenant asks the landlord in writing and the landlord consents; consent may not be unreasonably refused. The
+    landlord gives or refuses consent in writing by the 28th day after the request, a period that may be
+    extended where the landlord asks for further information or needs the consent of a superior landlord
+    (sections 16A and 16B of the Housing Act 1988).</p>
+  <p th:if="${!(countryCode == 'GB' and regionCode == 'ENG')}">The tenant keeps a pet at the dwelling only with
+    the landlord&rsquo;s prior written consent, which the landlord does not unreasonably withhold.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Under the Renting Homes (Wales) Act 2016 the
+    contract-holder must not engage or threaten to engage in anti-social behaviour or other prohibited conduct,
+    and must not allow a person living in or visiting the dwelling to do so; this is a fundamental term of the
+    contract.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The tenant may not assign the tenancy, sublet or part
+    with possession of the whole or part of the dwelling without the landlord&rsquo;s consent (section 15 of the
+    Housing Act 1988).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The contract-holder may not transfer the contract,
+    sublet the dwelling or part of it, or take in a lodger without the landlord&rsquo;s consent, except as the
+    Renting Homes (Wales) Act 2016 provides; joint contract-holders may be added or may withdraw as that Act
+    provides.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The tenant may not sublet the dwelling or any part of
+    it, take in a lodger, assign the tenancy or part with possession without the landlord&rsquo;s written consent,
+    as provided by the Private Residential Tenancies (Statutory Terms) (Scotland) Regulations 2017.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT'))}">The
+    tenant may not assign the tenancy, sublet or part with possession of the whole or part of the dwelling, or
+    take in a lodger, without the landlord&rsquo;s prior written consent.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The landlord keeps in repair the structure and
+    exterior of the dwelling (including drains, gutters and external pipes), and keeps in repair and proper
+    working order the installations for the supply of water, gas and electricity, for sanitation (including
+    basins, sinks, baths and sanitary conveniences) and for space heating and heating water (section 11 of the
+    Landlord and Tenant Act 1985). The landlord ensures that the dwelling is fit for human habitation at the
+    beginning of the tenancy and throughout it (section 9A of that Act).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The landlord ensures that the dwelling is fit for
+    human habitation on the occupation date and for the duration of the contract (section 91 of the Renting
+    Homes (Wales) Act 2016), keeps the structure and exterior of the dwelling in repair, and keeps the service
+    installations in repair and proper working order (section 92 of that Act).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The landlord ensures that the dwelling meets the
+    repairing standard at the start of the tenancy and at all times during it (sections 13 and 14 of the Housing
+    (Scotland) Act 2006). If it does not, the tenant may apply to the First-tier Tribunal for Scotland (Housing
+    and Property Chamber).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord carries out the repairs for which the
+    landlord is responsible under the Private Tenancies (Northern Ireland) Order 2006, in particular to the
+    structure and exterior of the dwelling and to the installations for the supply of water, gas and
+    electricity, for sanitation and for heating.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord keeps the structure, exterior and service installations of the dwelling in repair and ensures that
+    the dwelling meets the standard of fitness, repair or habitability required by the law of the nation in
+    which it is located.</p>
+  <p>The tenant reports any disrepair or defect to the landlord promptly, uses the dwelling in a tenant-like
+    manner and repairs damage caused by the tenant, members of the tenant&rsquo;s household or visitors. The
+    tenant gives the landlord access to inspect the dwelling or carry out repairs at reasonable times after at
+    least 24 hours&rsquo; notice in writing, or immediately in an emergency.</p>
+</div>
+
+<div th:fragment="clause-safety" data-clause="safety">
+  <p th:if="${!(countryCode == 'GB' and regionCode == 'NIR')}">The landlord has every gas appliance, fitting and
+    flue provided by the landlord checked for safety by a Gas Safe registered engineer at least every 12 months
+    and gives the tenant a copy of the gas safety record before the tenant moves in and within 28 days of each
+    check (regulation 36 of the Gas Safety (Installation and Use) Regulations 1998).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The landlord has the electrical installations
+    inspected and tested by a qualified person at intervals of no more than 5 years and gives the tenant a copy
+    of the report before the tenant moves in and within 28 days of each inspection (Electrical Safety Standards
+    in the Private Rented Sector (England) Regulations 2020). A smoke alarm is installed on each storey used
+    wholly or partly as living accommodation and a carbon monoxide alarm in each room used wholly or partly as
+    living accommodation that contains a fixed combustion appliance other than a gas cooker; the alarms are in
+    working order on the day the tenancy starts and are repaired or replaced once the landlord is told they are
+    faulty (Smoke and Carbon Monoxide Alarm (England) Regulations 2015).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">Under the Renting Homes (Fitness for Human
+    Habitation) (Wales) Regulations 2022, the landlord ensures that the electrical installation has been
+    inspected and tested within the previous 5 years and gives the contract-holder a copy of the electrical
+    condition report, that working smoke alarms connected to the mains electricity supply and linked to each
+    other are installed on each storey, and that a carbon monoxide alarm is installed in each room containing a gas, oil or solid fuel
+    burning appliance.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The repairing standard includes requirements for the
+    safety of the electrical installations and appliances, including an electrical inspection at intervals of no
+    more than 5 years, for fire detection by interlinked alarms and for carbon monoxide detection.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord has gas appliances checked for safety at
+    least every 12 months as required by the Gas Safety (Installation and Use) Regulations (Northern Ireland)
+    2004, provides the fire, smoke and carbon monoxide alarms required under section 8 of the Private Tenancies
+    Act (Northern Ireland) 2022, and has the electrical installations inspected as required under section 10 of
+    that Act.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord complies with the gas safety, electrical safety and smoke and carbon monoxide alarm requirements of
+    the law of the nation in which the dwelling is located, which differ between the nations.</p>
+  <p>The tenant tests the alarms regularly, reports any fault promptly and does not tamper with any safety
+    device.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <th:block th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">
+    <p>The landlord has made available to the tenant, free of charge, a valid energy performance certificate for
+      the dwelling (Energy Performance of Buildings (England and Wales) Regulations 2012).</p>
+    <p>The dwelling may not be let if its energy performance rating is below band E, unless a valid exemption
+      is registered (Energy Efficiency (Private Rented Property) (England and Wales) Regulations 2015).</p>
+  </th:block>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The landlord has made available to the tenant a
+    valid energy performance certificate for the dwelling (Energy Performance of Buildings (Scotland)
+    Regulations 2008).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord has made available to the tenant a
+    valid energy performance certificate for the dwelling (Energy Performance of Buildings (Certificates and
+    Inspections) Regulations (Northern Ireland) 2008).</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord has made available to the tenant a valid energy performance certificate for the dwelling, as the
+    energy performance regulations of the nation in which it is located require; in England and Wales the
+    dwelling may not be let below band E unless an exemption is registered.</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">Where the local housing authority requires a licence
+    for the dwelling (licensing of houses in multiple occupation or selective licensing under Parts 2 and 3 of
+    the Housing Act 2004), the landlord holds it. The landlord registers the dwelling on the private rented
+    sector database and joins the landlord redress scheme under Part 2 of the Renters&rsquo; Rights Act 2025 once
+    those duties apply.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The landlord is registered with Rent Smart Wales and
+    the person who carries out letting and management work for the dwelling is licensed, as required by Part 1
+    of the Housing (Wales) Act 2014. Registration number: ______________________________</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The landlord is registered with the local authority
+    under Part 8 of the Antisocial Behaviour etc. (Scotland) Act 2004. Registration number:
+    ______________________________</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord is registered under the Landlord
+    Registration Scheme Regulations (Northern Ireland) 2014. Registration number:
+    ______________________________</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord holds every registration and licence that the law of the nation in which the dwelling is located
+    requires; Wales, Scotland and Northern Ireland operate landlord registration schemes, and local licensing
+    schemes may apply. Registration or licence number: ______________________________</p>
+</div>
+
+<div th:fragment="clause-right-to-rent" data-clause="right-to-rent">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">Before the tenancy was entered into, the landlord
+    checked that each adult who will occupy the dwelling as their only or main home has the right to rent in
+    the United Kingdom (section 22 of the Immigration Act 2014). The tenant informs the landlord of any change
+    in the adult occupiers.</p>
+  <p th:if="${!(countryCode == 'GB' and regionCode == 'ENG')}">The right to rent checks under the Immigration Act
+    2014 apply only to dwellings in England.</p>
+</div>
+
+<div th:fragment="clause-statutory-information" data-clause="statutory-information">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">The landlord must give the tenant, before the tenancy
+    is entered into, a written statement of the terms and information prescribed under section 16D of the
+    Housing Act 1988 by the Assured Tenancies (Private Rented Sector) (Written Statement of Terms etc. and
+    Information Sheet) (England) Regulations 2026. This agreement is intended to contain them; the landlord
+    remains responsible for giving any prescribed term or information it does not contain.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">The landlord must give the contract-holder a written
+    statement of the contract within 14 days starting with the occupation date (section 31 of the Renting Homes
+    (Wales) Act 2016). This agreement serves as that written statement only if it sets out every term of the
+    contract, including the fundamental and supplementary provisions incorporated; otherwise the landlord gives
+    the statement separately within that period.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">The landlord gives the tenant, no later than the day
+    on which the tenancy starts, a document setting out all of the terms of the tenancy (section 10 of the
+    Private Housing (Tenancies) (Scotland) Act 2016), together with the information and notes for tenants
+    required by regulations made under that Act.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord gives the tenant, within 28 days of the
+    grant of the tenancy, the tenancy information notice required by the Private Tenancies (Northern Ireland)
+    Order 2006, as amended by section 1 of the Private Tenancies Act (Northern Ireland) 2022, and informs the
+    tenant of any change to that information within 28 days of the change.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord gives the tenant the written terms and information that the law of the nation in which the
+    dwelling is located requires, within the time limit set by that law.</p>
+  <p>Address in the United Kingdom at which the tenant may serve notices and other documents on the landlord:
+    ______________________________</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">For a dwelling in England or
+    Wales that address is in England or Wales.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At the start of the tenancy the parties agree an inventory and a record of the condition of the dwelling,
+    the meter readings and the keys handed over. Both parties sign them and each receives a copy; the tenant may
+    note any disagreement in writing within 7 days of receiving them.</p>
+  <p>At the end of the tenancy the tenant returns the dwelling and all keys, with the contents listed in the
+    inventory, in the condition recorded at the start of the tenancy, fair wear and tear excepted.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The repayment of the deposit follows
+    (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'ENG'}">
+    <p>The tenant may end the tenancy at any time by giving the landlord notice in writing of at least 2 months,
+      ending on a day on which rent is due or on the day before; a shorter notice period may be agreed in writing
+      with the landlord, with the agreement of any joint tenant.</p>
+    <p>The landlord may end the tenancy only by obtaining an order for possession from the court on 1 or more of
+      the grounds in Schedule 2 to the Housing Act 1988, after serving a notice in the prescribed form under
+      section 8 of that Act with the notice period required for each ground; notices under section 21 of that
+      Act can no longer be given. Ground 1 (occupation by the landlord or a family member) and Ground 1A (sale of
+      the dwelling) may not be relied on during the first 12 months of the tenancy and require 4 months&rsquo;
+      notice. Ground 8 (rent arrears) requires arrears of at least 3 months&rsquo; rent, or 13 weeks&rsquo; rent
+      where rent is payable weekly or every 2 weeks, both when the notice is served and at the hearing, and
+      4 weeks&rsquo; notice.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'WLS'}">
+    <p>The contract-holder may end a periodic standard contract by giving the landlord notice of at least
+      4 weeks. A fixed term standard contract may be ended before the end of the term only as the Renting Homes
+      (Wales) Act 2016 and the contract allow, for example under a break clause.</p>
+    <p>The landlord may end a periodic standard contract by a notice under section 173 of the Renting Homes
+      (Wales) Act 2016 giving at least 6 months&rsquo; notice; such a notice may not be given before the end of
+      the first 6 months of occupation and is subject to the further restrictions of that Act, for example where
+      the landlord has not complied with the written statement or deposit requirements. The landlord may also
+      seek possession on the grounds of breach of contract or the estate management grounds set out in that
+      Act. If the contract-holder does not leave, the landlord needs an order for possession from the
+      court.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'SCT'}">
+    <p>The tenant may end the tenancy by giving the landlord at least 28 days&rsquo; notice in writing, unless a
+      different period has been agreed in writing in accordance with the Private Housing (Tenancies) (Scotland)
+      Act 2016.</p>
+    <p>The landlord may end the tenancy only by giving the tenant a notice to leave stating 1 or more of the
+      eviction grounds in Schedule 3 to that Act and, if the tenant does not leave, obtaining an eviction order
+      from the First-tier Tribunal for Scotland (Housing and Property Chamber). The notice to leave must give
+      28 days&rsquo; or 84 days&rsquo; notice, depending on the ground and on whether the tenant has occupied the
+      dwelling for more than 6 months.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'NIR'}">
+    <p>A notice to quit must be given in writing. The landlord&rsquo;s notice to quit must give at least
+      4 weeks&rsquo; notice where the tenancy has existed for no more than 12 months, at least 8 weeks&rsquo;
+      notice where it has existed for more than 12 months but no more than 10 years, and at least
+      12 weeks&rsquo; notice where it has existed for more than 10 years. The tenant&rsquo;s notice to quit must
+      give at least the period required by the Private Tenancies (Northern Ireland) Order 2006.</p>
+    <p>If the tenant does not leave, the landlord may recover possession only by an order of the court.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    tenancy may be ended only as the law of the nation in which the dwelling is located permits. In every nation
+    the tenant may end the tenancy by written notice of the statutory length, and the landlord may not evict the
+    tenant without an order of a court or, in Scotland, of the First-tier Tribunal for Scotland; in England,
+    Wales and Scotland the landlord must rely on statutory grounds or notices with minimum notice periods.</p>
+  <p>The parties may also end the tenancy at any time by agreement in writing.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the dwelling is governed
+    by what this agreement provides (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this agreement are given in writing and delivered by hand or sent by post to the address of
+    the recipient stated in this agreement or notified in writing later. Notices may also be sent by email to an
+    address the recipient has given for that purpose, insofar as the law of the nation in which the dwelling is
+    located allows that form for the notice concerned.</p>
+  <p>Landlord&rsquo;s email address for notices: ______________________________</p>
+  <p>Tenant&rsquo;s email address for notices: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only insofar as this is necessary for entering into
+    and performing this agreement and for complying with legal obligations, in accordance with the UK General
+    Data Protection Regulation (UK GDPR) and the Data Protection Act 2018, and keeps the data no longer than
+    necessary for those purposes.</p>
+  <p>The tenant may exercise the rights under the UK GDPR, in particular the rights of access, rectification and
+    erasure, and may complain to the Information Commissioner&rsquo;s Office.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p th:if="${countryCode == 'GB' and regionCode == 'ENG'}">This agreement is governed by the law of England and
+    Wales. Disputes are decided by the county court; disputes about the rent may be referred to the First-tier
+    Tribunal (Property Chamber).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'WLS'}">This agreement is governed by the law of England and
+    Wales as it applies in Wales. Disputes are decided by the county court or, where the Renting Homes (Wales)
+    Act 2016 so provides, by the Residential Property Tribunal for Wales.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">This agreement is governed by Scots law. Disputes
+    about the tenancy are decided by the First-tier Tribunal for Scotland (Housing and Property Chamber).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">This agreement is governed by the law of Northern
+    Ireland. Disputes are decided by the courts of Northern Ireland.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">This
+    agreement is governed by the law of the nation of the United Kingdom in which the dwelling is located, and
+    disputes are decided by the courts or tribunals of that nation.</p>
+  <p>If a provision of this agreement is invalid or unenforceable, the remaining provisions remain in effect.</p>
+</div>
+
+</body>
+</html>
