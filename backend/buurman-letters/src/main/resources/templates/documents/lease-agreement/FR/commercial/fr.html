@@ -70,9 +70,7 @@
 
 <div th:fragment="clause-term" data-clause="term">
   <p>Le bail prend effet le <strong th:text="${startDate}">date de prise d'effet</strong>.</p>
-  <p th:if="${fixedTerm}">Il est conclu pour une durée déterminée<span th:if="${endDate != null}"> et prend fin le
-    <strong th:text="${endDate}">date de fin</strong></span>&nbsp;; cette durée ne peut être inférieure à 9 ans
-    (article L. 145-4 du code de commerce).</p>
+  <p th:if="${fixedTerm}">Il est conclu pour une durée déterminée<span th:if="${endDate != null}"> et prend fin le <strong th:text="${endDate}">date de fin</strong></span>&nbsp;; sauf dérogation légale, la durée du bail ne peut être inférieure à 9 ans (article L. 145-4 du code de commerce).</p>
   <p th:if="${!fixedTerm}">Il est conclu pour une durée de 9 ans, durée minimale prévue par l'article L. 145-4 du
     code de commerce.</p>
   <p>Le preneur a la faculté de donner congé à l'expiration de chaque période de 3 ans, au moins 6 mois à
@@ -118,9 +116,7 @@
   <p>L'indice choisi doit être en relation directe avec l'objet du bail ou avec l'activité de l'une des parties
     (article L. 112-2 du code monétaire et financier), et la période de variation de l'indice prise en compte ne
     peut être supérieure à la durée s'écoulant entre chaque révision (article L. 112-1 du code monétaire et
-    financier). Les parties peuvent encadrer la variation annuelle de l'indice, à la hausse et à la baisse, dans
-    les conditions de l'article L. 145-38-1 du code de commerce&nbsp;; encadrement convenu, le cas
-    échéant&nbsp;: ______________________________</p>
+    financier). Lorsque le loyer est indexé sur l'ILC, les parties peuvent encadrer, dans les mêmes proportions à la hausse et à la baisse, la variation annuelle de cet indice (article L. 145-38-1 du code de commerce)&nbsp;; encadrement convenu, le cas échéant&nbsp;: ______________________________</p>
   <p>Lorsque, par le jeu de cette clause d'échelle mobile, le loyer se trouve augmenté ou diminué de plus d'un
     quart (25 %) par rapport au prix précédemment fixé contractuellement ou par décision judiciaire, chaque partie
     peut demander la révision du loyer (article L. 145-39 du code de commerce). Indépendamment de cette clause,
@@ -184,8 +180,7 @@
   <p>Le dépôt de garantie est restitué au preneur dans un délai raisonnable ne pouvant excéder 3 mois à compter
     de la remise des clés au bailleur ou à son mandataire, en main propre ou par lettre recommandée avec demande
     d'avis de réception, déduction faite des sommes restant dues au bailleur et des sommes dont celui-ci pourrait
-    être tenu en lieu et place du preneur, sous réserve qu'elles soient dûment justifiées&nbsp;; les autres
-    garanties sont restituées dans un délai de 6 mois. En cas de mutation des locaux loués, l'obligation de restitution est transmise au nouveau bailleur.<span class="clause-ref" data-ref="handover-inspection"
+    être tenu en lieu et place du preneur, sous réserve qu'elles soient dûment justifiées. Pour les locaux mentionnés à l'article L. 145-32-1 du code de commerce, les garanties de toute nature reçues par le bailleur sont restituées dans un délai de 6 mois. En cas de mutation des locaux loués, l'obligation de restitution des sommes versées à titre de garantie est transmise au nouveau bailleur et, pour ces mêmes locaux, la mutation entraîne de droit la caducité des garanties de toute nature (article L. 145-40 du code de commerce).<span class="clause-ref" data-ref="handover-inspection"
     th:if="${refs['handover-inspection']}"> L'état des lieux de sortie est établi dans les conditions du présent
     bail (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
@@ -299,7 +294,7 @@
   <p>Lorsque les locaux sont destinés à l'exercice d'une activité de commerce de détail ou de gros ou de
     prestations de services à caractère commercial ou artisanal et que le propriétaire envisage de les vendre, il
     en informe le preneur par lettre recommandée avec demande d'avis de réception ou par remise en main propre
-    contre récépissé ou émargement. Cette notification vaut offre de vente au profit du preneur, qui dispose d'un
+    contre récépissé ou émargement&nbsp;; la notification indique le prix et les conditions de la vente envisagée. Cette notification vaut offre de vente au profit du preneur, qui dispose d'un
     délai de 1 mois à compter de sa réception pour se prononcer&nbsp;; en cas d'acceptation, il dispose d'un délai
     de 2 mois pour la réalisation de la vente, porté à 4 mois s'il notifie son intention de recourir à un prêt
     (article L. 145-46-1 du code de commerce).</p>
@@ -317,7 +312,7 @@
     charges ou du dépôt de garantie, ou à défaut d'exécution de l'une des clauses du bail, 1 mois après un
     commandement demeuré infructueux&nbsp;; à peine de nullité, le commandement mentionne ce délai
     (article L. 145-41 du code de commerce). Le juge saisi peut, en accordant des délais, suspendre la réalisation
-    et les effets de cette clause&nbsp;; l'octroi de délais est subordonné à la capacité du preneur à régler la dette
+    et les effets de cette clause&nbsp;; pour non-paiement des loyers, l'octroi de délais est subordonné à la capacité du preneur à régler la dette
     locative et à la reprise du versement intégral du loyer courant avant la première audience.<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La restitution des
     locaux donne lieu à un état des lieux de sortie (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>

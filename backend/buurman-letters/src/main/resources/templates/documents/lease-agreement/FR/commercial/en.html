@@ -73,13 +73,11 @@
 
 <div th:fragment="clause-term" data-clause="term">
   <p>The lease takes effect on <strong th:text="${startDate}">start date</strong>.</p>
-  <p th:if="${fixedTerm}">It is concluded for a fixed term<span th:if="${endDate != null}"> and ends on
-    <strong th:text="${endDate}">end date</strong></span>; that term may not be less than 9 years
-    (article L. 145-4 of the Commercial Code).</p>
+  <p th:if="${fixedTerm}">It is concluded for a fixed term<span th:if="${endDate != null}"> and ends on <strong th:text="${endDate}">end date</strong></span>; save for a statutory exception, the term of the lease may not be less than 9 years (article L. 145-4 of the Commercial Code).</p>
   <p th:if="${!fixedTerm}">It is concluded for a term of 9 years, the minimum term laid down in article L. 145-4 of
     the Commercial Code.</p>
   <p>The tenant may give notice at the end of each 3-year period, at least 6 months in
-    advance, by registered letter with acknowledgement of receipt or by bailiff&rsquo;s writ (acte extrajudiciaire).
+    advance, by registered letter with acknowledgement of receipt or by a writ served by a judicial officer (acte extrajudiciaire, commissaire de justice).
     Leases concluded for a term of more than 9 years, leases of premises built for a single use, leases of premises
     used exclusively as offices and leases of storage premises referred to in the General Tax Code may contain
     contrary terms. A tenant admitted to retirement benefits or to an invalidity pension, or his heirs in the event
@@ -121,9 +119,7 @@
   <p>The index chosen must be directly related to the subject matter of the lease or to the activity of one of
     the parties (article L. 112-2 of the Monetary and Financial Code), and the period of index variation taken into
     account may not exceed the time elapsing between reviews (article L. 112-1 of the Monetary and
-    Financial Code). The parties may limit the annual variation of the index, upwards and downwards, under
-    the conditions of article L. 145-38-1 of the Commercial Code; agreed limit, where
-    applicable: ______________________________</p>
+    Financial Code). Where the rent is indexed on the ILC, the parties may limit, in the same proportions upwards and downwards, the annual variation of that index (article L. 145-38-1 of the Commercial Code); agreed limit, where applicable: ______________________________</p>
   <p>Where, as a result of this sliding-scale clause, the rent is increased or reduced by more than a
     quarter (25 %) compared with the price previously set by contract or by court decision, either party
     may request a review of the rent (article L. 145-39 of the Commercial Code). Independently of this clause,
@@ -136,8 +132,7 @@
   <p>The precise and exhaustive inventory of the categories of charges, taxes, levies and fees related to this lease,
     with an indication of how they are allocated between the landlord and the tenant, is as follows (article
     L. 145-40-2 of the Commercial Code): ______________________________. In a property complex with several
-    tenants, the charges and the cost of works are allocated between the tenants according to the area
-    occupied: ______________________________</p>
+    tenants, the charges and the cost of works are allocated between the tenants according to the area operated: ______________________________</p>
   <p>The following may not be charged to the tenant: expenditure on major repairs referred to in
     article 606 of the Civil Code and the fees relating to their performance; expenditure on
     works intended to remedy dilapidation or to bring the let property or the building into compliance with
@@ -187,8 +182,7 @@
   <p>The security deposit is returned to the tenant within a reasonable period not exceeding 3 months from
     the return of the keys to the landlord or the landlord&rsquo;s agent, by hand or by registered letter with
     acknowledgement of receipt, after deduction of the sums still owed to the landlord and of the sums for which the landlord may
-    be liable in place of the tenant, provided that they are duly justified; other
-    guarantees are returned within a period of 6 months. If the let premises change hands, the obligation to return is transferred to the new landlord.<span class="clause-ref" data-ref="handover-inspection"
+    be liable in place of the tenant, provided that they are duly justified. For premises referred to in article L. 145-32-1 of the Commercial Code, guarantees of any kind received by the landlord are returned within a period of 6 months. If the let premises change hands, the obligation to return the sums paid as security is transferred to the new landlord and, for those same premises, the transfer causes guarantees of any kind to lapse by operation of law (caducité) (article L. 145-40 of the Commercial Code).<span class="clause-ref" data-ref="handover-inspection"
     th:if="${refs['handover-inspection']}"> The check-out inventory is drawn up as provided in this
     lease (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
 </div>
@@ -288,7 +282,7 @@
     provided by law, in particular a serious and legitimate ground against the tenant
     (article L. 145-17 of the Commercial Code), pay the tenant an eviction indemnity (indemnité d&rsquo;éviction) equal to the loss caused
     by the refusal to renew (article L. 145-14 of the Commercial Code).</p>
-  <p>Notice is given by bailiff&rsquo;s writ (acte extrajudiciaire), at least 6 months in advance; on pain of nullity, it states
+  <p>Notice is given by a writ served by a judicial officer (acte extrajudiciaire, commissaire de justice), at least 6 months in advance; on pain of nullity, it states
     the grounds on which it is given and indicates that a tenant who intends to contest it or to claim payment
     of an eviction indemnity must bring the matter before the court before the expiry of a period of 2 years from the date
     for which notice was given (article L. 145-9 of the Commercial Code).</p>
@@ -302,7 +296,7 @@
   <p>Where the premises are intended for a retail or wholesale trade activity or for the provision of
     commercial or artisanal services and the owner plans to sell them, the owner
     informs the tenant by registered letter with acknowledgement of receipt or by delivery by hand
-    against a receipt or signature. That notification constitutes an offer of sale to the tenant, who has a
+    against a receipt or signature; the notification states the price and the conditions of the planned sale. That notification constitutes an offer of sale to the tenant, who has a
     period of 1 month from its receipt to decide; in the event of acceptance, the tenant has a period
     of 2 months to complete the sale, extended to 4 months if he gives notice of his intention to take out a loan
     (article L. 145-46-1 of the Commercial Code).</p>
@@ -320,7 +314,7 @@
     charges or the security deposit on its due date, or failure to perform any term of the lease, 1 month after a
     payment demand or formal demand (commandement) that has remained unsuccessful; on pain of nullity, the demand states that period
     (article L. 145-41 of the Commercial Code). The court seised may, by granting time, suspend the operation
-    and effects of this clause; the grant of time is conditional on the tenant&rsquo;s ability to pay the rent
+    and effects of this clause; for non-payment of rent, the grant of time is conditional on the tenant&rsquo;s ability to pay the rent
     arrears and on the resumption of full payment of the current rent before the first hearing.<span
     class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
     premises gives rise to a check-out inventory (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
