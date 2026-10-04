@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useState } from 'react';
 import {
   AlertTriangle,
+  Eye,
   Languages,
   Lock,
   Pencil,
@@ -16,6 +17,7 @@ import {
   useUpdateLeaseClauseTemplate,
   useDeleteLeaseClauseTemplate,
 } from '../hooks/useLeaseClauseTemplateHooks';
+import { Link } from 'react-router-dom';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { DocumentLanguage, LeaseKind } from '../generated/models';
 import type { LeaseClauseTemplateResponse } from '../generated/models';
@@ -38,22 +40,15 @@ import type {
   BehaviourFlag,
   TableFilters,
 } from '../lib/leaseClauseTable';
+import { LEASE_COUNTRIES } from '../lib/leaseCountries';
+import { previewLink } from '../lib/leasePreviewUrl';
 import {
   LEASE_KIND_META,
   LEASE_KIND_ORDER,
   fallbackText,
 } from '../lib/leaseKindMeta';
 
-// The 7 countries seeded with placeholder lease clause templates (BUUR-105).
-const COUNTRIES = [
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'PT', name: 'Portugal' },
-  { code: 'BE', name: 'Belgium' },
-  { code: 'GB', name: 'United Kingdom' },
-];
+const COUNTRIES = LEASE_COUNTRIES;
 
 const TH_CLASS =
   'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
@@ -238,14 +233,27 @@ export const LeaseClauseTemplatesPage = () => {
             exist, their order and their rules.
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          leftIcon={<Plus />}
-          onClick={() => openCreate()}
-        >
-          Add Clause Template
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link
+            to={previewLink(
+              filters.country === 'all' ? undefined : filters.country,
+              filters.kind === 'all' ? undefined : filters.kind,
+              language
+            )}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border-default px-3 py-1.5 text-sm font-medium text-text-primary hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+          >
+            <Eye className="h-4 w-4" aria-hidden="true" />
+            Preview agreement
+          </Link>
+          <Button
+            variant="primary"
+            size="sm"
+            leftIcon={<Plus />}
+            onClick={() => openCreate()}
+          >
+            Add Clause Template
+          </Button>
+        </div>
       </div>
 
       <div
@@ -431,13 +439,24 @@ export const LeaseClauseTemplatesPage = () => {
                               {group.rows.length} clause
                               {group.rows.length === 1 ? '' : 's'}
                             </span>
+                            <Link
+                              to={previewLink(
+                                country.countryCode,
+                                group.kind,
+                                language
+                              )}
+                              aria-label={`Preview ${country.countryCode} ${LEASE_KIND_META[group.kind].label} agreement`}
+                              className="ml-auto rounded-md p-1 text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                            >
+                              <Eye className="h-4 w-4" aria-hidden="true" />
+                            </Link>
                             <button
                               type="button"
                               onClick={() =>
                                 openCreate(country.countryCode, group.kind)
                               }
                               aria-label={`Add clause to ${country.countryCode} ${LEASE_KIND_META[group.kind].label}`}
-                              className="ml-auto rounded-md p-1 text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                              className="rounded-md p-1 text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                             >
                               <Plus className="h-4 w-4" aria-hidden="true" />
                             </button>

@@ -9,6 +9,7 @@ import {
   createLeaseClauseTemplate,
   updateLeaseClauseTemplate,
   deleteLeaseClauseTemplate,
+  previewLeaseAgreement,
 } from '../generated/api/backoffice-lease-clause-templates/backoffice-lease-clause-templates';
 import {
   LEASE_TEMPLATES_KEY_PREFIX,
@@ -17,6 +18,7 @@ import {
 } from '../lib/leaseTemplateQuery';
 import type {
   DocumentLanguage,
+  LeaseAgreementPreviewRequest,
   UpsertLeaseClauseTemplateRequest,
 } from '../generated/models';
 
@@ -97,4 +99,28 @@ export const useDeleteLeaseClauseTemplate = () => {
       queryClient.invalidateQueries({ queryKey: BASE_KEY });
     },
   });
+};
+
+/**
+ * Renders the sample preview. The previous result stays on screen while a new request loads
+ * (`isPlaceholderData`); 4xx errors are not retried.
+ */
+export const useLeasePreview = (
+  request: LeaseAgreementPreviewRequest | null
+) => {
+  const query = useQuery({
+    queryKey: ['lease-preview', request],
+    queryFn: () =>
+      previewLeaseAgreement(request as LeaseAgreementPreviewRequest),
+    enabled: request !== null,
+    placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: 30_000,
+  });
+  return {
+    data: query.data,
+    error: query.error,
+    isFetching: query.isFetching,
+    isError: query.isError,
+  };
 };

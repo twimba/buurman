@@ -91,6 +91,11 @@ const LeaseClauseTemplatesPage = lazy(() =>
     default: m.LeaseClauseTemplatesPage,
   }))
 );
+const LeaseAgreementPreviewPage = lazy(() =>
+  import('./pages/LeaseAgreementPreviewPage').then((m) => ({
+    default: m.LeaseAgreementPreviewPage,
+  }))
+);
 const SegmentsPage = lazy(() =>
   import('./pages/SegmentsPage').then((m) => ({
     default: m.SegmentsPage,
@@ -174,6 +179,10 @@ function App() {
                   <Route
                     path="/lease-clause-templates"
                     element={<LeaseClauseTemplatesPage />}
+                  />
+                  <Route
+                    path="/lease-clause-templates/preview"
+                    element={<LeaseAgreementPreviewPage />}
                   />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
                   <Route path="/segments" element={<SegmentsPage />} />
