@@ -4,7 +4,7 @@
                eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
                01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
                256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
-               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266i, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
                269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
                The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
                apply to leases of residential AND commercial premises (titles of the second and third sections); the
@@ -128,8 +128,9 @@
     contester les loyers échelonnés (art. 270d CO).</p>
   <p>Pour le surplus, le bailleur peut majorer le loyer pour le prochain terme de résiliation ; l'avis de
     majoration, avec indication des motifs, doit parvenir au locataire 10 jours au moins avant le début du délai de
-    résiliation et être effectué au moyen d'une formule agréée par le canton (art. 269d, al. 1, CO), faute de quoi la
-    majoration est nulle (art. 269d, al. 2, CO). Le locataire peut contester une majoration comme abusive devant
+    résiliation et être effectué au moyen d'une formule agréée par le canton (art. 269d, al. 1, CO). La majoration est nulle lorsque le bailleur ne la notifie pas
+    au moyen de la formule officielle, n'en indique pas les motifs ou l'assortit d'une résiliation ou d'une menace de
+    résiliation (art. 269d, al. 2, CO). Le locataire peut contester une majoration comme abusive devant
     l'autorité de conciliation dans les 30 jours qui suivent l'avis de majoration (art. 270b, al. 1, CO) et demander
     la diminution du loyer aux conditions de l'art. 270a CO.</p>
 </div>
@@ -149,8 +150,10 @@
 </div>
 
 <div th:fragment="clause-vat" data-clause="vat">
-  <p>La mise à disposition d'immeubles ou de parties d'immeubles à des fins d'usage ou de jouissance est exclue du
-    champ de la TVA (art. 21, al. 2, ch. 21, LTVA). Le bailleur assujetti peut imposer cette prestation en faisant
+  <p>La mise à disposition d'immeubles ou de parties d'immeubles à des fins d'usage ou de jouissance est exclue du champ de la TVA, sous réserve des prestations imposables énumérées aux lettres a à f
+    de cette disposition, notamment la location de places de parc n'appartenant pas au domaine public, pour le
+    stationnement de véhicules, sauf s'il s'agit d'une prestation accessoire à une location d'immeuble exclue du champ
+    de l'impôt (art. 21, al. 2, ch. 21, LTVA). Le bailleur assujetti peut imposer cette prestation en faisant
     figurer clairement l'impôt ou en la déclarant dans son décompte (option, art. 22, al. 1, LTVA) ; l'option est
     exclue si le locataire utilise ou entend utiliser l'objet loué exclusivement à des fins d'habitation
     (art. 22, al. 2, let. b, LTVA).</p>
@@ -185,8 +188,9 @@
     <span th:text="${paymentFrequency}">par mois</span>,
     <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong>e jour
       de chaque période de paiement</span><span th:if="${paymentDueDay == null}">d'avance pour le 1er jour de
-      chaque période de paiement</span>, sur le compte désigné par écrit par le bailleur. Cette convention l'emporte
-    sur la règle légale selon laquelle le loyer doit être payé à la fin de chaque mois (art. 257c CO).</p>
+      chaque période de paiement</span>, sur le compte désigné par écrit par le bailleur. Cette convention l'emporte sur la règle légale selon laquelle le locataire doit
+    payer le loyer et, le cas échéant, les frais accessoires à la fin de chaque mois, mais au plus tard à l'expiration
+    du bail, sauf convention ou usage local contraires (art. 257c CO).</p>
   <p>À l'expiration du terme de paiement convenu, le locataire est en demeure sans interpellation
     (art. 102, al. 2, CO) et doit un intérêt moratoire de 5 pour cent l'an (art. 104, al. 1, CO).</p>
   <p>Lorsque, après la réception de la chose, le locataire a du retard pour s'acquitter d'un terme ou de frais
@@ -260,7 +264,8 @@
     n'a pas payé son loyer (art. 268, al. 2, CO) ; ne sont pas soumis au droit de rétention les biens qui ne
     pourraient être saisis par les créanciers du locataire (art. 268, al. 3, CO).</p>
   <p>Les droits des tiers sur des choses dont le bailleur savait ou devait savoir qu'elles n'étaient pas la propriété
-    du locataire prévalent sur le droit de rétention (art. 268a, al. 1, CO). Lorsque le locataire veut déménager ou a
+    du locataire prévalent sur le droit de rétention ; il en va de même pour les choses que le possesseur a perdues,
+    qui lui ont été volées ou dont il est dessaisi de quelque autre manière contre sa volonté (art. 268a, al. 1, CO). Lorsque le locataire veut déménager ou a
     l'intention d'emporter les meubles qui se trouvent dans les locaux loués, le bailleur peut, avec l'assistance de
     l'autorité compétente, en retenir autant qu'il en faut pour garantir sa créance (art. 268b, al. 1, CO).</p>
 </div>
@@ -320,7 +325,9 @@
   <p>Les congés extraordinaires sont régis par la loi, notamment en cas de demeure du locataire (art. 257d CO), de
     violation grave par le locataire de son devoir de diligence ou de graves manques d'égards envers les voisins
     (art. 257f, al. 3 et 4, CO), pour de justes motifs rendant l'exécution du contrat intolérable pour une partie
-    (art. 266g CO) et en cas de faillite du locataire (art. 266h CO). Si le bailleur aliène la chose, le bail passe
+    (art. 266g CO), en cas de décès du locataire, par ses héritiers (art. 266i CO),
+    et en cas de faillite du locataire après la délivrance de la chose, lorsque les sûretés exigées par le bailleur
+    pour les loyers à échoir ne lui sont pas fournies dans le délai convenable fixé (art. 266h, al. 1 et 2, CO). Si le bailleur aliène la chose, le bail passe
     à l'acquéreur ; celui-ci peut le résilier en observant le délai de congé légal pour le prochain terme légal s'il
     fait valoir un besoin urgent pour lui-même ou ses proches parents ou alliés (art. 261, al. 1 et 2, CO).</p>
   <p>Lorsque le locataire restitue la chose sans observer les délai ou terme de congé, il n'est libéré de ses

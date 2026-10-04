@@ -4,7 +4,7 @@
                eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
                01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
                256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
-               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266i, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
                269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
                The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
                apply to leases of residential AND commercial premises (titles of the second and third sections); the
@@ -126,8 +126,9 @@
     rents (Article 270d CO).</p>
   <p>Otherwise, the Landlord may increase the rent with effect from the next possible termination date; the Landlord
     must notify the Tenant of the rent increase, with reasons, at least 10 days before the notice period begins, on a
-    form approved by the canton (Article 269d paragraph 1 CO), failing which the increase is void
-    (Article 269d paragraph 2 CO). The Tenant may challenge a rent increase as abusive before the conciliation
+    form approved by the canton (Article 269d paragraph 1 CO). The rent increase is void if the Landlord does not notify
+    it on the prescribed form, does not give reasons for it, or threatens or gives notice of termination together
+    with the notification (Article 269d paragraph 2 CO). The Tenant may challenge a rent increase as abusive before the conciliation
     authority within 30 days after being notified of it (Article 270b paragraph 1 CO) and request a reduction of the
     rent under the conditions of Article 270a CO.</p>
 </div>
@@ -148,8 +149,9 @@
 </div>
 
 <div th:fragment="clause-vat" data-clause="vat">
-  <p>The provision of immovable property and parts of immovable property for use or enjoyment is excluded from VAT
-    (Article 21 paragraph 2 number 21 MWSTG, VAT Act). A Landlord registered for VAT may opt to tax this supply by
+  <p>The provision of immovable property and parts of immovable property for use or enjoyment is excluded from VAT, subject to the taxable supplies listed in letters a to f of that
+    provision, in particular the letting of parking spaces not in public use, unless it is ancillary to an exempt
+    letting of immovable property (Article 21 paragraph 2 number 21 MWSTG, VAT Act). A Landlord registered for VAT may opt to tax this supply by
     showing the tax openly or by declaring it in the VAT return (option, Article 22 paragraph 1 MWSTG); the option is
     excluded if the Tenant uses or intends to use the Premises exclusively for residential purposes
     (Article 22 paragraph 2 letter b MWSTG).</p>
@@ -183,8 +185,9 @@
     <span th:text="${paymentFrequency}">per month</span>,
     <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
       payment period</span><span th:if="${paymentDueDay == null}">in advance for the 1st day of each payment
-      period</span>, into the account designated in writing by the Landlord. This arrangement takes precedence over
-    the statutory rule that the rent is payable at the end of each month (Article 257c CO).</p>
+      period</span>, into the account designated in writing by the Landlord. This arrangement takes precedence over the statutory rule that the Tenant pays the
+    rent and any ancillary costs at the end of each month, but at the latest at the end of the lease, unless another
+    date is agreed or customary in the locality (Article 257c CO).</p>
   <p>When the agreed payment date has passed, the Tenant is in default without a reminder
     (Article 102 paragraph 2 CO) and owes default interest of 5 per cent per year (Article 104 paragraph 1 CO).</p>
   <p>If, after taking over the Premises, the Tenant is in arrears with rent or ancillary costs that have fallen due,
@@ -256,8 +259,9 @@
     them (Article 268 paragraph 1 CO). It extends to items brought in by a subtenant to the extent that the subtenant
     has not paid the rent (Article 268 paragraph 2 CO); items that the Tenant's creditors could not seize are excluded
     (Article 268 paragraph 3 CO).</p>
-  <p>Third-party rights in items that the Landlord knew or should have known did not belong to the Tenant take
-    precedence over the right of retention (Article 268a paragraph 1 CO). If the Tenant intends to move out or to
+  <p>Third-party rights in items that the Landlord knew or should have known did not belong to the Tenant, and in
+    items that were stolen, lost or otherwise taken from their possessor against the possessor's will, take precedence
+    over the right of retention (Article 268a paragraph 1 CO). If the Tenant intends to move out or to
     remove the items located in the leased premises, the Landlord may, with the assistance of the competent
     authority, retain as many items as are necessary to cover the Landlord's claim (Article 268b paragraph 1 CO).</p>
 </div>
@@ -315,8 +319,9 @@
     a fixed-term lease (Article 273 paragraph 2 CO).</p>
   <p>Extraordinary termination is governed by the law, in particular in the event of the Tenant's payment arrears
     (Article 257d CO), a serious breach of the duty of care and consideration (Article 257f paragraphs 3 and 4 CO),
-    for good cause making performance of the agreement unreasonable for a party (Article 266g CO) and on the Tenant's
-    bankruptcy (Article 266h CO). If the Landlord sells the Premises, the lease passes to the acquirer, who may
+    for good cause making performance of the agreement unreasonable for a party (Article 266g CO), on the Tenant's death by the Tenant's heirs
+    (Article 266i CO) and on the Tenant's bankruptcy after taking over the Premises, if the security for future rent
+    demanded by the Landlord is not provided within the reasonable deadline set (Article 266h paragraphs 1 and 2 CO). If the Landlord sells the Premises, the lease passes to the acquirer, who may
     terminate it with the statutory notice period to the next statutory termination date if the acquirer claims an
     urgent need for personal use by the acquirer, close relatives or relatives by marriage
     (Article 261 paragraphs 1 and 2 CO).</p>

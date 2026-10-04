@@ -4,7 +4,7 @@
                eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
                01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
                256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
-               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266i, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
                269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
                The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
                apply to leases of residential AND commercial premises (titles of the second and third sections); the
@@ -127,7 +127,8 @@
     della pigione iniziale, il conduttore non può contestare le pigioni scalari (art. 270d CO).</p>
   <p>Per il resto, il locatore può aumentare la pigione per la prossima scadenza di disdetta; deve comunicare,
     motivandolo, l'aumento al conduttore almeno 10 giorni prima dell'inizio del termine di preavviso su un modulo
-    approvato dal Cantone (art. 269d cpv. 1 CO), altrimenti l'aumento è nullo (art. 269d cpv. 2 CO). Il conduttore
+    approvato dal Cantone (art. 269d cpv. 1 CO). L'aumento è nullo se il locatore non lo comunica mediante il modulo
+    prescritto, non lo motiva o lo comunica con la minaccia di disdetta o dando la disdetta (art. 269d cpv. 2 CO). Il conduttore
     può contestare come abusivo un aumento della pigione innanzi l'autorità di conciliazione entro 30 giorni dalla sua
     comunicazione (art. 270b cpv. 1 CO) e domandare la riduzione della pigione alle condizioni
     dell'art. 270a CO.</p>
@@ -149,8 +150,10 @@
 </div>
 
 <div th:fragment="clause-vat" data-clause="vat">
-  <p>La messa a disposizione di fondi e di parti di fondi per l'uso o il godimento è esclusa dall'imposta sul valore
-    aggiunto (art. 21 cpv. 2 n. 21 LIVA). Il locatore contribuente può assoggettare all'imposta tale prestazione
+  <p>La messa a disposizione di fondi e di parti di fondi per l'uso o il godimento è esclusa dall'imposta sul valore aggiunto, fatte salve le prestazioni imponibili elencate alle lettere a-f
+    di tale disposizione, segnatamente la locazione, per il parcheggio di veicoli, di aree non destinate all'uso comune,
+    salvo se si tratta di una prestazione accessoria a una locazione di immobili esclusa dall'imposta
+    (art. 21 cpv. 2 n. 21 LIVA). Il locatore contribuente può assoggettare all'imposta tale prestazione
     indicando chiaramente l'imposta o dichiarandola nel rendiconto (opzione, art. 22 cpv. 1 LIVA); l'opzione è
     esclusa se il conduttore utilizza o intende utilizzare l'ente locato esclusivamente a scopo d'abitazione
     (art. 22 cpv. 2 lett. b LIVA).</p>
@@ -185,8 +188,9 @@
     <span th:text="${paymentFrequency}">al mese</span>,
     <span th:if="${paymentDueDay != null}">al più tardi il giorno <strong th:text="${paymentDueDay}">1</strong>
       di ciascun periodo di pagamento</span><span th:if="${paymentDueDay == null}">anticipatamente per il 1° giorno
-      di ciascun periodo di pagamento</span>, sul conto indicato per scritto dal locatore. Tale accordo prevale sulla
-    regola legale secondo cui la pigione deve essere pagata alla fine di ogni mese (art. 257c CO).</p>
+      di ciascun periodo di pagamento</span>, sul conto indicato per scritto dal locatore. Tale accordo prevale sulla regola legale secondo cui il conduttore è tenuto a pagare la
+    pigione e, se del caso, le spese accessorie alla fine di ogni mese, ma al più tardi alla fine della locazione, salvo
+    patto o usi locali contrari (art. 257c CO).</p>
   <p>Alla scadenza del termine di pagamento convenuto il conduttore è in mora senza diffida (art. 102 cpv. 2 CO) e
     deve interessi moratori del 5 per cento all'anno (art. 104 cpv. 1 CO).</p>
   <p>Quando, dopo la consegna della cosa, il conduttore sia in mora al pagamento della pigione o delle spese
@@ -255,8 +259,9 @@
     estende agli oggetti introdotti dal subconduttore nella misura in cui questi non abbia pagato la pigione
     (art. 268 cpv. 2 CO); sono esenti dal diritto di ritenzione gli oggetti che non potrebbero essere pignorati dai
     creditori del conduttore (art. 268 cpv. 3 CO).</p>
-  <p>I diritti dei terzi sulle cose che il locatore sapeva o doveva sapere non appartenere al conduttore prevalgono
-    sul diritto di ritenzione (art. 268a cpv. 1 CO). Se il conduttore vuole trasferirsi altrove o asportare le cose che
+  <p>I diritti dei terzi sulle cose che il locatore sapeva o doveva sapere non essere del conduttore, come pure quelli
+    sulle cose rubate, smarrite o di cui il possessore è stato altrimenti privato, prevalgono sul diritto di ritenzione
+    (art. 268a cpv. 1 CO). Se il conduttore vuole trasferirsi altrove o asportare le cose che
     si trovano nei locali locati, il locatore può, con l'assistenza dell'autorità competente, ritenere tante cose
     quante occorrono a coprire il suo credito (art. 268b cpv. 1 CO).</p>
 </div>
@@ -315,8 +320,9 @@
     determinato, al più tardi 60 giorni prima della scadenza del contratto (art. 273 cpv. 2 CO).</p>
   <p>Le disdette straordinarie sono rette dalla legge, segnatamente in caso di mora del conduttore (art. 257d CO), di
     grave violazione dell'obbligo di diligenza e di riguardo del conduttore (art. 257f cpv. 3 e 4 CO), per motivi
-    gravi che rendono incomportabile per una parte l'adempimento del contratto (art. 266g CO) e in caso di
-    fallimento del conduttore (art. 266h CO). Se il locatore aliena la cosa, la locazione passa all'acquirente;
+    gravi che rendono incomportabile per una parte l'adempimento del contratto (art. 266g CO), in caso di morte del conduttore, da parte dei suoi eredi
+    (art. 266i CO), e in caso di fallimento del conduttore dopo la consegna della cosa, se entro il congruo termine
+    assegnato non viene prestata la garanzia chiesta dal locatore per i corrispettivi futuri (art. 266h cpv. 1 e 2 CO). Se il locatore aliena la cosa, la locazione passa all'acquirente;
     questi può disdirla con il preavviso legale per la prossima scadenza legale se fa valere un urgente bisogno per sé
     o per i suoi stretti congiunti o affini (art. 261 cpv. 1 e 2 CO).</p>
   <p>Il conduttore che restituisce la cosa senza osservare i termini di preavviso o le scadenze è liberato dai suoi

@@ -4,7 +4,7 @@
                eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
                01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
                256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
-               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266i, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
                269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
                The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
                apply to leases of residential AND commercial premises (titles of the second and third sections); the
@@ -128,7 +128,9 @@
     Mietzinse nicht anfechten (Art. 270d OR).</p>
   <p>Im Übrigen kann der Vermieter den Mietzins auf den nächstmöglichen Kündigungstermin erhöhen; er muss dem Mieter
     die Mietzinserhöhung mindestens 10 Tage vor Beginn der Kündigungsfrist auf einem vom Kanton genehmigten Formular
-    mitteilen und begründen (Art. 269d Abs. 1 OR), andernfalls ist sie nichtig (Art. 269d Abs. 2 OR). Der Mieter
+    mitteilen und begründen (Art. 269d Abs. 1 OR). Die Mietzinserhöhung ist nichtig, wenn der Vermieter sie nicht
+    mit dem vorgeschriebenen Formular mitteilt, sie nicht begründet oder mit der Mitteilung die Kündigung androht
+    oder ausspricht (Art. 269d Abs. 2 OR). Der Mieter
     kann eine Mietzinserhöhung innert 30 Tagen, nachdem sie ihm mitgeteilt worden ist, bei der Schlichtungsbehörde
     als missbräuchlich anfechten (Art. 270b Abs. 1 OR) und unter den Voraussetzungen von Art. 270a OR die
     Herabsetzung des Mietzinses verlangen.</p>
@@ -148,8 +150,10 @@
 </div>
 
 <div th:fragment="clause-vat" data-clause="vat">
-  <p>Die Überlassung von Grundstücken und Grundstücksteilen zum Gebrauch oder zur Nutzung ist von der
-    Mehrwertsteuer ausgenommen (Art. 21 Abs. 2 Ziff. 21 MWSTG). Der steuerpflichtige Vermieter kann diese Leistung
+  <p>Die Überlassung von Grundstücken und Grundstücksteilen zum Gebrauch oder zur Nutzung ist von der Mehrwertsteuer ausgenommen, unter Vorbehalt der dort unter den Buchstaben a
+    bis f aufgeführten steuerbaren Leistungen, namentlich der Vermietung von nicht im Gemeingebrauch stehenden Plätzen
+    für das Abstellen von Fahrzeugen, ausser es handle sich um eine unselbstständige Nebenleistung zu einer von der
+    Steuer ausgenommenen Immobilienvermietung (Art. 21 Abs. 2 Ziff. 21 MWSTG). Der steuerpflichtige Vermieter kann diese Leistung
     durch offenen Ausweis der Steuer oder durch Deklaration in der Abrechnung versteuern (Option,
     Art. 22 Abs. 1 MWSTG); die Option ist ausgeschlossen, wenn der Mieter das Mietobjekt ausschliesslich für
     Wohnzwecke nutzt oder nutzen will (Art. 22 Abs. 2 Bst. b MWSTG).</p>
@@ -183,9 +187,9 @@
     <span th:text="${paymentFrequency}">monatlich</span>,
     <span th:if="${paymentDueDay != null}">jeweils spätestens am <strong th:text="${paymentDueDay}">1</strong>. Tag
       des jeweiligen Zahlungszeitraums</span><span th:if="${paymentDueDay == null}">jeweils im Voraus auf den 1. Tag
-      des jeweiligen Zahlungszeitraums</span>, auf das vom Vermieter schriftlich bezeichnete Konto. Diese
-    Vereinbarung geht der gesetzlichen Regel vor, wonach der Mietzins am Ende jedes Monats zu bezahlen ist
-    (Art. 257c OR).</p>
+      des jeweiligen Zahlungszeitraums</span>, auf das vom Vermieter schriftlich bezeichnete Konto. Diese Vereinbarung geht der gesetzlichen Regel vor, wonach der Mieter den Mietzins und allenfalls die
+    Nebenkosten am Ende jedes Monats, spätestens aber am Ende der Mietzeit bezahlen muss, wenn kein anderer Zeitpunkt
+    vereinbart oder ortsüblich ist (Art. 257c OR).</p>
   <p>Mit dem Ablauf des vereinbarten Zahlungstermins kommt der Mieter ohne Mahnung in Verzug (Art. 102 Abs. 2 OR)
     und schuldet Verzugszinse zu 5 Prozent für das Jahr (Art. 104 Abs. 1 OR).</p>
   <p>Ist der Mieter nach der Übernahme der Sache mit der Zahlung fälliger Mietzinse oder Nebenkosten im Rückstand,
@@ -258,7 +262,8 @@
     Mietzins nicht bezahlt hat (Art. 268 Abs. 2 OR); ausgeschlossen ist es an Sachen, die durch die Gläubiger des
     Mieters nicht gepfändet werden könnten (Art. 268 Abs. 3 OR).</p>
   <p>Die Rechte Dritter an Sachen, von denen der Vermieter wusste oder wissen musste, dass sie nicht dem Mieter
-    gehören, gehen dem Retentionsrecht vor (Art. 268a Abs. 1 OR). Will der Mieter wegziehen oder die in den
+    gehören, sowie an gestohlenen, verlorenen oder sonstwie abhanden gekommenen Sachen gehen dem Retentionsrecht vor
+    (Art. 268a Abs. 1 OR). Will der Mieter wegziehen oder die in den
     gemieteten Räumen befindlichen Sachen fortschaffen, so kann der Vermieter mit Hilfe der zuständigen Amtsstelle so
     viele Gegenstände zurückhalten, als zur Deckung seiner Forderung notwendig sind (Art. 268b Abs. 1 OR).</p>
 </div>
@@ -317,8 +322,9 @@
     spätestens 60 Tage vor Ablauf der Vertragsdauer einzureichen (Art. 273 Abs. 2 OR).</p>
   <p>Ausserordentliche Kündigungen richten sich nach dem Gesetz, namentlich bei Zahlungsrückstand des Mieters
     (Art. 257d OR), bei schwerer Verletzung der Pflicht zu Sorgfalt und Rücksichtnahme (Art. 257f Abs. 3 und 4 OR),
-    aus wichtigen Gründen, welche die Vertragserfüllung für eine Partei unzumutbar machen (Art. 266g OR), und bei
-    Konkurs des Mieters (Art. 266h OR). Veräussert der Vermieter die Sache, so geht das Mietverhältnis auf den
+    aus wichtigen Gründen, welche die Vertragserfüllung für eine Partei unzumutbar machen (Art. 266g OR), beim Tod des Mieters durch seine Erben (Art. 266i OR)
+    und bei Konkurs des Mieters nach der Übernahme der Sache, wenn die vom Vermieter für künftige Mietzinse verlangte
+    Sicherheit nicht innert der gesetzten angemessenen Frist geleistet wird (Art. 266h Abs. 1 und 2 OR). Veräussert der Vermieter die Sache, so geht das Mietverhältnis auf den
     Erwerber über; dieser kann es mit der gesetzlichen Frist auf den nächsten gesetzlichen Termin kündigen, wenn er
     einen dringenden Eigenbedarf für sich, nahe Verwandte oder Verschwägerte geltend macht
     (Art. 261 Abs. 1 und 2 OR).</p>
