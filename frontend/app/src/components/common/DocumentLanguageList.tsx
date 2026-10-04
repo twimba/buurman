@@ -47,40 +47,42 @@ export const DocumentLanguageList = ({
         {t('documentDownload.language')}
       </div>
       <div className="min-h-0 max-h-72 overflow-y-auto px-2">
-        {orderDocumentLanguages(uiLanguage, languages).map(({ code, label }) => {
-          const isCurrent = code === uiLanguage;
-          const isSelected = code === highlighted;
-          const isPending = pendingCode === code;
-          return (
-            <button
-              key={code}
-              type="button"
-              role={mode === 'select' ? 'menuitemradio' : 'menuitem'}
-              aria-checked={mode === 'select' ? isSelected : undefined}
-              onClick={() => onSelect(code)}
-              disabled={disabled}
-              className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-60 ${
-                isSelected
-                  ? 'text-primary-600 dark:text-primary-300 font-medium hover:bg-primary-50 dark:hover:bg-primary-500/10'
-                  : 'text-text-primary hover:bg-surface-inset'
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                {label}
-                {isCurrent && (
-                  <span className="text-[10px] font-normal uppercase tracking-wide text-text-muted">
-                    {t('documentDownload.yourLanguage')}
-                  </span>
+        {orderDocumentLanguages(uiLanguage, languages).map(
+          ({ code, label }) => {
+            const isCurrent = code === uiLanguage;
+            const isSelected = code === highlighted;
+            const isPending = pendingCode === code;
+            return (
+              <button
+                key={code}
+                type="button"
+                role={mode === 'select' ? 'menuitemradio' : 'menuitem'}
+                aria-checked={mode === 'select' ? isSelected : undefined}
+                onClick={() => onSelect(code)}
+                disabled={disabled}
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors disabled:opacity-60 ${
+                  isSelected
+                    ? 'text-primary-600 dark:text-primary-300 font-medium hover:bg-primary-50 dark:hover:bg-primary-500/10'
+                    : 'text-text-primary hover:bg-surface-inset'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  {label}
+                  {isCurrent && (
+                    <span className="text-[10px] font-normal uppercase tracking-wide text-text-muted">
+                      {t('documentDownload.yourLanguage')}
+                    </span>
+                  )}
+                </span>
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-text-muted" />
+                ) : (
+                  isSelected && <Check className="h-4 w-4 text-primary-500" />
                 )}
-              </span>
-              {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin text-text-muted" />
-              ) : (
-                isSelected && <Check className="h-4 w-4 text-primary-500" />
-              )}
-            </button>
-          );
-        })}
+              </button>
+            );
+          }
+        )}
       </div>
     </div>
   );

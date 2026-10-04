@@ -441,10 +441,12 @@ describe('ContractLeaseAgreementTab', () => {
 
       it('offers only the languages the envelope lists, with the hint', async () => {
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
-            'it',
-            'en',
-          ])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'IT',
+            ['it', 'en']
+          )
         );
         await renderTab();
 
@@ -464,10 +466,12 @@ describe('ContractLeaseAgreementTab', () => {
       it('defaults to the UI language when a document exists in it', async () => {
         await i18n.changeLanguage('it');
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
-            'it',
-            'en',
-          ])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'IT',
+            ['it', 'en']
+          )
         );
         const generateSpy = vi
           .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
@@ -486,10 +490,12 @@ describe('ContractLeaseAgreementTab', () => {
       it("defaults to the country's first listed language when the UI language has no document", async () => {
         await i18n.changeLanguage('pt');
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
-            'it',
-            'en',
-          ])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'IT',
+            ['it', 'en']
+          )
         );
         const generateSpy = vi
           .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
@@ -515,10 +521,12 @@ describe('ContractLeaseAgreementTab', () => {
 
       it('generates in a listed language picked in the picker', async () => {
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'PT', [
-            'pt',
-            'en',
-          ])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'PT',
+            ['pt', 'en']
+          )
         );
         const generateSpy = vi
           .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
@@ -542,9 +550,12 @@ describe('ContractLeaseAgreementTab', () => {
       it('leaves nothing to choose when a single language exists', async () => {
         await i18n.changeLanguage('de');
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'CZ', [
-            'en',
-          ])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'CZ',
+            ['en']
+          )
         );
         const generateSpy = vi
           .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
@@ -566,17 +577,26 @@ describe('ContractLeaseAgreementTab', () => {
         );
         await renderTab();
 
-        expect(screen.queryByText(/exist only in the languages shown/)).toBeNull();
+        expect(
+          screen.queryByText(/exist only in the languages shown/)
+        ).toBeNull();
       });
 
       it('offers every language when the envelope lists none', async () => {
         vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
-          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'NL', [])
+          documentEnvelope(
+            CLAUSES,
+            LeaseAvailability.AVAILABLE_DOCUMENT,
+            'NL',
+            []
+          )
         );
         await renderTab();
 
         expect(await openPicker('English')).toHaveLength(13);
-        expect(screen.queryByText(/exist only in the languages shown/)).toBeNull();
+        expect(
+          screen.queryByText(/exist only in the languages shown/)
+        ).toBeNull();
       });
     });
   });

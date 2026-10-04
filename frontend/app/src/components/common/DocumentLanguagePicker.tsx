@@ -32,41 +32,41 @@ export const DocumentLanguagePicker = ({
   languages,
 }: DocumentLanguagePickerProps) => {
   const { i18n } = useTranslation('common');
-  const { open, setOpen, triggerRef, popoverRef, popoverStyle } = useAnchoredPopover('left');
+  const { open, setOpen, triggerRef, popoverRef, popoverStyle } =
+    useAnchoredPopover('left');
   const valueLabel = documentLanguageLabel(value);
 
-  const popover =
-    open
-      ? createPortal(
-          <>
-            <div
-              className="fixed inset-0 z-[9998]"
-              onClick={() => setOpen(false)}
-              aria-hidden="true"
+  const popover = open
+    ? createPortal(
+        <>
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            role="menu"
+            aria-label={label}
+            className="fixed w-72 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+            ref={popoverRef}
+            style={popoverStyle}
+          >
+            <DocumentLanguageList
+              uiLanguage={baseLanguage(i18n.language)}
+              selected={value}
+              languages={languages}
+              mode="select"
+              divided={false}
+              onSelect={(code) => {
+                onChange(code);
+                setOpen(false);
+              }}
             />
-            <div
-              role="menu"
-              aria-label={label}
-              className="fixed w-72 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
-              ref={popoverRef}
-              style={popoverStyle}
-            >
-              <DocumentLanguageList
-                uiLanguage={baseLanguage(i18n.language)}
-                selected={value}
-                languages={languages}
-                mode="select"
-                divided={false}
-                onSelect={(code) => {
-                  onChange(code);
-                  setOpen(false);
-                }}
-              />
-            </div>
-          </>,
-          document.body
-        )
-      : null;
+          </div>
+        </>,
+        document.body
+      )
+    : null;
 
   return (
     <div ref={triggerRef}>

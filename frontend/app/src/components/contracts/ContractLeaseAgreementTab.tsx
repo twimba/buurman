@@ -366,14 +366,13 @@ export const ContractLeaseAgreementTab = ({
               ? t('leaseAgreement.saveAndGenerate')
               : t('leaseAgreement.generate')}
           </Button>
-          {isLimited &&
-            offeredLanguages.length < DOCUMENT_LANGUAGES.length && (
-              <p className="basis-full text-xs text-text-muted">
-                {t('leaseAgreement.languagesLimited', {
-                  country: countryName,
-                })}
-              </p>
-            )}
+          {isLimited && offeredLanguages.length < DOCUMENT_LANGUAGES.length && (
+            <p className="basis-full text-xs text-text-muted">
+              {t('leaseAgreement.languagesLimited', {
+                country: countryName,
+              })}
+            </p>
+          )}
         </div>
       )}
     </div>

@@ -28,7 +28,8 @@ export const DocumentDownloadMenu = ({
 }: DocumentDownloadMenuProps) => {
   const { t, i18n } = useTranslation('common');
   const { showToast } = useToast();
-  const { open, setOpen, triggerRef, popoverRef, popoverStyle } = useAnchoredPopover();
+  const { open, setOpen, triggerRef, popoverRef, popoverStyle } =
+    useAnchoredPopover();
   const [docType, setDocType] = useState<DocType>('booklet');
   const [downloadingLang, setDownloadingLang] = useState<string | null>(null);
 
@@ -56,61 +57,60 @@ export const DocumentDownloadMenu = ({
     { key: 'summary', icon: FileText },
   ];
 
-  const popover =
-    open
-      ? createPortal(
-          <>
-            <div
-              className="fixed inset-0 z-[9998]"
-              onClick={() => setOpen(false)}
-              aria-hidden="true"
-            />
-            <div
-              role="menu"
-              aria-label={t('documentDownload.title')}
-              className="fixed w-80 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
-              ref={popoverRef}
-              style={popoverStyle}
-            >
-              {/* Document-type chooser */}
-              <div className="p-3 pb-2">
-                <div className="grid grid-cols-2 gap-1 p-1 bg-surface-inset rounded-lg">
-                  {types.map(({ key, icon: Icon }) => {
-                    const active = docType === key;
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setDocType(key)}
-                        aria-pressed={active}
-                        className={`flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                          active
-                            ? 'bg-surface-card text-text-primary shadow-sm'
-                            : 'text-text-secondary hover:text-text-primary'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {t(`documentDownload.${key}.label`)}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="text-xs text-text-secondary mt-2 px-1">
-                  {t(`documentDownload.${docType}.description`)}
-                </p>
+  const popover = open
+    ? createPortal(
+        <>
+          <div
+            className="fixed inset-0 z-[9998]"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            role="menu"
+            aria-label={t('documentDownload.title')}
+            className="fixed w-80 bg-surface-card rounded-xl shadow-xl border border-border-default z-[9999] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-100"
+            ref={popoverRef}
+            style={popoverStyle}
+          >
+            {/* Document-type chooser */}
+            <div className="p-3 pb-2">
+              <div className="grid grid-cols-2 gap-1 p-1 bg-surface-inset rounded-lg">
+                {types.map(({ key, icon: Icon }) => {
+                  const active = docType === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setDocType(key)}
+                      aria-pressed={active}
+                      className={`flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                        active
+                          ? 'bg-surface-card text-text-primary shadow-sm'
+                          : 'text-text-secondary hover:text-text-primary'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {t(`documentDownload.${key}.label`)}
+                    </button>
+                  );
+                })}
               </div>
-
-              <DocumentLanguageList
-                uiLanguage={currentLang}
-                pendingCode={downloadingLang}
-                disabled={downloadingLang !== null}
-                onSelect={handleDownload}
-              />
+              <p className="text-xs text-text-secondary mt-2 px-1">
+                {t(`documentDownload.${docType}.description`)}
+              </p>
             </div>
-          </>,
-          document.body
-        )
-      : null;
+
+            <DocumentLanguageList
+              uiLanguage={currentLang}
+              pendingCode={downloadingLang}
+              disabled={downloadingLang !== null}
+              onSelect={handleDownload}
+            />
+          </div>
+        </>,
+        document.body
+      )
+    : null;
 
   return (
     <div ref={triggerRef}>
