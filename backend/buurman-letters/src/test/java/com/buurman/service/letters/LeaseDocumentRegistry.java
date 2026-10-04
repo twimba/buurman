@@ -594,6 +594,82 @@ public final class LeaseDocumentRegistry {
   // ===== CZ entries (country pack) =====
   // Constants, citation pattern and foreign markers for CZ go here, only inside these markers.
 
+  /**
+   * The Czech statute citation format as written in the English CZ documents: the section number
+   * after "section(s)", with an optional letter suffix and the paragraph in parentheses glued to
+   * it: {@code section 2249(1)}, {@code section 2282a}, {@code section 7a(2)} (Czech "§ 2249 odst.
+   * 1"). CZ is English only (no translation is compared), so the pattern only documents the format
+   * for the fidelity gate should a translation ever be added.
+   */
+  public static final Pattern CZECH_CITATION =
+      Pattern.compile(
+          "(?<=\\bsections?\\s{1,20})\\d+[a-z]?(?:\\(\\d+\\))?", Pattern.CASE_INSENSITIVE);
+
+  /**
+   * Mirror of V109__seed_cz_lease_clauses.sql (RESIDENTIAL rows). English only: Czech is not a
+   * document language, so English is the only (and authoritative) document; no foreign markers.
+   */
+  private static final Entry CZ_RESIDENTIAL =
+      new Entry(
+          "CZ",
+          LeaseKind.RESIDENTIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("succession", false, false, 14),
+              new ClauseSpec("termination", true, false, 15),
+              new ClauseSpec("notices", false, false, 16),
+              new ClauseSpec("data-protection", false, false, 17),
+              new ClauseSpec("disputes", false, false, 18)),
+          List.of(),
+          Optional.of(CZECH_CITATION));
+
+  /** Mirror of V109__seed_cz_lease_clauses.sql (COMMERCIAL rows). English only. */
+  private static final Entry CZ_COMMERCIAL =
+      new Entry(
+          "CZ",
+          LeaseKind.COMMERCIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("assignment", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("goodwill-compensation", false, false, 17),
+              new ClauseSpec("handover-inspection", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("notices", false, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          List.of(),
+          Optional.of(CZECH_CITATION));
+
   // ===== end CZ =====
 
   // ===== DK entries (country pack) =====
@@ -689,6 +765,8 @@ public final class LeaseDocumentRegistry {
     // ===== end CH ENTRIES =====
 
     // ===== CZ ENTRIES (country pack) =====
+    entries.add(CZ_RESIDENTIAL);
+    entries.add(CZ_COMMERCIAL);
 
     // ===== end CZ ENTRIES =====
 
