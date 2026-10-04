@@ -1,0 +1,359 @@
+<!--
+  legal-basis: Canadian commercial tenancy law is provincial and territorial; the province is read from the contract
+               region (catalog codes AB, BC, MB, NB, NL, NS, NT, NU, ON, PE, QC, SK, YT). This document has branches
+               for Ontario (ON), Quebec (QC) and British Columbia (BC) and a general text for every other province or
+               territory and for an unknown region. Commercial rents are not subject to the residential rent rules.
+               Ontario: Commercial Tenancies Act, R.S.O. 1990, c. L.7 (e-Laws consolidation from 2022-12-08, last
+               amendment 2021, c. 4, Sched. 11): s. 18 (re-entry where rent unpaid for 15 days, unless otherwise
+               agreed), 19 (notice before re-entry or forfeiture for breaches other than non-payment of rent), 20
+               (relief against forfeiture), 23 (consent to assign or sublet not to be unreasonably withheld unless
+               the lease expressly provides otherwise), 27 (local improvement taxes), 28, 30 and 43 (distress).
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991, arts. 1851-1891 (lease in general; arts. 1892-2000 on
+               the lease of a dwelling do not apply to premises let for business): 1851, 1854, 1855, 1856, 1857,
+               1863, 1864, 1866, 1870-1873, 1877-1883, 1885-1887 (lease inscribed in the land register), 1890, 1891
+               (text updated 2026-09-22 as read on ccq.lexum.com).
+               British Columbia: Commercial Tenancy Act, RSBC 1996, c. 57 and Rent Distress Act, RSBC 1996, c. 403
+               (both current to 2026-09-22 on bclaws.gov.bc.ca); the Residential Tenancy Act does not apply.
+               Federal: Interest Act, R.S.C. 1985, c. I-15, s. 4 (current to 2026-09-21 on laws-lois.justice.gc.ca);
+               goods and services tax / harmonized sales tax under the Excise Tax Act and Quebec sales tax - stated
+               generally, listed as unverified in the pack report. Privacy: Personal Information Protection and
+               Electronic Documents Act; Act respecting the protection of personal information in the private sector
+               (Quebec); Personal Information Protection Act (British Columbia) - unverified.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com,
+               laws-lois.justice.gc.ca. The temporary federal commercial rent relief programs of 2020-2021 have ended
+               and are not reflected.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out ("15 days",
+               never "fifteen days"); checked by the number-word lint and, for fr.html, by the fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Traduction de courtoisie en français de en.html; le texte anglais fait foi. Elle expose en français le droit de la
+  location commerciale des provinces et territoires du Canada nommés ci-dessus et non le droit d'un autre pays.
+  Projet non validé par un juriste. Seule la prose diffère de en.html : fragments, expressions et attributs th: sont
+  identiques (contrôlé par LeaseDocumentFidelityTest). Chaque fragment clause-<key> ne contient que le corps de la
+  clause; le gabarit fournit les numéros et les titres des articles. Les renvois utilisent refs['key'] et
+  disparaissent si la clause est exclue. Ne jamais coder en dur les numéros d'article du présent bail.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Le présent bail est conclu entre</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, ci-après &laquo;&nbsp;le locateur&nbsp;&raquo;,</p>
+  <p>autorité législative et numéro de constitution ou d&rsquo;immatriculation : ______________________________</p>
+  <p>numéro d&rsquo;entreprise (NE) : ______________________________</p>
+  <p>numéro d&rsquo;inscription aux fins de la TPS/TVH : ______________________________ numéro
+    d&rsquo;inscription aux fins de la TVQ (Québec) : ______________________________</p>
+  <p>représenté par : ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, ci-après
+    (conjointement) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les locataires soussignés, ci-après (conjointement)
+    &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p>autorité législative et numéro de constitution ou d&rsquo;immatriculation : ______________________________</p>
+  <p>numéro d&rsquo;entreprise (NE) : ______________________________</p>
+  <p>numéro d&rsquo;inscription aux fins de la TPS/TVH : ______________________________ numéro
+    d&rsquo;inscription aux fins de la TVQ (Québec) : ______________________________</p>
+  <p>représenté par : ______________________________.</p>
+  <p>Lorsque le locataire est constitué de plusieurs personnes, chacune d&rsquo;elles est tenue solidairement de toutes
+    les obligations du locataire découlant du présent bail.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Lorsque les lieux sont situés au Québec, les termes
+    &laquo;&nbsp;locateur&nbsp;&raquo; et &laquo;&nbsp;locataire&nbsp;&raquo; ont le sens que leur donne le Code
+    civil du Québec.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le locateur loue au locataire les lieux situés au <strong th:text="${propertyAddress}">address</strong>,
+    d&rsquo;une superficie locative d&rsquo;environ ________ m&sup2; selon le plan joint au présent bail, ci-après
+    &laquo;&nbsp;les lieux&nbsp;&raquo;, avec le droit d&rsquo;utiliser les aires communes de l&rsquo;immeuble pour y
+    accéder et les autres droits suivants : ______________________________</p>
+  <p>Les lieux sont loués à des fins commerciales et non à titre de logement.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, le présent bail est régi par la Loi sur la
+    location commerciale et par le droit général des contrats, et non par la Loi de 2006 sur la location à usage
+    d&rsquo;habitation.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le présent bail est régi par les articles 1851 à
+    1891 du Code civil du Québec relatifs au louage en général; les règles particulières au bail d&rsquo;un logement
+    (articles 1892 à 2000) ne s&rsquo;y appliquent pas.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, le présent bail est régi par le
+    Commercial Tenancy Act (loi sur la location commerciale), le Rent Distress Act (loi sur la saisie-gagerie pour
+    loyer) et le droit général, et non par le Residential Tenancy Act.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Au
+    Canada, les baux commerciaux sont régis par le droit de la province ou du territoire où se trouvent les lieux; la
+    législation de cette province ou de ce territoire sur la location résidentielle ne s&rsquo;applique pas aux lieux
+    loués à des fins commerciales. Les parties doivent vérifier ce droit avant de signer.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Le locataire utilise les lieux uniquement pour l&rsquo;activité suivante : ______________________________, et à
+    aucune autre fin sans le consentement écrit préalable du locateur.</p>
+  <p>Le locateur ne garantit pas que l&rsquo;usage permis est autorisé par les règlements de zonage ou par une autre
+    règle de droit. Le locataire obtient à ses frais tous les permis, licences et autorisations nécessaires à son
+    activité et se conforme à toutes les lois et à tous les règlements qui s&rsquo;y rapportent.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, ni le locateur ni le locataire ne peuvent, au
+    cours du bail, changer la forme ou la destination du bien loué (article 1856 du Code civil du Québec).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail commence le <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">Le bail est conclu pour une durée fixe<span th:if="${endDate != null}"> prenant fin le
+    <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Le bail est à durée indéterminée et se poursuit jusqu&rsquo;à ce qu&rsquo;il y soit mis fin
+    par avis conformément au présent bail et à la loi.</p>
+  <p>Option de renouvellement (le cas échéant) : le locataire peut renouveler le présent bail pour ________ durée(s)
+    supplémentaire(s) de ________ ans chacune, aux conditions du présent bail sauf le loyer, qui est fixé comme suit :
+    ______________________________, en donnant au locateur un avis écrit au plus tard ________ mois avant la fin de
+    la durée en cours et pourvu qu&rsquo;il ne soit pas en défaut.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le bail à durée fixe cesse de plein droit à
+    l&rsquo;arrivée du terme (article 1877 du Code civil du Québec). Il est reconduit tacitement lorsque le locataire
+    continue, sans opposition de la part du locateur, d&rsquo;occuper les lieux plus de 10 jours après
+    l&rsquo;expiration du bail; il est alors reconduit pour 1 an ou, si la durée du bail initial était inférieure à
+    1 an, pour cette durée, aux mêmes conditions (article 1879). La sûreté consentie par un tiers ne s&rsquo;étend pas
+    au bail reconduit (article 1881).</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">À moins que le droit de la province ou du territoire où
+    se trouvent les lieux n&rsquo;en dispose autrement, le locataire n&rsquo;a aucun droit de demeurer dans les lieux ni
+    droit à un nouveau bail à la fin de la durée, sauf en vertu de l&rsquo;option de renouvellement du présent
+    bail.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer de base est de <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>, plus les taxes de vente applicables.<span class="clause-ref"
+    data-ref="additional-rent" th:if="${refs['additional-rent']}"> Le locataire paie également un loyer additionnel
+    (voir l&rsquo;article <span th:text="${refs['additional-rent']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Les modifications du loyer de
+    base obéissent aux stipulations du présent bail (voir l&rsquo;article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-additional-rent" data-clause="additional-rent">
+  <p>En plus du loyer de base, le locataire paie à titre de loyer additionnel sa quote-part de ________ pour cent des
+    frais d&rsquo;exploitation de l&rsquo;immeuble et des aires communes, des impôts fonciers établis sur les lieux ou
+    sur l&rsquo;immeuble et des frais d&rsquo;assurance du locateur, tels que définis dans une annexe du présent
+    bail.</p>
+  <p>Le locateur estime le loyer additionnel pour chaque année du bail; le locataire paie cette estimation par
+    versements égaux avec le loyer de base. Dans les ________ jours qui suivent la fin de chaque année du bail, le
+    locateur remet au locataire un relevé des frais réels, et les parties règlent la différence dans les 30 jours qui
+    suivent ce relevé.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, sauf disposition expresse contraire du bail,
+    l&rsquo;engagement d&rsquo;un locataire de payer les impôts ne comprend pas les impôts établis pour des
+    aménagements locaux (article 27, paragraphe 1, de la Loi sur la location commerciale). En vertu du présent bail,
+    le locataire [ ] paie [ ] ne paie pas sa quote-part des impôts établis pour des aménagements locaux.</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Le loyer de base est ajusté comme suit (cocher 1 case) : [ ] selon les montants ou paliers fixes suivants :
+    ______________________________; [ ] à chaque anniversaire de la date de début, selon la variation en pourcentage
+    de l&rsquo;indice des prix à la consommation publié par Statistique Canada pour ________ au cours des 12 mois
+    précédents; [ ] aux dates suivantes, au loyer du marché convenu par les parties ou, à défaut d&rsquo;accord dans
+    les 30 jours, fixé par un arbitre : ______________________________</p>
+  <p th:if="${countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC')}">Les limites
+    d&rsquo;augmentation de loyer et les règles d&rsquo;avis applicables à la location résidentielle dans cette
+    province ne s&rsquo;appliquent pas aux lieux loués à des fins commerciales; le loyer de base ne varie que selon ce
+    que prévoit le présent bail.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le loyer
+    de base ne varie que selon ce que prévoit le présent bail, à moins que le droit de la province ou du territoire où
+    se trouvent les lieux n&rsquo;en dispose autrement.</p>
+</div>
+
+<div th:fragment="clause-sales-tax" data-clause="sales-tax">
+  <p>Le loyer de base et le loyer additionnel s&rsquo;entendent hors taxe sur les produits et services ou taxe de vente
+    harmonisée (TPS/TVH) et, au Québec, hors taxe de vente du Québec (TVQ). Lorsque le loyer constitue une fourniture
+    taxable et que le locateur est un inscrit, le locataire paie ces taxes au taux applicable en plus du loyer, aux
+    mêmes dates que le loyer, sur présentation d&rsquo;une facture ou d&rsquo;un relevé indiquant les numéros
+    d&rsquo;inscription du locateur.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p>Pour garantir l&rsquo;exécution de ses obligations, le locataire remet au locateur un dépôt de garantie<span
+    th:if="${depositAmount != null}"> de <strong th:text="${depositAmount}">amount</strong></span> à la signature du
+    présent bail. Le locateur peut imputer le dépôt sur toute somme que le locataire lui doit en vertu du présent bail
+    et, dans ce cas, le locataire reconstitue le dépôt dans les 10 jours d&rsquo;une demande écrite. Le locateur
+    restitue le dépôt, sans intérêts sauf convention contraire et déduction faite de toute somme due par le locataire,
+    dans les 30 jours qui suivent la fin du bail et la remise des lieux.</p>
+  <p th:if="${countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC')}">Les limites
+    légales des dépôts applicables à la location résidentielle dans cette province (en Ontario le dépôt de loyer, au
+    Québec l&rsquo;interdiction de tout dépôt, en Colombie-Britannique le plafond de 1/2 de 1 mois de loyer) ne
+    s&rsquo;appliquent pas aux lieux loués à des fins commerciales.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le locataire paie le loyer de base, le loyer additionnel et les taxes applicables<span class="clause-ref"
+    data-ref="rent" th:if="${refs['rent']}"> (voir l&rsquo;article <span th:text="${refs['rent']}"></span>)</span>
+    <span th:text="${paymentFrequency}">monthly</span> d&rsquo;avance,
+    <span th:if="${paymentDueDay != null}">le jour <strong th:text="${paymentDueDay}">1</strong> de chaque période de
+      loyer</span><span th:if="${paymentDueDay == null}">le jour convenu par les parties</span>, selon le mode
+    suivant : ______________________________, sans déduction ni compensation, sauf dans la mesure exigée par la
+    loi.</p>
+  <p>Toute somme non payée à l&rsquo;échéance porte intérêt depuis la date d&rsquo;échéance jusqu&rsquo;au paiement au
+    taux annuel de ________ pour cent. Selon l&rsquo;article 4 de la Loi sur l&rsquo;intérêt (Canada), l&rsquo;intérêt
+    qu&rsquo;un contrat écrit rend payable à un taux calculé pour une période de moins de 1 an est limité, à moins que
+    le contrat n&rsquo;énonce expressément le taux annuel équivalent.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le locateur répare et entretient la structure, la toiture, les fondations et les systèmes de base de
+    l&rsquo;immeuble qui desservent les lieux. Le locataire répare et entretient l&rsquo;intérieur des lieux, ses
+    améliorations locatives et les systèmes qui desservent exclusivement les lieux, sauf l&rsquo;usure normale et les
+    dommages couverts par l&rsquo;assurance du locateur, et avise promptement le locateur par écrit de toute
+    défectuosité importante.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, à défaut de convention différente, le locateur
+    fait au cours du bail toutes les réparations nécessaires, à l&rsquo;exception des menues réparations
+    d&rsquo;entretien, qui sont à la charge du locataire à moins qu&rsquo;elles ne résultent de la vétusté ou
+    d&rsquo;une force majeure (article 1864 du Code civil du Québec); le locataire qui a connaissance d&rsquo;une
+    défectuosité ou d&rsquo;une détérioration substantielles est tenu d&rsquo;en aviser le locateur dans un délai
+    raisonnable (article 1866).</p>
+  <p>Le locateur peut entrer dans les lieux à des heures raisonnables et, sauf urgence, moyennant un préavis
+    d&rsquo;au moins 24 heures, pour les inspecter, y effectuer des réparations ou les faire visiter à des locataires,
+    acquéreurs ou prêteurs éventuels.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Le locataire n&rsquo;apporte aucune modification, amélioration ou installation aux lieux sans le consentement
+    écrit préalable du locateur, que celui-ci ne peut refuser de façon déraisonnable pour des travaux non structuraux.
+    Le locataire exécute les travaux approuvés à ses frais, par des entrepreneurs qualifiés, avec tous les permis
+    requis et de manière qu&rsquo;aucune hypothèque légale ou privilège de construction ne soit inscrit contre
+    l&rsquo;immeuble.</p>
+  <p>À la fin du bail, le locataire enlève ses installations commerciales et, si le locateur l&rsquo;exige, les
+    améliorations qu&rsquo;il a faites, et remet les lieux en état, sauf l&rsquo;usure normale.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locataire est tenu, à la fin du bail,
+    d&rsquo;enlever les constructions, ouvrages ou plantations qu&rsquo;il a faits (article 1891 du Code civil du
+    Québec), sauf convention contraire.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Le locataire ne peut céder le présent bail, sous-louer tout ou partie des lieux ni autrement se départir de leur
+    possession sans le consentement écrit préalable du locateur, qui ne peut être refusé de façon déraisonnable. Un
+    changement de contrôle d&rsquo;un locataire qui est une personne morale est assimilé à une cession : [ ] oui
+    [ ] non.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, l&rsquo;engagement de ne pas céder ni sous-louer
+    sans consentement est réputé assorti d&rsquo;une condition selon laquelle le consentement ne doit pas être refusé
+    de façon déraisonnable, à moins que le bail ne contienne une disposition expresse contraire; si le locateur refuse
+    ou néglige de donner son consentement, le locataire peut demander à un juge de la Cour supérieure de justice de
+    rendre une ordonnance établissant si le consentement est refusé de façon déraisonnable (article 23, paragraphes 1
+    et 2, de la Loi sur la location commerciale).</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Au Québec, le locataire doit aviser le locateur de son intention de sous-louer ou de céder, lui indiquer le nom
+      et l&rsquo;adresse du sous-locataire ou du cessionnaire envisagé et obtenir son consentement (article 1870 du Code
+      civil du Québec). Le locateur ne peut refuser son consentement sans un motif sérieux et doit indiquer les motifs
+      de son refus dans les 15 jours de la réception de l&rsquo;avis, faute de quoi il est réputé avoir consenti
+      (article 1871); il ne peut exiger que le remboursement des dépenses raisonnables résultant de la sous-location ou
+      de la cession (article 1872).</p>
+    <p>La cession de bail décharge l&rsquo;ancien locataire de ses obligations, à moins que les parties n&rsquo;aient
+      convenu autrement (article 1873). Les parties conviennent qu&rsquo;en cas de cession le locataire (cocher 1 case)
+      : [ ] est libéré; [ ] demeure tenu avec le cessionnaire.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC'))}">Sauf convention écrite contraire
+    des parties, le locataire demeure tenu des obligations découlant du présent bail après une cession.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Le locataire maintient pendant le bail, à ses frais, une assurance de responsabilité civile générale des
+    entreprises d&rsquo;au moins ______________________________ par sinistre désignant le locateur comme assuré
+    additionnel, ainsi qu&rsquo;une assurance de biens tous risques sur ses stocks, son équipement, ses installations
+    commerciales et ses améliorations locatives pour leur pleine valeur de remplacement. Le locateur assure
+    l&rsquo;immeuble contre tous risques pour sa valeur de remplacement.</p>
+  <p>Le locataire remet au locateur un certificat d&rsquo;assurance sur demande et au moins 10 jours avant toute
+    modification ou résiliation d&rsquo;une police.</p>
+</div>
+
+<div th:fragment="clause-indemnity" data-clause="indemnity">
+  <p>Le locataire indemnise le locateur de toutes réclamations, pertes et dépenses découlant de l&rsquo;usage ou de
+    l&rsquo;occupation des lieux par le locataire, d&rsquo;un manquement du locataire au présent bail ou des actes ou
+    omissions du locataire et des personnes dont il répond en droit, sauf dans la mesure où ils sont causés par la
+    négligence ou la faute intentionnelle du locateur ou des personnes dont celui-ci répond en droit.</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, les droits résultant du bail peuvent être publiés
+    (article 1852 du Code civil du Québec). S&rsquo;il reste à courir plus de 12 mois d&rsquo;un bail immobilier à durée
+    fixe à compter de l&rsquo;aliénation du bien, l&rsquo;acquéreur peut résilier le bail à l&rsquo;expiration de ces
+    12 mois en donnant par écrit un préavis de 6 mois au locataire, à moins que le bail n&rsquo;ait été inscrit au
+    bureau de la publicité des droits avant l&rsquo;acte d&rsquo;aliénation (article 1887). Le locataire peut faire
+    inscrire à ses frais le présent bail ou un avis de celui-ci.</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">Le locataire peut enregistrer un avis du présent bail,
+    mais non le bail lui-même, à l&rsquo;égard du titre de propriété lorsque le droit de l&rsquo;enregistrement
+    immobilier de la province ou du territoire où se trouvent les lieux le permet; le locateur signe tout document
+    raisonnablement requis à cette fin, et le locataire en paie les frais et radie l&rsquo;enregistrement à la fin du
+    bail.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Le locateur et le locataire constatent par écrit l&rsquo;état des lieux lorsque le locataire en prend possession et
+    lorsqu&rsquo;il les remet; chacun signe le constat et en conserve une copie.</p>
+  <p>À la fin du bail, le locataire remet les lieux propres et dans l&rsquo;état constaté au début, sauf l&rsquo;usure
+    normale et les travaux permis par le présent bail, et remet toutes les clés.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locataire remet le bien dans l&rsquo;état où il
+    l&rsquo;a reçu, mais n&rsquo;est pas tenu des changements résultant de la vétusté, de l&rsquo;usure normale du bien
+    ou d&rsquo;une force majeure (article 1890 du Code civil du Québec).</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Le bail à durée fixe prend fin à l&rsquo;arrivée de son terme. Chaque partie peut mettre fin à un bail à durée
+    indéterminée par un avis écrit donné dans le délai qu&rsquo;exige le droit de la province ou du territoire où se
+    trouvent les lieux, et au moins ________ mois avant la fin d&rsquo;une période de loyer.</p>
+  <p>Si le locataire ne paie pas un loyer dans les ________ jours de son échéance, ne remédie pas à tout autre
+    manquement dans les ________ jours d&rsquo;un avis écrit du locateur, ou devient failli ou insolvable, le locateur
+    peut résilier le présent bail et reprendre possession des lieux, en plus de ses autres recours, sous réserve des
+    conditions et des droits d&rsquo;être relevé de la déchéance que prévoit la loi.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, sauf convention contraire, tout bail est réputé
+    permettre au locateur de reprendre possession des lieux si le loyer demeure impayé 15 jours après son échéance,
+    même sans demande formelle (article 18, paragraphe 1, de la Loi sur la location commerciale). Un droit de reprise
+    de possession ou de déchéance pour un manquement autre que le non-paiement du loyer ne peut être exercé
+    qu&rsquo;après un avis précisant le manquement, exigeant qu&rsquo;il y soit remédié s&rsquo;il peut l&rsquo;être et
+    exigeant une indemnité, et l&rsquo;omission du locataire de s&rsquo;y conformer dans un délai raisonnable (article
+    19, paragraphe 2); le locataire peut demander au tribunal d&rsquo;être relevé de la reprise de possession ou de la
+    déchéance (article 20). Le droit de saisie-gagerie du locateur pour arriérés de loyer prévu par cette loi demeure
+    ouvert, sous réserve de ses conditions et exemptions (articles 30 et 43).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, lorsque l&rsquo;inexécution d&rsquo;une
+    obligation cause un préjudice sérieux, l&rsquo;autre partie peut demander la résiliation du bail, outre des
+    dommages-intérêts (article 1863 du Code civil du Québec); le locataire poursuivi en résiliation du bail pour défaut
+    de paiement du loyer peut l&rsquo;éviter en payant, avant jugement, le loyer dû, les frais et les intérêts
+    (article 1883). La partie qui entend résilier un bail à durée indéterminée doit donner à l&rsquo;autre partie un
+    avis dans le même délai que le terme fixé pour le paiement du loyer ou, si ce terme excède 3 mois, dans un délai
+    de 3 mois (article 1882). Selon la compréhension généralement admise du droit québécois, le locateur ne dispose
+    d&rsquo;aucun droit de saisie-gagerie sans procédure judiciaire; la saisie des biens du locataire requiert un
+    jugement.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, les recours du locateur pour loyer
+    impayé comprennent, sous réserve de leurs conditions et exemptions, la saisie-gagerie en vertu du Rent Distress Act
+    et du Commercial Tenancy Act.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">La
+    question de savoir si le locateur peut saisir les biens du locataire pour loyer impayé, et l&rsquo;avis qui doit
+    précéder une reprise de possession, relèvent du droit de la province ou du territoire où se trouvent les
+    lieux.</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Tout avis prévu par le présent bail est donné par écrit et remis en mains propres, par courrier recommandé ou par
+    courriel à l&rsquo;adresse de l&rsquo;autre partie indiquée dans le présent bail ou à une nouvelle adresse dont
+    cette partie a donné avis par écrit. Un avis est réputé reçu le jour de sa remise en mains propres ou par courriel
+    un jour ouvrable et le 5e jour ouvrable qui suit sa mise à la poste.</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Un avis mettant fin au présent bail doit
+    aussi satisfaire aux exigences des dispositions relatives à la fin du bail (voir l&rsquo;article
+    <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>______________________________ (la caution) garantit au locateur, à titre de débiteur principal et solidairement
+    avec le locataire, le paiement du loyer et l&rsquo;exécution de toutes les obligations du locataire découlant du
+    présent bail, jusqu&rsquo;à concurrence de ______________________________, pour la durée du présent bail.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, la sûreté consentie par un tiers pour garantir
+    l&rsquo;exécution des obligations du locataire ne s&rsquo;étend pas au bail reconduit (article 1881 du Code civil
+    du Québec).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Chaque partie ne recueille, n&rsquo;utilise et ne communique les renseignements personnels des représentants de
+    l&rsquo;autre partie qu&rsquo;aux fins du présent bail et conformément à la législation applicable en matière de
+    protection des renseignements personnels : au Québec la Loi sur la protection des renseignements personnels dans
+    le secteur privé, en Colombie-Britannique le Personal Information Protection Act, et ailleurs, en général, la Loi
+    fédérale sur la protection des renseignements personnels et les documents électroniques ou la législation
+    provinciale qui la remplace.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent bail est régi par le droit de la province ou du territoire où se trouvent les lieux et par le droit
+    fédéral du Canada qui y est applicable. Les litiges sont soumis aux tribunaux compétents de cette province ou de
+    ce territoire, à moins que les parties ne conviennent par écrit de recourir à l&rsquo;arbitrage.</p>
+</div>
+
+</body>
+</html>

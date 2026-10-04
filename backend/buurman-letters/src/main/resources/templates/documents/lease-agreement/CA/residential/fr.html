@@ -1,0 +1,566 @@
+<!--
+  legal-basis: Canadian residential tenancy law is provincial and territorial, not federal; the province is read from
+               the contract region (catalog codes AB, BC, MB, NB, NL, NS, NT, NU, ON, PE, QC, SK, YT). This document
+               has branches for Ontario (ON), Quebec (QC) and British Columbia (BC) and a general text for every other
+               province or territory and for an unknown region.
+               Ontario: Residential Tenancies Act, 2006, S.O. 2006, c. 17 (e-Laws consolidation from 2026-09-21, last
+               amendment 2025, c. 14, Sched. 12, Fighting Delays, Building Faster Act, 2025): s. 3, 4, 6.1 (units
+               first occupied after 2018-11-15), 11, 12, 12.1 (prescribed form; demand, 21 days, withholding of up to
+               1 month's rent, agreement not void), 14, 15, 20, 26, 27 (24 hours' written notice, 8 a.m. to 8 p.m.),
+               37, 38, 39, 40, 43, 44 (28 / 60 days), 47, 47.0.1, 59 (notice for non-payment effective not earlier
+               than the 7th day, in force 2026-09-21), 95, 96, 97, 105, 106, 108, 109, 116 (90 days, approved form),
+               119 (12 months), 120 (guideline, at most 2.5 per cent), 134, 135. O. Reg. 9/18 (Standard Form of
+               Lease: prescribed class, 2018-04-30, form dated 2020/12, additional terms void where inconsistent).
+               O. Reg. 516/06 s. 17 (permitted charges: refundable key deposit, NSF administration charge of not more
+               than $20). Guideline 2027 (1.9 per cent) on ontario.ca/page/rent-increase-guideline (not printed).
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as read on
+               ccq.lexum.com; legisquebec.gouv.qc.ca refused automated access), arts. 1851-1891 (lease in general:
+               1864, 1870-1873, 1890, 1891) and 1892-2000 (lease of a dwelling): 1893, 1894, 1895 (copy within 10
+               days, mandatory form), 1896 (notice to a new lessee, amended 2024, c. 2), 1897 (French unless the
+               parties expressly wish otherwise), 1898, 1903, 1904 (no deposit, no postdated cheque), 1906, 1910,
+               1911, 1931, 1932, 1936, 1941, 1942, 1943, 1945, 1946, 1947, 1955, 1957, 1959, 1959.1, 1960, 1965,
+               1971, 1974, 1974.1, 1978.1-1978.4 (assignment rules of 2024, c. 2, Bill 31). Tribunal administratif du
+               logement (tal.gouv.qc.ca): mandatory lease form since 1996-09-01, notice periods, rent-fixing criteria
+               for notices given from 2026-01-01.
+               British Columbia: Residential Tenancy Act, SBC 2002, c. 78 (current to 2026-09-22 on bclaws.gov.bc.ca):
+               s. 12, 13 (written agreement, standard terms, copy within 21 days, vacate clause), 14, 15, 17, 18, 19
+               (security deposit and pet damage deposit each at most 1/2 of 1 month's rent), 20, 21, 23, 29 (24 hours
+               to 30 days' written notice, 8 a.m. to 9 p.m.), 32, 33, 34, 35, 37, 38 (15 days, double), 42 (12 months,
+               3 months' notice, approved form), 43, 44, 45, 46 (10 days, 5 days), 47, 49, 52; Residential Tenancy
+               Regulation, B.C. Reg. 477/2003: s. 7 (fees, $25), 13.1 (vacate clause), 22 (annual increase = BC
+               inflation rate).
+               Privacy: Personal Information Protection and Electronic Documents Act (federal); Act respecting the
+               protection of personal information in the private sector (Quebec); Personal Information Protection Act
+               (British Columbia) - named from knowledge, listed as unverified in the pack report.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com, tal.gouv.qc.ca.
+               Pending: Ontario 2025, c. 14, Sched. 12 provisions not yet in force; Quebec rent-fixing regulation
+               applies to notices given from 2026-01-01; British Columbia allowable increase for 2027 announced
+               annually (not printed).
+               Convention: every numeric quantity in the prose is written as digits, never spelled out ("60 days",
+               never "sixty days"); checked by the number-word lint and, for fr.html, by the fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Traduction de courtoisie en français de en.html; le texte anglais fait foi. Elle expose en français le droit de la
+  location résidentielle des provinces et territoires du Canada nommés ci-dessus et non le droit d'un autre pays.
+  Projet non validé par un juriste. Seule la prose diffère de en.html : fragments, expressions et attributs th: sont
+  identiques (contrôlé par LeaseDocumentFidelityTest). Ce document N'EST NI le bail standard de l'Ontario NI le
+  formulaire de bail obligatoire du Tribunal administratif du logement; lorsque ces formulaires s'appliquent, le
+  document le dit. Chaque fragment clause-<key> ne contient que le corps de la clause; le gabarit fournit les numéros
+  et les titres des articles. Les renvois utilisent refs['key'] et disparaissent si la clause est exclue. Ne jamais
+  coder en dur les numéros d'article de la présente convention.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>La présente convention est conclue entre</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, ci-après &laquo;&nbsp;le locateur&nbsp;&raquo;, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, ci-après
+    (conjointement) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les locataires soussignés, ci-après (conjointement)
+    &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p>pour la location du logement décrit ci-dessous à titre de résidence du locataire. Lorsque le locataire est
+    constitué de plusieurs personnes, chacune d&rsquo;elles est tenue solidairement des obligations du locataire
+    découlant de la présente convention, dans la mesure où le droit de la province ou du territoire où se trouve le
+    logement le permet.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Lorsque le logement est situé au Québec, les termes
+    &laquo;&nbsp;locateur&nbsp;&raquo; et &laquo;&nbsp;locataire&nbsp;&raquo; ont le sens que leur donne le Code
+    civil du Québec, et les mentions du locateur et du locataire dans la présente convention s&rsquo;interprètent en
+    conséquence.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le locateur loue au locataire le logement situé au <strong th:text="${propertyAddress}">address</strong>, avec
+    les appareils, meubles et accessoires énumérés dans la présente convention ou ses annexes, ci-après
+    &laquo;&nbsp;le logement&nbsp;&raquo;.</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>Le logement est situé en Ontario. Lorsque la location appartient à la catégorie prescrite par le Règlement de
+      l&rsquo;Ontario 9/18 (en général toute location conclue le 30 avril 2018 ou après cette date à laquelle
+      s&rsquo;applique la Loi de 2006 sur la location à usage d&rsquo;habitation, sauf notamment les maisons de soins,
+      les emplacements de maisons mobiles, les emplacements de maisons sur terrain loué, les logements sociaux et
+      autres logements visés à l&rsquo;article 7, paragraphe 1, de la Loi, et les loyers indexés sur le revenu), la
+      convention de location doit être rédigée selon la formule prescrite, la Convention de location à usage
+      d&rsquo;habitation (Bail standard) datée de 2020/12, en français ou en anglais (article 12.1, paragraphe 1, de
+      la Loi).</p>
+    <p>LE PRÉSENT DOCUMENT N&rsquo;EST PAS LE BAIL STANDARD. Pour une location de la catégorie prescrite, les parties
+      doivent signer le bail standard; les clauses du présent document ne peuvent alors servir que de conditions
+      supplémentaires jointes à celui-ci, et une condition supplémentaire incompatible avec les conditions
+      obligatoires du bail standard est nulle. Si le locateur n&rsquo;utilise pas le bail standard, le locataire peut
+      l&rsquo;exiger par écrit une fois pendant la location; si le locateur ne l&rsquo;a pas fourni au moins 21 jours
+      après la demande, le locataire peut retenir des loyers jusqu&rsquo;à concurrence d&rsquo;un montant total égal à
+      1 mois de loyer (article 12.1, paragraphes 5 à 7), et, dans les cas prévus à l&rsquo;article 47.0.1, le
+      locataire peut mettre fin de façon anticipée à une location à l&rsquo;année ou à durée déterminée moyennant un
+      préavis de 60 jours. Une convention de location n&rsquo;est pas nulle du seul fait qu&rsquo;elle n&rsquo;est pas
+      rédigée selon la formule prescrite (article 12.1, paragraphe 11).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Le logement est situé au Québec. Le bail d&rsquo;un logement doit être fait sur le formulaire dont
+      l&rsquo;utilisation est rendue obligatoire par règlement du gouvernement, le formulaire de bail du Tribunal
+      administratif du logement (TAL) (article 1895 du Code civil du Québec); selon le TAL, ce formulaire est
+      obligatoire depuis le 1er septembre 1996 pour tout nouveau bail de logement.</p>
+    <p>LE PRÉSENT DOCUMENT N&rsquo;EST PAS LE FORMULAIRE DE BAIL OBLIGATOIRE. Pour un logement situé au Québec, les
+      parties doivent utiliser le formulaire du TAL; les clauses du présent document peuvent alors tout au plus le
+      compléter dans la mesure où elles sont compatibles avec lui. Est sans effet la clause d&rsquo;un bail de
+      logement qui déroge aux articles 1892 à 2000 du Code civil du Québec ou aux autres articles énumérés à
+      l&rsquo;article 1893. Le bail doit être rédigé en français; il ne peut être rédigé dans une autre langue que si
+      telle est la volonté expresse des parties (article 1897).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">Le logement est situé en Colombie-Britannique. Le
+    locateur doit rédiger la convention de location par écrit, et celle-ci doit reproduire les conditions standard
+    prescrites par le Residential Tenancy Regulation (règlement sur la location résidentielle) ainsi que les autres
+    renseignements exigés par l&rsquo;article 13 du Residential Tenancy Act (loi sur la location résidentielle). Les
+    conditions standard font partie de toute convention de location, qu&rsquo;elles y soient écrites ou non, et ne
+    peuvent être modifiées ni supprimées par convention (articles 12 et 14 de cette loi). Une clause du présent
+    document contraire aux conditions standard ou à cette loi est sans effet.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Au
+    Canada, la location résidentielle est régie par le droit de la province ou du territoire où se trouve le
+    logement, et non par le droit fédéral. Les règles relatives aux formules prescrites, aux dépôts, aux augmentations
+    de loyer, aux avis et à la fin de la location diffèrent sensiblement d&rsquo;une province ou d&rsquo;un territoire
+    à l&rsquo;autre, et certains prescrivent une formule de bail obligatoire ou des conditions standard qui
+    s&rsquo;appliquent malgré la présente convention : en Ontario le bail standard, au Québec le formulaire de bail du
+    Tribunal administratif du logement, en Colombie-Britannique les conditions standard du Residential Tenancy
+    Regulation. Le présent document n&rsquo;est pas une telle formule. Les parties doivent vérifier le droit de la
+    province ou du territoire concerné avant de signer.</p>
+  <p>Lorsqu&rsquo;une disposition du droit provincial ou territorial applicable, à laquelle il ne peut être dérogé par
+    convention, est contraire à la présente convention, cette disposition l&rsquo;emporte.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>La location commence le <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">La location est conclue pour une durée déterminée<span th:if="${endDate != null}"> prenant
+    fin le <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">La location est périodique et se poursuit de période de location en période de location
+    jusqu&rsquo;à ce qu&rsquo;il y soit mis fin conformément à la loi.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, il ne peut être mis fin à une location que
+    conformément à la Loi de 2006 sur la location à usage d&rsquo;habitation (article 37, paragraphe 1). Si une
+    convention de location à durée déterminée prend fin sans avoir été renouvelée ni résiliée, le locateur et le
+    locataire sont réputés l&rsquo;avoir renouvelée comme convention de location au mois aux mêmes conditions, sous
+    réserve de toute augmentation de loyer faite conformément à cette loi (article 38, paragraphe 1).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, tout locataire a un droit personnel au maintien
+    dans les lieux et ne peut être évincé du logement loué que dans les cas prévus par la loi (article 1936). Le
+    locataire qui a droit au maintien dans les lieux a droit à la reconduction de plein droit du bail à durée fixe
+    lorsque celui-ci prend fin; le bail est reconduit aux mêmes conditions et pour la même durée ou, si la durée du
+    bail initial excède 12 mois, pour une durée de 12 mois, à moins que les parties ne conviennent d&rsquo;un terme de
+    reconduction différent (article 1941).</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>En Colombie-Britannique, si, à la date fixée comme fin d&rsquo;une location à durée déterminée, le locateur et
+      le locataire n&rsquo;ont pas conclu de nouvelle convention de location, ils sont réputés avoir renouvelé la
+      convention aux mêmes conditions comme location périodique au mois, à moins que la convention n&rsquo;oblige
+      valablement le locataire à quitter les lieux à la fin de la durée (article 44, paragraphe 3). Une telle
+      obligation n&rsquo;est permise que si le locateur est une personne physique qui, elle-même ou un proche parent,
+      occupera le logement à la fin de la durée (article 13, paragraphe 2, du Residential Tenancy Act et article 13.1
+      du Residential Tenancy Regulation).</p>
+    <p th:if="${fixedTerm}">Obligation de quitter les lieux à la fin de la durée déterminée (cocher 1 case) :
+      [ ] ne s&rsquo;applique pas; [ ] s&rsquo;applique, parce que la personne suivante occupera le logement à la fin
+      de la durée : ______________________________</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Ce qui
+    se passe à la fin d&rsquo;une durée déterminée dépend du droit de la province ou du territoire où se trouve le
+    logement; dans plusieurs provinces, la location ne prend pas fin à l&rsquo;expiration de la durée, mais se
+    poursuit ou est renouvelée à moins qu&rsquo;il n&rsquo;y soit mis fin conformément à ce droit.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer est de <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Les services et fournitures compris dans le loyer sont énumérés séparément (voir
+    l&rsquo;article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Les modifications du loyer
+    obéissent aux stipulations de la présente convention (voir l&rsquo;article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>Le locateur ne peut augmenter le loyer qu&rsquo;en donnant au locataire un préavis écrit d&rsquo;au moins
+      90 jours, rédigé selon la formule approuvée par la Commission de la location immobilière et indiquant le montant
+      du nouveau loyer (article 116, paragraphes 1 et 3, de la Loi de 2006 sur la location à usage
+      d&rsquo;habitation); une augmentation sans ce préavis est nulle (article 116, paragraphe 4). Le loyer ne peut
+      être augmenté que si au moins 12 mois se sont écoulés depuis la dernière augmentation pour ce locataire ou,
+      à défaut, depuis la date à laquelle le logement lui a été loué pour la première fois (article 119, paragraphe
+      1).</p>
+    <p>Pendant la location, l&rsquo;augmentation ne peut dépasser le taux légal que le ministre fixe pour chaque année
+      civile et qui n&rsquo;est pas supérieur à 2,5 pour cent, sauf dans les cas permis par les articles 121, 123, 126
+      ou 127 de cette loi (article 120, paragraphes 1 et 2). Le taux légal ne s&rsquo;applique pas lorsque aucune partie
+      de l&rsquo;immeuble où se trouve le logement n&rsquo;était occupée à des fins d&rsquo;habitation le 15 novembre
+      2018 ou avant cette date (article 6.1, paragraphe 2, de cette loi, qui vise aussi les rajouts et, aux termes du
+      paragraphe 3, certains logements aménagés dans des maisons).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Est sans effet, dans un bail à durée fixe de 12 mois ou moins, la clause stipulant le réajustement du loyer en
+      cours de bail; dans un bail de plus de 12 mois, elle est sans effet au cours des 12 premiers mois ou si elle
+      prévoit plus de 1 réajustement au cours de chaque période de 12 mois (article 1906 du Code civil du
+      Québec).</p>
+    <p>Lors de la reconduction du bail, le locateur ne peut en modifier les conditions, notamment la durée ou le
+      loyer, qu&rsquo;en donnant au locataire un avis de modification au moins 3 mois, mais pas plus de 6 mois, avant
+      l&rsquo;arrivée du terme; pour un bail de moins de 12 mois, au moins 1 mois, mais pas plus de 2 mois, avant le
+      terme; pour un bail à durée indéterminée, au moins 1 mois, mais au plus 2 mois, avant la modification; pour le
+      bail d&rsquo;une chambre, au moins 10 jours, mais au plus 20 jours (article 1942). Le locataire qui refuse la
+      modification doit en aviser le locateur dans un délai de 1 mois à compter de la réception de l&rsquo;avis, faute de quoi il est réputé
+      avoir accepté la reconduction aux conditions proposées (article 1945); le locateur peut alors s&rsquo;adresser au
+      Tribunal administratif du logement dans un délai de 1 mois à compter de la réception de l&rsquo;avis de refus pour faire fixer le
+      loyer, faute de quoi le bail est reconduit aux conditions antérieures (article 1947).</p>
+    <p>Ni l&rsquo;une ni l&rsquo;autre partie ne peut s&rsquo;adresser au tribunal pour faire fixer le loyer ou modifier
+      une autre condition du bail d&rsquo;un logement loué par une coopérative d&rsquo;habitation, ou d&rsquo;un logement
+      situé dans un immeuble nouvellement bâti ou récemment affecté à la location, dans les 5 années qui suivent la date
+      à laquelle l&rsquo;immeuble est prêt pour l&rsquo;usage auquel il est destiné (article 1955). Le locateur ne peut
+      invoquer ces restrictions à l&rsquo;encontre du locataire que si elles sont prévues dans le bail et, pour un
+      immeuble neuf ou dont l&rsquo;affectation a changé, que si le bail indique le loyer maximal qu&rsquo;il pourra
+      imposer pendant ces 5 années; pour un tel logement, le locataire qui refuse la modification proposée doit quitter
+      le logement à la fin du bail (article 1945).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>Le locateur ne peut imposer une augmentation de loyer pendant au moins 12 mois après la date à laquelle le
+      loyer est devenu exigible pour la première fois ou, si le loyer a déjà été augmenté, après la date
+      d&rsquo;effet de la dernière augmentation (article 42, paragraphe 1, du Residential Tenancy Act). Le locateur doit
+      aviser le locataire de l&rsquo;augmentation au moyen de la formule approuvée au moins 3 mois avant sa date
+      d&rsquo;effet (article 42, paragraphes 2 et 3).</p>
+    <p>L&rsquo;augmentation ne peut dépasser le montant calculé selon le Residential Tenancy Regulation (le taux
+      d&rsquo;inflation, soit la variation moyenne en pourcentage sur 12 mois de l&rsquo;indice des prix à la
+      consommation, ensemble, pour la Colombie-Britannique), un montant ordonné par le directeur ou un montant accepté
+      par écrit par le locataire (article 43, paragraphe 1); le locataire peut déduire du loyer une augmentation perçue
+      en violation de ces règles (article 43, paragraphe 5).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
+    loyer ne peut être augmenté que de la manière, avec le préavis écrit, aux intervalles et dans les limites que
+    permet le droit de la province ou du territoire où se trouve le logement. La plupart des provinces et territoires
+    exigent un préavis écrit de plusieurs mois et ne permettent pas plus de 1 augmentation par période de 12 mois;
+    certains limitent le montant de l&rsquo;augmentation.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Les services, fournitures et installations suivants sont compris dans le loyer (cocher les cases applicables) :
+    [ ] chauffage [ ] électricité [ ] eau chaude [ ] eau et égouts [ ] stationnement : ________ [ ] rangement :
+    ________ [ ] buanderie [ ] autre : ______________________________</p>
+  <p>Le locataire paie directement au fournisseur concerné tout service ou toute fourniture non coché ci-dessus.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, la convention de location doit
+    indiquer les services et installations compris dans le loyer (article 13, paragraphe 2, du Residential Tenancy
+    Act).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>Le seul dépôt de garantie qu&rsquo;un locateur peut percevoir en Ontario est un dépôt de loyer, qui ne peut
+      être exigé qu&rsquo;au moment de la conclusion de la convention de location ou avant, et qui ne peut dépasser le
+      moindre du loyer de 1 période de location et du loyer de 1 mois (article 105, paragraphe 1, et article 106,
+      paragraphes 1 et 2, de la Loi de 2006 sur la location à usage d&rsquo;habitation).<span
+      th:if="${depositAmount != null}"> Le dépôt de loyer est de
+      <strong th:text="${depositAmount}">amount</strong>.</span></p>
+    <p>Le locateur affecte le dépôt de loyer au paiement du loyer de la dernière période de location précédant la fin
+      de la location (article 106, paragraphe 10) et verse chaque année au locataire des intérêts sur ce dépôt à un
+      taux égal au taux légal en vigueur à la date d&rsquo;exigibilité du paiement (article 106, paragraphe 6). Le
+      dépôt de loyer n&rsquo;est pas un dépôt pour dommages. Un dépôt remboursable pour une clé ou un dispositif
+      d&rsquo;entrée à distance, n&rsquo;excédant pas le coût direct prévu de remplacement, est permis (article 17 du
+      Règlement 516/06 de l&rsquo;Ontario).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locateur ne peut exiger une somme
+    d&rsquo;argent autre que le loyer, sous forme de dépôt ou autrement (article 1904 du Code civil du Québec). Aucun
+    dépôt de garantie n&rsquo;est exigible en vertu de la présente convention; un montant inscrit à titre de dépôt pour
+    ce contrat n&rsquo;est pas exigible pour un logement situé au Québec.</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>Le locateur ne peut exiger ni accepter un dépôt de garantie ou un dépôt pour dommages causés par un animal
+      supérieur à l&rsquo;équivalent de 1/2 de 1 mois du loyer payable en vertu de la convention de location (article
+      19, paragraphe 1, du Residential Tenancy Act); un dépôt de garantie ne peut être exigé qu&rsquo;au moment de la
+      conclusion de la convention de location (article 20).<span th:if="${depositAmount != null}"> Le dépôt de
+      garantie est de <strong th:text="${depositAmount}">amount</strong>.</span> Dépôt pour dommages causés par un
+      animal (le cas échéant) : ______________________________</p>
+    <p>Dans les 15 jours qui suivent la plus tardive de la date de fin de la location et de la date à laquelle le
+      locateur reçoit par écrit la nouvelle adresse du locataire, le locateur doit rembourser les dépôts avec les
+      intérêts calculés conformément aux règlements, ou présenter une demande de règlement de différend visant ces
+      dépôts (article 38, paragraphe 1); le locateur qui ne fait ni l&rsquo;un ni l&rsquo;autre doit payer au
+      locataire 2 fois le montant des dépôts (article 38, paragraphe 6). Le locataire ne peut imputer un dépôt sur le
+      loyer sans le consentement écrit du locateur (article 21).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
+    locataire verse un dépôt de garantie<span th:if="${depositAmount != null}"> de
+    <strong th:text="${depositAmount}">amount</strong></span>, dans la mesure où le droit de la province ou du
+    territoire où se trouve le logement permet un dépôt de cette nature et de ce montant. Le droit provincial et
+    territorial limite ou interdit les dépôts, prescrit la façon de les détenir et de les rembourser et peut exiger le
+    versement d&rsquo;intérêts; le locateur rembourse le dépôt, déduction faite des sommes que ce droit lui permet de
+    retenir, dans le délai qu&rsquo;il fixe.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le locataire paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir
+    l&rsquo;article <span th:text="${refs['rent']}"></span>)</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">le jour <strong th:text="${paymentDueDay}">1</strong> de chaque période de
+      location</span><span th:if="${paymentDueDay == null}">le jour convenu par les parties</span>, selon le mode
+    suivant : ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, ni le locateur ni la présente convention ne
+    peuvent exiger que le locataire remette des chèques postdatés ou autorise le paiement automatique du loyer
+    (article 108 de la Loi de 2006 sur la location à usage d&rsquo;habitation). Le locateur remet gratuitement un reçu
+    sur demande (article 109, paragraphe 1). Le locateur ne peut percevoir aucuns frais, pénalité ou autre somme que
+    la Loi et ses règlements ne permettent pas (article 134, paragraphe 1); les sommes permises comprennent des frais
+    d&rsquo;administration d&rsquo;au plus 20 $ pour un chèque retourné pour insuffisance de fonds (article 17 du
+    Règlement 516/06 de l&rsquo;Ontario).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le loyer est payable par versements égaux, sauf
+    le dernier qui peut être moindre, le 1er jour de chaque terme, à moins qu&rsquo;il n&rsquo;en soit convenu
+    autrement (article 1903 du Code civil du Québec). Le locateur ne peut exiger que chaque versement excède 1 mois
+    de loyer, ne peut exiger d&rsquo;avance que le paiement du 1er terme (ou, si ce terme excède 1 mois, le paiement
+    de plus de 1 mois de loyer) et ne peut exiger la remise d&rsquo;un chèque ou d&rsquo;un autre effet postdaté
+    (article 1904).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, le locateur ne peut exiger des
+    frais d&rsquo;administration d&rsquo;au plus 25 $ pour retard de paiement du loyer ou pour un chèque retourné par
+    une institution financière que si la présente convention prévoit ces frais (article 7 du Residential Tenancy
+    Regulation). La présente convention [ ] ne prévoit pas [ ] prévoit de tels frais de ________ $. Le locateur ne
+    peut rien exiger pour accepter ou traiter une demande de location (article 15 du Residential Tenancy Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Les frais
+    de retard, les frais de chèque retourné et l&rsquo;exigence de chèques postdatés ne sont permis que dans la mesure
+    où le droit de la province ou du territoire où se trouve le logement les autorise.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Le locataire utilise le logement comme résidence privée pour lui-même et les membres de son ménage, et se
+    conduit de manière à ne pas troubler la jouissance normale des autres occupants de l&rsquo;immeuble.</p>
+  <p>Animaux : ______________________________. Usage du tabac : ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, est nulle la disposition d&rsquo;une
+    convention de location qui interdit la présence d&rsquo;animaux dans l&rsquo;ensemble d&rsquo;habitation ou aux
+    alentours (article 14 de la Loi de 2006 sur la location à usage d&rsquo;habitation).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, une convention de location peut
+    interdire les animaux ou en restreindre la taille, l&rsquo;espèce ou le nombre, sous réserve du Guide Dog and
+    Service Dog Act (loi sur les chiens-guides et chiens d&rsquo;assistance) (article 18 du Residential Tenancy
+    Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'BC'))}">Toute règle relative aux animaux
+    et à l&rsquo;usage du tabac ne s&rsquo;applique que dans la mesure où le droit de la province ou du territoire où
+    se trouve le logement le permet.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>Le locataire ne peut céder le logement ou le sous-louer qu&rsquo;avec le consentement du locateur (article 95,
+      paragraphe 1, et article 97, paragraphe 1, de la Loi de 2006 sur la location à usage d&rsquo;habitation). Le
+      locateur ne peut refuser arbitrairement ou de façon déraisonnable de consentir à la sous-location à un
+      sous-locataire éventuel ou à la cession à un cessionnaire éventuel (article 97, paragraphe 2, et article 95,
+      paragraphe 5). Si le locateur refuse une cession ou ne répond pas dans les 7 jours de la demande, le locataire
+      peut donner un avis de résiliation dans les 30 jours de la demande (article 95, paragraphe 4). Le locateur ne
+      peut exiger que les débours raisonnables engagés pour donner son consentement (article 95, paragraphe 7, et
+      article 97, paragraphe 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Le locataire peut sous-louer tout ou partie du logement ou céder le bail après avoir avisé le locateur de son
+      intention, lui avoir indiqué le nom et l&rsquo;adresse du sous-locataire ou du cessionnaire envisagé et avoir
+      obtenu son consentement (article 1870 du Code civil du Québec); l&rsquo;avis de cession doit indiquer la date de
+      cession prévue (article 1978.1). Le locateur ne peut refuser de consentir à la sous-location sans un motif
+      sérieux et doit indiquer les motifs de son refus dans les 15 jours de la réception de l&rsquo;avis, faute de quoi
+      il est réputé avoir consenti (article 1871).</p>
+    <p>Le locateur peut refuser de consentir à la cession pour un motif autre qu&rsquo;un motif sérieux; le bail est
+      alors résilié à la date de cession indiquée dans l&rsquo;avis du locataire (article 1978.2). Le locateur ne peut
+      exiger que le remboursement des dépenses raisonnables résultant de la sous-location ou de la cession (article
+      1872); le locataire ne peut exiger de contrepartie pour une cession (article 1978.3) ni exiger du sous-locataire
+      un montant supérieur au loyer qu&rsquo;il verse au locateur, outre le coût des services offerts et des frais
+      raisonnables pour l&rsquo;usage des biens meubles dont il est propriétaire (article 1978.4).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">À moins que le locateur n&rsquo;y consente par écrit, le
+    locataire ne peut céder la convention de location ni sous-louer le logement (article 34, paragraphe 1, du
+    Residential Tenancy Act). Lorsqu&rsquo;il reste 6 mois ou plus à courir sur une convention de location à durée
+    déterminée, le locateur ne peut refuser son consentement de façon déraisonnable (article 34, paragraphe 2), et il
+    ne peut rien exiger pour examiner une cession ou une sous-location ou y consentir (article 34, paragraphe 3).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
+    locataire ne peut céder la présente convention ni sous-louer le logement qu&rsquo;avec le consentement écrit
+    préalable du locateur, que celui-ci ne peut refuser ni subordonner à des frais, sauf dans la mesure où le droit de
+    la province ou du territoire où se trouve le logement le permet.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>Le locateur est responsable de fournir l&rsquo;ensemble d&rsquo;habitation, y compris le logement, et de le
+      garder en bon état, propre à l&rsquo;habitation et conforme aux normes de santé, de sécurité et
+      d&rsquo;entretien et aux normes relatives à l&rsquo;habitation, même si le locataire connaissait le défaut avant
+      de conclure la convention (article 20, paragraphes 1 et 2, de la Loi de 2006 sur la location à usage
+      d&rsquo;habitation).</p>
+    <p>Le locateur peut entrer dans le logement sans préavis écrit en cas d&rsquo;urgence ou si le locataire y consent
+      au moment de l&rsquo;entrée (article 26, paragraphe 1); dans les autres cas, aux fins énumérées à
+      l&rsquo;article 27, paragraphe 1, uniquement après un préavis écrit remis au moins 24 heures avant
+      l&rsquo;entrée, indiquant le motif, le jour et une heure située entre 8 heures du matin et 8 heures du soir
+      (article 27, paragraphe 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Le locateur est tenu de délivrer un logement en bon état d&rsquo;habitabilité et de le maintenir ainsi pendant
+      toute la durée du bail (article 1910 du Code civil du Québec), et de le délivrer en bon état de propreté, état que
+      le locataire est tenu de maintenir (article 1911). Le locateur fait toutes les réparations nécessaires, à
+      l&rsquo;exception des menues réparations d&rsquo;entretien, qui sont à la charge du locataire à moins
+      qu&rsquo;elles ne résultent de la vétusté ou d&rsquo;une force majeure (article 1864).</p>
+    <p>À moins d&rsquo;une urgence, le locateur est tenu de donner au locataire un préavis de 24 heures de son
+      intention de vérifier l&rsquo;état du logement, d&rsquo;y effectuer des travaux ou de le faire visiter par un
+      acquéreur éventuel (article 1931); à moins d&rsquo;une urgence, le locataire peut refuser une visite avant
+      9 heures du matin ou après 9 heures du soir (article 1932).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>Le locateur doit fournir et maintenir la propriété résidentielle dans un état de décoration et de réparation
+      conforme aux normes de santé, de sécurité et d&rsquo;habitation exigées par la loi et qui la rend propre à
+      l&rsquo;occupation, compte tenu de son âge, de son caractère et de son emplacement (article 32, paragraphe 1, du
+      Residential Tenancy Act). Le locataire maintient des normes raisonnables de salubrité et de propreté et répare
+      les dommages causés par lui ou par une personne qu&rsquo;il admet sur la propriété, mais non l&rsquo;usure
+      normale (article 32, paragraphes 2 à 4). Personne à joindre pour les réparations d&rsquo;urgence :
+      ______________________________ (article 33, paragraphe 2).</p>
+    <p>À moins que le locataire ne donne sa permission ou qu&rsquo;un autre cas prévu à l&rsquo;article 29, paragraphe
+      1, ne s&rsquo;applique (par exemple une urgence où l&rsquo;entrée est nécessaire pour protéger des personnes ou
+      des biens), le locateur ne peut entrer dans le logement qu&rsquo;après avoir donné un préavis écrit au moins
+      24 heures et au plus 30 jours avant l&rsquo;entrée, indiquant un motif raisonnable ainsi qu&rsquo;une date et une
+      heure situées entre 8 heures du matin et 9 heures du soir, sauf accord contraire du locataire.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
+    locateur garde le logement en bon état et propre à l&rsquo;habitation conformément à la loi et aux normes de santé,
+    de sécurité et d&rsquo;habitation applicables; le locataire le garde propre et répare les dommages qu&rsquo;il
+    cause, à l&rsquo;exception de l&rsquo;usure normale. Sauf urgence, le locateur n&rsquo;entre dans le logement
+    qu&rsquo;avec le préavis et aux heures qu&rsquo;exige le droit de la province ou du territoire où se trouve le
+    logement.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Le locateur et le locataire constatent par écrit l&rsquo;état du logement au début et à la fin de la location;
+    chacun signe le constat et en conserve une copie.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, le locateur et le locataire
+    doivent inspecter ensemble l&rsquo;état du logement le jour où le locataire a droit à la possession ou un autre
+    jour convenu (article 23 du Residential Tenancy Act) et à la fin de la location, le locateur devant alors offrir
+    au locataire au moins 2 possibilités d&rsquo;inspection et dresser un rapport d&rsquo;inspection signé par les
+    deux parties (article 35, paragraphes 2 à 4); le défaut de s&rsquo;y conformer peut éteindre le droit au
+    remboursement du dépôt ou le droit de faire une réclamation sur celui-ci (articles 24 et 36). Sauf accord
+    contraire, le locataire quitte les lieux au plus tard à 1 heure de l&rsquo;après-midi le jour où la location prend
+    fin (article 37, paragraphe 1).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locataire remet le logement à la fin du bail
+    dans l&rsquo;état où il l&rsquo;a reçu, mais n&rsquo;est pas tenu des changements résultant de la vétusté, de
+    l&rsquo;usure normale ou d&rsquo;une force majeure (article 1890 du Code civil du Québec), enlève les
+    constructions, ouvrages ou plantations qu&rsquo;il a faits (article 1891) et laisse le logement libre de tous
+    effets mobiliers autres que ceux du locateur (article 1978).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'QC' or regionCode == 'BC'))}">À la fin de la location, le
+    locataire remet le logement propre et dans l&rsquo;état constaté au début, à l&rsquo;exception de l&rsquo;usure
+    normale, et remet toutes les clés.</p>
+</div>
+
+<div th:fragment="clause-statutory-information" data-clause="statutory-information">
+  <p>Nom légal et adresse du locateur aux fins de la remise des avis et autres documents :
+    ______________________________. Téléphone et courriel : ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">En Ontario, toute convention de location écrite doit
+    indiquer le nom légal et l&rsquo;adresse du locateur aux fins de la remise des avis, et le locateur doit remettre
+    au locataire une copie de la convention signée par les deux parties dans les 21 jours qui suivent la date à
+    laquelle le locataire la signe et la lui remet; tant que le locateur ne s&rsquo;y conforme pas, l&rsquo;obligation
+    du locataire de payer le loyer est suspendue (article 12, paragraphes 1, 2 et 4, de la Loi de 2006 sur la location
+    à usage d&rsquo;habitation). Lorsque l&rsquo;article 12.1 ne s&rsquo;applique pas, le locateur doit en outre
+    remettre au locataire, au plus tard le jour du début de la location, les renseignements sur les droits et
+    responsabilités des locateurs et des locataires selon la formule approuvée par la Commission de la location
+    immobilière (article 11).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locateur est tenu de remettre au locataire un
+    exemplaire du bail dans les 10 jours de sa conclusion (article 1895 du Code civil du Québec) et, avant la
+    conclusion du bail, un exemplaire du règlement de l&rsquo;immeuble, le cas échéant, lequel fait partie du bail
+    (article 1894). Lors de la conclusion du bail, le locateur doit remettre au nouveau locataire un avis indiquant le
+    loyer le plus bas payé au cours des 12 mois précédant le début du bail ou, le cas échéant, le loyer fixé par le
+    tribunal au cours de la même période, ou, si aucun loyer n&rsquo;a été payé au cours de ces 12 mois, le dernier
+    loyer payé et sa date, sauf si le logement est visé aux articles 1955 à 1956 (article 1896).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, la convention de location doit
+    indiquer l&rsquo;adresse aux fins de signification et le numéro de téléphone du locateur ou de son mandataire, et
+    le locateur doit remettre au locataire une copie de la convention dans les 21 jours de sa conclusion (article 13,
+    paragraphes 2 et 3, du Residential Tenancy Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
+    locateur remet au locataire une copie signée de la présente convention ainsi que tout renseignement, avis ou
+    formulaire que le droit de la province ou du territoire où se trouve le logement exige au début de la
+    location.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>En Ontario, un avis de résiliation doit être rédigé selon la formule approuvée par la Commission de la location
+      immobilière ou selon la formule prescrite (article 43, paragraphe 1, de la Loi de 2006 sur la location à usage
+      d&rsquo;habitation). Le locataire peut mettre fin à la location à la fin d&rsquo;une période de location ou de la
+      durée déterminée en donnant un avis au moins 60 jours avant la date de résiliation dans le cas d&rsquo;une
+      location au mois ou à l&rsquo;année ou d&rsquo;une durée déterminée, ou au moins 28 jours avant cette date dans le
+      cas d&rsquo;une location à la journée ou à la semaine; la date de résiliation doit être le dernier jour
+      d&rsquo;une période de location ou, pour une durée déterminée, sa date d&rsquo;expiration (article 44,
+      paragraphes 1 à 4, et article 47). Est nul l&rsquo;avis ou l&rsquo;accord de résiliation donné ou conclu au moment
+      de la conclusion de la convention de location ou comme condition de sa conclusion (article 37, paragraphes 4 et
+      5), sauf pour les logements d&rsquo;étudiants visés aux paragraphes 6 et 7 de cet article.</p>
+    <p>Le locateur ne peut mettre fin à la location que pour les motifs et avec les avis prévus par la Loi, et ne peut
+      reprendre possession du logement que si le locataire l&rsquo;a quitté ou abandonné ou si une ordonnance
+      d&rsquo;expulsion de la Commission l&rsquo;autorise (article 39). Si le locataire ne paie pas le loyer
+      légalement dû, le locateur peut donner un avis de résiliation qui prend effet au plus tôt le 7e jour qui suit la
+      remise de l&rsquo;avis (article 59, paragraphe 1, en vigueur depuis le 21 septembre 2026); l&rsquo;avis est nul si
+      le locataire paie l&rsquo;arriéré et le loyer devenu exigible avant que le locateur ne présente une requête à la
+      Commission (article 59, paragraphe 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>Au Québec, le locataire qui n&rsquo;a pas reçu d&rsquo;avis de modification peut éviter la reconduction d&rsquo;un
+      bail à durée fixe, ou mettre fin à un bail à durée indéterminée, en donnant au locateur un avis de
+      non-reconduction ou de résiliation dans les mêmes délais que ceux que doit respecter le locateur pour un avis de
+      modification (article 1946 du Code civil du Québec; voir l&rsquo;article 1942). Le locataire peut aussi résilier
+      le bail en cours dans les cas et avec les attestations exigés par les articles 1974 et 1974.1 (attribution
+      d&rsquo;un logement à loyer modique, relogement dans un logement équivalent en raison d&rsquo;une décision du
+      tribunal, handicap, admission permanente d&rsquo;une personne âgée dans un lieu d&rsquo;hébergement, ou violence
+      sexuelle, violence conjugale ou violence envers un enfant); la résiliation prend alors effet 2 mois après
+      l&rsquo;envoi de l&rsquo;avis, ou 1 mois après son envoi lorsque le bail est à durée indéterminée ou de moins de
+      12 mois, ou plus tôt dans les cas prévus à ces articles.</p>
+    <p>Le locateur ne peut reprendre le logement ou évincer le locataire que dans les cas et aux conditions prévus aux
+      articles 1957 à 1970, au moyen d&rsquo;un avis donné au moins 6 mois avant l&rsquo;expiration d&rsquo;un bail à
+      durée fixe (1 mois si la durée est de 6 mois ou moins) ou, pour un bail à durée indéterminée, 6 mois avant la date
+      de la reprise ou de l&rsquo;éviction (article 1960). Le locataire évincé a droit à des frais raisonnables de
+      déménagement et à une indemnité équivalente à 1 mois de loyer pour chaque année de location ininterrompue, qui ne
+      peut être inférieure à 3 mois ni excéder 24 mois de loyer (article 1965). La reprise et l&rsquo;éviction sont
+      exclues lorsque le locataire ou son conjoint est âgé de 65 ans ou plus, occupe le logement depuis au moins 10 ans
+      et a un revenu égal ou inférieur à 125 pour cent du revenu maximal permettant d&rsquo;être admissible à un
+      logement à loyer modique, sauf dans les situations énumérées à l&rsquo;article 1959.1. Le locateur peut obtenir
+      la résiliation du bail si le locataire est en retard de plus de 3 semaines pour le paiement du loyer ou, s&rsquo;il
+      en subit un préjudice sérieux, si le locataire en retarde fréquemment le paiement (article 1971).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>En Colombie-Britannique, une location ne prend fin que dans les cas prévus à l&rsquo;article 44 du Residential
+      Tenancy Act, et tout avis de fin de location doit être conforme à l&rsquo;article 52 de cette loi. Le locataire
+      peut mettre fin à une location périodique par un avis prenant effet à une date qui n&rsquo;est pas antérieure à
+      1 mois après la réception de l&rsquo;avis par le locateur et qui est la veille du jour où le loyer est payable;
+      pour une location à durée déterminée, en outre, pas avant la date fixée comme fin de la location (article 45,
+      paragraphes 1 et 2).</p>
+    <p>Le locateur ne peut mettre fin à la location que pour les motifs et avec les délais de préavis prévus par cette
+      loi, notamment pour loyer impayé par un avis prenant effet au plus tôt 10 jours après sa réception par le
+      locataire, qui est sans effet si le locataire paie le loyer en retard dans les 5 jours (article 46, paragraphes
+      1 et 4), pour un motif sérieux (article 47) ou pour l&rsquo;usage de la propriété par le locateur (article
+      49).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Chaque
+    partie ne peut mettre fin à la location que pour les motifs, avec l&rsquo;avis écrit, la formule et le délai de
+    préavis que prescrit le droit de la province ou du territoire où se trouve le logement; en général, le locateur ne
+    peut reprendre possession du logement contre la volonté du locataire qu&rsquo;en vertu d&rsquo;une ordonnance du
+    tribunal administratif ou judiciaire compétent.</p>
+  <p class="clause-ref" data-ref="notices" th:if="${refs['notices']}">Les avis sont donnés comme le prévoit la
+    présente convention (voir l&rsquo;article <span th:text="${refs['notices']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Tout avis prévu par la présente convention est donné par écrit à l&rsquo;adresse de l&rsquo;autre partie indiquée
+    dans la présente convention ou à une nouvelle adresse dont cette partie a donné avis par écrit.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, tout avis relatif au bail, à l&rsquo;exception
+    de celui que donne le locateur afin d&rsquo;avoir accès au logement, doit être donné par écrit à l&rsquo;adresse
+    indiquée dans le bail ou à la nouvelle adresse dont l&rsquo;autre partie a été avisée, et doit être rédigé dans la
+    même langue que le bail; l&rsquo;avis qui ne respecte pas ces exigences est inopposable au destinataire, à moins
+    que la personne qui l&rsquo;a donné ne démontre que le destinataire n&rsquo;en subit aucun préjudice (article 1898
+    du Code civil du Québec).</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">Lorsque le droit de la province ou du territoire où se
+    trouve le logement prescrit une formule, un mode de signification ou un moment auquel un avis est réputé reçu,
+    cette exigence s&rsquo;applique.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Le locateur ne recueille, n&rsquo;utilise et ne communique les renseignements personnels du locataire
+    qu&rsquo;aux fins de la présente location et conformément à la législation applicable en matière de protection
+    des renseignements personnels : au Québec la Loi sur la protection des renseignements personnels dans le secteur
+    privé, en Colombie-Britannique le Personal Information Protection Act, et ailleurs, en général, la Loi fédérale
+    sur la protection des renseignements personnels et les documents électroniques ou la législation provinciale qui
+    la remplace.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>La présente convention est régie par le droit de la province ou du territoire où se trouve le logement et par le
+    droit fédéral du Canada qui y est applicable.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">Les litiges relevant de la Loi de 2006 sur la location à
+    usage d&rsquo;habitation sont tranchés par la Commission de la location immobilière.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Les litiges relatifs au bail d&rsquo;un logement sont
+    tranchés par le Tribunal administratif du logement.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">Les litiges relevant du Residential Tenancy Act sont
+    réglés par la procédure de règlement des différends de la Residential Tenancy Branch (direction de la location
+    résidentielle).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Les
+    litiges sont tranchés par le tribunal, l&rsquo;agent ou la cour en matière de location résidentielle que désigne
+    le droit de cette province ou de ce territoire.</p>
+</div>
+
+</body>
+</html>

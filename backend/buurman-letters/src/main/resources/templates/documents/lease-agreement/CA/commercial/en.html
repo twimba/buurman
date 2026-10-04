@@ -1,0 +1,334 @@
+<!--
+  legal-basis: Canadian commercial tenancy law is provincial and territorial; the province is read from the contract
+               region (catalog codes AB, BC, MB, NB, NL, NS, NT, NU, ON, PE, QC, SK, YT). This document has branches
+               for Ontario (ON), Quebec (QC) and British Columbia (BC) and a general text for every other province or
+               territory and for an unknown region. Commercial rents are not subject to the residential rent rules.
+               Ontario: Commercial Tenancies Act, R.S.O. 1990, c. L.7 (e-Laws consolidation from 2022-12-08, last
+               amendment 2021, c. 4, Sched. 11): s. 18 (re-entry where rent unpaid for 15 days, unless otherwise
+               agreed), 19 (notice before re-entry or forfeiture for breaches other than non-payment of rent), 20
+               (relief against forfeiture), 23 (consent to assign or sublet not to be unreasonably withheld unless
+               the lease expressly provides otherwise), 27 (local improvement taxes), 28, 30 and 43 (distress).
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991, arts. 1851-1891 (lease in general; arts. 1892-2000 on
+               the lease of a dwelling do not apply to premises let for business): 1851, 1854, 1855, 1856, 1857,
+               1863, 1864, 1866, 1870-1873, 1877-1883, 1885-1887 (lease inscribed in the land register), 1890, 1891
+               (text updated 2026-09-22 as read on ccq.lexum.com).
+               British Columbia: Commercial Tenancy Act, RSBC 1996, c. 57 and Rent Distress Act, RSBC 1996, c. 403
+               (both current to 2026-09-22 on bclaws.gov.bc.ca); the Residential Tenancy Act does not apply.
+               Federal: Interest Act, R.S.C. 1985, c. I-15, s. 4 (current to 2026-09-21 on laws-lois.justice.gc.ca);
+               goods and services tax / harmonized sales tax under the Excise Tax Act and Quebec sales tax - stated
+               generally, listed as unverified in the pack report. Privacy: Personal Information Protection and
+               Electronic Documents Act; Act respecting the protection of personal information in the private sector
+               (Quebec); Personal Information Protection Act (British Columbia) - unverified.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com,
+               laws-lois.justice.gc.ca. The temporary federal commercial rent relief programs of 2020-2021 have ended
+               and are not reflected.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out ("15 days",
+               never "fifteen days"); checked by the number-word lint and, for fr.html, by the fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  English is the authoritative language of this document; fr.html is a machine-drafted French translation. Draft
+  text, not vetted by legal counsel. Reflects the commercial tenancy law of the Canadian provinces and territories
+  named above, not the law of any other country. Each clause-<key> fragment holds only the clause body; the shell
+  supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded;
+  they sit outside the province branches. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;,</p>
+  <p>jurisdiction and number of incorporation or registration: ______________________________</p>
+  <p>business number (BN): ______________________________</p>
+  <p>GST/HST registration number: ______________________________ QST registration number (Quebec):
+    ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>jurisdiction and number of incorporation or registration: ______________________________</p>
+  <p>business number (BN): ______________________________</p>
+  <p>GST/HST registration number: ______________________________ QST registration number (Quebec):
+    ______________________________</p>
+  <p>represented by: ______________________________.</p>
+  <p>Where the tenant consists of several persons, each of them is jointly and severally liable for all
+    obligations of the tenant under this lease.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Where the premises are in Quebec, the landlord is the
+    lessor and the tenant is the lessee within the meaning of the Civil Code of Quebec.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord leases to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>, with a
+    rentable area of approximately ________ m&sup2; as shown on the plan attached to this lease, hereinafter
+    &ldquo;the premises&rdquo;, together with the right to use the common areas of the building for access and the
+    following other rights: ______________________________</p>
+  <p>The premises are leased for business purposes and not as a dwelling.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario this lease is governed by the Commercial
+    Tenancies Act and the general law of contract, not by the Residential Tenancies Act, 2006.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec this lease is governed by articles 1851 to 1891
+    of the Civil Code of Quebec on the lease in general; the special rules on the lease of a dwelling (articles 1892
+    to 2000) do not apply to it.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia this lease is governed by the
+    Commercial Tenancy Act, the Rent Distress Act and the general law, not by the Residential Tenancy Act.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Commercial
+    leases in Canada are governed by the law of the province or territory in which the premises are located; the
+    residential tenancy legislation of that province or territory does not apply to premises leased for business
+    purposes. The parties must check that law before signing.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The tenant uses the premises only for the following business: ______________________________, and for no
+    other purpose without the landlord&rsquo;s prior written consent.</p>
+  <p>The landlord gives no warranty that the permitted use is allowed by zoning by-laws or other law. The tenant
+    obtains at the tenant&rsquo;s own cost every permit, licence and approval required for the tenant&rsquo;s
+    business and complies with all laws and by-laws relating to it.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec neither party may change the form or
+    destination of the leased property during the lease (article 1856 of the Civil Code of Quebec).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">The lease is for an indeterminate term and continues until it is ended by notice in
+    accordance with this lease and the law.</p>
+  <p>Renewal option (if any): the tenant may renew this lease for ________ further term(s) of ________ years each,
+    on the terms of this lease except the rent, which is determined as follows: ______________________________,
+    by giving the landlord written notice not later than ________ months before the end of the current term and
+    provided that the tenant is not in default.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec a fixed-term lease ends of right at the end of
+    the term (article 1877 of the Civil Code of Quebec). It is tacitly renewed if the lessee continues to occupy the
+    premises for more than 10 days after its expiry without opposition from the lessor; it is then renewed for 1
+    year or, where the initial term was less than 1 year, for that term, on the same conditions (article 1879). A
+    security given by a third person does not extend to the renewed lease (article 1881).</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">Unless the law of the province or territory in which
+    the premises are located provides otherwise, the tenant has no right to remain in the premises or to a new lease
+    at the end of the term other than under the renewal option of this lease.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The basic rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>, plus applicable sales taxes.<span class="clause-ref"
+    data-ref="additional-rent" th:if="${refs['additional-rent']}"> The tenant also pays additional rent (see article
+    <span th:text="${refs['additional-rent']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the basic rent are
+    governed by what this lease provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-additional-rent" data-clause="additional-rent">
+  <p>In addition to the basic rent, the tenant pays as additional rent its proportionate share of ________ per cent
+    of the operating costs of the building and common areas, the realty taxes assessed on the premises or on the
+    building, and the landlord&rsquo;s insurance costs, as defined in a schedule to this lease.</p>
+  <p>The landlord estimates the additional rent for each lease year; the tenant pays the estimate in equal
+    instalments with the basic rent. Within ________ days after the end of each lease year the landlord gives the
+    tenant a statement of the actual costs, and the parties settle the difference within 30 days after the
+    statement.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario, unless a lease specifically provides otherwise,
+    a covenant by a tenant to pay taxes does not include taxes assessed for local improvements (section 27,
+    subsection 1, of the Commercial Tenancies Act). Under this lease the tenant [ ] pays [ ] does not pay its share
+    of taxes assessed for local improvements.</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The basic rent is adjusted as follows (tick 1 box): [ ] by the fixed amounts or steps set out here:
+    ______________________________; [ ] on each anniversary of the start date, by the percentage change in the
+    Consumer Price Index published by Statistics Canada for ________ over the preceding 12 months; [ ] at the
+    following dates, to the fair market rent agreed by the parties or, failing agreement within 30 days, determined
+    by an arbitrator: ______________________________</p>
+  <p th:if="${countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC')}">The
+    rent-increase limits and notice rules for residential tenancies in this province do not apply to premises
+    leased for business purposes; the basic rent changes only as this lease provides.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    basic rent changes only as this lease provides, unless the law of the province or territory in which the premises
+    are located provides otherwise.</p>
+</div>
+
+<div th:fragment="clause-sales-tax" data-clause="sales-tax">
+  <p>The basic rent and the additional rent are exclusive of the goods and services tax or harmonized sales tax
+    (GST/HST) and, in Quebec, of the Quebec sales tax (QST). Where the rent is a taxable supply and the landlord is a
+    registrant, the tenant pays those taxes at the applicable rate in addition to the rent, on the same dates as the
+    rent, against an invoice or statement that shows the landlord&rsquo;s registration numbers.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p>To secure the performance of its obligations, the tenant pays the landlord a security deposit<span
+    th:if="${depositAmount != null}"> of <strong th:text="${depositAmount}">amount</strong></span> on signing this
+    lease. The landlord may apply the deposit to any amount the tenant owes under this lease and, in that case, the
+    tenant restores the deposit within 10 days after written demand. The landlord returns the deposit, without
+    interest unless otherwise agreed and less any amount the tenant owes, within 30 days after the end of the lease
+    and the return of the premises.</p>
+  <p th:if="${countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC')}">The
+    statutory limits on deposits for residential tenancies in this province (in Ontario the rent deposit, in Quebec the
+    prohibition of any deposit, in British Columbia the cap of 1/2 of 1 month&rsquo;s rent) do not apply to
+    premises leased for business purposes.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the basic rent, the additional rent and the applicable taxes<span class="clause-ref"
+    data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span>
+    <span th:text="${paymentFrequency}">monthly</span> in advance,
+    <span th:if="${paymentDueDay != null}">on day <strong th:text="${paymentDueDay}">1</strong> of each rent
+      period</span><span th:if="${paymentDueDay == null}">on the day agreed by the parties</span>, by the following
+    method: ______________________________, without deduction or set-off except as the law requires.</p>
+  <p>An amount not paid when due bears interest from its due date until payment at the yearly rate of ________ per
+    cent. Under section 4 of the Interest Act (Canada), interest that a written contract makes payable at a rate for
+    a period of less than 1 year is limited unless the contract expressly states the equivalent yearly rate.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord repairs and maintains the structure, the roof, the foundations and the base building systems
+    serving the premises. The tenant repairs and maintains the interior of the premises, its leasehold improvements
+    and the systems that serve the premises exclusively, except for reasonable wear and tear and damage that the
+    landlord&rsquo;s insurance covers, and gives the landlord prompt written notice of any substantial defect.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec, failing a different agreement, the lessor makes
+    all the necessary repairs during the lease, except minor maintenance repairs, which are borne by the lessee unless
+    they result from decrepitude or superior force (article 1864 of the Civil Code of Quebec); the lessee who becomes
+    aware of a substantial defect or deterioration must inform the lessor within a reasonable time (article
+    1866).</p>
+  <p>The landlord may enter the premises at reasonable times and, except in an emergency, on at least 24 hours&rsquo;
+    notice to inspect them, carry out repairs or show them to prospective tenants, purchasers or lenders.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant makes no alterations, improvements or installations to the premises without the landlord&rsquo;s
+    prior written consent, which the landlord may not unreasonably withhold for non-structural work. The tenant
+    carries out approved work at its own cost, by qualified contractors, with all permits required and so that no
+    construction lien is registered against the property.</p>
+  <p>At the end of the lease the tenant removes its trade fixtures and, if the landlord so requires, the
+    improvements the tenant made, and restores the premises, except for reasonable wear and tear.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the lessee is bound, at the end of the lease, to
+    remove the constructions, works or plantations it has made (article 1891 of the Civil Code of Quebec), unless
+    otherwise agreed.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not assign this lease, sublet all or part of the premises or otherwise part with possession of
+    them without the landlord&rsquo;s prior written consent, which may not be unreasonably withheld. A change of
+    control of a tenant that is a corporation is treated as an assignment: [ ] yes [ ] no.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario a covenant against assigning or subletting
+    without consent is deemed subject to a proviso that consent is not to be unreasonably withheld, unless the lease
+    expressly provides otherwise; where the landlord refuses or neglects to consent, the tenant may apply to a judge
+    of the Superior Court of Justice for an order determining whether consent is unreasonably withheld (section 23,
+    subsections 1 and 2, of the Commercial Tenancies Act).</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>In Quebec the lessee must notify the lessor of the intention to sublease or assign, give the name and address
+      of the intended sublessee or assignee and obtain the lessor&rsquo;s consent (article 1870 of the Civil Code of
+      Quebec). The lessor may not refuse consent without a serious reason and must state the reasons for a refusal
+      within 15 days after receiving the notice, failing which consent is deemed given (article 1871); the lessor may
+      exact only the reasonable expenses resulting from the sublease or assignment (article 1872).</p>
+    <p>An assignment releases the former lessee from its obligations unless the parties agree otherwise (article
+      1873). The parties agree that on an assignment the tenant (tick 1 box): [ ] is released; [ ] remains liable
+      together with the assignee.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC'))}">Unless the parties agree
+    otherwise in writing, the tenant remains liable for the obligations under this lease after an assignment.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant maintains during the lease, at its own cost, commercial general liability insurance of at least
+    ______________________________ per occurrence naming the landlord as an additional insured, and all-risks
+    property insurance on its inventory, equipment, trade fixtures and leasehold improvements for their full
+    replacement cost. The landlord insures the building against all risks for its replacement cost.</p>
+  <p>The tenant gives the landlord a certificate of insurance on request and at least 10 days before any change or
+    cancellation of a policy.</p>
+</div>
+
+<div th:fragment="clause-indemnity" data-clause="indemnity">
+  <p>The tenant indemnifies the landlord against all claims, losses and costs arising from the tenant&rsquo;s use or
+    occupation of the premises, from a breach of this lease by the tenant or from the acts or omissions of the tenant
+    and of the persons for whom the tenant is responsible in law, except to the extent caused by the negligence or
+    wilful misconduct of the landlord or of the persons for whom the landlord is responsible in law.</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the rights resulting from a lease may be
+    published (article 1852 of the Civil Code of Quebec). Where more than 12 months of a fixed-term lease of an
+    immovable remain after the property is alienated, the acquirer may resiliate the lease on the expiry of those
+    12 months by giving the lessee 6 months&rsquo; written notice, unless the lease was inscribed in the land register
+    before the act of alienation (article 1887). The tenant may have this lease or a notice of it inscribed at its
+    own cost.</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">The tenant may register a notice of this lease, but not
+    the lease itself, against the title to the property where the land registration law of the province or territory
+    in which the premises are located allows it; the landlord signs any document reasonably required for that
+    purpose, and the tenant pays the costs and discharges the registration when the lease ends.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord and the tenant record the condition of the premises in writing when the tenant takes possession
+    and when it returns them; each signs the record and keeps a copy.</p>
+  <p>At the end of the lease the tenant returns the premises clean and in the condition recorded at the start,
+    except for reasonable wear and tear and the work permitted by this lease, and returns all keys.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the lessee returns the property in the condition
+    in which it was received, but is not liable for changes resulting from decrepitude, normal wear and tear or
+    superior force (article 1890 of the Civil Code of Quebec).</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>A fixed-term lease ends at the end of its term. A lease for an indeterminate term may be ended by either party
+    by written notice given within the time that the law of the province or territory in which the premises are
+    located requires, and not less than ________ months before the end of a rent period.</p>
+  <p>If the tenant fails to pay any rent within ________ days after it is due, or fails to remedy any other breach
+    within ________ days after written notice from the landlord, or becomes bankrupt or insolvent, the landlord may
+    terminate this lease and re-enter the premises, in addition to its other remedies, subject to the conditions
+    and to the rights of relief that the law provides.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario, unless otherwise agreed, a lease is deemed to
+    allow the landlord to re-enter if rent remains unpaid for 15 days after it is due, even without formal demand
+    (section 18, subsection 1, of the Commercial Tenancies Act). A right of re-entry or forfeiture for a breach other
+    than non-payment of rent may be enforced only after a notice specifying the breach, requiring it to be remedied
+    where it can be remedied and requiring compensation, and the tenant&rsquo;s failure to comply within a reasonable
+    time (section 19, subsection 2); the tenant may apply to the court for relief against re-entry or forfeiture
+    (section 20). The landlord&rsquo;s right of distress for arrears of rent under that Act remains available,
+    subject to its conditions and exemptions (sections 30 and 43).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec, where the non-performance of an obligation
+    causes serious prejudice, the other party may apply for the resiliation of the lease, in addition to damages
+    (article 1863 of the Civil Code of Quebec); a lessee sued for resiliation for non-payment of rent may avoid it by
+    paying, before judgment, the rent due, the costs and interest (article 1883). A party who intends to resiliate a
+    lease of indeterminate term must give the other party notice within the same time as the term fixed for payment
+    of the rent or, if that term exceeds 3 months, within 3 months (article 1882). As Quebec law is generally
+    understood, the lessor has no right of distress without legal process; seizure of the lessee&rsquo;s property
+    requires a judgment.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the landlord&rsquo;s remedies for
+    unpaid rent include, subject to its conditions and exemptions, distress under the Rent Distress Act and the
+    Commercial Tenancy Act.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Whether
+    the landlord may distrain the tenant&rsquo;s goods for unpaid rent, and the notice that must precede a re-entry,
+    depend on the law of the province or territory in which the premises are located.</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Every notice under this lease is given in writing and delivered by hand, by registered mail or by email to the
+    address of the other party stated in this lease or to a new address of which that party has given written
+    notice. A notice is deemed received on the day of delivery by hand or email on a business day and on the
+    5th business day after mailing.</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">A notice ending this lease must also
+    meet the requirements of the provisions on termination (see article
+    <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>______________________________ (the guarantor) guarantees to the landlord, as principal debtor and jointly and
+    severally with the tenant, the payment of the rent and the performance of all obligations of the tenant under this
+    lease, up to ______________________________, for the term of this lease.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec a security given by a third person to guarantee
+    the performance of the lessee&rsquo;s obligations does not extend to the renewed lease (article 1881 of the Civil
+    Code of Quebec).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party collects, uses and discloses the personal information of the other party&rsquo;s representatives
+    only for the purposes of this lease and in accordance with the privacy legislation that applies: in Quebec the
+    Act respecting the protection of personal information in the private sector, in British Columbia the Personal
+    Information Protection Act, and elsewhere in general the federal Personal Information Protection and Electronic
+    Documents Act or the provincial legislation that replaces it.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by the law of the province or territory in which the premises are located and by the
+    federal law of Canada that applies there. Disputes are submitted to the competent courts of that province or
+    territory, unless the parties agree on arbitration in writing.</p>
+</div>
+
+</body>
+</html>

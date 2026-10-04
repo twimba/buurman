@@ -584,6 +584,86 @@ public final class LeaseDocumentRegistry {
   // ===== CA entries (country pack) =====
   // Constants, citation pattern and foreign markers for CA go here, only inside these markers.
 
+  /**
+   * The Canadian statute citation format: the section or article number after "section(s)" /
+   * "article(s)" (English: "section 106, subsection 2, of the Residential Tenancies Act, 2006",
+   * "article 1904 of the Civil Code of Quebec"; French: "article 106, paragraphe 2, de la Loi de
+   * 2006 ...", "article 1904 du Code civil du Québec"). Decimal sections and articles ("12.1",
+   * "47.0.1", "1974.1", "1978.2") and a letter suffix glued to the number stay in the token; the
+   * subsection that follows within 3 words ("subsection 2" / "paragraphe 2") is the digit the gate
+   * pairs.
+   */
+  public static final Pattern CANADIAN_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:sections?|articles?|art\\.|arts\\.)\\s{1,20})\\d+(?:\\.\\d+)*[a-z]?(?![\\w])",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** English marker words that must not leak into the French translation outside glosses. */
+  private static final List<String> CANADIAN_ENGLISH_MARKERS =
+      List.of(
+          "the landlord", "the tenant", "the lessor", "the lessee", "see article", "pursuant to");
+
+  /** Mirror of V111__seed_ca_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry CA_RESIDENTIAL =
+      new Entry(
+          "CA",
+          LeaseKind.RESIDENTIAL,
+          "en",
+          List.of("en", "fr"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("handover-inspection", false, false, 12),
+              new ClauseSpec("statutory-information", true, false, 13),
+              new ClauseSpec("termination", true, false, 14),
+              new ClauseSpec("notices", false, false, 15),
+              new ClauseSpec("data-protection", false, false, 16),
+              new ClauseSpec("disputes", false, false, 17)),
+          CANADIAN_ENGLISH_MARKERS,
+          Optional.of(CANADIAN_CITATION));
+
+  /** Mirror of V111__seed_ca_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry CA_COMMERCIAL =
+      new Entry(
+          "CA",
+          LeaseKind.COMMERCIAL,
+          "en",
+          List.of("en", "fr"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("additional-rent", false, false, 6),
+              new ClauseSpec("rent-adjustment", false, false, 7),
+              new ClauseSpec("sales-tax", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("indemnity", false, false, 15),
+              new ClauseSpec("registration", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("notices", false, false, 19),
+              new ClauseSpec("guarantor", false, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          CANADIAN_ENGLISH_MARKERS,
+          Optional.of(CANADIAN_CITATION));
+
   // ===== end CA =====
 
   // ===== CH entries (country pack) =====
@@ -681,6 +761,8 @@ public final class LeaseDocumentRegistry {
     // ===== end BE ENTRIES =====
 
     // ===== CA ENTRIES (country pack) =====
+    entries.add(CA_RESIDENTIAL);
+    entries.add(CA_COMMERCIAL);
 
     // ===== end CA ENTRIES =====
 

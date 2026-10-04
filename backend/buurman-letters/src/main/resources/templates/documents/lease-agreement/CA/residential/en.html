@@ -1,0 +1,524 @@
+<!--
+  legal-basis: Canadian residential tenancy law is provincial and territorial, not federal; the province is read from
+               the contract region (catalog codes AB, BC, MB, NB, NL, NS, NT, NU, ON, PE, QC, SK, YT). This document
+               has branches for Ontario (ON), Quebec (QC) and British Columbia (BC) and a general text for every other
+               province or territory and for an unknown region.
+               Ontario: Residential Tenancies Act, 2006, S.O. 2006, c. 17 (e-Laws consolidation from 2026-09-21, last
+               amendment 2025, c. 14, Sched. 12, Fighting Delays, Building Faster Act, 2025): s. 3, 4, 6.1 (units
+               first occupied after 2018-11-15), 11, 12, 12.1 (prescribed form; demand, 21 days, withholding of up to
+               1 month's rent, agreement not void), 14, 15, 20, 26, 27 (24 hours' written notice, 8 a.m. to 8 p.m.),
+               37, 38, 39, 40, 43, 44 (28 / 60 days), 47, 47.0.1, 59 (notice for non-payment effective not earlier
+               than the 7th day, in force 2026-09-21), 95, 96, 97, 105, 106, 108, 109, 116 (90 days, approved form),
+               119 (12 months), 120 (guideline, at most 2.5 per cent), 134, 135. O. Reg. 9/18 (Standard Form of
+               Lease: prescribed class, 2018-04-30, form dated 2020/12, additional terms void where inconsistent).
+               O. Reg. 516/06 s. 17 (permitted charges: refundable key deposit, NSF administration charge of not more
+               than $20). Guideline 2027 (1.9 per cent) on ontario.ca/page/rent-increase-guideline (not printed).
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as read on
+               ccq.lexum.com; legisquebec.gouv.qc.ca refused automated access), arts. 1851-1891 (lease in general:
+               1864, 1870-1873, 1890, 1891) and 1892-2000 (lease of a dwelling): 1893, 1894, 1895 (copy within 10
+               days, mandatory form), 1896 (notice to a new lessee, amended 2024, c. 2), 1897 (French unless the
+               parties expressly wish otherwise), 1898, 1903, 1904 (no deposit, no postdated cheque), 1906, 1910,
+               1911, 1931, 1932, 1936, 1941, 1942, 1943, 1945, 1946, 1947, 1955, 1957, 1959, 1959.1, 1960, 1965,
+               1971, 1974, 1974.1, 1978.1-1978.4 (assignment rules of 2024, c. 2, Bill 31). Tribunal administratif du
+               logement (tal.gouv.qc.ca): mandatory lease form since 1996-09-01, notice periods, rent-fixing criteria
+               for notices given from 2026-01-01.
+               British Columbia: Residential Tenancy Act, SBC 2002, c. 78 (current to 2026-09-22 on bclaws.gov.bc.ca):
+               s. 12, 13 (written agreement, standard terms, copy within 21 days, vacate clause), 14, 15, 17, 18, 19
+               (security deposit and pet damage deposit each at most 1/2 of 1 month's rent), 20, 21, 23, 29 (24 hours
+               to 30 days' written notice, 8 a.m. to 9 p.m.), 32, 33, 34, 35, 37, 38 (15 days, double), 42 (12 months,
+               3 months' notice, approved form), 43, 44, 45, 46 (10 days, 5 days), 47, 49, 52; Residential Tenancy
+               Regulation, B.C. Reg. 477/2003: s. 7 (fees, $25), 13.1 (vacate clause), 22 (annual increase = BC
+               inflation rate).
+               Privacy: Personal Information Protection and Electronic Documents Act (federal); Act respecting the
+               protection of personal information in the private sector (Quebec); Personal Information Protection Act
+               (British Columbia) - named from knowledge, listed as unverified in the pack report.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com, tal.gouv.qc.ca.
+               Pending: Ontario 2025, c. 14, Sched. 12 provisions not yet in force; Quebec rent-fixing regulation
+               applies to notices given from 2026-01-01; British Columbia allowable increase for 2027 announced
+               annually (not printed).
+               Convention: every numeric quantity in the prose is written as digits, never spelled out ("60 days",
+               never "sixty days"); checked by the number-word lint and, for fr.html, by the fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  English is the authoritative language of this document; fr.html is a machine-drafted French translation. Draft
+  text, not vetted by legal counsel. Reflects the residential tenancy law of the Canadian provinces and territories
+  named above, not the law of any other country. This document is NOT the Ontario Standard Form of Lease nor the
+  mandatory lease form of the Tribunal administratif du logement; where those forms apply the document says so. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded; they sit outside the province branches so that they
+  render for every province. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This agreement is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>for the rental of the dwelling described below as the tenant&rsquo;s residence. Where the tenant consists of
+    several persons, each of them is jointly and severally liable for the obligations of the tenant under this
+    agreement, insofar as the law of the province or territory where the dwelling is located permits.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Where the dwelling is in Quebec, the landlord is the
+    lessor and the tenant is the lessee within the meaning of the Civil Code of Quebec; references in this agreement
+    to the landlord and to the tenant are to be read accordingly.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord rents to the tenant the dwelling at <strong th:text="${propertyAddress}">address</strong>,
+    together with the appliances, furniture and accessories listed in this agreement or its schedules, hereinafter
+    &ldquo;the dwelling&rdquo;.</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>The dwelling is in Ontario. Where the tenancy belongs to the class prescribed by Ontario Regulation 9/18 (in
+      general every tenancy entered into on or after April 30, 2018 to which the Residential Tenancies Act, 2006
+      applies, except in particular care homes, mobile home sites, land lease home sites, social and other
+      housing described in section 7, subsection 1, of the Act, and rent geared to income), the tenancy agreement
+      must be in the prescribed form, the Residential Tenancy Agreement (Standard Form of Lease) dated 2020/12, in
+      English or in French (section 12.1, subsection 1, of the Act).</p>
+    <p>THIS DOCUMENT IS NOT THE STANDARD FORM OF LEASE. For a tenancy of the prescribed class the parties must sign
+      the Standard Form of Lease; the terms of this document may then be used only as additional terms attached to
+      it, and an additional term that is inconsistent with the mandatory terms of the Standard Form of Lease is
+      void. If the landlord does not use the Standard Form of Lease, the tenant may demand it in writing once during
+      the tenancy; if the landlord has not provided it at least 21 days after the demand, the tenant may withhold
+      rent up to a total amount equal to 1 month&rsquo;s rent (section 12.1, subsections 5 to 7), and in the cases
+      set out in section 47.0.1 the tenant may end a yearly or fixed-term tenancy early with 60 days&rsquo; notice.
+      A tenancy agreement is not void solely because it is not in the prescribed form (section 12.1, subsection
+      11).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>The dwelling is in Quebec. A lease of a dwelling must be made on the form whose use is made mandatory by
+      government regulation, the lease form of the Tribunal administratif du logement (TAL) (article 1895 of the Civil
+      Code of Quebec); the TAL states that this form has been mandatory since September 1, 1996 for every new lease of
+      a dwelling.</p>
+    <p>THIS DOCUMENT IS NOT THE MANDATORY LEASE FORM. For a dwelling in Quebec the parties must use the form of the
+      TAL; the terms of this document may then at most supplement it to the extent that they are compatible with it.
+      A clause of a lease of a dwelling that derogates from articles 1892 to 2000 of the Civil Code of Quebec, or
+      from the other articles listed in article 1893, is without effect. The lease must be drawn up in French; it may
+      be drawn up in another language only if that is the express wish of the parties (article 1897).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">The dwelling is in British Columbia. The landlord must
+    prepare the tenancy agreement in writing, and it must set out the standard terms prescribed by the Residential
+    Tenancy Regulation and the other information required by section 13 of the Residential Tenancy Act. The
+    standard terms are terms of every tenancy agreement, whether or not they are written in it, and may not be
+    changed or removed by agreement (sections 12 and 14 of that Act). A term of this document that conflicts with
+    the standard terms or with that Act has no effect.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Residential
+    tenancies in Canada are governed by the law of the province or territory in which the dwelling is located, not
+    by federal law. The rules on prescribed forms, deposits, rent increases, notices and termination differ
+    materially between provinces and territories, and some of them prescribe a mandatory lease form or standard
+    terms that apply despite this agreement: in Ontario the Standard Form of Lease, in Quebec the lease form of the
+    Tribunal administratif du logement, in British Columbia the standard terms of the Residential Tenancy
+    Regulation. This document is not such a form. The parties must check the law of the province or territory
+    concerned before signing.</p>
+  <p>Where a provision of the applicable provincial or territorial law that cannot be excluded or varied by agreement
+    conflicts with this agreement, that provision prevails.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The tenancy is for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">The tenancy is periodic and continues from rent period to rent period until it is ended
+    in accordance with the law.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario a tenancy may be terminated only in
+    accordance with the Residential Tenancies Act, 2006 (section 37, subsection 1). If a tenancy agreement for a
+    fixed term ends and has not been renewed or terminated, the landlord and the tenant are deemed to have renewed it
+    as a monthly tenancy agreement on the same terms, subject to any rent increase made in accordance with that Act
+    (section 38, subsection 1).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec every lessee has a personal right to maintain
+    occupancy and may be evicted only in the cases provided by law (article 1936). A lessee entitled to maintain
+    occupancy is entitled, as of right, to the renewal of a fixed-term lease when it ends; the lease is renewed on
+    the same conditions and for the same term or, where the initial term exceeds 12 months, for 12 months, unless the
+    parties agree on a different renewal term (article 1941).</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>In British Columbia, if on the date specified as the end of a fixed-term tenancy the landlord and the tenant
+      have not entered into a new tenancy agreement, they are deemed to have renewed the tenancy agreement on the same
+      terms as a periodic tenancy from month to month, unless the agreement validly requires the tenant to vacate at the end of the
+      term (section 44, subsection 3). Such a requirement is permitted only where the landlord is an individual who,
+      or whose close family member, will occupy the rental unit at the end of the term (section 13, subsection 2, of
+      the Residential Tenancy Act and section 13.1 of the Residential Tenancy Regulation).</p>
+    <p th:if="${fixedTerm}">Requirement to vacate at the end of the fixed term (tick 1 box): [ ] does not apply;
+      [ ] applies, because the following person will occupy the rental unit at the end of the term:
+      ______________________________</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">What
+    happens at the end of a fixed term depends on the law of the province or territory in which the dwelling is
+    located; in several provinces the tenancy does not end when the term expires but continues or is renewed unless
+    it is ended in accordance with that law.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> The services and utilities included in the rent are listed separately (see
+    article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>The landlord may increase the rent only by giving the tenant at least 90 days&rsquo; written notice in the
+      form approved by the Landlord and Tenant Board, stating the amount of the new rent (section 116, subsections 1
+      and 3, of the Residential Tenancies Act, 2006); an increase without that notice is void (section 116,
+      subsection 4). The rent may be increased only if at least 12 months have elapsed since the last increase for
+      the tenant or, if there has been none, since the unit was first rented to the tenant (section 119, subsection
+      1).</p>
+    <p>During the tenancy the increase may not exceed the guideline that the Minister determines for each calendar
+      year, which is not more than 2.5 per cent, except as permitted by sections 121, 123, 126 or 127 of that Act
+      (section 120, subsections 1 and 2). The guideline does not apply where no part of the building in which the
+      unit is located was occupied for residential purposes on or before November 15, 2018 (section 6.1, subsection
+      2, of that Act, which also covers additions and, under subsection 3, certain units created in houses).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>A clause providing for the readjustment of the rent during the lease is without effect in a fixed-term lease
+      of 12 months or less; in a lease of more than 12 months it is without effect during the first 12 months or if
+      it provides for more than 1 readjustment in each period of 12 months (article 1906 of the Civil Code of
+      Quebec).</p>
+    <p>On the renewal of the lease the lessor may modify its conditions, in particular the term or the rent, only by
+      giving the lessee a notice of modification at least 3 months but not more than 6 months before the end of the
+      term; for a lease of less than 12 months, at least 1 month but not more than 2 months before the end of the
+      term; for a lease of indeterminate term, at least 1 month but not more than 2 months before the modification;
+      for the lease of a room, at least 10 days but not more than 20 days (article 1942). A lessee who refuses the modification must notify the lessor within 1 month after receiving
+      the notice, failing which the lessee is deemed to have accepted the renewal on the proposed conditions (article
+      1945); the lessor may then apply to the Tribunal administratif du logement within 1 month after receiving the
+      refusal to have the rent fixed, failing which the lease is renewed on the previous conditions (article
+      1947).</p>
+    <p>Neither party may apply to the tribunal to fix the rent or modify another condition of the lease of a
+      dwelling leased by a housing cooperative, or of a dwelling in a newly erected building or a building recently
+      converted to rental use, during the 5 years following the date on which the building is ready for its intended
+      use (article 1955). The lessor may invoke these restrictions against the lessee only if they are stated in the
+      lease and, for a new or converted building, only if the lease states the maximum rent that the lessor may
+      charge during those 5 years; for such a dwelling, a lessee who refuses the proposed modification must leave the
+      dwelling at the end of the lease (article 1945).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>The landlord may not impose a rent increase for at least 12 months after the date on which the rent was first
+      payable or, if the rent has been increased before, after the effective date of the last increase (section 42,
+      subsection 1, of the Residential Tenancy Act). The landlord must give the tenant notice of the increase in the
+      approved form at least 3 months before its effective date (section 42, subsections 2 and 3).</p>
+    <p>The increase may not exceed the amount calculated under the Residential Tenancy Regulation (the inflation
+      rate, being the 12-month average percent change in the all-items Consumer Price Index for British Columbia),
+      an amount ordered by the director or an amount agreed to by the tenant in writing (section 43, subsection 1);
+      the tenant may deduct an increase collected in breach of these rules from the rent (section 43, subsection
+      5).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    rent may be increased only in the manner, with the written notice, at the intervals and within the limits that
+    the law of the province or territory in which the dwelling is located permits. Most provinces and territories
+    require written notice of several months and allow no more than 1 increase in 12 months; some limit the amount of
+    the increase.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The following services, utilities and facilities are included in the rent (tick as applicable): [ ] heat
+    [ ] electricity [ ] hot water [ ] water and sewer [ ] parking: ________ [ ] storage: ________ [ ] laundry
+    [ ] other: ______________________________</p>
+  <p>The tenant pays directly to the supplier concerned every service or utility that is not ticked above.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the tenancy agreement must state
+    which services and facilities are included in the rent (section 13, subsection 2, of the Residential Tenancy
+    Act).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>The only security deposit that a landlord in Ontario may collect is a rent deposit, which may be required
+      only on or before entering into the tenancy agreement and may not exceed the lesser of the rent for 1 rent
+      period and the rent for 1 month (section 105, subsection 1, and section 106, subsections 1 and 2, of the
+      Residential Tenancies Act, 2006).<span th:if="${depositAmount != null}"> The rent deposit is
+      <strong th:text="${depositAmount}">amount</strong>.</span></p>
+    <p>The landlord applies the rent deposit to the rent for the last rent period before the tenancy terminates
+      (section 106, subsection 10) and pays the tenant interest on it annually at a rate equal to the guideline in
+      effect when the payment becomes due (section 106, subsection 6). The rent deposit is not a damage deposit. A
+      refundable key or remote entry device deposit not greater than the expected direct replacement costs is
+      permitted (section 17 of Ontario Regulation 516/06).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the lessor may not exact any sum of money other
+    than the rent, in the form of a deposit or otherwise (article 1904 of the Civil Code of Quebec). No security
+    deposit is payable under this agreement; an amount recorded as a deposit for this contract is not payable for
+    a dwelling in Quebec.</p>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>The landlord may not require or accept a security deposit or a pet damage deposit greater than the equivalent
+      of 1/2 of 1 month&rsquo;s rent payable under the tenancy agreement (section 19, subsection 1, of the
+      Residential Tenancy Act); a security deposit may be required only when the tenancy agreement is entered into
+      (section 20).<span th:if="${depositAmount != null}"> The security deposit is
+      <strong th:text="${depositAmount}">amount</strong>.</span> Pet damage deposit (if any):
+      ______________________________</p>
+    <p>Within 15 days after the later of the date the tenancy ends and the date the landlord receives the tenant&rsquo;s
+      forwarding address in writing, the landlord must repay the deposits with any interest calculated in
+      accordance with the regulations, or apply for dispute resolution claiming against them (section 38,
+      subsection 1); a landlord who does neither must pay the tenant 2 times the amount of the deposits (section 38,
+      subsection 6).
+      The tenant may not apply a deposit as rent without the landlord&rsquo;s written consent (section 21).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    tenant pays a security deposit<span th:if="${depositAmount != null}"> of
+    <strong th:text="${depositAmount}">amount</strong></span>, insofar as the law of the province or territory in
+    which the dwelling is located permits a deposit of that kind and amount. Provincial and territorial law limits
+    or prohibits deposits, prescribes how they are held and returned and may require interest to be paid; the
+    landlord returns the deposit, less the amounts that law allows the landlord to keep, within the time limit that
+    law sets.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">on day <strong th:text="${paymentDueDay}">1</strong> of each rent
+      period</span><span th:if="${paymentDueDay == null}">on the day agreed by the parties</span>, by the following
+    method: ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario neither the landlord nor this agreement may
+    require the tenant to provide post-dated cheques or to permit automatic payment of the rent (section 108 of the
+    Residential Tenancies Act, 2006). The landlord provides a receipt free of charge on request (section 109,
+    subsection 1). The landlord may not collect any fee, penalty or other charge that the Act and its regulations do
+    not permit (section 134, subsection 1); permitted charges include an administration charge of not more than $20
+    for a cheque that is returned for insufficient funds (section 17 of Ontario Regulation 516/06).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the rent is payable in equal instalments,
+    except the last, which may be less, on the 1st day of each payment term unless otherwise agreed (article 1903 of
+    the Civil Code of Quebec). The lessor may not exact that an instalment exceed 1 month&rsquo;s rent, may exact
+    payment in advance only of the 1st instalment (or, if that term exceeds 1 month, of not more than 1 month&rsquo;s
+    rent) and may not exact a postdated cheque or other postdated instrument (article 1904).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the landlord may charge an
+    administration fee of not more than $25 for the late payment of rent or for a cheque returned by a financial
+    institution only if this agreement provides for that fee (section 7 of the Residential Tenancy Regulation). This
+    agreement [ ] does not provide [ ] provides for such a fee of $________. The landlord may not charge anything for
+    accepting or processing an application for a tenancy (section 15 of the Residential Tenancy Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Late
+    payment fees, charges for returned cheques and requirements for post-dated cheques are permitted only insofar as
+    the law of the province or territory in which the dwelling is located allows them.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling as a private residence for the tenant and the members of the tenant&rsquo;s
+    household, and behaves so as not to disturb the reasonable enjoyment of the other occupants of the building.</p>
+  <p>Pets: ______________________________. Smoking: ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario a provision in a tenancy agreement prohibiting
+    the presence of animals in or about the residential complex is void (section 14 of the Residential Tenancies Act,
+    2006).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia a tenancy agreement may prohibit pets
+    or restrict their size, kind or number, subject to the Guide Dog and Service Dog Act (section 18 of the
+    Residential Tenancy Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'BC'))}">Any rule on pets and smoking
+    applies only insofar as the law of the province or territory in which the dwelling is located permits it.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>The tenant may assign the rental unit or sublet it only with the landlord&rsquo;s consent (section 95,
+      subsection 1, and section 97, subsection 1, of the Residential Tenancies Act, 2006). The landlord may not
+      arbitrarily or unreasonably refuse consent to a sublet to a potential subtenant or to an assignment to a
+      potential assignee (section 97, subsection 2, and section 95, subsection 5). If the landlord refuses an
+      assignment or does not respond within 7 days after the request, the tenant may give notice of termination
+      within 30 days after the request (section 95, subsection 4). The landlord may charge only the reasonable
+      out-of-pocket expenses incurred in giving consent (section 95, subsection 7, and section 97, subsection 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>The lessee may sublease all or part of the dwelling or assign the lease after notifying the lessor of the
+      intention, giving the name and address of the intended sublessee or assignee and obtaining the lessor&rsquo;s
+      consent (article 1870 of the Civil Code of Quebec); the notice of assignment must state the intended date of
+      assignment (article 1978.1). The lessor may not refuse to consent to a sublease without a serious reason and
+      must state the reasons for a refusal within 15 days after receiving the notice, failing which the lessor is
+      deemed to have consented (article 1871).</p>
+    <p>The lessor may refuse to consent to an assignment for a reason other than a serious reason; the lease is then
+      resiliated on the date of assignment stated in the lessee&rsquo;s notice (article 1978.2). The lessor may
+      exact only reimbursement of the reasonable expenses resulting from the sublease or assignment (article 1872);
+      the lessee may not exact any consideration for an assignment (article 1978.3) and may not charge a sublessee
+      more than the rent paid to the lessor, apart from the cost of services offered and reasonable fees for the use
+      of the lessee&rsquo;s movable property (article 1978.4).</p>
+  </th:block>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">Unless the landlord consents in writing, the tenant may
+    not assign the tenancy agreement or sublet the rental unit (section 34, subsection 1, of the Residential Tenancy
+    Act). Where a fixed-term tenancy agreement has 6 months or more remaining in the term, the landlord may not
+    unreasonably withhold consent (section 34, subsection 2), and the landlord may not charge anything for
+    considering or consenting to an assignment or sublease (section 34, subsection 3).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    tenant may assign this agreement or sublet the dwelling only with the landlord&rsquo;s prior written consent,
+    which the landlord may not refuse or make subject to charges except as the law of the province or territory in
+    which the dwelling is located allows.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>The landlord is responsible for providing and maintaining the residential complex, including the rental
+      unit, in a good state of repair and fit for habitation and for complying with health, safety, housing and
+      maintenance standards, even if the tenant was aware of a defect before entering into the agreement (section
+      20, subsections 1 and 2, of the Residential Tenancies Act, 2006).</p>
+    <p>The landlord may enter the unit without written notice in an emergency or with the tenant&rsquo;s consent
+      at the time of entry (section 26, subsection 1); otherwise, for the purposes listed in section 27, subsection
+      1, only after written notice given at least 24 hours before the entry that states the reason, the day and a
+      time between 8 a.m. and 8 p.m. (section 27, subsection 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>The lessor must deliver the dwelling in good habitable condition and maintain it so throughout the lease
+      (article 1910 of the Civil Code of Quebec) and deliver it in a clean condition, which the lessee must maintain
+      (article 1911). The lessor makes all the necessary repairs other than minor maintenance repairs, which are
+      borne by the lessee unless they result from decrepitude or superior force (article 1864).</p>
+    <p>Except in an emergency, the lessor must give the lessee 24 hours&rsquo; notice of the intention to ascertain
+      the condition of the dwelling, to carry out work or to have it visited by a prospective acquirer (article
+      1931); except in an emergency, the lessee may refuse a visit before 9 a.m. or after 9 p.m. (article
+      1932).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>The landlord must provide and maintain the residential property in a state of decoration and repair that
+      complies with the health, safety and housing standards required by law and makes it suitable for occupation,
+      having regard to its age, character and location (section 32, subsection 1, of the Residential Tenancy Act).
+      The tenant maintains reasonable health, cleanliness and sanitary standards and repairs damage caused by the
+      tenant or a person the tenant permits on the property, but not reasonable wear and tear (section 32,
+      subsections 2 to 4). Emergency repairs contact: ______________________________ (section 33, subsection 2).</p>
+    <p>Unless the tenant gives permission or another case set out in section 29, subsection 1, applies (such as an
+      emergency in which entry is necessary to protect life or property), the landlord may enter the rental unit only
+      after giving written notice at least 24 hours and not more than 30 days before the entry, stating a reasonable
+      purpose and a date and time between 8 a.m. and 9 p.m. unless the tenant otherwise agrees.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    landlord keeps the dwelling in a good state of repair and fit for habitation in accordance with the law and the
+    health, safety and housing standards that apply; the tenant keeps it clean and repairs damage the tenant causes,
+    other than normal wear and tear. Except in an emergency, the landlord enters the dwelling only with the notice
+    and at the times that the law of the province or territory in which the dwelling is located requires.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord and the tenant record the condition of the dwelling in writing at the start and at the end of
+    the tenancy; each signs the record and keeps a copy.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the landlord and the tenant must
+    inspect the condition of the rental unit together on the day the tenant is entitled to possession or on another
+    mutually agreed day (section 23 of the Residential Tenancy Act) and at the end of the tenancy, when the landlord
+    must offer the tenant at least 2 opportunities for the inspection and complete a condition inspection report that
+    both sign (section 35, subsections 2 to 4); failing to comply may extinguish the right to the deposit or the
+    right to claim against it (sections 24 and 36). Unless otherwise agreed, the tenant vacates by 1 p.m. on the day
+    the tenancy ends (section 37, subsection 1).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the lessee returns the dwelling at the end of
+    the lease in the condition in which it was received, but is not liable for changes resulting from decrepitude,
+    normal wear and tear or superior force (article 1890 of the Civil Code of Quebec), removes the constructions,
+    works or plantations the lessee made (article 1891) and leaves the dwelling free of all movable effects other
+    than those of the lessor (article 1978).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'QC' or regionCode == 'BC'))}">At the end of the tenancy the
+    tenant returns the dwelling clean and in the condition recorded at the start, except for normal wear and tear,
+    and returns all keys.</p>
+</div>
+
+<div th:fragment="clause-statutory-information" data-clause="statutory-information">
+  <p>Legal name and address of the landlord for the giving of notices and other documents:
+    ______________________________. Telephone and email: ______________________________</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">In Ontario every written tenancy agreement must set out the
+    legal name and address of the landlord to be used for giving notices, and the landlord must give the tenant a
+    copy of the agreement signed by both parties within 21 days after the tenant signs it and gives it to the
+    landlord; until the landlord complies, the tenant&rsquo;s obligation to pay rent is suspended (section 12,
+    subsections 1, 2 and 4, of the Residential Tenancies Act, 2006). Where section 12.1 does not apply, the landlord
+    must also give the tenant, on or before the date the tenancy begins, the information about the rights and
+    responsibilities of landlords and tenants in the form approved by the Landlord and Tenant Board (section 11).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec the lessor must give the lessee a copy of the
+    lease within 10 days after it is entered into (article 1895 of the Civil Code of Quebec) and, before the lease is
+    entered into, a copy of any by-laws of the immovable, which form part of the lease (article 1894). When the lease
+    is entered into, the lessor must give a new lessee a notice stating the lowest rent paid in the 12 months
+    preceding the beginning of the lease or, where applicable, the rent fixed by the tribunal during that period,
+    or, where no rent was paid during those 12 months, the last rent paid and its date, unless the dwelling is
+    covered by articles 1955 to 1956 (article 1896).</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the tenancy agreement must set out the
+    address for service and telephone number of the landlord or the landlord&rsquo;s agent, and the landlord must
+    give the tenant a copy of the agreement within 21 days after it is entered into (section 13, subsections 2 and 3,
+    of the Residential Tenancy Act).</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
+    landlord gives the tenant a signed copy of this agreement and any information, notice or form that the law of
+    the province or territory in which the dwelling is located requires at the start of the tenancy.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
+    <p>In Ontario a notice of termination must be in the form approved by the Landlord and Tenant Board or the
+      prescribed form (section 43, subsection 1, of the Residential Tenancies Act, 2006). The tenant may end the
+      tenancy at the end of a rental period or of the fixed term by giving notice at least 60 days before the
+      termination date in the case of a monthly or yearly tenancy or a fixed term, or at least 28 days before it in
+      the case of a daily or weekly tenancy; the termination date must be the last day of a rental period or, for a
+      fixed term, its expiration date (section 44, subsections 1 to 4, and section 47). A notice or an agreement to
+      terminate given or made at the time the tenancy agreement is entered into, or as a condition of entering into
+      it, is void (section 37, subsections 4 and 5), except for the student housing described in subsections 6 and
+      7 of that section.</p>
+    <p>The landlord may end the tenancy only on the grounds and with the notice that the Act provides, and may not
+      recover possession unless the tenant has vacated or abandoned the unit or an order of the Board evicting the
+      tenant authorizes it (section 39). Where the tenant fails to pay rent lawfully owing, the landlord may give a
+      notice of termination effective not earlier than the 7th day after the notice is given (section 59,
+      subsection 1, in force since September 21, 2026); the notice is void if the tenant pays the arrears and the
+      rent that has become due before the landlord applies to the Board (section 59, subsection 3).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
+    <p>In Quebec a lessee who has not received a notice of modification may avoid the renewal of a fixed-term lease,
+      or end a lease of indeterminate term, by giving the lessor a notice of non-renewal or resiliation within the
+      same time limits as the lessor must observe for a notice of modification (article 1946 of the Civil Code of
+      Quebec; see article 1942). The lessee may also resiliate the lease in progress in the cases and with the
+      attestations required by articles 1974 and 1974.1 (allocation of low-rental housing, relocation to an
+      equivalent dwelling by decision of the tribunal, a handicap, permanent admission of an elderly person to a care
+      facility, or sexual or conjugal violence or violence towards a child);
+      the resiliation then takes effect 2 months after the notice is sent, or 1 month after it is sent where the lease
+      is of indeterminate term or of less than 12 months, or earlier as those articles provide.</p>
+    <p>The lessor may repossess the dwelling or evict the lessee only in the cases and on the conditions of articles
+      1957 to 1970, by notice given at least 6 months before the expiry of a fixed-term lease (1 month where the term
+      is 6 months or less) or, for a lease of indeterminate term, 6 months before the date of repossession or
+      eviction (article 1960). An evicted lessee is entitled to reasonable moving expenses and to an indemnity equal
+      to 1 month&rsquo;s rent for each year of uninterrupted lease, of not less than 3 and not more than 24 months&rsquo;
+      rent (article 1965). Repossession and eviction are excluded where the lessee or the lessee&rsquo;s spouse is
+      65 years of age or over, has occupied the dwelling for at least 10 years and has an income equal to or less than
+      125 per cent of the maximum income for eligibility for low-rental housing, except in the situations listed in
+      article 1959.1. The lessor may obtain the resiliation of the lease if the lessee is more than 3 weeks late in
+      paying the rent or, where the lessor suffers serious prejudice, if the lessee is frequently late (article
+      1971).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
+    <p>In British Columbia a tenancy ends only in the cases set out in section 44 of the Residential Tenancy Act, and
+      every notice to end a tenancy must comply with section 52 of that Act. The tenant may end a periodic tenancy by
+      notice effective on a date that is not earlier than 1 month after the landlord receives the notice and is the
+      day before the day on which rent is payable; a fixed-term tenancy, in addition, not earlier than the date
+      specified as the end of the tenancy (section 45, subsections 1 and 2).</p>
+    <p>The landlord may end the tenancy only on the grounds and with the notice periods set out in that Act, in
+      particular for unpaid rent by notice effective not earlier than 10 days after the tenant receives it, which has
+      no effect if the tenant pays the overdue rent within 5 days (section 46, subsections 1 and 4), for cause
+      (section 47) or for the landlord&rsquo;s use of the property (section 49).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Each
+    party may end the tenancy only on the grounds, with the written notice, the form and the notice period that the
+    law of the province or territory in which the dwelling is located prescribes; in general the landlord may
+    recover possession against the tenant&rsquo;s will only with an order of the competent tribunal or court.</p>
+  <p class="clause-ref" data-ref="notices" th:if="${refs['notices']}">Notices are given as this agreement provides
+    (see article <span th:text="${refs['notices']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Every notice under this agreement is given in writing to the address of the other party stated in this
+    agreement or to a new address of which that party has given written notice.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">In Quebec every notice relating to the lease, except a
+    notice of the lessor to have access to the dwelling, must be given in writing at the address indicated in the
+    lease or at the new address of which the other party was notified, and must be drawn up in the same language as
+    the lease; a notice that does not meet these requirements may not be set up against the addressee unless the
+    sender shows that the addressee suffered no prejudice (article 1898 of the Civil Code of Quebec).</p>
+  <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">Where the law of the province or territory in which
+    the dwelling is located prescribes a form, a method of service or a time at which a notice is deemed received,
+    that requirement applies.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord collects, uses and discloses the tenant&rsquo;s personal information only for the purposes of
+    this tenancy and in accordance with the privacy legislation that applies: in Quebec the Act respecting the
+    protection of personal information in the private sector, in British Columbia the Personal Information Protection
+    Act, and elsewhere in general the federal Personal Information Protection and Electronic Documents Act or the
+    provincial legislation that replaces it.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by the law of the province or territory in which the dwelling is located and by the
+    federal law of Canada that applies there.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'ON'}">Disputes under the Residential Tenancies Act, 2006 are
+    decided by the Landlord and Tenant Board.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Disputes relating to the lease of a dwelling are decided
+    by the Tribunal administratif du logement.</p>
+  <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">Disputes under the Residential Tenancy Act are resolved by
+    dispute resolution through the Residential Tenancy Branch.</p>
+  <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Disputes
+    are decided by the residential tenancy tribunal, officer or court that the law of that province or territory
+    designates.</p>
+</div>
+
+</body>
+</html>
