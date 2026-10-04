@@ -7,7 +7,7 @@
                Legge 27 luglio 1978, n. 392 (equo canone; residential provisions still in force after L. 431/1998
                art. 14, comma 4): art. 2, 4, 5, 6 (with Corte costituzionale n. 404/1988), 8, 9, 10, 11, 80 (with
                Corte costituzionale n. 185/1988); art. 32 (non-residential leases, cited for its scope only).
-               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1455, 1571, 1575, 1576, 1577,
+               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1453, 1455, 1571, 1575, 1576, 1577,
                1583, 1584, 1587, 1590, 1591, 1592, 1593, 1595, 1598, 1609, 1938, 1944.
                Decreto ministeriale (MIT) 16 gennaio 2017, GU n. 62 del 15/03/2017: art. 1 comma 10, art. 2 comma 7,
                art. 3 comma 4 (contratti tipo, allegati A, B, C) - www.mit.gov.it.
@@ -82,7 +82,7 @@
 </div>
 
 <div th:fragment="clause-term" data-clause="term">
-  <p>This agreement is concluded for 4 years, starting on <strong th:text="${startDate}">start date</strong>.</p>
+  <p>This agreement is concluded for 4 years, or any longer term stated by the parties, starting on <strong th:text="${startDate}">start date</strong>.</p>
   <p th:if="${fixedTerm}">The parties state the expiry date of the first period<span th:if="${endDate != null}">:
     <strong th:text="${endDate}">end date</strong></span>. The term may not be shorter than 4 years (article 2,
     paragraph 1, of Law 431/1998), and any agreement intended to depart from the limits on the duration of the lease
@@ -176,7 +176,8 @@
   <p>The landlord receiving payment must, at the tenant&rsquo;s request and expense, issue a receipt (article 1199
     of the Civil Code). Unless otherwise agreed, claims for rent bear interest only from the time the tenant is put
     in default (article 1282, paragraph 2, of the Civil Code).</p>
-  <p>Failure to pay the rent within 20 days of the due date, or failure to pay the ancillary charges within the
+  <p>Without prejudice to article 55 of Law 392/1978 on curing arrears in court, failure to pay the rent within 20
+    days of the due date, or failure to pay the ancillary charges within the
     time allowed where the unpaid amount exceeds 2 months&rsquo; rent, is a ground for termination for breach under
     article 1455 of the Civil Code (article 5 of Law 392/1978).</p>
 </div>
@@ -200,8 +201,9 @@
     registered letter stating the identity of the subtenant, the duration of the sublease and the rooms sublet
     (article 2 of Law 392/1978).</p>
   <p>Contrary agreement of the parties on partial subletting, if agreed: ______________________________</p>
-  <p>The nullity or termination of the lease also takes effect against the subtenant (article 1595, paragraph 3, of
-    the Civil Code).</p>
+  <p>Without prejudice to the subtenant&rsquo;s claims against the sublessor, the nullity or termination of the
+    lease also takes effect against the subtenant, and the judgment given between landlord and tenant is also
+    effective against the subtenant (article 1595, paragraph 3, of the Civil Code).</p>
 </div>
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
@@ -277,7 +279,9 @@
   <p>In the event of judicial separation, dissolution of the marriage or cessation of its civil effects, the other
     spouse succeeds the tenant in the agreement if the court has granted that spouse the right to live in the family
     home; in the event of consensual separation or annulment of the marriage, the other spouse succeeds if the spouses
-    have so agreed (article 6, paragraphs 2 and 3, of Law 392/1978).</p>
+    have so agreed (article 6, paragraphs 2 and 3, of Law 392/1978). According to judgment no. 404 of 1988 of the
+    Constitutional Court, the de facto separated spouse, if the spouses have so agreed, and the former cohabiting
+    partner, where the tenant has ended the cohabitation and there are children of the couple, also succeed.</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
@@ -375,8 +379,8 @@
 
 <div th:fragment="clause-disputes" data-clause="disputes">
   <p>This agreement is governed by Italian law. Actions concerning leases of immovable property fall within the
-    jurisdiction of the court of the place where the property is located (article 21, paragraph 1, of the Code of
-    Civil Procedure), and clauses departing from that jurisdiction are void (article 447-bis of the Code of Civil
+    territorial competence (venue) of the court of the place where the property is located (article 21, paragraph 1,
+    of the Code of Civil Procedure), and clauses departing from that venue are void (article 447-bis of the Code of Civil
     Procedure).</p>
   <p>Anyone intending to bring legal proceedings in a dispute concerning a lease must first undertake mediation
     proceedings, which are a condition for the admissibility of the claim (article 5, paragraphs 1 and 2, of

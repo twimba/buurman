@@ -7,7 +7,7 @@
                Legge 27 luglio 1978, n. 392 (equo canone; residential provisions still in force after L. 431/1998
                art. 14, comma 4): art. 2, 4, 5, 6 (with Corte costituzionale n. 404/1988), 8, 9, 10, 11, 80 (with
                Corte costituzionale n. 185/1988); art. 32 (non-residential leases, cited for its scope only).
-               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1455, 1571, 1575, 1576, 1577,
+               Codice civile (R.D. 16 marzo 1942, n. 262): art. 1130 n. 6, 1199, 1282, 1453, 1455, 1571, 1575, 1576, 1577,
                1583, 1584, 1587, 1590, 1591, 1592, 1593, 1595, 1598, 1609, 1938, 1944.
                Decreto ministeriale (MIT) 16 gennaio 2017, GU n. 62 del 15/03/2017: art. 1 comma 10, art. 2 comma 7,
                art. 3 comma 4 (contratti tipo, allegati A, B, C) - www.mit.gov.it.
@@ -81,7 +81,7 @@
 </div>
 
 <div th:fragment="clause-term" data-clause="term">
-  <p>Il contratto ha la durata di 4 anni, con decorrenza dal <strong th:text="${startDate}">data di decorrenza</strong>.</p>
+  <p>Il contratto ha la durata di 4 anni, o la maggiore durata indicata dalle parti, con decorrenza dal <strong th:text="${startDate}">data di decorrenza</strong>.</p>
   <p th:if="${fixedTerm}">Le parti indicano la scadenza del primo periodo<span th:if="${endDate != null}">:
     <strong th:text="${endDate}">data di scadenza</strong></span>. La durata non può essere inferiore a 4 anni
     (art. 2, comma 1, della legge 431/1998) ed è nulla ogni pattuizione volta a derogare ai limiti di durata del
@@ -178,7 +178,8 @@
   <p>Il locatore che riceve il pagamento deve, a richiesta e a spese del conduttore, rilasciare quietanza (art. 1199
     del codice civile). Salvo patto contrario, i crediti per canoni non producono interessi se non dalla costituzione
     in mora (art. 1282, comma 2, del codice civile).</p>
-  <p>Il mancato pagamento del canone decorsi 20 giorni dalla scadenza prevista, ovvero il mancato pagamento, nel
+  <p>Salvo quanto previsto dall'art. 55 della legge 392/1978 sulla sanatoria della morosità in sede giudiziale, il
+    mancato pagamento del canone decorsi 20 giorni dalla scadenza prevista, ovvero il mancato pagamento, nel
     termine previsto, degli oneri accessori quando l'importo non pagato superi quello di 2 mensilità del canone,
     costituisce motivo di risoluzione, ai sensi dell'art. 1455 del codice civile (art. 5 della legge 392/1978).</p>
 </div>
@@ -203,8 +204,9 @@
     comunicazione al locatore con lettera raccomandata che indichi la persona del subconduttore, la durata del
     contratto ed i vani sublocati (art. 2 della legge 392/1978).</p>
   <p>Patto contrario delle parti sulla sublocazione parziale, se convenuto: ______________________________</p>
-  <p>La nullità o la risoluzione del contratto di locazione ha effetto anche nei confronti del subconduttore (art.
-    1595, comma 3, del codice civile).</p>
+  <p>Senza pregiudizio delle ragioni del subconduttore verso il sublocatore, la nullità o la risoluzione del
+    contratto di locazione ha effetto anche nei confronti del subconduttore, e la sentenza pronunciata tra locatore e
+    conduttore ha effetto anche contro di lui (art. 1595, comma 3, del codice civile).</p>
 </div>
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
@@ -280,7 +282,9 @@
   <p>In caso di separazione giudiziale, di scioglimento del matrimonio o di cessazione degli effetti civili dello
     stesso, nel contratto succede al conduttore l'altro coniuge, se il diritto di abitare nella casa familiare sia
     stato attribuito dal giudice a quest'ultimo; in caso di separazione consensuale o di nullità matrimoniale succede
-    l'altro coniuge se tra i coniugi si sia così convenuto (art. 6, commi 2 e 3, della legge 392/1978).</p>
+    l'altro coniuge se tra i coniugi si sia così convenuto (art. 6, commi 2 e 3, della legge 392/1978). Secondo la sentenza della
+    Corte costituzionale n. 404 del 1988 succedono inoltre il coniuge separato di fatto, se tra i coniugi si sia così
+    convenuto, e il già convivente, quando il conduttore abbia cessato la convivenza e vi sia prole naturale.</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
