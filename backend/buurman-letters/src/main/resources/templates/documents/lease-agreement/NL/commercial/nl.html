@@ -13,8 +13,11 @@
                Uitvoeringsbeschikking omzetbelasting 1968 (BWBR0002634, geldend van 01-04-2026) art. 6a.
                Wetboek van Burgerlijke Rechtsvordering (BWBR0001827, geldend van 14-07-2026) art. 93 and 103.
                Faillissementswet (BWBR0001860, geldend van 01-09-2026) art. 39.
-               Energy label: Besluit bouwwerken leefomgeving (rvo.nl "Verplicht energielabel voor utiliteitsgebouwen"
-               and "Energielabel C kantoren", read 04-10-2026; monument exemption for the label duty lapsed 29-05-2026).
+               Energy label: Besluit bouwwerken leefomgeving (BWBR0041297, geldend van 24-09-2026) art. 3.87, 3.87a,
+               6.27 lid 4, 6.28 (read 04-10-2026); rvo.nl "Verplicht energielabel voor utiliteitsgebouwen" and
+               "Energielabel C kantoren" (monument exemption for the label duty lapsed 29-05-2026).
+               CPI: CBS table 86141NED "Consumentenprijzen; CPI 2025=100", category "Alle bestedingen"
+               (opendata.cbs.nl, read 04-10-2026); predecessor 83131NED (2015=100) discontinued after December 2025.
                AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04.
                Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "ten minste 1 jaar" is "at least 1 year" in English), enforced by the translation fidelity gate.
@@ -93,7 +96,8 @@
   <p th:if="${!fixedTerm}">De overeenkomst is aangegaan voor onbepaalde tijd.</p>
   <p th:if="${fixedTerm}">De overeenkomst is aangegaan voor bepaalde tijd<span th:if="${endDate != null}">, tot en
     met <strong th:text="${endDate}">einddatum</strong></span>.</p>
-  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW, dan geldt de overeenkomst voor 5 jaar of, als
+  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW, dan geldt de overeenkomst, ook als zij voor onbepaalde tijd
+    is aangegaan, voor 5 jaar of, als
     een langere bepaalde duur is overeengekomen, voor die langere duur (artikel 7:292 lid 1 BW). Een overeenkomst
     die voor 5 jaar geldt, wordt na het verstrijken daarvan van rechtswege met 5 jaar verlengd; een overeenkomst die
     is aangegaan voor een termijn langer dan 5 jaar maar korter dan 10 jaar, wordt na het verstrijken van die
@@ -102,8 +106,8 @@
     tweede termijn opgezegd, dan wordt zij voortgezet voor onbepaalde tijd, tenzij uit de overeenkomst een bepaalde
     tijd voortvloeit of partijen een bepaalde tijd overeenkomen (artikel 7:300 lid 1 BW).</p>
   <p>Op een overeenkomst van 2 jaar of korter voor bedrijfsruimte in de zin van artikel 7:290 BW zijn de artikelen
-    7:291 tot en met 7:300 BW niet van toepassing (artikel 7:301 lid 1 BW). Heeft het gebruik op grond van zo&rsquo;n
-    overeenkomst langer dan 2 jaar geduurd, dan geldt van rechtswege een overeenkomst op de tussen partijen
+    7:291 tot en met 7:300 BW niet van toepassing (artikel 7:301 lid 1 BW). Heeft het gebruik op grond van een
+    dergelijke overeenkomst langer dan 2 jaar geduurd, dan geldt van rechtswege een overeenkomst op de tussen partijen
     overeengekomen voorwaarden, maar voor 5 jaar, waarop de verstreken 2 jaar in mindering komen (artikel 7:301
     lid 2 BW). Dat gevolg treedt niet in als partijen v&oacute;&oacute;r het verstrijken van de termijn van 2 jaar
     een andere overeenkomst sluiten die onder artikel 7:292 lid 1 BW valt, of een daarvan afwijkende overeenkomst,
@@ -132,11 +136,13 @@
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
   <p>De huurprijs wordt 1 maal per jaar aangepast, voor het eerst 12 maanden na de ingangsdatum van deze
-    overeenkomst, op basis van de wijziging van de consumentenprijsindex (CPI), reeks alle huishoudens, zoals
-    gepubliceerd door het Centraal Bureau voor de Statistiek (CBS). De aangepaste huurprijs is gelijk aan de
+    overeenkomst, op basis van de wijziging van de consumentenprijsindex (CPI), reeks alle bestedingen, zoals
+    maandelijks gepubliceerd door het Centraal Bureau voor de Statistiek (CBS), thans in de reeks CPI 2025=100.
+    Partijen gebruiken de definitieve indexcijfers. De aangepaste huurprijs is gelijk aan de
     geldende huurprijs, vermenigvuldigd met het indexcijfer van de kalendermaand die 3 maanden v&oacute;&oacute;r
     de aanpassingsdatum ligt en gedeeld door het indexcijfer van de kalendermaand die 15 maanden v&oacute;&oacute;r
-    die datum ligt. Leidt de berekening tot een lagere huurprijs, dan geldt: ______________________________
+    die datum ligt. Beide indexcijfers worden ontleend aan dezelfde reeks met hetzelfde basisjaar of, als dat niet
+    mogelijk is, omgerekend volgens de methode die het CBS daarvoor aangeeft. Leidt de berekening tot een lagere huurprijs, dan geldt: ______________________________
     (verlaging / geen verlaging). Wordt de reeks niet meer gepubliceerd, dan geldt de daarmee het meest
     vergelijkbare reeks van het CBS. De verhuurder deelt de aangepaste huurprijs tijdig schriftelijk aan de huurder
     mee.</p>
@@ -179,7 +185,8 @@
     artikel 25a lid 1 van die wet toepast, en partijen blijkens de schriftelijke huurovereenkomst voor belaste
     verhuur hebben gekozen of gezamenlijk een verzoek daartoe aan de inspecteur hebben gedaan (artikel 11 lid 1
     onder b, onder 5&deg;, van de Wet op de omzetbelasting 1968). Bij belaste verhuur is de huurder over de
-    huurprijs en, voor zover belast, over de servicekosten omzetbelasting verschuldigd.</p>
+    huurprijs en, voor zover belast, over de servicekosten omzetbelasting verschuldigd. De keuze geldt niet voor
+    gebouwen en gedeelten daarvan die als woning worden gebruikt, zoals een tot het gehuurde behorende woning.</p>
   <p>Kiezen partijen voor belaste verhuur, dan vermelden zij hieronder een omschrijving van het gehuurde met
     plaatselijke en kadastrale aanduiding en de datum van aanvang van het boekjaar van de huurder, en voegt de
     huurder een door hem ondertekende verklaring toe waaruit blijkt dat hij het gehuurde gebruikt voor doeleinden
@@ -256,9 +263,7 @@
 <div th:fragment="clause-alterations" data-clause="alterations">
   <p>De huurder verandert de inrichting of gedaante van het gehuurde niet geheel of gedeeltelijk dan na
     schriftelijke toestemming van de verhuurder, tenzij het gaat om veranderingen en toevoegingen die bij het einde
-    van de huur zonder noemenswaardige kosten kunnen worden ongedaan gemaakt en verwijderd (artikel 7:215 lid 1 BW).
-    Partijen beschouwen het aanbrengen van reclame-uitingen aan de buitenzijde van het gebouw als een verandering
-    in deze zin.</p>
+    van de huur zonder noemenswaardige kosten kunnen worden ongedaan gemaakt en verwijderd (artikel 7:215 lid 1 BW).</p>
   <p>Verleent de verhuurder de toestemming niet, dan kan de huurder vorderen dat de rechter hem machtigt de
     veranderingen aan te brengen. De rechter wijst de vordering bij bedrijfsruimte slechts toe als de veranderingen
     noodzakelijk zijn voor een doelmatig gebruik van het gehuurde door de huurder en geen zwaarwichtige bezwaren aan
@@ -285,7 +290,7 @@
     machtiging voorwaarden verbinden of daarbij een last opleggen (artikel 7:307 BW). Voor zover artikel 7:291 BW van
     toepassing is (niet bij een overeenkomst van 2 jaar of korter, artikel 7:301 lid 1 BW), kan van deze regeling
     niet ten nadele van de huurder worden afgeweken.</p>
-  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan bestaat zo&rsquo;n wettelijke regeling van
+  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan bestaat een dergelijke wettelijke regeling van
     indeplaatsstelling niet; overdracht van de huurovereenkomst aan een derde vereist dan de medewerking van de
     verhuurder.</p>
 </div>
@@ -302,17 +307,25 @@
 </div>
 
 <div th:fragment="clause-energy-label" data-clause="energy-label">
-  <p>Bij de start, verlenging of vernieuwing van een huurovereenkomst voor een utiliteitsgebouw, zoals een kantoor-
-    of winkelgebouw, is op grond van het Besluit bouwwerken leefomgeving een geldig energielabel verplicht, tenzij
-    een wettelijke uitzondering van toepassing is. Is voor het gehuurde een energielabel verplicht of aanwezig, dan
-    verstrekt de verhuurder de huurder uiterlijk bij het aangaan van deze overeenkomst een afschrift van het geldige
-    energielabel. Een energielabel is geldig tot de op het label vermelde datum.</p>
-  <p>Is het gehuurde een kantoorgebouw of een deel daarvan, dan mag het op grond van het Besluit bouwwerken
-    leefomgeving alleen als kantoor worden gebruikt als het ten minste energielabel C heeft, behoudens de daarin
-    geregelde uitzonderingen, onder meer bij een gebruiksoppervlakte van de kantoorfuncties en hun nevenfuncties van
-    minder dan 100 m², bij kantoorfuncties van minder dan 50% van de totale gebruiksoppervlakte van het gebouw en
-    bij een gebouw dat ten hoogste 2 jaar wordt gebruikt. Partij die de maatregelen treft die nodig zijn om aan die
-    eis te voldoen of te blijven voldoen: ______________________________</p>
+  <p>Bij de verhuur van een gebouw of gedeelte daarvan stelt de eigenaar een afschrift van een geldig energielabel
+    beschikbaar aan de nieuwe huurder, en bij verlenging van een huurovereenkomst of na een ingrijpende renovatie
+    aan de huurder (artikel 6.27 lid 4 van het Besluit bouwwerken leefomgeving). Dit geldt niet in de gevallen van
+    artikel 6.28 van dat besluit, onder meer voor een industriefunctie, voor een gebouw dat niet is bestemd om voor
+    personen te worden verwarmd of gekoeld en voor een gebouw dat ten hoogste 2 jaar wordt gebruikt. Is voor het
+    gehuurde een energielabel verplicht of aanwezig, dan verstrekt de verhuurder de huurder uiterlijk bij het
+    aangaan van deze overeenkomst een afschrift van het geldige energielabel. Een energielabel is geldig tot de op
+    het label vermelde datum.</p>
+  <p>Is het gehuurde een kantoorgebouw of een deel daarvan, dan is het verboden het als kantoorgebouw in gebruik te
+    nemen of te gebruiken zonder een geldig energielabel met een maximumwaarde voor primair fossiel energiegebruik
+    van 225 kWh per m² per jaar of met energielabel C of beter (artikel 3.87 lid 1 van het Besluit bouwwerken
+    leefomgeving). Dit geldt niet in de gevallen van artikel 3.87 leden 2 tot en met 4 en artikel 3.87a van dat
+    besluit, onder meer bij kantoorfuncties van minder dan 50% van de totale gebruiksoppervlakte aan
+    gebruiksfuncties van het gebouw, bij een totale gebruiksoppervlakte aan kantoorfuncties en nevengebruiksfuncties
+    van minder dan 100 m², bij een monument en bij een kantoorgebouw dat ten hoogste 2 jaar wordt gebruikt. Hebben
+    de maatregelen die nodig zijn om aan die eis te voldoen een terugverdientijd van meer dan 10 jaar, dan kan
+    worden volstaan met de maatregelen met een terugverdientijd tot en met 10 jaar (artikel 3.87 lid 5 van dat
+    besluit). De partij die de maatregelen treft die nodig zijn om aan die eis te voldoen of te blijven voldoen:
+    ______________________________</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
@@ -345,14 +358,16 @@
     10 jaar of langer, dan eindigt zij niet door het enkele verloop van de huurtijd, maar kan zij door ieder van de
     partijen tegen het einde van die huurtijd worden opgezegd, met inachtneming van dezelfde vereisten (artikel
     7:300 leden 2 en 3 BW).</p>
-  <p>Een opzegging door de verhuurder is nietig als zij niet de gronden vermeldt die tot de opzegging hebben geleid
-    (artikel 7:294 BW). Heeft de huurder niet zelf opgezegd en na de opzegging door de verhuurder niet schriftelijk
-    in de beëindiging toegestemd, dan blijft de overeenkomst na de dag waartegen rechtsgeldig is opgezegd van
-    rechtswege van kracht totdat de rechter onherroepelijk heeft beslist op een vordering van de verhuurder; de
-    verhuurder kan, als hij 6 weken na de opzegging van de huurder geen schriftelijke mededeling heeft ontvangen
-    dat deze in de beëindiging toestemt, op de in de opzegging vermelde gronden vorderen dat de rechter het
-    tijdstip vaststelt waarop de overeenkomst eindigt (artikel 7:295 BW).</p>
-  <p>Is opgezegd tegen het einde van de eerste termijn, dan kan de rechter de vordering slechts toewijzen op de
+  <p>Bij bedrijfsruimte in de zin van artikel 7:290 BW is een opzegging door de verhuurder nietig als zij niet de
+    gronden vermeldt die tot de opzegging hebben geleid (artikel 7:294 BW). Heeft de huurder niet zelf opgezegd en
+    na de opzegging door de verhuurder niet schriftelijk in de beëindiging toegestemd, dan blijft de overeenkomst na
+    de dag waartegen rechtsgeldig is opgezegd van rechtswege van kracht totdat de rechter onherroepelijk heeft
+    beslist op een vordering van de verhuurder; de verhuurder kan, als hij 6 weken na zijn opzegging van de huurder
+    nog geen schriftelijke mededeling heeft ontvangen dat deze in de beëindiging toestemt, op de in de opzegging
+    vermelde gronden vorderen dat de rechter het tijdstip vaststelt waarop de overeenkomst eindigt (artikel 7:295
+    BW).</p>
+  <p>Is bedrijfsruimte in de zin van artikel 7:290 BW opgezegd tegen het einde van de eerste termijn, dan kan de
+    rechter de vordering slechts toewijzen op de
     grond dat de bedrijfsvoering van de huurder niet is geweest zoals een goed huurder betaamt, of op de grond dat
     de verhuurder aannemelijk maakt dat hij, zijn echtgenoot, zijn geregistreerde partner, een bloed- of
     aanverwant in de eerste graad of een pleegkind het verhuurde persoonlijk in duurzaam gebruik wil nemen en hij
@@ -362,7 +377,8 @@
     geregistreerde partner, bloed- of aanverwant in de eerste graad of pleegkind is, en de opzegging is geschied
     binnen 3 jaar nadat de rechtsopvolging schriftelijk ter kennis van de huurder is gebracht (artikel 7:296 lid 2
     BW).</p>
-  <p>Is opgezegd tegen het einde van de tweede termijn, dan kan de rechter de vordering toewijzen op grond van een
+  <p>Is bedrijfsruimte in de zin van artikel 7:290 BW opgezegd tegen het einde van de tweede termijn, dan kan de
+    rechter de vordering toewijzen op grond van een
     redelijke afweging van de belangen van de verhuurder bij beëindiging tegen die van de huurder en van de
     onderhuurder aan wie bevoegdelijk is onderverhuurd bij verlenging; hij wijst de vordering in elk geval af als
     van de huurder bij die afweging niet kan worden gevergd dat hij het gehuurde ontruimt (artikel 7:296 lid 3 BW).
@@ -370,15 +386,26 @@
     de beperking van lid 2, als de huurder niet toestemt in een redelijk aanbod tot het aangaan van een nieuwe
     overeenkomst met betrekking tot het gehuurde, voor zover dat aanbod geen wijziging van de huurprijs inhoudt, of
     als de verhuurder een krachtens het geldende omgevingsplan aan het verhuurde toegedeelde functie wil
-    verwezenlijken (artikel 7:296 lid 4 BW). Voor een opzegging na de tweede termijn zijn deze regels van
-    overeenkomstige toepassing (artikel 7:300 lid 3 BW).</p>
-  <p>Wijst de rechter de vordering toe, dan stelt hij tevens het tijdstip van de ontruiming vast (artikel 7:296
-    lid 5 BW); hij kan een bedrag vaststellen dat de verhuurder aan de huurder of aan de onderhuurder aan wie
+    verwezenlijken (artikel 7:296 lid 4 BW). Voor een opzegging na de tweede termijn en voor de opzegging van een
+    overeenkomst die is aangegaan voor een duur van 10 jaar of langer zijn de artikelen 7:295 tot en met 7:299 BW
+    van overeenkomstige toepassing (artikel 7:300 lid 3 BW); welke gronden van artikel 7:296 BW in het laatste geval
+    gelden, bepaalt de wet niet uitdrukkelijk. Is na de tweede termijn een vordering tot vaststelling van het
+    tijdstip waarop de overeenkomst eindigt afgewezen en volgt uit de overeenkomst niet dat zij dan voor een
+    bepaalde termijn wordt voortgezet tegen het einde waarvan zij opnieuw kan worden opgezegd, dan kan zij pas
+    rechtsgeldig opnieuw worden opgezegd nadat 1 jaar is verstreken sinds de afwijzing onherroepelijk is geworden;
+    de rechter kan een langere termijn vaststellen (artikel 7:300 lid 4 BW).</p>
+  <p>Wijst de rechter bij bedrijfsruimte in de zin van artikel 7:290 BW de vordering toe, dan stelt hij tevens het
+    tijdstip van de ontruiming vast (artikel 7:296 lid 5 BW); hij kan een bedrag vaststellen dat de verhuurder aan de huurder of aan de onderhuurder aan wie
     bevoegdelijk is onderverhuurd moet betalen ter tegemoetkoming in diens verhuis- en inrichtingskosten, waarna de
-    verhuurder zijn vordering binnen de door de rechter gestelde termijn kan intrekken (artikel 7:297 BW). Eindigt
-    de overeenkomst op de grond dat een in artikel 7:296 lid 1 onder b BW genoemde persoon het verhuurde persoonlijk
-    in duurzaam gebruik wil nemen, terwijl die wil in werkelijkheid niet aanwezig is geweest, dan is de verhuurder
-    tot schadevergoeding gehouden (artikel 7:299 BW). Geniet de verhuurder, nadat de overeenkomst door zijn
+    verhuurder zijn vordering binnen de door de rechter gestelde termijn kan intrekken (artikel 7:297 BW).</p>
+  <p>Eindigt een overeenkomst van bedrijfsruimte in de zin van artikel 7:290 BW doordat de huurder heeft
+    toegestemd in een opzegging op de grond dat een in artikel 7:296 lid 1 onder b BW genoemde persoon het verhuurde
+    persoonlijk in duurzaam gebruik wil nemen, of doordat de vordering op die grond of op de grond van artikel 7:296
+    lid 3 BW is toegewezen, terwijl die wil in werkelijkheid niet aanwezig is geweest, dan is de verhuurder jegens de
+    huurder en degene die bevoegdelijk heeft ondergehuurd tot schadevergoeding gehouden; behoudens tegenbewijs wordt
+    die wil geacht niet aanwezig te zijn geweest als het verhuurde niet binnen 1 jaar na het einde van de
+    overeenkomst door een zodanige persoon in duurzaam gebruik is genomen (artikel 7:299 leden 1 en 2 BW).</p>
+  <p>Geniet de verhuurder van bedrijfsruimte in de zin van artikel 7:290 BW, nadat de overeenkomst door zijn
     opzegging is geëindigd, voordeel doordat het verhuurde wordt gebruikt voor een bedrijf dat gelijksoortig is aan
     het daar door de gewezen huurder of een bevoegde onderhuurder uitgeoefende bedrijf, dan kan deze een naar
     billijkheid te berekenen vergoeding vorderen; voordeel uit de aard of ligging van het verhuurde of uit de

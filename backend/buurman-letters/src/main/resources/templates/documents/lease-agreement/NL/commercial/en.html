@@ -13,8 +13,11 @@
                Uitvoeringsbeschikking omzetbelasting 1968 (BWBR0002634, geldend van 01-04-2026) art. 6a.
                Wetboek van Burgerlijke Rechtsvordering (BWBR0001827, geldend van 14-07-2026) art. 93 and 103.
                Faillissementswet (BWBR0001860, geldend van 01-09-2026) art. 39.
-               Energy label: Besluit bouwwerken leefomgeving (rvo.nl "Verplicht energielabel voor utiliteitsgebouwen"
-               and "Energielabel C kantoren", read 04-10-2026; monument exemption for the label duty lapsed 29-05-2026).
+               Energy label: Besluit bouwwerken leefomgeving (BWBR0041297, geldend van 24-09-2026) art. 3.87, 3.87a,
+               6.27 lid 4, 6.28 (read 04-10-2026); rvo.nl "Verplicht energielabel voor utiliteitsgebouwen" and
+               "Energielabel C kantoren" (monument exemption for the label duty lapsed 29-05-2026).
+               CPI: CBS table 86141NED "Consumentenprijzen; CPI 2025=100", category "Alle bestedingen"
+               (opendata.cbs.nl, read 04-10-2026); predecessor 83131NED (2015=100) discontinued after December 2025.
                AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
                Verified 2026-10-04.
                Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "ten minste 1 jaar" is "at least 1 year" in English), enforced by the translation fidelity gate.
@@ -96,7 +99,7 @@
   <p th:if="${fixedTerm}">The agreement is entered into for a fixed term<span th:if="${endDate != null}">, up to and
     including <strong th:text="${endDate}">end date</strong></span>.</p>
   <p>If the leased premises are business premises within the meaning of article 7:290 of the Civil Code, the
-    agreement applies for 5 years or, if a longer fixed duration has been agreed, for that longer duration
+    agreement applies, even if it was entered into for an indefinite period, for 5 years or, if a longer fixed duration has been agreed, for that longer duration
     (article 7:292 paragraph 1 of the Civil Code). An agreement that applies for 5 years is extended by operation of
     law by 5 years once that period has expired; an agreement entered into for a term longer than 5 years but
     shorter than 10 years is, once that term has expired, extended by operation of law by a second term that is
@@ -136,10 +139,13 @@
 
 <div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
   <p>The rent is adjusted 1 time per year, for the first time 12 months after the start date of this agreement, on
-    the basis of the change in the consumer price index (CPI), all households series, as published by Statistics
-    Netherlands (Centraal Bureau voor de Statistiek, CBS). The adjusted rent equals the current rent multiplied by
+    the basis of the change in the consumer price index (CPI), all expenditure series (alle bestedingen), as published
+    monthly by Statistics Netherlands (Centraal Bureau voor de Statistiek, CBS), currently in the series CPI
+    2025=100. The parties use the final index figures. The adjusted rent equals the current rent multiplied by
     the index figure of the calendar month falling 3 months before the adjustment date and divided by the index
-    figure of the calendar month falling 15 months before that date. If the calculation results in a lower rent, the
+    figure of the calendar month falling 15 months before that date. Both index figures are taken from the same series with the same
+    base year or, if that is not possible, converted using the method specified by CBS for that purpose. If the
+    calculation results in a lower rent, the
     following applies: ______________________________ (reduction / no reduction). If the series is no longer
     published, the most comparable CBS series applies. The landlord notifies the tenant of the adjusted rent in
     writing and in good time.</p>
@@ -183,7 +189,8 @@
     act, and the parties have opted for taxed letting as shown by the written lease agreement or have jointly
     submitted a request to that effect to the tax inspector (article 11 paragraph 1(b), under 5&deg;, of the Turnover
     Tax Act, Wet op de omzetbelasting 1968). In the case of taxed letting, the tenant owes VAT on the rent and, to
-    the extent taxed, on the service charges.</p>
+    the extent taxed, on the service charges. The option does not apply to buildings and parts of buildings used as
+    a dwelling, such as a dwelling belonging to the leased premises.</p>
   <p>If the parties opt for taxed letting, they state below a description of the leased premises with their local
     and cadastral designation and the date on which the tenant's financial year begins, and the tenant attaches a
     statement signed by it showing that it uses the leased premises for purposes for which a full or almost full
@@ -260,8 +267,7 @@
 <div th:fragment="clause-alterations" data-clause="alterations">
   <p>The tenant does not change the layout or form of the leased premises, in whole or in part, except with the
     written consent of the landlord, unless the changes and additions can be undone and removed at the end of the
-    lease without significant cost (article 7:215 paragraph 1 of the Civil Code). The parties regard the
-    installation of advertising on the outside of the building as a change in this sense.</p>
+    lease without significant cost (article 7:215 paragraph 1 of the Civil Code).</p>
   <p>If the landlord does not give consent, the tenant may claim that the court authorise it to make the changes.
     For business premises, the court grants the claim only if the changes are necessary for an efficient use of the
     leased premises by the tenant and no serious objections on the part of the landlord oppose them; it may attach
@@ -305,17 +311,24 @@
 </div>
 
 <div th:fragment="clause-energy-label" data-clause="energy-label">
-  <p>At the start, extension or renewal of a lease agreement for a non-residential building, such as an office or
-    shop building, a valid energy label is mandatory under the Buildings (Living Environment) Decree (Besluit
-    bouwwerken leefomgeving), unless a statutory exception applies. If an energy label is mandatory or available for
-    the leased premises, the landlord provides the tenant with a copy of the valid energy label no later than at the
-    conclusion of this agreement. An energy label is valid until the date stated on the label.</p>
-  <p>If the leased premises are an office building or part of one, under the Buildings (Living Environment) Decree
-    they may only be used as an office if they have at least energy label C, save for the exceptions provided in that
-    decree, among others where the usable floor area of the office functions and their ancillary functions is less
-    than 100 m², where office functions make up less than 50% of the total usable floor area of the building and
-    where a building is used for no more than 2 years. Party that takes the measures needed to meet or continue to
-    meet that requirement: ______________________________</p>
+  <p>When a building or part of a building is let, the owner makes a copy of a valid energy label available to the
+    new tenant, and on the extension of a lease agreement or after a major renovation to the tenant (article 6.27
+    paragraph 4 of the Buildings (Living Environment) Decree, Besluit bouwwerken leefomgeving). This does not apply
+    in the cases of article 6.28 of that decree, among others for an industrial function, for a building not intended
+    to be heated or cooled for persons and for a building used for no more than 2 years. If an energy label is
+    mandatory or available for the leased premises, the landlord provides the tenant with a copy of the valid energy
+    label no later than at the conclusion of this agreement. An energy label is valid until the date stated on the
+    label.</p>
+  <p>If the leased premises are an office building or part of one, it is prohibited to take them into use or use
+    them as an office building without a valid energy label with a maximum primary fossil energy use of 225 kWh per
+    m² per year or with energy label C or better (article 3.87 paragraph 1 of the Buildings (Living Environment)
+    Decree). This does not apply in the cases of article 3.87 paragraphs 2 to 4 and article 3.87a of that decree,
+    among others where office functions make up less than 50% of the total usable floor area of the building's
+    functions, where the total usable floor area of office functions and ancillary functions is less than 100 m², for
+    a listed monument and for an office building used for no more than 2 years. If the measures needed to meet that
+    requirement have a payback period of more than 10 years, it suffices to take the measures with a payback period
+    of up to and including 10 years (article 3.87 paragraph 5 of that decree). The party that takes the measures
+    needed to meet or continue to meet that requirement: ______________________________</p>
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
@@ -349,41 +362,56 @@
     entered into for a duration of 10 years or more, it does not end by the mere expiry of the lease period but may be
     terminated by either party by notice to the end of that lease period, subject to the same requirements (article
     7:300 paragraphs 2 and 3 of the Civil Code).</p>
-  <p>A notice of termination by the landlord is void if it does not state the grounds that led to the notice
-    (article 7:294 of the Civil Code). If the tenant has not given notice itself and has not consented in writing to
+  <p>For business premises within the meaning of article 7:290 of the Civil Code, a notice of termination by the
+    landlord is void if it does not state the grounds that led to the notice (article 7:294 of the Civil Code). If the
+    tenant has not given notice itself and has not consented in writing to
     the termination after the landlord's notice, the agreement remains in force by operation of law after the day to
     which notice was validly given until the court has given a final decision on a claim of the landlord; if, 6 weeks
     after the notice, the landlord has not received a written statement from the tenant that it consents to the
     termination, the landlord may claim, on the grounds stated in the notice, that the court fix the date on which the
     agreement ends (article 7:295 of the Civil Code).</p>
-  <p>If notice has been given to the end of the first term, the court may grant the claim only on the ground that
+  <p>If business premises within the meaning of article 7:290 of the Civil Code have been given notice to the end
+    of the first term, the court may grant the claim only on the ground that
     the tenant's business operations have not been those befitting a good tenant, or on the ground that the landlord
     makes it plausible that the landlord, its spouse, its registered partner, a relative by blood or marriage in the
     first degree or a foster child wishes to take the leased premises into lasting personal use and that it urgently
     needs them for that purpose; lasting use does not include disposal of the business premises, but does include a
-    renovation that is not possible without ending the lease (article 7:296 paragraph 1 of the Civil Code). The
-    latter ground cannot be granted if the landlord is the legal successor of a previous landlord, is not its spouse,
+    renovation that is not possible without ending the lease (article 7:296 paragraph 1 of the Civil Code). A
+    claim on the latter ground cannot be granted if the landlord is the legal successor of a previous landlord, is not its spouse,
     registered partner, relative by blood or marriage in the first degree or foster child, and notice was given
     within 3 years after the succession was notified to the tenant in writing (article 7:296 paragraph 2 of the
     Civil Code).</p>
-  <p>If notice has been given to the end of the second term, the court may grant the claim on the basis of a
-    reasonable balancing of the interests of the landlord in termination against those of the tenant and of the
-    subtenant to whom the premises have been sublet with authority in continuation; it rejects the claim in any event
+  <p>If business premises within the meaning of article 7:290 of the Civil Code have been given notice to the end
+    of the second term, the court may grant the claim on the basis of a reasonable balancing of the interests of the
+    landlord in termination against those of the tenant and of the subtenant to whom the premises have been sublet
+    with authority in the continuation of the agreement; it rejects the claim in any event
     if, in that balancing, the tenant cannot be required to vacate the leased premises (article 7:296 paragraph 3 of
     the Civil Code). It grants the claim in any event if one of the grounds of article 7:296 paragraph 1 of the Civil
     Code exists, subject to the restriction in paragraph 2, if the tenant does not accept a reasonable offer to enter
     into a new agreement in respect of the leased premises, insofar as that offer does not involve a change of the
     rent, or if the landlord wishes to realise a function assigned to the leased premises under the applicable
-    environment plan (omgevingsplan) (article 7:296 paragraph 4 of the Civil Code). These rules apply accordingly to a
-    notice given after the second term (article 7:300 paragraph 3 of the Civil Code).</p>
-  <p>If the court grants the claim, it also fixes the date of vacation (article 7:296 paragraph 5 of the Civil
-    Code); it may set an amount that the landlord must pay to the tenant or to the subtenant to whom the premises have
+    environment plan (omgevingsplan) (article 7:296 paragraph 4 of the Civil Code). Articles 7:295 to 7:299 of the Civil
+    Code apply accordingly to a notice given after the second term and to the notice of termination of an agreement
+    entered into for a duration of 10 years or more (article 7:300 paragraph 3 of the Civil Code); which grounds of
+    article 7:296 of the Civil Code apply in the latter case is not expressly laid down by law. If, after the second
+    term, a claim to fix the date on which the agreement ends has been rejected and it does not follow from the
+    agreement that it is then continued for a fixed period at the end of which notice may be given again, notice can
+    validly be given again only after 1 year has passed since the rejection became final; the court may set a longer
+    period (article 7:300 paragraph 4 of the Civil Code).</p>
+  <p>If the court grants the claim for business premises within the meaning of article 7:290 of the Civil Code, it
+    also fixes the date of vacation (article 7:296 paragraph 5 of the Civil Code); it may set an amount that the landlord must pay to the tenant or to the subtenant to whom the premises have
     been sublet with authority as a contribution to its relocation and fitting-out costs, after which the landlord
-    may withdraw its claim within the period set by the court (article 7:297 of the Civil Code). If the agreement ends
-    on the ground that a person referred to in article 7:296 paragraph 1(b) of the Civil Code wishes to take the
-    leased premises into lasting personal use, while that wish did not in fact exist, the landlord is liable for
-    damages (article 7:299 of the Civil Code). If, after the agreement has ended by its notice, the landlord derives
-    an advantage from the leased premises being used for a business similar to the business carried on there by the
+    may withdraw its claim within the period set by the court (article 7:297 of the Civil Code).</p>
+  <p>If an agreement for business premises within the meaning of article 7:290 of the Civil Code ends because the
+    tenant has consented to a notice given on the ground that a person referred to in article 7:296 paragraph 1(b) of
+    the Civil Code wishes to take the leased premises into lasting personal use, or because the claim has been
+    granted on that ground or on the ground of article 7:296 paragraph 3 of the Civil Code, while that wish did not in
+    fact exist, the landlord is liable for damages to the tenant and to the person who sublet with authority; unless
+    proven otherwise, that wish is deemed not to have existed if the leased premises have not been taken into lasting
+    use by such a person within 1 year after the end of the agreement (article 7:299 paragraphs 1 and 2 of the Civil
+    Code).</p>
+  <p>If, after the agreement for business premises within the meaning of article 7:290 of the Civil Code has ended by
+    its notice, the landlord derives an advantage from the leased premises being used for a business similar to the business carried on there by the
     former tenant or an authorised subtenant, the latter may claim compensation calculated on the basis of equity;
     an advantage arising from the nature or location of the leased premises or from changes made to them is not taken
     into account, and the compensation cannot be awarded if that use only begins after more than 1 year has passed
@@ -409,7 +437,7 @@
     the Civil Code).</p>
   <p>Dissolution of this agreement on the ground that the tenant has failed to perform its obligations can, save for
     the exceptions provided by law, only be effected by the court (article 7:231 paragraphs 1 and 3 of the Civil
-    Code). If the tenant is declared bankrupt, both the receiver (curator) and the landlord may terminate the lease
+    Code). If the tenant is declared bankrupt, both the trustee in bankruptcy (curator) and the landlord may terminate the lease
     early by notice to a date on which such agreements end according to local custom, observing the agreed or
     customary notice period, a period of 3 months being sufficient in any event; if rent has been paid in advance,
     notice cannot be given to a date earlier than the day on which the period for which payment was made in advance
