@@ -104,7 +104,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V092)
+- Convention: `V<version>__<description>.sql` (currently at V113)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -143,7 +143,7 @@ backend/
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
 ├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
-│   ├── src/main/resources/db/migration/  (92 SQL migrations)
+│   ├── src/main/resources/db/migration/  (113 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
@@ -287,7 +287,7 @@ frontend/
   that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V092)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V113)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`
