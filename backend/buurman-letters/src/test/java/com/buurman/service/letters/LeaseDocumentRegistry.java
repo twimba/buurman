@@ -1375,6 +1375,81 @@ public final class LeaseDocumentRegistry {
   // ===== NO entries (country pack) =====
   // Constants, citation pattern and foreign markers for NO go here, only inside these markers.
 
+  /**
+   * The Norwegian statute citation format: the section sign with chapter and section, {@code §
+   * 9-3}, {@code § 3-5}, {@code § 13-2}, or a plain section of a regulation, {@code § 6}. Norwegian
+   * writes the paragraph (ledd) as an ordinal word ("§ 9-3 andre ledd"), which the fidelity gate
+   * cannot pair with the English "paragraph 2"; the NO documents therefore write the ledd as a
+   * digit ordinal in Norwegian, "§ 9-3 2. ledd", and as "§ 9-3, paragraph 2" in English, so the
+   * gate pairs (9-3, 2) in both. A letter section ("§ 9-3 a") is cited as the section without the
+   * letter.
+   */
+  public static final Pattern NORWEGIAN_CITATION = Pattern.compile("§\\s*\\d+(?:-\\d+)?");
+
+  /** Norwegian marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> NORWEGIAN_MARKERS =
+      List.of("utleieren", "leieren", "leieavtalen", "husrommet", "med mindre");
+
+  /** Mirror of V106__seed_no_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry NO_RESIDENTIAL =
+      new Entry(
+          "NO",
+          LeaseKind.RESIDENTIAL,
+          "nb",
+          List.of("nb", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-label", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("termination", true, false, 14),
+              new ClauseSpec("enforcement", false, false, 15),
+              new ClauseSpec("data-protection", false, false, 16),
+              new ClauseSpec("disputes", false, false, 17)),
+          NORWEGIAN_MARKERS,
+          Optional.of(NORWEGIAN_CITATION));
+
+  /** Mirror of V106__seed_no_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry NO_COMMERCIAL =
+      new Entry(
+          "NO",
+          LeaseKind.COMMERCIAL,
+          "nb",
+          List.of("nb", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("subletting", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-label", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("enforcement", false, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          NORWEGIAN_MARKERS,
+          Optional.of(NORWEGIAN_CITATION));
+
   // ===== end NO =====
 
   // ===== PL entries (country pack) =====
@@ -1478,6 +1553,8 @@ public final class LeaseDocumentRegistry {
     // ===== end NL-COMMERCIAL ENTRIES =====
 
     // ===== NO ENTRIES (country pack) =====
+    entries.add(NO_RESIDENTIAL);
+    entries.add(NO_COMMERCIAL);
 
     // ===== end NO ENTRIES =====
 
