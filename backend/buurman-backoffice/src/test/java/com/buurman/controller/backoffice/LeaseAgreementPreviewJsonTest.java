@@ -67,6 +67,10 @@ class LeaseAgreementPreviewJsonTest {
 
     assertThat(json)
         .contains("\"availability\":\"UNAVAILABLE_COUNTRY\"")
-        .contains("\"clauses\":[]");
+        .contains("\"clauses\":[]")
+        .contains("\"html\":null")
+        .contains("\"languageUsed\":null")
+        .contains("\"kindUsed\":null")
+        .contains("\"source\":null");
   }
 }

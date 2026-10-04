@@ -56,6 +56,7 @@ public class LeasePreviewService {
   static final LocalDate MAX_DATE = LocalDate.of(2200, 1, 1);
 
   private static final String SAMPLE_REFERENCE = "SAMPLE";
+  private static final int SAMPLE_NOTICE_DAYS = 30;
   private static final Pattern COUNTRY = Pattern.compile("[A-Z]{2}");
   private static final Pattern CURRENCY = Pattern.compile("[A-Z]{3}");
   private static final Pattern REGION = Pattern.compile("[A-Za-z0-9-]{1,10}");
@@ -76,8 +77,10 @@ public class LeasePreviewService {
           + "</style>";
   private static final String SAMPLE_BANNER =
       "<div class=\"sample-banner\">SAMPLE &ndash; NOT A VALID LEASE</div>";
-  private static final Pattern HEAD_OPEN = Pattern.compile("<head[^>]*>", Pattern.CASE_INSENSITIVE);
-  private static final Pattern BODY_OPEN = Pattern.compile("<body[^>]*>", Pattern.CASE_INSENSITIVE);
+  private static final Pattern HEAD_OPEN =
+      Pattern.compile("<head(\\s[^>]*)?>", Pattern.CASE_INSENSITIVE);
+  private static final Pattern BODY_OPEN =
+      Pattern.compile("<body(\\s[^>]*)?>", Pattern.CASE_INSENSITIVE);
 
   private final LeaseAgreementExporter exporter;
   private final LeaseClauseResolver clauseResolver;
@@ -98,7 +101,7 @@ public class LeasePreviewService {
   /**
    * @throws BadRequestException for an invalid request or an unknown clause key
    * @throws com.buurman.exception.BusinessRuleException when no clause is included or a clause has
-   *     no fragment in the document (a 422 the admin needs to see)
+   *     no fragment in the document (rendered as a 409 ProblemDetail by the global handler)
    */
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public LeaseAgreementPreviewResponse preview(LeaseAgreementPreviewRequest request) {
@@ -114,6 +117,8 @@ public class LeasePreviewService {
 
     LeaseAgreementExporter.LeaseRenderPlan plan =
         exporter.plan(country, request.leaseKind(), request.language(), availability.templates());
+    // Clause keys can only be checked against templates, so an unavailable country (no templates)
+    // answers before this point and ignores them.
     List<LeaseClauseResolver.ClauseOverride> overrides =
         toOverrides(request.clauses(), plan.templates());
     LeaseAgreementExporter.AssembledLease assembled =
@@ -156,8 +161,8 @@ public class LeasePreviewService {
                     Optional.ofNullable(idByKey.get(c.clauseKey()))
                         .orElseThrow(
                             () -> new BadRequestException("Unknown clause key: " + c.clauseKey())),
-                    c.included(),
-                    c.sortOrder()))
+                    Boolean.TRUE.equals(c.included()),
+                    Optional.ofNullable(c.sortOrder()).orElse(0)))
         .toList();
   }
 
@@ -190,8 +195,8 @@ public class LeasePreviewService {
         Optional.ofNullable(sample.endDate()),
         sample.contractType(),
         Optional.ofNullable(sample.paymentFrequency()).orElse(Contract.PaymentFrequency.MONTHLY),
-        30,
-        30,
+        SAMPLE_NOTICE_DAYS,
+        SAMPLE_NOTICE_DAYS,
         lines,
         baseRent,
         Optional.ofNullable(sample.deposit()).map(d -> MoneyAmount.of(d.amount(), d.currency())),
@@ -218,8 +223,10 @@ public class LeasePreviewService {
   private static String insertAfter(String html, Pattern anchor, String insertion) {
     var matcher = anchor.matcher(html);
     if (!matcher.find()) {
-      // A template without the anchor is a bug, but the banner and CSP must never be skipped.
-      return insertion + html;
+      // Fail closed: a preview without its CSP or banner must never be returned, and prepending
+      // before the doctype would leave the CSP meta outside <head>, where it is ignored.
+      throw new IllegalStateException(
+          "Lease preview template has no " + anchor.pattern() + " element");
     }
     return html.substring(0, matcher.end()) + insertion + html.substring(matcher.end());
   }
@@ -250,6 +257,8 @@ public class LeasePreviewService {
               && LeaseClauseTemplate.CLAUSE_KEY_PATTERN.matcher(clause.clauseKey()).matches(),
           "clauseKey must match ^[a-z0-9-]{1,64}$");
       require(seen.add(clause.clauseKey()), "Duplicate clauseKey: " + clause.clauseKey());
+      require(clause.included() != null, "clauses[].included is required");
+      require(clause.sortOrder() != null, "clauses[].sortOrder is required");
     }
   }
 
@@ -263,6 +272,9 @@ public class LeasePreviewService {
 
     require(sample.startDate() != null, "sample.startDate is required");
     requireSaneDate(sample.startDate(), "sample.startDate");
+    require(
+        sample.contractType() != Contract.ContractType.FIXED_TERM || sample.endDate() != null,
+        "sample.endDate is required for a fixed-term contract");
     Optional.ofNullable(sample.endDate())
         .ifPresent(
             end -> {

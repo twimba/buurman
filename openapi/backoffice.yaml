@@ -5081,7 +5081,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetail"
-        "422":
+        "409":
           description: No clause is included, or a clause has no fragment in the document
           content:
             application/json:
@@ -8605,7 +8605,7 @@ components:
     LeaseAgreementPreviewResponse:
       type: object
       description: >-
-        When availability is UNAVAILABLE_*, html, languageUsed, kindUsed and source are absent and
+        When availability is UNAVAILABLE_*, html, languageUsed, kindUsed and source are null and
         clauses is empty.
       properties:
         availability:
@@ -8614,11 +8614,17 @@ components:
           type: string
           nullable: true
         languageUsed:
-          $ref: "#/components/schemas/DocumentLanguage"
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/DocumentLanguage"
         kindUsed:
-          $ref: "#/components/schemas/LeaseKind"
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/LeaseKind"
         source:
-          $ref: "#/components/schemas/LeasePreviewSource"
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/LeasePreviewSource"
         clauses:
           type: array
           items:

@@ -2,7 +2,10 @@ package com.buurman.service.letters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.context.MessageSource;
 
 import com.buurman.document.DocumentRenderer;
@@ -37,8 +41,12 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.LeaseAvailability;
 import com.buurman.domain.LeaseClauseTemplate;
 import com.buurman.domain.LeaseKind;
+import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Team;
+import com.buurman.domain.Unit;
+import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest;
 import com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.ClauseChoice;
 import com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.Money;
@@ -61,6 +69,7 @@ import com.buurman.repository.UnitResidentialDetailsRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.LeaseClauseResolver;
 import com.buurman.service.LeaseKindResolver;
+import com.buurman.util.MoneyAmount;
 
 @DisplayName("LeasePreviewService")
 class LeasePreviewServiceTest {
@@ -105,6 +114,12 @@ class LeasePreviewServiceTest {
   private final LeaseClauseTemplateRepository templateRepository =
       mock(LeaseClauseTemplateRepository.class);
   private final DocumentRenderer pdfRenderer = mock(DocumentRenderer.class);
+  private final ContractRepository contractRepository = mock(ContractRepository.class);
+  private final PropertyRepository propertyRepository = mock(PropertyRepository.class);
+  private final ContractRentComponentRepository rentComponentRepository =
+      mock(ContractRentComponentRepository.class);
+  private final TeamRepository teamRepository = mock(TeamRepository.class);
+  private final UnitRepository unitRepository = mock(UnitRepository.class);
 
   private LeaseAgreementExporter exporter;
   private LeasePreviewService service;
@@ -126,19 +141,19 @@ class LeasePreviewServiceTest {
             templateRepository, mock(ContractLeaseClauseRepository.class), messageSource);
     exporter =
         new LeaseAgreementExporter(
-            mock(ContractRepository.class),
-            mock(PropertyRepository.class),
-            mock(ContractRentComponentRepository.class),
+            contractRepository,
+            propertyRepository,
+            rentComponentRepository,
             mock(ContractRentPeriodRepository.class),
             resolver,
             new LeaseKindResolver(mock(UnitResidentialDetailsRepository.class)),
             new LeaseDocumentLocator(),
-            mock(TeamRepository.class),
+            teamRepository,
             new LetterExporterHelper(
                 mock(ContractPartyService.class),
                 mock(ContactRepository.class),
                 mock(ContactAddressRepository.class),
-                mock(UnitRepository.class)),
+                unitRepository),
             new LetterTemplateService(
                 DocumentTemplateSupport.templateEngine(messageSource, false), pdfRenderer),
             messageSource,
@@ -271,6 +286,27 @@ class LeasePreviewServiceTest {
         Arguments.of(
             "empty clause key",
             request("NL", LeaseKind.RESIDENTIAL, "nl", List.of(new ClauseChoice("", true, 1)))),
+        Arguments.of(
+            "null included",
+            request("NL", LeaseKind.RESIDENTIAL, "nl", List.of(new ClauseChoice("rent", null, 1)))),
+        Arguments.of(
+            "null sortOrder",
+            request(
+                "NL", LeaseKind.RESIDENTIAL, "nl", List.of(new ClauseChoice("rent", true, null)))),
+        Arguments.of(
+            "fixed term without end date",
+            withSample(
+                x ->
+                    copy(
+                        x,
+                        "L",
+                        List.of("T"),
+                        "A",
+                        x.startDate(),
+                        null,
+                        x.rentComponents(),
+                        null,
+                        1))),
         Arguments.of(
             "duplicate clause keys",
             request(
@@ -637,6 +673,18 @@ class LeasePreviewServiceTest {
     assertThat(r.clauses()).isEmpty();
   }
 
+  @Test
+  @DisplayName(
+      "clause keys are not checked when the country is unavailable: nothing to check against")
+  void unavailableCountryIgnoresClauseKeys() {
+    LeaseAgreementPreviewResponse r =
+        service.preview(
+            request(
+                "IT", LeaseKind.RESIDENTIAL, "it", List.of(new ClauseChoice("whatever", true, 1))));
+
+    assertThat(r.availability()).isEqualTo(LeaseAvailability.UNAVAILABLE_COUNTRY);
+  }
+
   // ---- overrides ------------------------------------------------------------------------
 
   @Test
@@ -719,26 +767,66 @@ class LeasePreviewServiceTest {
   void bannerAndCspPresent() {
     String html = service.preview(nl()).html();
 
-    assertThat(html).contains(CSP).contains("sample-banner").contains("SAMPLE");
+    assertThat(html)
+        .contains(CSP)
+        .contains("<div class=\"sample-banner\">SAMPLE &ndash; NOT A VALID LEASE</div>")
+        .contains("content:\"SAMPLE\"");
     assertThat(html.indexOf(CSP)).isLessThan(html.indexOf("<style"));
     assertThat(html.indexOf("sample-banner\">")).isGreaterThan(html.indexOf("<body"));
     assertThat(html).contains("body::before");
   }
 
   @Test
-  @DisplayName("the real render path output has neither the banner nor the CSP")
+  @DisplayName("the real PDF path hands the renderer html with neither banner, CSP nor watermark")
   void realRenderHasNeither() {
-    LeaseAgreementPreviewRequest request = nl();
-    var templates = templates("NL", LeaseKind.RESIDENTIAL, NL_RESIDENTIAL, "lease.nl.residential.");
-    var plan = exporter.plan(Optional.of("NL"), LeaseKind.RESIDENTIAL, "nl", templates);
-    var assembled =
-        exporter.assembleWithOverrides(
-            plan, service.toRenderInput(request.sample(), plan.locale()), List.of());
+    UUID teamId = UUID.randomUUID();
+    UUID propertyId = UUID.randomUUID();
+    UUID unitId = UUID.randomUUID();
+    ContractIdentifier identifier = ContractIdentifier.of("CON00000000000000000000009");
+    Contract contract =
+        Contract.builder()
+            .id(UUID.randomUUID())
+            .teamId(teamId)
+            .propertyId(propertyId)
+            .unitId(unitId)
+            .identifier(Optional.of(Sid.of(identifier.value())))
+            .countryCode(Optional.of("NL"))
+            .contractType(Contract.ContractType.INDEFINITE)
+            .startDate(LocalDate.of(2026, 2, 1))
+            .rentAmount(new MoneyAmount(new BigDecimal("1250.00"), "EUR"))
+            .paymentFrequency(Contract.PaymentFrequency.MONTHLY)
+            .build();
+    when(contractRepository.getByIdentifierAndTeamId(identifier, teamId)).thenReturn(contract);
+    when(propertyRepository.getByIdAndTeamId(propertyId, teamId))
+        .thenReturn(
+            Property.builder()
+                .id(propertyId)
+                .street("Keizersgracht 12")
+                .postalCode("1015 CJ")
+                .city("Amsterdam")
+                .build());
+    when(unitRepository.getByIdAndTeamId(unitId, teamId))
+        .thenReturn(Unit.builder().id(unitId).unitNumber("2B").name(Optional.empty()).build());
+    when(teamRepository.getById(teamId))
+        .thenReturn(Team.builder().name("Real Landlord BV").build());
+    when(rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId))
+        .thenReturn(List.of());
+    when(templateRepository.findByCountryAndKind("NL", LeaseKind.RESIDENTIAL))
+        .thenReturn(
+            templates("NL", LeaseKind.RESIDENTIAL, NL_RESIDENTIAL, "lease.nl.residential."));
+    when(pdfRenderer.render(anyString(), any())).thenReturn(new byte[] {1});
 
-    String real = exporter.renderHtml(assembled);
+    exporter.generateWithLanguage(identifier, teamId, "nl");
 
-    assertThat(real).doesNotContain("Content-Security-Policy").doesNotContain("sample-banner");
-    assertThat(service.preview(request).html()).contains("sample-banner");
+    ArgumentCaptor<String> html = ArgumentCaptor.forClass(String.class);
+    verify(pdfRenderer).render(html.capture(), any());
+    assertThat(html.getValue())
+        .contains("Real Landlord BV")
+        .doesNotContain("SAMPLE")
+        .doesNotContain("sample-banner")
+        .doesNotContain("Content-Security-Policy")
+        .doesNotContain("body::before");
+    assertThat(service.preview(nl()).html()).contains("sample-banner");
   }
 
   @Test

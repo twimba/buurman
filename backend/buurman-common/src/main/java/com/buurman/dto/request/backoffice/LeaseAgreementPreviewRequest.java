@@ -45,5 +45,6 @@ public record LeaseAgreementPreviewRequest(
 
   public record Money(BigDecimal amount, String currency) {}
 
-  public record ClauseChoice(String clauseKey, boolean included, int sortOrder) {}
+  public record ClauseChoice(
+      String clauseKey, @Nullable Boolean included, @Nullable Integer sortOrder) {}
 }
