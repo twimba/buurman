@@ -1081,6 +1081,7 @@
     "generate": "Mietvertrag erstellen",
     "saveAndGenerate": "Speichern und Mietvertrag erstellen",
     "language": "Sprache des Mietvertrags",
+    "languagesLimited": "Mietverträge für {{country}} gibt es nur in den angezeigten Sprachen.",
     "pinned": "Fixiert",
     "moveUp": "{{title}} nach oben verschieben",
     "moveDown": "{{title}} nach unten verschieben",

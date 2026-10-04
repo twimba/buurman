@@ -1081,6 +1081,7 @@
     "generate": "Luo vuokrasopimus",
     "saveAndGenerate": "Tallenna ja luo vuokrasopimus",
     "language": "Vuokrasopimuksen kieli",
+    "languagesLimited": "Vuokrasopimukset maalle {{country}} ovat saatavilla vain näytetyillä kielillä.",
     "pinned": "Kiinnitetty",
     "moveUp": "Siirrä {{title}} ylös",
     "moveDown": "Siirrä {{title}} alas",

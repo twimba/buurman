@@ -40,14 +40,26 @@ export const DOCUMENT_LANGUAGES: DocumentLanguage[] = [
 export const baseLanguage = (i18nLanguage: string): string =>
   i18nLanguage.split('-')[0];
 
-/** Active UI language first, then the rest in canonical order. */
+/**
+ * Active UI language first, then the rest in canonical order. `allowed` limits the list to those
+ * codes (every language when omitted).
+ */
 export const orderDocumentLanguages = (
-  uiLanguage: string
+  uiLanguage: string,
+  allowed?: readonly string[]
 ): DocumentLanguage[] => {
-  const current = DOCUMENT_LANGUAGES.find((l) => l.code === uiLanguage);
-  const rest = DOCUMENT_LANGUAGES.filter((l) => l.code !== uiLanguage);
-  return current ? [current, ...rest] : DOCUMENT_LANGUAGES;
+  const languages = allowed
+    ? DOCUMENT_LANGUAGES.filter((l) => allowed.includes(l.code))
+    : DOCUMENT_LANGUAGES;
+  const current = languages.find((l) => l.code === uiLanguage);
+  const rest = languages.filter((l) => l.code !== uiLanguage);
+  return current ? [current, ...rest] : languages;
 };
+
+export const isDocumentLanguageCode = (
+  code: string
+): code is DocumentLanguageCode =>
+  DOCUMENT_LANGUAGES.some((l) => l.code === code);
 
 /** The UI language when documents can be rendered in it, otherwise English. */
 export const defaultDocumentLanguage = (

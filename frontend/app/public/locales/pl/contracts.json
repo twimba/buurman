@@ -1109,6 +1109,7 @@
     "generate": "Wygeneruj umowę najmu",
     "saveAndGenerate": "Zapisz i wygeneruj umowę najmu",
     "language": "Język umowy",
+    "languagesLimited": "Umowy najmu dla kraju {{country}} są dostępne tylko w wyświetlonych językach.",
     "pinned": "Przypięta",
     "moveUp": "Przesuń w górę: {{title}}",
     "moveDown": "Przesuń w dół: {{title}}",

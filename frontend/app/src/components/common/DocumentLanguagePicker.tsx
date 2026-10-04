@@ -16,6 +16,8 @@ interface DocumentLanguagePickerProps {
   /** Accessible name of the trigger and the popover, e.g. "Agreement language". */
   label: string;
   disabled?: boolean;
+  /** Languages offered; every PDF language when omitted. */
+  languages?: readonly DocumentLanguageCode[];
 }
 
 /**
@@ -27,6 +29,7 @@ export const DocumentLanguagePicker = ({
   onChange,
   label,
   disabled = false,
+  languages,
 }: DocumentLanguagePickerProps) => {
   const { i18n } = useTranslation('common');
   const { open, setOpen, triggerRef, popoverRef, popoverStyle } = useAnchoredPopover('left');
@@ -51,6 +54,7 @@ export const DocumentLanguagePicker = ({
               <DocumentLanguageList
                 uiLanguage={baseLanguage(i18n.language)}
                 selected={value}
+                languages={languages}
                 mode="select"
                 divided={false}
                 onSelect={(code) => {

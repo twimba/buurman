@@ -1095,6 +1095,7 @@
     "generate": "Genera contratto di locazione",
     "saveAndGenerate": "Salva e genera contratto di locazione",
     "language": "Lingua del contratto",
+    "languagesLimited": "I contratti di locazione per {{country}} esistono solo nelle lingue indicate.",
     "pinned": "Fissata",
     "moveUp": "Sposta su {{title}}",
     "moveDown": "Sposta giù {{title}}",

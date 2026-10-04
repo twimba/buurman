@@ -1081,6 +1081,7 @@
     "generate": "Generera hyresavtal",
     "saveAndGenerate": "Spara och generera hyresavtal",
     "language": "Hyresavtalets språk",
+    "languagesLimited": "Hyresavtal för {{country}} finns bara på de språk som visas.",
     "pinned": "Fast",
     "moveUp": "Flytta upp {{title}}",
     "moveDown": "Flytta ned {{title}}",

@@ -1095,6 +1095,7 @@
     "generate": "Générer le bail",
     "saveAndGenerate": "Enregistrer et générer le bail",
     "language": "Langue du bail",
+    "languagesLimited": "Les baux pour {{country}} n'existent que dans les langues proposées.",
     "pinned": "Épinglée",
     "moveUp": "Monter {{title}}",
     "moveDown": "Descendre {{title}}",

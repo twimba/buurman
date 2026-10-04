@@ -1081,6 +1081,7 @@
     "generate": "Generate lease agreement",
     "saveAndGenerate": "Save and generate lease agreement",
     "language": "Agreement language",
+    "languagesLimited": "Lease agreements for {{country}} exist only in the languages shown.",
     "pinned": "Pinned",
     "moveUp": "Move up {{title}}",
     "moveDown": "Move down {{title}}",

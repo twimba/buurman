@@ -1081,6 +1081,7 @@
     "generate": "Generer leiekontrakt",
     "saveAndGenerate": "Lagre og generer leiekontrakt",
     "language": "Språk for leiekontrakten",
+    "languagesLimited": "Leiekontrakter for {{country}} finnes bare på språkene som vises.",
     "pinned": "Festet",
     "moveUp": "Flytt {{title}} opp",
     "moveDown": "Flytt {{title}} ned",

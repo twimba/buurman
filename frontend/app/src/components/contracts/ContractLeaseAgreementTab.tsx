@@ -5,7 +5,9 @@ import { Button, LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentLanguagePicker } from '@/components/common/DocumentLanguagePicker';
 import {
+  DOCUMENT_LANGUAGES,
   defaultDocumentLanguage,
+  isDocumentLanguageCode,
   type DocumentLanguageCode,
 } from '@/components/common/documentLanguages';
 import { LeaseUnavailableState } from '@/components/contracts/LeaseUnavailableState';
@@ -87,11 +89,28 @@ export const ContractLeaseAgreementTab = ({
   // "show the server order". Cleared on a successful save, like overrides.
   const [order, setOrder] = useState<ClauseOrder>(null);
 
-  // Same default as the booklet menu: the user's UI language (English when PDFs don't exist in
-  // it). The server falls back to the country's national language when it has no document in it.
-  const [language, setLanguage] = useState<DocumentLanguageCode>(() =>
-    defaultDocumentLanguage(i18n.language)
+  // The language the landlord picked; null until they pick one, so the default below follows the
+  // envelope once it loads.
+  const [pickedLanguage, setPickedLanguage] =
+    useState<DocumentLanguageCode | null>(null);
+
+  // Only the languages a document exists in for this country and kind: the server would silently
+  // fall back to the national language for any other. Empty (older server) offers every language.
+  const offeredLanguages = (envelope?.documentLanguages ?? []).filter(
+    isDocumentLanguageCode
   );
+  const isLimited = offeredLanguages.length > 0;
+  const uiDocumentLanguage = defaultDocumentLanguage(i18n.language);
+  // Default: the UI language when a document exists in it, else the first offered one (the server
+  // lists the country's authoritative language first), else the UI language / English.
+  const defaultLanguage: DocumentLanguageCode =
+    !isLimited || offeredLanguages.includes(uiDocumentLanguage)
+      ? uiDocumentLanguage
+      : offeredLanguages[0];
+  const language: DocumentLanguageCode =
+    pickedLanguage && (!isLimited || offeredLanguages.includes(pickedLanguage))
+      ? pickedLanguage
+      : defaultLanguage;
 
   // True while "Save and generate" runs, covering both requests so the button spins throughout.
   const [savingThenGenerating, setSavingThenGenerating] = useState(false);
@@ -326,9 +345,15 @@ export const ContractLeaseAgreementTab = ({
           </Button>
           <DocumentLanguagePicker
             value={language}
-            onChange={setLanguage}
+            onChange={setPickedLanguage}
             label={t('leaseAgreement.language')}
-            disabled={savingThenGenerating || generateMutation.isPending}
+            languages={isLimited ? offeredLanguages : undefined}
+            // A single language leaves nothing to choose: the picker only shows it.
+            disabled={
+              offeredLanguages.length === 1 ||
+              savingThenGenerating ||
+              generateMutation.isPending
+            }
           />
           <Button
             variant="primary"
@@ -341,6 +366,14 @@ export const ContractLeaseAgreementTab = ({
               ? t('leaseAgreement.saveAndGenerate')
               : t('leaseAgreement.generate')}
           </Button>
+          {isLimited &&
+            offeredLanguages.length < DOCUMENT_LANGUAGES.length && (
+              <p className="basis-full text-xs text-text-muted">
+                {t('leaseAgreement.languagesLimited', {
+                  country: countryName,
+                })}
+              </p>
+            )}
         </div>
       )}
     </div>

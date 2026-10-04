@@ -16,10 +16,34 @@ import {
   type ResolvedLeaseClauseResponse,
 } from '@/generated/models';
 
+/** Every PDF language, as the server lists them for NL residential (Dutch first). */
+const ALL_LANGUAGES = [
+  'nl',
+  'en',
+  'de',
+  'fr',
+  'pt',
+  'es',
+  'sv',
+  'it',
+  'fi',
+  'el',
+  'pl',
+  'da',
+  'nb',
+];
+
 const documentEnvelope = (
   clauses: ResolvedLeaseClauseResponse[],
-  availability: LeaseAvailability = LeaseAvailability.AVAILABLE_DOCUMENT
-): LeaseClausesResponse => ({ availability, countryCode: 'NL', clauses });
+  availability: LeaseAvailability = LeaseAvailability.AVAILABLE_DOCUMENT,
+  countryCode = 'NL',
+  documentLanguages: string[] = ALL_LANGUAGES
+): LeaseClausesResponse => ({
+  availability,
+  countryCode,
+  clauses,
+  documentLanguages,
+});
 
 const CLAUSES: ResolvedLeaseClauseResponse[] = [
   {
@@ -404,6 +428,157 @@ describe('ContractLeaseAgreementTab', () => {
         expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'de' });
       });
     });
+
+    describe('offered languages', () => {
+      const openPicker = async (current: string) => {
+        await userEvent.click(
+          screen.getByRole('button', {
+            name: `Agreement language: ${current}`,
+          })
+        );
+        return within(screen.getByRole('menu')).getAllByRole('menuitemradio');
+      };
+
+      it('offers only the languages the envelope lists, with the hint', async () => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
+            'it',
+            'en',
+          ])
+        );
+        await renderTab();
+
+        expect(
+          screen.getByText(
+            'Lease agreements for Italy exist only in the languages shown.'
+          )
+        ).toBeInTheDocument();
+        const options = await openPicker('English');
+        expect(options.map((o) => o.textContent)).toEqual([
+          'EnglishYour language',
+          'Italiano',
+        ]);
+        expect(options[0]).toHaveAttribute('aria-checked', 'true');
+      });
+
+      it('defaults to the UI language when a document exists in it', async () => {
+        await i18n.changeLanguage('it');
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
+            'it',
+            'en',
+          ])
+        );
+        const generateSpy = vi
+          .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+          .mockResolvedValue(GENERATED);
+        await renderTab();
+
+        expect(
+          screen.getByRole('button', { name: /: Italiano$/ })
+        ).toBeInTheDocument();
+        await userEvent.click(primaryButton());
+        await waitFor(() => {
+          expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'it' });
+        });
+      });
+
+      it("defaults to the country's first listed language when the UI language has no document", async () => {
+        await i18n.changeLanguage('pt');
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'IT', [
+            'it',
+            'en',
+          ])
+        );
+        const generateSpy = vi
+          .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+          .mockResolvedValue(GENERATED);
+        await renderTab();
+
+        const picker = screen.getByRole('button', { name: /: Italiano$/ });
+        await userEvent.click(picker);
+        const options = within(screen.getByRole('menu')).getAllByRole(
+          'menuitemradio'
+        );
+        expect(options.map((o) => o.textContent)).toEqual([
+          'English',
+          'Italiano',
+        ]);
+        await userEvent.keyboard('{Escape}');
+
+        await userEvent.click(primaryButton());
+        await waitFor(() => {
+          expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'it' });
+        });
+      });
+
+      it('generates in a listed language picked in the picker', async () => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'PT', [
+            'pt',
+            'en',
+          ])
+        );
+        const generateSpy = vi
+          .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+          .mockResolvedValue(GENERATED);
+        await renderTab();
+
+        await openPicker('English');
+        await userEvent.click(
+          screen.getByRole('menuitemradio', { name: /Português/ })
+        );
+        expect(
+          screen.getByRole('button', { name: 'Agreement language: Português' })
+        ).toBeInTheDocument();
+
+        await userEvent.click(primaryButton());
+        await waitFor(() => {
+          expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'pt' });
+        });
+      });
+
+      it('leaves nothing to choose when a single language exists', async () => {
+        await i18n.changeLanguage('de');
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'CZ', [
+            'en',
+          ])
+        );
+        const generateSpy = vi
+          .spyOn(leaseAgreementApi, 'generateLeaseAgreement')
+          .mockResolvedValue(GENERATED);
+        await renderTab();
+
+        expect(
+          screen.getByRole('button', { name: /: English$/ })
+        ).toBeDisabled();
+        await userEvent.click(primaryButton());
+        await waitFor(() => {
+          expect(generateSpy).toHaveBeenCalledWith(CONTRACT, { lang: 'en' });
+        });
+      });
+
+      it('shows no hint when every language exists', async () => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES)
+        );
+        await renderTab();
+
+        expect(screen.queryByText(/exist only in the languages shown/)).toBeNull();
+      });
+
+      it('offers every language when the envelope lists none', async () => {
+        vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue(
+          documentEnvelope(CLAUSES, LeaseAvailability.AVAILABLE_DOCUMENT, 'NL', [])
+        );
+        await renderTab();
+
+        expect(await openPicker('English')).toHaveLength(13);
+        expect(screen.queryByText(/exist only in the languages shown/)).toBeNull();
+      });
+    });
   });
 
   describe('clause ordering', () => {
@@ -709,6 +884,7 @@ describe('ContractLeaseAgreementTab', () => {
         availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
         countryCode: 'IT',
         clauses: [],
+        documentLanguages: [],
       });
       const onGoToDocuments = vi.fn();
       renderTab({ onGoToDocuments });
@@ -736,6 +912,7 @@ describe('ContractLeaseAgreementTab', () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
         availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
         clauses: [],
+        documentLanguages: [],
       });
       const onEditProperty = vi.fn();
       renderTab({ onEditProperty });
@@ -754,6 +931,7 @@ describe('ContractLeaseAgreementTab', () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
         availability: LeaseAvailability.UNAVAILABLE_NO_COUNTRY,
         clauses: [],
+        documentLanguages: [],
       });
       renderTab();
       await screen.findByRole('heading', { name: 'Choose a country first' });
@@ -816,6 +994,7 @@ describe('ContractLeaseAgreementTab', () => {
           availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
           countryCode,
           clauses: [],
+          documentLanguages: [],
         });
         renderTab();
 
@@ -835,6 +1014,7 @@ describe('ContractLeaseAgreementTab', () => {
           availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
           countryCode,
           clauses: [],
+          documentLanguages: [],
         });
         renderTab();
 
@@ -851,6 +1031,7 @@ describe('ContractLeaseAgreementTab', () => {
           availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
           countryCode: 'IT',
           clauses: [],
+          documentLanguages: [],
         });
       const track = vi
         .spyOn(analytics, 'trackEvent')
@@ -881,6 +1062,7 @@ describe('ContractLeaseAgreementTab', () => {
         availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
         countryCode: 'FR',
         clauses: [],
+        documentLanguages: [],
       });
       await queryClient.invalidateQueries();
       await waitFor(() => {
@@ -900,6 +1082,7 @@ describe('ContractLeaseAgreementTab', () => {
           availability,
           countryCode: 'NL',
           clauses: [],
+          documentLanguages: [],
         });
         renderTab();
 
@@ -916,6 +1099,7 @@ describe('ContractLeaseAgreementTab', () => {
       vi.spyOn(leaseAgreementApi, 'getLeaseClauses').mockResolvedValue({
         availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
         clauses: [],
+        documentLanguages: [],
       });
       renderTab();
 
@@ -928,6 +1112,7 @@ describe('ContractLeaseAgreementTab', () => {
         availability: LeaseAvailability.UNAVAILABLE_COUNTRY,
         countryCode: 'IT',
         clauses: null as unknown as ResolvedLeaseClauseResponse[],
+        documentLanguages: [],
       });
       renderTab();
 

@@ -17,6 +17,8 @@ interface DocumentLanguageListProps {
   mode?: 'action' | 'select';
   /** Top divider separating the list from content above it in the same popover. */
   divided?: boolean;
+  /** Limits the list to these codes; every PDF language when omitted (booklets). */
+  languages?: readonly DocumentLanguageCode[];
   onSelect: (code: DocumentLanguageCode) => void;
 }
 
@@ -31,6 +33,7 @@ export const DocumentLanguageList = ({
   disabled = false,
   mode = 'action',
   divided = true,
+  languages,
   onSelect,
 }: DocumentLanguageListProps) => {
   const { t } = useTranslation('common');
@@ -44,7 +47,7 @@ export const DocumentLanguageList = ({
         {t('documentDownload.language')}
       </div>
       <div className="min-h-0 max-h-72 overflow-y-auto px-2">
-        {orderDocumentLanguages(uiLanguage).map(({ code, label }) => {
+        {orderDocumentLanguages(uiLanguage, languages).map(({ code, label }) => {
           const isCurrent = code === uiLanguage;
           const isSelected = code === highlighted;
           const isPending = pendingCode === code;

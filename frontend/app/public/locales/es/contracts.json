@@ -1095,6 +1095,7 @@
     "generate": "Generar contrato de arrendamiento",
     "saveAndGenerate": "Guardar y generar contrato de arrendamiento",
     "language": "Idioma del contrato",
+    "languagesLimited": "Los contratos de arrendamiento para {{country}} solo existen en los idiomas mostrados.",
     "pinned": "Fijada",
     "moveUp": "Subir {{title}}",
     "moveDown": "Bajar {{title}}",

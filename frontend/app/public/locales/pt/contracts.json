@@ -1095,6 +1095,7 @@
     "generate": "Gerar contrato de arrendamento",
     "saveAndGenerate": "Guardar e gerar contrato de arrendamento",
     "language": "Idioma do contrato",
+    "languagesLimited": "Os contratos de arrendamento para {{country}} só existem nos idiomas apresentados.",
     "pinned": "Fixada",
     "moveUp": "Mover {{title}} para cima",
     "moveDown": "Mover {{title}} para baixo",

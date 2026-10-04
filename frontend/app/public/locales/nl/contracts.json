@@ -1081,6 +1081,7 @@
     "generate": "Huurovereenkomst genereren",
     "saveAndGenerate": "Opslaan en huurovereenkomst genereren",
     "language": "Taal van de huurovereenkomst",
+    "languagesLimited": "Huurovereenkomsten voor {{country}} bestaan alleen in de getoonde talen.",
     "pinned": "Vastgezet",
     "moveUp": "{{title}} omhoog verplaatsen",
     "moveDown": "{{title}} omlaag verplaatsen",
