@@ -225,8 +225,11 @@ public final class LeaseDocumentRegistry {
     }
 
     /**
-     * Case-insensitive word-boundary pattern over {@link #foreignMarkers()}, or empty when the
-     * entry has none.
+     * Case-insensitive whole-word pattern over {@link #foreignMarkers()}, or empty when the entry
+     * has none. The word boundary is a Unicode-aware lookaround (no letter or digit of any script
+     * before or after), not {@code \b}: Java's {@code \b} only sees ASCII word characters here, so
+     * a marker starting or ending with a Greek, Cyrillic or accented Latin letter ("μίσθιο",
+     * "déjà", "umową") would never match.
      */
     public Optional<Pattern> foreignMarkerPattern() {
       if (foreignMarkers.isEmpty()) {
@@ -235,7 +238,8 @@ public final class LeaseDocumentRegistry {
       String alternatives = String.join("|", foreignMarkers.stream().map(Pattern::quote).toList());
       return Optional.of(
           Pattern.compile(
-              "\\b(?:" + alternatives + ")\\b", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE));
+              "(?<![\\p{L}\\p{N}])(?:" + alternatives + ")(?![\\p{L}\\p{N}])",
+              Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE));
     }
   }
 
@@ -1259,9 +1263,8 @@ public final class LeaseDocumentRegistry {
 
   /**
    * Greek marker words that must not leak into the English translations outside parenthetical
-   * glosses. Not passed to the registry entry: {@link Entry#foreignMarkerPattern()} uses {@code
-   * \b}, which does not match next to Greek letters, so {@code GrLeaseDocumentTest} checks them
-   * with a Unicode-aware boundary.
+   * glosses ({@link Entry#foreignMarkerPattern()} uses a Unicode-aware word boundary, so Greek
+   * letters are seen).
    */
   public static final List<String> GREEK_MARKERS =
       List.of("ο εκμισθωτής", "ο μισθωτής", "μίσθιο", "βλ. άρθρο", "σύμφωνα με");
@@ -1292,7 +1295,7 @@ public final class LeaseDocumentRegistry {
               new ClauseSpec("termination", true, false, 16),
               new ClauseSpec("data-protection", false, false, 17),
               new ClauseSpec("disputes", false, false, 18)),
-          List.of(),
+          GREEK_MARKERS,
           Optional.of(GREEK_CITATION));
 
   /** Mirror of V102__seed_gr_lease_clauses.sql (COMMERCIAL rows). */
@@ -1324,7 +1327,7 @@ public final class LeaseDocumentRegistry {
               new ClauseSpec("termination", true, false, 19),
               new ClauseSpec("data-protection", false, false, 20),
               new ClauseSpec("disputes", false, false, 21)),
-          List.of(),
+          GREEK_MARKERS,
           Optional.of(GREEK_CITATION));
 
   // ===== end GR =====
