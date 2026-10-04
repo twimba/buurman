@@ -3,8 +3,11 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import com.buurman.domain.metadata.ContractCountryMetadata;
@@ -38,7 +41,24 @@ public class Contract {
     ACTIVE,
     EXPIRED,
     TERMINATED,
-    PENDING_SIGNATURE
+    PENDING_SIGNATURE,
+    NOTICE_GIVEN;
+
+    /**
+     * Statuses in which a contract is still in force: the tenant occupies the unit and owes rent.
+     * {@code NOTICE_GIVEN} counts — notice has been served, but the tenancy runs until its
+     * effective end date, when the termination sweep moves it to {@code TERMINATED}.
+     */
+    public static final Set<ContractStatus> IN_FORCE =
+        Collections.unmodifiableSet(EnumSet.of(ACTIVE, NOTICE_GIVEN));
+
+    /** Names of {@link #IN_FORCE}, for SQL filters such as jOOQ {@code STATUS.in(...)}. */
+    public static final List<String> IN_FORCE_NAMES =
+        IN_FORCE.stream().map(Enum::name).sorted().toList();
+
+    public boolean isInForce() {
+      return IN_FORCE.contains(this);
+    }
   }
 
   public enum RenewalMode {
@@ -69,7 +89,7 @@ public class Contract {
   @Builder.Default private Integer terminationNoticeDays = 30;
   @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
 
-  /** Charge {@code lateFeePercentage} once a rent payment is overdue past the grace period. */
+  /** Charge the late fee percentage once a rent payment is overdue past the grace period. */
   @Builder.Default private Boolean lateFeeEnabled = false;
 
   @Builder.Default private Integer lateFeeGraceDays = 0;
@@ -97,6 +117,7 @@ public class Contract {
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();
   @Builder.Default private List<String> documentLanguages = List.of("en");
+  @Builder.Default private LeaseRegime leaseRegime = LeaseRegime.STANDARD;
 
   /** Tenant-facing payment reminders for this contract. Off by default. */
   @Builder.Default private Boolean tenantRemindersEnabled = false;

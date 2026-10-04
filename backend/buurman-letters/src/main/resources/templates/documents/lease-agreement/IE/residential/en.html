@@ -1,0 +1,454 @@
+<!--
+  legal-basis: Irish residential tenancy law. Residential Tenancies Act 2004 (No. 27 of 2004, "the Act"),
+               Law Reform Commission revised text updated to 1 March 2026, as amended by the Residential
+               Tenancies (Amendment) Act 2021 (No. 39 of 2021: Part 4 tenancies of unlimited duration from
+               11 June 2022), the Residential Tenancies (No. 2) Act 2021 (No. 17 of 2021: s.19B deposit and
+               advance rent of at most 1 month each), the Regulation of Providers of Building Works and
+               Miscellaneous Provisions Act 2022 (s.66 Table 1 landlord notice periods), the Residential
+               Tenancies (Amendment) Act 2025 (No. 5 of 2025: rent pressure zone rules nationwide from
+               20 June 2025), the Residential Tenancies (Miscellaneous Provisions) Act 2026 (No. 3 of 2026,
+               enacted 24 February 2026, commenced by S.I. No. 67 of 2026, ss.10, 15 and 24 on 28 February
+               2026 and the other provisions of Part 2 on 1 March 2026: s.12(1)(i) rent
+               information, s.16(ca) access for an intended sale, s.19 national rent limits with the CPI,
+               s.20B, s.34 and s.35 amendments, s.35B tenancies of minimum duration of 6 years and the
+               restrictions for companies and landlords of more than 3 tenancies, s.62(1)(da) and (1A)) and
+               the Housing and Residential Tenancies (Miscellaneous Provisions) Act 2026 (No. 33 of 2026,
+               enacted 22 July 2026; s.17 in force 31 July 2026 by S.I. No. 396 of 2026: new s.3(2)(j)
+               exclusion of certain garden dwellings; ss.19 to 39 in force 14 September 2026 by S.I. No. 434
+               of 2026: s.12(1)(i) information to the tenant and new s.12(6) information to the Board within
+               1 month from the commencement, s.22(2) and s.62(1A) copy of a rent review notice or notice of
+               termination to the Board within 7 days).
+               Sections relied on: s.3 (application and exclusions), s.6(1)(ca) (service by email), s.12
+               (landlord obligations: repairs, insurance with an indemnity of at least EUR 250,000, deposit
+               return and deductions in s.12(4), authorised agent, rent information), s.14 (penalisation),
+               s.16 (tenant obligations, normal wear and tear), s.19 (market rent; s.19(4) limit of 2 per
+               cent per year or the CPI increase, whichever is lower; s.19(4)(aa) new apartments and
+               student accommodation; s.19(5) exemptions), s.19B, s.20 and s.20B (at most 1 review in each 12 months,
+               not in the first 12 months), s.22 (rent review notice at least 90 days before, dispute within
+               28 days), s.28 to s.35B (Part 4 tenancies, Table to s.34 grounds 1, 1A, 2, 3, 4, 5 and 6),
+               s.58 (no forfeiture), s.62 (validity of notices of termination), s.66 Tables 1 and 2 (landlord
+               90, 152, 180, 196, 224 days; tenant 28, 35, 42, 56, 84, 112 days), s.67 (28 days, 7 days for
+               serious anti-social behaviour, rent arrears notification with 28 days to pay), s.68, s.69,
+               s.128(4), s.134 (registration within 1 month of the commencement and of each anniversary),
+               s.182 (court only above EUR 20,000 damages or EUR 60,000 arrears), s.185, s.186.
+               Housing (Standards for Rented Houses) Regulations 2019 (S.I. No. 137 of 2019); Housing (Rent
+               Books) Regulations 1993 (S.I. No. 146 of 1993); European Union (Energy Performance of
+               Buildings) Regulations 2012 (S.I. No. 243 of 2012); Regulation (EU) 2016/679 (GDPR) and the
+               Data Protection Act 2018.
+               Verified 2026-10-04 against irishstatutebook.ie (Acts No. 3 of 2026 and No. 33 of 2026),
+               irishstatutebook.ie/eli/isbc/2026_33.html (commencement of Act No. 33 of 2026),
+               revisedacts.lawreform.ie (Residential Tenancies Act 2004 revised to 1 March 2026), rtb.ie
+               (rental law changes from 1 March 2026; changes from 14 September 2026) and the official
+               consolidated text annotations (commencement dates).
+               Pending: ss.4 to 15, 49 and 56 of Act No. 33 of 2026 (not yet commenced, not relied on); the
+               deposit protection scheme of the Act (transmission of deposits to the Board) is not
+               commenced.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("90 days' notice", never "ninety days"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (Ireland); there is no translation. Draft text, not vetted by
+  legal counsel. Reflects the residential tenancy law of Ireland, not the law of any other country. It is
+  drafted for a tenancy created on or after 1 March 2026. Each clause-<key> fragment holds only the clause body;
+  the shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause
+  is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This agreement is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>for the letting of the dwelling described below as the tenant&rsquo;s home. Where the tenant consists of
+    several persons, each of them is jointly and severally liable for all obligations of the tenant under this
+    agreement.</p>
+  <p>Name of the person, if any, authorised by the landlord to act on the landlord&rsquo;s behalf in relation to
+    the tenancy (authorised agent): ______________________________</p>
+  <p>Means by which the tenant may contact the landlord or the authorised agent at all reasonable times:
+    ______________________________</p>
+  <p>The landlord notifies the tenant of any change in these particulars (section 12(1)(e) and (f) of the
+    Residential Tenancies Act 2004).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the dwelling at <strong th:text="${propertyAddress}">address</strong>,
+    together with the fixtures, fittings and any furniture listed in the inventory, hereinafter &ldquo;the
+    dwelling&rdquo;.</p>
+  <p>This agreement creates a tenancy of a dwelling to which the Residential Tenancies Act 2004, as amended
+    (hereinafter &ldquo;the Act&rdquo;), applies, unless the dwelling is excluded by section 3(2) of the Act, for
+    example a dwelling within which the landlord also resides, a dwelling let to a person whose entitlement to
+    occupation is for the purpose of a holiday only, or a dwelling used wholly or partly for the purpose of
+    carrying on a business such that the occupier could, after the tenancy has lasted 5 years, make an
+    application under section 13(1)(a) of the Landlord and Tenant (Amendment) Act 1980, or a detached house
+    constructed, erected or placed in the rear garden of a house as exempted development, where that house is
+    the principal private residence of the landlord and is owned by the landlord (section 3(2)(j)). In this agreement
+    &ldquo;the Board&rdquo; means the Residential Tenancies Board (RTB).</p>
+  <p>This agreement is drafted for a tenancy created on or after 1 March 2026. For a tenancy created before that
+    date different transitional rules of the Act apply, in particular on the setting of the rent and on the
+    grounds on which the landlord may terminate the tenancy.</p>
+  <p>Where a provision of the Act that cannot be excluded by agreement conflicts with this agreement, the
+    provision of the Act prevails. A term that is inconsistent with the Act is not a term of a Part 4 tenancy
+    (section 30(3) of the Act), and rights of the tenant that are more beneficial than those created by Part 4 of
+    the Act are not affected (section 26).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The tenancy is a periodic tenancy and continues from rent period to rent period until
+    it is terminated in accordance with Part 5 of the Act.</p>
+  <p th:if="${fixedTerm}">The tenancy is granted for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>. The expiry of the fixed term does not by itself end a
+    Part 4 tenancy: the landlord may terminate a Part 4 tenancy only in accordance with section 34 of the Act
+    (section 33).</p>
+  <p>Where the tenant has been in occupation of the dwelling under the tenancy for a continuous period of 6
+    months and no notice of termination giving the required period of notice has been served before the expiry
+    of that period (or any such notice has been withdrawn), the tenancy continues in existence as a Part 4
+    tenancy for a period of unlimited duration from the date on which that period of 6 months expires, subject
+    to termination in accordance with the Act (section 28).</p>
+  <p>Where the tenancy commences on or after 1 March 2026, the Part 4 tenancy is a relevant Part 4 tenancy. Each
+    continuous period of 6 years under it, from the commencement of the relevant Part 4 tenancy and from each
+    sixth anniversary of that commencement, is a tenancy of minimum duration (section 35B(1) of the Act), during
+    which the grounds on which the landlord may terminate the tenancy are further restricted.<span
+    class="clause-ref" data-ref="termination" th:if="${refs['termination']}"> The termination of the tenancy is
+    governed by what this agreement provides (see article <span th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Utilities and other charges are dealt with separately (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent set under this tenancy may not be greater than the market rent for the tenancy at the time it is
+    set (section 19(1) of the Act). In addition, section 19(4) of the Act limits the rent: the new rent may not
+    exceed the old rent by more than 2 per cent of the old rent for each year that has elapsed since the
+    previous setting of the rent (and a proportionate percentage for any shorter additional period), nor in a
+    greater proportion than the All Items Consumer Price Index (CPI) published by the Central Statistics Office
+    has increased between the previous setting and the new setting, whichever limit is lower. For a new tenancy
+    of the dwelling the old rent is the rent last set under the tenancy that immediately preceded it within the
+    meaning of section 19(4)(c) of the Act. The limit of 2 per cent does not apply, but the CPI limit does, to
+    dwellings in an apartment complex or
+    in student accommodation for whose construction, extension or change of use a commencement notice or a 7
+    day notice was given on or after 10 June 2025, subject to the conditions of section 19(4)(aa) of the Act.</p>
+  <p>Section 19(5) of the Act lists the cases in which these limits do not apply to the rent first set under
+    this tenancy, for example (subject to the conditions of that subsection) where no tenancy of the dwelling
+    subsisted during the 2 years immediately preceding the creation of this tenancy, or where the most recent
+    previous tenancy of the dwelling was terminated by the tenant.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Reviews of the rent are
+    governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-information" data-clause="rent-information">
+  <p>At the commencement of the tenancy the landlord furnishes the tenant in writing with the following
+    information (section 12(1)(i) of the Act), and gives the same information in writing to the Board within
+    1 month from the commencement of the tenancy (section 12(6)):</p>
+  <p>(a) the amount of rent last set under the most recent previous tenancy, if any, of the dwelling:
+    ______________________________</p>
+  <p>(b) the date on which that rent was last set: ______________________________</p>
+  <p>(c) a statement as to how the rent set under this tenancy has been calculated having regard to section 19 of
+    the Act: ______________________________</p>
+  <p>(d) the number assigned by the Board under section 135(3) of the Act in respect of the most recent previous
+    tenancy, if any, of the dwelling: ______________________________</p>
+  <p>(e) by reference to the published register of the Board, the amount of rent payable and the number assigned
+    under section 135(3) in respect of the most recent tenancy, preceding the commencement of this tenancy, of
+    each of 3 dwellings of a similar size (determined by reference to floor area), number of bedrooms, type,
+    character and (where applicable) Building Energy Rating (BER) to the dwelling, situated in a comparable
+    area: ______________________________</p>
+  <p>These obligations apply to a tenancy created on or after 1 March 2026 (the obligation towards the Board under
+    section 12(6), to a tenancy created after 14 September 2026), other than the tenancies excluded by section
+    12(1)(i), such as a cost rental tenancy.</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent may be reviewed only in accordance with Part 3 of the Act. For a tenancy that commences on or after
+    1 March 2026, a review of the rent may not occur more frequently than once in each period of 12 months, nor
+    in the period of 12 months beginning on the commencement of the tenancy (sections 20(1) and 20B(2) of the
+    Act), unless, within that period, a substantial change within the meaning of section 19(5A) in the nature
+    of the accommodation occurs and the rent, were it to be set immediately after that change, would by virtue
+    of that change be different to the market rent at the time of the last review or of the commencement of the
+    tenancy (section 20(3)).</p>
+  <p>The new rent may not be greater than the market rent and must comply with the limits of section 19(4) of the
+    Act, except in the cases listed in section 19(5), including the rent set under the tenancy following a
+    period of not less than 6 years during which section 19(4) applied to the rent and every setting of the rent
+    complied with it (section 19(5)(aa)).</p>
+  <p>A new rent does not have effect unless, at least 90 days before the date from which it is to have effect,
+    the landlord serves on the tenant a notice in the prescribed form stating the amount of the new rent, the
+    date from which it is to have effect and the other matters required by section 22(2A) of the Act, including
+    the landlord&rsquo;s statement that in the landlord&rsquo;s opinion the new rent is not greater than the market
+    rent, the rent information in the published register of the Board for 3 dwellings of a similar size, number
+    of bedrooms, type, character and (where applicable) BER in a comparable area, the floor area of the
+    dwelling and (where applicable) its BER, and a copy of that notice is served on the Board within 7 days of
+    the date on which it is served on the tenant (section 22(2) of the Act).</p>
+  <p>A dispute about the new rent must be referred to the Board before the date from which the new rent is to
+    have effect or before the expiry of 28 days from the receipt of the notice by the tenant, whichever is the
+    later (section 22(2A)(b) of the Act).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays the following charges, with the amount or how it is calculated:
+    ______________________________. Unless stated otherwise here, the tenant pays directly to the suppliers the
+    charges for electricity, gas, heating, water services where charged, telecommunications and television
+    services used in the dwelling.</p>
+  <p>The tenant pays charges or taxes only where this agreement provides for them and such provision is not
+    unlawful (section 16(a)(ii) of the Act). Service charges levied by the management company of an apartment
+    complex in which the dwelling is situated are borne by the landlord unless stated otherwise above; the
+    tenant may request from the management company particulars in writing of those service charges (section
+    188 of the Act).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays a deposit of
+    <strong th:text="${depositAmount}">amount</strong> as security for the performance of the tenant&rsquo;s
+    obligations.</p>
+  <p th:if="${depositAmount == null}">The tenant pays a deposit in the amount agreed in writing between the
+    parties as security for the performance of the tenant&rsquo;s obligations.</p>
+  <p>The deposit may not exceed the rent payable under this agreement in respect of a period of 1 month. For the
+    purpose of securing the tenancy, the landlord may not seek or require any payment other than that deposit
+    and an advance payment of rent of no more than the rent payable in respect of a period of 1 month (section
+    19B(1) of the Act). The landlord holds the deposit during the tenancy.</p>
+  <p>The landlord returns or repays the deposit promptly at the end of the tenancy (section 12(1)(d) of the Act).
+    Where, at the date of the request for return, there is a default in the payment of rent or of other charges
+    or taxes payable by the tenant under this agreement, or in compliance with section 16(f) of the Act (damage
+    beyond normal wear and tear), the landlord may retain the amount in arrears or the reasonable cost of
+    restoring the dwelling to the condition required by that paragraph; where that amount is equal to or greater
+    than the deposit, no amount of the deposit is required to be returned (section 12(4)). A dispute about the
+    retention or refund of the deposit may be referred to the Board.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The condition of the dwelling at the end
+    of the tenancy is assessed against the inventory (see article
+    <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span> <span th:text="${paymentFrequency}">monthly</span>, on the
+    date it falls due for payment (section 16(a)(i) of the Act), <span th:if="${paymentDueDay != null}">no later
+    than day <strong th:text="${paymentDueDay}">1</strong> of each rent period,</span><span
+    th:if="${paymentDueDay == null}">on the first day of each rent period,</span> by bank transfer to the account
+    designated in writing by the landlord: IBAN ______________________________</p>
+  <p>This agreement does not provide for an advance payment of rent, during the tenancy, which exceeds the rent
+    payable in respect of a period of 1 month (section 19B(2) of the Act).</p>
+  <p>The landlord provides the tenant with a rent book or other documentation to the like effect, recording the
+    rent and any other payments, as the Housing (Rent Books) Regulations 1993 require.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling only as a dwelling and does not use it or cause it to be used for any other
+    purpose without the written consent of the landlord, which the landlord may in the landlord&rsquo;s
+    discretion withhold (section 16(m) of the Act).</p>
+  <p>The tenant does not behave within the dwelling, or in its vicinity, in a way that is anti-social, and does
+    not allow other occupiers of, or visitors to, the dwelling to behave in such a way (section 16(h)). The
+    tenant notifies the landlord in writing of the identity of each person (other than a tenant under this
+    agreement) who for the time being resides ordinarily in the dwelling (section 16(n)).</p>
+  <p>The tenant keeps pets in the dwelling only with the prior written consent of the landlord, which the
+    landlord will not unreasonably withhold.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant does not assign or sub-let the tenancy without the written consent of the landlord, which the
+    landlord may in the landlord&rsquo;s discretion withhold (section 16(k) of the Act). If the landlord refuses
+    consent to an assignment or sub-letting, the tenant may terminate the tenancy by a notice of termination
+    giving the period of notice required by section 66 of the Act or a lesser period agreed in accordance with
+    section 69, even during a fixed term and despite anything to the contrary in this agreement (section
+    186).</p>
+  <p>The creation of a sub-tenancy of part only of a dwelling that is the subject of a Part 4 tenancy is
+    prohibited, and any such sub-tenancy is void (section 32(2) and (3) of the Act). A tenant who proposes to
+    create a sub-tenancy must inform the intended sub-tenant that a sub-tenancy will be created (section
+    185).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord carries out to the structure of the dwelling all such repairs as are from time to time
+    necessary, and to the interior of the dwelling all such repairs and replacement of fittings as are
+    necessary to maintain the interior and those fittings in at least the condition in which they were at the
+    commencement of the tenancy, and ensures that the dwelling complies with the Housing (Standards for Rented
+    Houses) Regulations 2019 (section 12(1)(b) of the Act). This does not apply to repairs that are necessary due
+    to the tenant&rsquo;s failure to comply with section 16(f) of the Act (section 12(2)). The landlord provides
+    receptacles suitable for the storage of refuse outside the dwelling, save where that is not within the
+    landlord&rsquo;s power or control (section 12(1)(ba)).</p>
+  <p>The landlord reimburses the tenant&rsquo;s reasonable and vouched for expenses of carrying out repairs for
+    which the landlord is responsible where the landlord has refused or failed to carry out the repairs at the
+    time the tenant requested them, and their postponement would have been unreasonable having regard to a
+    significant risk to the health or safety of the tenant or other lawful occupants, or to a significant
+    reduction in the quality of their living environment (section 12(1)(g) of the Act). The condition of a
+    refusal or failure is satisfied if, after all reasonable attempts, the landlord or the authorised agent
+    could not be contacted to make the request (section 12(5)).</p>
+  <p>The tenant notifies the landlord or the authorised agent of any defect that arises in the dwelling and
+    requires repair, allows reasonable access for works for which the landlord is responsible, and does not do
+    any act that would cause a deterioration in the condition of the dwelling beyond normal wear and tear
+    (section 16(d), (e) and (f) of the Act). The tenant allows the landlord, or persons acting on the
+    landlord&rsquo;s behalf, access to the dwelling at reasonable intervals, on a date and time agreed in advance
+    with the tenant, to inspect it (section 16(c)), and, where the landlord intends to sell the dwelling, on the
+    same conditions for inspections by prospective buyers accompanied by the landlord or a person acting on the
+    landlord&rsquo;s behalf (section 16(ca)).</p>
+  <p>The tenant does not alter or improve the dwelling without the written consent of the landlord; where the
+    alteration or improvement consists only of repairing, painting and decorating, the landlord may not
+    unreasonably withhold consent, and in any other case the landlord may withhold it in the landlord&rsquo;s
+    discretion (section 16(l) of the Act).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Where the European Union (Energy Performance of Buildings) Regulations 2012 (S.I. No. 243 of 2012) require a
+    Building Energy Rating (BER) certificate for the letting of the dwelling, the landlord has made the
+    certificate available to the tenant. BER of the dwelling: ____________ BER certificate number:
+    ______________________________</p>
+  <p>The BER and the floor area of the dwelling recorded on the BER register are used for the rent information
+    that the Act requires (sections 12(1)(i) and 22(2A) of the Act).</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The landlord applies to the Board to register the tenancy within 1 month from the commencement of the
+    tenancy, and again annually within 1 month from each anniversary of that commencement, in the prescribed
+    form and with the prescribed fee (section 134 of the Act). The number assigned by the Board to the tenancy
+    is notified to the tenant once it is available: ______________________________</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord effects and maintains a policy of insurance in respect of the structure of the dwelling that
+    insures the landlord against damage to, and loss and destruction of, the dwelling and indemnifies the
+    landlord, to an amount of at least EUR 250,000, against liability arising out of the ownership, possession
+    and use of the dwelling (section 12(1)(c) of the Act), unless such a policy is not obtainable, or not
+    obtainable at a reasonable cost (section 12(3)).</p>
+  <p>The tenant does not act, or allow other occupiers or visitors to act, in a way that would invalidate that
+    policy, and pays to the landlord any increase in the premium caused by such an act (section 16(i) and (j) of
+    the Act). The tenant&rsquo;s own belongings are not covered by the landlord&rsquo;s policy.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At the start of the tenancy the parties sign an inventory and a description of the condition of the dwelling,
+    preferably with dated photographs. Any inaccuracy is notified in writing within 7 days after the tenant
+    receives the inventory.</p>
+  <p>At the end of the tenancy the tenant returns the dwelling, with all keys, in the condition recorded at the
+    start, disregarding normal wear and tear, that is wear and tear that is normal having regard to the time
+    that has elapsed from the commencement of the tenancy, the extent of occupation the landlord must reasonably
+    have foreseen and any other relevant matters (section 16(f) of the Act). The parties inspect the dwelling
+    together on the last day of the tenancy or shortly before.<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> The return of the deposit follows (see article
+    <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The tenancy may be terminated by the landlord or the tenant only by a notice of termination served in
+    accordance with Part 5 of the Act, and not by a notice of forfeiture, a re-entry or any other process not
+    provided by that Part (section 58(1) of the Act). A notice of termination is valid only if it is in writing,
+    is signed by the landlord or the authorised agent or, as appropriate, by the tenant, specifies the date of
+    its service, is in the prescribed form (if any), states the reason for the termination where the Act
+    requires it, specifies the termination date (the day, month and year on which the tenancy terminates and on
+    or before which, for a termination by the landlord, the tenant must vacate, the tenant having the whole of
+    the 24 hours of that date to vacate) and states that any issue as to its validity or the right to serve it
+    must be referred to the Board within the period referred to in section 80 (section 62(1)). A notice of
+    termination served by the landlord is invalid unless a copy of it is served on the Board within 7 days of
+    the date on which it is served on the tenant (section 62(1A)).</p>
+  <p><strong>Termination by the tenant.</strong> The tenant may terminate the tenancy by a notice of termination
+    giving at least the period of notice of Table 2 to section 66 of the Act, according to the duration of the
+    tenancy: less than 6 months, 28 days; 6 months or more but less than 1 year, 35 days; 1 year or more but less
+    than 2 years, 42 days; 2 years or more but less than 4 years, 56 days; 4 years or more but less than 8 years,
+    84 days; 8 years or more, 112 days. Where the landlord fails to comply with the obligations of the tenancy,
+    the tenant may terminate it by a notice giving 7 days&rsquo; notice if the landlord&rsquo;s behaviour poses
+    an imminent danger of death or serious injury or an imminent danger to the fabric of the dwelling or the
+    property containing it, and otherwise by a notice giving 28 days&rsquo; notice, provided in that case that
+    the tenant has notified the landlord in writing of the failure and the landlord has not remedied it within
+    a reasonable time (section 68). During a fixed term the tenant may terminate the tenancy before its end only
+    in those cases, under
+    section 186 (refusal of consent to an assignment or sub-letting), or by agreement with the landlord.</p>
+  <p><strong>Termination by the landlord.</strong> During a fixed term the landlord terminates the tenancy only
+    for the tenant&rsquo;s failure to comply with the obligations of the tenancy, in accordance with the Act.
+    Unless the termination is for such a failure, the landlord&rsquo;s notice of termination gives at least the
+    period of notice of Table 1 to section 66 of the Act, according to the duration of the tenancy: less than
+    6 months, 90 days; 6 months or more but less than 1 year, 152 days; 1 year or more but less than 7 years,
+    180 days; 7 years or more but less than 8 years, 196 days; 8 years or more, 224 days. Before the tenancy
+    has become a Part 4 tenancy, the landlord need not rely on a ground in the Table to section 34 of the Act, but
+    the notice must state which of the reasons listed in section 62(1)(da) applies.</p>
+  <p>A Part 4 tenancy may be terminated by the landlord only on any of the grounds in the Table to section
+    34 of the Act, cited in the notice of termination, which must contain or be accompanied by the statement,
+    statutory declaration or certificate that the Act requires for the ground concerned (sections 34 and 35):
+    (1) the tenant has failed to comply with an obligation of the tenancy (other than the obligations in section
+    16(a) of the Act, such as the payment of rent), has been notified in writing of the failure by a
+    notification stating that the landlord is entitled to terminate
+    the tenancy if the failure is not remedied within a reasonable time specified in it, and has not remedied
+    the failure within that time, unless the failure provides an excepted basis for termination; (1A) the tenant
+    has failed to pay rent due, the landlord has notified the tenant and the Board in writing of the amount due,
+    and that amount has not been paid within 28 days following receipt of the notification by the tenant or by
+    the Board, whichever occurs later (section 67(3)); (2) the dwelling is no longer suitable to the
+    accommodation needs of the tenant and of the persons residing with the tenant, having regard to the number of
+    bed spaces and the size and composition of the household; (3) the landlord intends, within 9 months after the
+    termination, to enter into an enforceable agreement to transfer, for full consideration, the whole of the
+    landlord&rsquo;s interest in the dwelling or in the property containing it; (4) the landlord requires the
+    dwelling or the property containing it for the landlord&rsquo;s own occupation or for occupation by a member of
+    the landlord&rsquo;s family; (5) the landlord intends to substantially refurbish or renovate the dwelling or
+    the property containing it in a way which requires the dwelling to be vacated for that purpose, planning
+    permission has been obtained where it is required, and a registered construction professional certifies that
+    the works would pose a risk to the health or safety of the occupants and should not proceed while the
+    dwelling is occupied, for a period specified in the certificate of not less than 3 weeks; (6) the landlord
+    intends to change the use of the dwelling or of the property containing it to some other use, and planning
+    permission has been obtained where it is required. On grounds (4), (5) and (6) the landlord must offer the
+    tenancy back to the tenant in the circumstances set out in the Table (and, on ground (3), in the
+    circumstances set out in section 35(8)(aa)). Section 35A of the Act further
+    restricts ground (3), subject to the exceptions in that section, where the landlord intends to transfer 10 or
+    more dwellings in the same development, each the subject of a tenancy, within a period of 6 months.</p>
+  <p>For a Part 4 tenancy that commences on or after 1 March 2026, section 35B of the Act applies: a landlord that
+    is a company, or that is a landlord under more than 3 tenancies of dwellings on the date the notice is
+    served, may not terminate the tenancy on grounds (3), (4), (5) or (6). Any other landlord may not terminate it
+    on grounds (3), (5) or (6), except (a) on any of those grounds, where the notice of termination, giving the
+    required period of notice, is served before the expiry of a tenancy of minimum duration and that period of
+    notice expires on or after that expiry, or (b) on ground (3), where the landlord shows to the satisfaction of
+    the Board that the landlord requires the consideration from the transfer to provide a principal private
+    residence for the landlord or the landlord&rsquo;s spouse or civil partner, or to discharge a debt or make a
+    payment to the Revenue Commissioners of at least 15 per cent of the expected consideration that is legally
+    required to be discharged or paid within 9 months after the termination date, or that the landlord or the
+    landlord&rsquo;s spouse or civil partner is in a personal insolvency, bankruptcy or composition or arrangement
+    with creditors as described in section 35B(4), and that the restriction would, having regard to all the
+    circumstances of the case, cause undue financial or other hardship on the landlord. Where the termination
+    date falls before the expiry of a tenancy of minimum duration, ground (4) is available only for the
+    landlord&rsquo;s spouse, civil partner, child, stepchild, foster child, parent, step parent, parent-in-law or
+    a person adopted by the landlord (section 35(4)(b)).</p>
+  <p>Where the termination is for the tenant&rsquo;s failure to comply with the obligations of a Part 4 tenancy,
+    the period of notice is 28 days, regardless of the duration of the tenancy, and 7 days where the tenancy is
+    terminated by reason of anti-social behaviour within paragraph (a) or (b) of the definition in section 17(1)
+    of the Act or of behaviour threatening the fabric of the dwelling or of the property containing it (section
+    67(2)).</p>
+  <p>A shorter period of notice than the Act requires may be agreed only at, or after, the time the other party
+    indicates the intention to terminate; a term of this agreement cannot constitute such an agreement (section
+    69 of the Act). The landlord may not penalise the tenant for referring a dispute to the Board, for giving
+    evidence or for making a complaint to a public authority (section 14).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the dwelling is governed
+    by what this agreement provides (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this agreement and the Act are given in writing. They may be served in any manner that section
+    6 of the Act permits, including by sending them by electronic means to an email address used by the
+    recipient for receiving emails, where a record that the notice has been sent is made for the sender by the
+    email system used (section 6(1)(ca)).</p>
+  <p>Landlord&rsquo;s address for service: ______________________________ email:
+    ______________________________</p>
+  <p>Tenant&rsquo;s email address for notices: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only insofar as this is necessary for entering into
+    and performing this agreement and for complying with legal obligations, including the registration of the
+    tenancy with the Board, in accordance with the General Data Protection Regulation (Regulation (EU)
+    2016/679) and the Data Protection Act 2018, and keeps the data no longer than necessary for those
+    purposes.</p>
+  <p>The published register of the Board does not contain information that discloses or could reasonably lead to
+    the disclosure of the identity of the landlord or the tenant (section 128(4) of the Act). The tenant may
+    exercise the rights under the General Data Protection Regulation, in particular the rights of access,
+    rectification and erasure, and may complain to the Data Protection Commission.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by the law of Ireland. Disputes between the landlord and the tenant that fall
+    within Part 6 of the Act, including disputes about the rent, the deposit, repairs and the validity of a
+    notice of termination, are referred to the Board for resolution by mediation, adjudication or the Tenancy
+    Tribunal. Proceedings may be instituted in a court in respect of such a dispute only where damages of more
+    than EUR 20,000, or arrears of rent or other charges of more than EUR 60,000 (or such lesser amount as section
+    115(3) of the Act makes applicable), are claimed (section 182 of the Act).</p>
+  <p>Other disputes are decided by the courts of Ireland.</p>
+</div>
+
+</body>
+</html>

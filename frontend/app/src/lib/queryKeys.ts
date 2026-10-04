@@ -103,6 +103,32 @@ export const queryKeys = {
     deposit: (contractId?: string) => k('contractDeposit', contractId),
     paymentPlans: (contractId?: string) =>
       k('contractPaymentPlans', contractId),
+    timeline: (contractId?: string) => k('contractTimeline', contractId),
+    terminationPreview: (
+      contractId?: string,
+      givenBy?: string,
+      noticeDate?: string
+    ) => k('contractTerminationPreview', contractId, givenBy, noticeDate),
+    leaseClauses: (contractId?: string) =>
+      k('contractLeaseClauses', contractId),
+    /** Prefix of every contract's lease-clauses query, for cross-contract invalidation. */
+    leaseClausesAll: () => k('contractLeaseClauses'),
+  },
+
+  // --- Signature Requests ---
+  signatureRequests: {
+    all: (contractId?: string, documentId?: string) =>
+      k('signatureRequests', contractId, documentId),
+    detail: (
+      contractId?: string,
+      documentId?: string,
+      signatureRequestId?: string
+    ) => k('signatureRequest', contractId, documentId, signatureRequestId),
+    signingLinks: (
+      contractId?: string,
+      documentId?: string,
+      signatureRequestId?: string
+    ) => k('signingLinks', contractId, documentId, signatureRequestId),
   },
 
   // --- Contract Extensions ---
@@ -126,6 +152,11 @@ export const queryKeys = {
         landlordType,
         furnished
       ),
+  },
+
+  // --- Saved Contract Filters ---
+  savedContractFilters: {
+    all: () => k('savedContractFilters'),
   },
 
   // --- Payments ---

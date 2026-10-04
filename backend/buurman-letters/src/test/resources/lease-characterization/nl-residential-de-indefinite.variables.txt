@@ -1,0 +1,158 @@
+languageUsed=de
+authoritative=Boolean:false
+clauseSource=String:lease-agreement/NL/residential/de
+clauses:
+  [0]:
+    articleNumber=Integer:1
+    clauseKey=String:parties
+    optional=Boolean:false
+    pinned=Boolean:true
+    title=String:Parteien
+  [1]:
+    articleNumber=Integer:2
+    clauseKey=String:premises
+    optional=Boolean:false
+    pinned=Boolean:true
+    title=String:Mietsache
+  [2]:
+    articleNumber=Integer:3
+    clauseKey=String:term
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Mietdauer
+  [3]:
+    articleNumber=Integer:4
+    clauseKey=String:rent
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Miete
+  [4]:
+    articleNumber=Integer:5
+    clauseKey=String:rent-adjustment
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Mietanpassung
+  [5]:
+    articleNumber=Integer:6
+    clauseKey=String:service-costs
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Nebenkosten
+  [6]:
+    articleNumber=Integer:7
+    clauseKey=String:deposit
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Kaution
+  [7]:
+    articleNumber=Integer:8
+    clauseKey=String:payment
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Zahlung
+  [8]:
+    articleNumber=Integer:9
+    clauseKey=String:use
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Nutzung
+  [9]:
+    articleNumber=Integer:10
+    clauseKey=String:subletting
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Untervermietung
+  [10]:
+    articleNumber=Integer:11
+    clauseKey=String:maintenance
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Instandhaltung und Reparaturen
+  [11]:
+    articleNumber=Integer:12
+    clauseKey=String:energy-label
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Energieausweis
+  [12]:
+    articleNumber=Integer:13
+    clauseKey=String:handover-inspection
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Abnahme und Übergabe
+  [13]:
+    articleNumber=Integer:14
+    clauseKey=String:termination
+    optional=Boolean:false
+    pinned=Boolean:false
+    title=String:Beendigung
+  [14]:
+    articleNumber=Integer:15
+    clauseKey=String:data-protection
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Datenschutz
+  [15]:
+    articleNumber=Integer:16
+    clauseKey=String:disputes
+    optional=Boolean:true
+    pinned=Boolean:false
+    title=String:Streitigkeiten
+contactAddress=<null>
+contractIdentifier=String:CON00000000000000000000001
+contractTypeLabel=String:Unbefristet
+countryCode=String:NL
+countryMetadata=<null>
+depositAmount=String:2.000,00 €
+endDate=<null>
+fallbackUsed=Boolean:false
+fixedTerm=Boolean:false
+generatedDate=String:15 Januar 2026
+landlordName=String:Verhuur Voorbeeld BV
+landlordNoticeDays=Integer:30
+languageUsed=String:de
+noNationalVersion=Boolean:false
+paymentDueDay=Integer:1
+paymentFrequency=String:monatlich
+primaryContactName=String:J. Jansen
+propertyAddress=String:Keizersgracht 12, 1015 CJ Amsterdam
+refs:
+  data-protection=Integer:15
+  deposit=Integer:7
+  disputes=Integer:16
+  energy-label=Integer:12
+  handover-inspection=Integer:13
+  maintenance=Integer:11
+  parties=Integer:1
+  payment=Integer:8
+  premises=Integer:2
+  rent=Integer:4
+  rent-adjustment=Integer:5
+  service-costs=Integer:6
+  subletting=Integer:10
+  term=Integer:3
+  termination=Integer:14
+  use=Integer:9
+regionCode=<null>
+rentAmount=String:1.000,00 €
+rentComponents:
+  [0]:
+    amount=String:1.000,00 €
+    type=String:Grundmiete
+  [1]:
+    amount=String:250,00 €
+    type=String:Servicekosten
+requestedLang=String:de
+signatureBlocks:
+  [0]:
+    label=String:Vermieter / Immobilienverwalter
+    placeholder=String:signature-landlord
+  [1]:
+    label=String:J. Jansen
+    placeholder=String:signature-tenant-1
+  [2]:
+    label=String:P. de Vries
+    placeholder=String:signature-tenant-2
+startDate=String:1 Februar 2026
+tenantNames=String:J. Jansen, P. de Vries
+tenantNoticeDays=Integer:30

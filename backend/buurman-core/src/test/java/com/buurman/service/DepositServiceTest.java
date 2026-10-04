@@ -3,6 +3,8 @@ package com.buurman.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -220,5 +223,32 @@ class DepositServiceTest {
                     principal))
         .isInstanceOf(BusinessRuleException.class)
         .hasMessageContaining("never received");
+  }
+
+  @Test
+  @DisplayName("updateReturnDueDate sets the deadline on the existing deposit and saves it")
+  void updateReturnDueDateSetsFieldWhenDepositExists() {
+    Deposit deposit = held("2000.00");
+    when(depositRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(Optional.of(deposit));
+
+    LocalDate newDueDate = TODAY.plusDays(30);
+    service.updateReturnDueDate(CONTRACT_SID, newDueDate, principal);
+
+    ArgumentCaptor<Deposit> captor = ArgumentCaptor.forClass(Deposit.class);
+    verify(depositRepository).save(captor.capture());
+    assertThat(captor.getValue().getReturnDueDate()).contains(newDueDate);
+    assertThat(captor.getValue().getUpdatedBy()).isEqualTo(USER_ID);
+  }
+
+  @Test
+  @DisplayName("updateReturnDueDate is a no-op, team-scoped lookup, when no deposit is recorded")
+  void updateReturnDueDateNoOpWhenNoDeposit() {
+    when(depositRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+        .thenReturn(Optional.empty());
+
+    service.updateReturnDueDate(CONTRACT_SID, TODAY.plusDays(30), principal);
+
+    verify(depositRepository, never()).save(any());
   }
 }

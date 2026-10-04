@@ -1,0 +1,387 @@
+<!--
+  legal-basis: Codigo Civil (Decreto-Lei n.o 47344, de 25 de novembro de 1966), version in force on 2026-10-04 (latest
+               amendment Lei n.o 29/2026, de 23/06; no lease article changed after Lei n.o 82/2023, de 29/12), read on
+               www.pgdlisboa.pt (versao actualizada): art. 1025, 1036, 1038, 1041, 1043, 1045, 1057 (locacao) and
+               art. 1064-1091 (arrendamento urbano, disposicoes gerais, as rewritten by the NRAU, Lei n.o 31/2012,
+               Lei n.o 43/2017 and Lei n.o 13/2019): 1067, 1069, 1070, 1072, 1074, 1075, 1076 (caucao and
+               antecipacao limited to 2 rendas / 2 meses by Lei n.o 24-D/2022, de 30/12, in force 01/01/2023), 1077,
+               1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1087, 1088, 1091; art. 1101, 1104 and art.
+               1108-1113 (arrendamento para fins nao habitacionais: 1109, 1110, 1110-A added by Lei n.o 13/2019,
+               1111, 1112, 1113).
+               NRAU, Lei n.o 6/2006, de 27 de fevereiro (latest amendment Lei n.o 56/2023, de 06/10): art. 8 (Codigo
+               do Registo Predial art. 5, n.o 5), 9, 11, 15 (n.o 5), 15-A, 24, 25.
+               Decreto-Lei n.o 160/2006, de 8 de agosto (elementos do contrato; republished by Decreto-Lei n.o
+               266-C/2012, de 31/12): art. 2, 3, 5 (n.o 4 prior municipal authorisation, n.o 8 lease for a purpose
+               other than the licensed one is void) - files.dre.pt.
+               Codigo do IVA art. 9, n.o 29, art. 12, n.os 4 and 6; Codigo do IRS art. 101, n.o 1, e); Codigo do IRC
+               art. 94, n.o 1, c), and n.o 4; Codigo do Imposto do Selo art. 2, n.o 5, art. 3, art. 60, Tabela Geral
+               verba 2 (10 %) - read on info.portaldasfinancas.gov.pt.
+               Decreto-Lei n.o 101-D/2020, de 7 de dezembro (SCE, latest amendment DL n.o 11/2025, de 19/02):
+               art. 18, n.o 1, e) and n.o 2, art. 29, n.o 1, c).
+               Codigo de Processo Civil art. 70, n.o 1. RGPD: Regulamento (UE) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); Lei n.o 58/2019, de 8 de agosto.
+               Pending: Government bill amending the NRAU (approved na generalidade on 30/09/2026; would remove the
+               caucao cap and allow 3 months' advance rent) - not law on 2026-10-04; re-verify art. 1076 when it is
+               published.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against www.pgdlisboa.pt, files.dre.pt and info.portaldasfinancas.gov.pt (texts
+               read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in pt.html, never spelled out (pt "2 rendas" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Portuguese law (Codigo Civil, arrendamento urbano para fins nao
+  habitacionais, NRAU) for the lease of premises for commerce, industry, services or a liberal profession. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre <strong th:text="${landlordName}">Senhorio</strong>, adiante designado &laquo;o senhorio&raquo;,</p>
+  <p>número de identificação fiscal ou de pessoa coletiva, sede ou domicílio, conservatória do registo comercial e
+    número de matrícula, se aplicável: ______________________________</p>
+  <p>representado por ______________________________, na qualidade de ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">e <strong th:text="${tenantNames}">Arrendatário</strong>, adiante
+    designado &laquo;o arrendatário&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">e o arrendatário que assina no final, adiante designado
+    &laquo;o arrendatário&raquo;,</p>
+  <p>número de identificação fiscal ou de pessoa coletiva, sede ou domicílio, conservatória do registo comercial e
+    número de matrícula, se aplicável: ______________________________</p>
+  <p>representado por ______________________________, na qualidade de ______________________________,</p>
+  <p>é celebrado o presente contrato de arrendamento urbano para fins não habitacionais, que se rege pelo Código
+    Civil, em particular pelos artigos 1064.º e seguintes e 1108.º e seguintes, e pelo Novo Regime do Arrendamento
+    Urbano (NRAU), aprovado pela Lei n.º 6/2006, de 27 de fevereiro. O contrato é celebrado por escrito (artigo
+    1069.º, n.º 1, do Código Civil) e contém os elementos exigidos pelo artigo 2.º do Decreto-Lei n.º 160/2006, de 8
+    de agosto.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>O senhorio dá de arrendamento ao arrendatário, que aceita, o local situado em
+    <strong th:text="${propertyAddress}">Morada</strong>, adiante designado &laquo;o locado&raquo;, com as seguintes
+    características:</p>
+  <p>artigo matricial e, sendo o caso, fração autónoma: ______________________________</p>
+  <p>área: ________ m²</p>
+  <p>locais de uso privativo do arrendatário, locais de uso comum a que tem acesso e anexos arrendados com o locado:
+    ______________________________</p>
+  <p>licença ou autorização de utilização para o fim do contrato: número ________, data ________, entidade emitente
+    ______________________________, ou indicação de que não é exigível por o edifício ser anterior a 7 de agosto de 1951, com anexação de documento autêntico que demonstre a data de construção (artigos 2.º e 5.º, n.º 2, do Decreto-Lei n.º 160/2006).</p>
+  <p>Só podem ser objeto de arrendamento urbano os edifícios ou frações cuja aptidão para o fim do contrato seja
+    atestada pela licença de utilização, quando exigível; o arrendamento para fim não habitacional de prédios ou
+    frações não licenciados deve ser sempre previamente autorizado pela câmara municipal (artigo 1070.º, n.º 1, do
+    Código Civil e artigo 5.º, n.os 1 e 4, do Decreto-Lei n.º 160/2006). Existindo regulamento do condomínio ou da
+    propriedade horizontal, é anexado ao presente contrato e assinado pelas partes (artigo 3.º do Decreto-Lei n.º
+    160/2006).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>O arrendamento tem fim não habitacional. O arrendatário destina o locado exclusivamente ao exercício da seguinte
+    atividade: ______________________________</p>
+  <p>O arrendatário não aplica o locado a fim diverso daquele a que se destina e deve usá-lo efetivamente para o fim
+    contratado, não deixando de o utilizar por mais de 1 ano, salvo nos casos de não uso lícito previstos no artigo
+    1072.º, n.º 2, do Código Civil (artigos 1038.º, alínea c), e 1072.º, n.º 1, do Código Civil). O arrendamento para fim diverso do licenciado é nulo, sem prejuízo da aplicação da coima prevista no n.º 5 e do direito do arrendatário à indemnização (artigo 5.º, n.º 8, do Decreto-Lei n.º 160/2006).</p>
+  <p>As partes estipulam que cabe ao arrendatário obter, a expensas suas, as licenças, autorizações e registos
+    exigidos para o exercício da sua atividade no locado, e cumprir o regulamento do condomínio que lhe tenha sido
+    dado a conhecer.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>O contrato inicia a sua vigência em <strong th:text="${startDate}">data de início</strong>.</p>
+  <p th:if="${fixedTerm}">O contrato é celebrado com prazo certo<span th:if="${endDate != null}">, até
+    <strong th:text="${endDate}">data de termo</strong></span>. A locação não pode celebrar-se por mais de 30 anos
+    (artigo 1025.º do Código Civil). Se as partes não estipularem o prazo, o contrato considera-se celebrado pelo período de 5 anos, não podendo o arrendatário denunciá-lo com antecedência inferior a 1 ano (artigo 1110.º, n.º 2, do Código Civil). Prazo, se não resultar da data de termo: ______________________________</p>
+  <p th:if="${!fixedTerm}">O contrato é celebrado por duração indeterminada.</p>
+  <p>As regras relativas à duração, denúncia e oposição à renovação são livremente estabelecidas pelas partes,
+    aplicando-se, na falta de estipulação, o disposto quanto ao arrendamento para habitação, sem prejuízo do disposto
+    nos artigos 1110.º e 1110.º-A do Código Civil (artigo 1110.º, n.º 1, do Código Civil). Regras estipuladas pelas partes sobre
+    denúncia e oposição à renovação: ______________________________</p>
+  <p th:if="${fixedTerm}">Salvo estipulação em contrário, o contrato renova-se automaticamente no seu termo e por
+    períodos sucessivos de igual duração ou de 5 anos se esta for inferior (artigo 1110.º, n.º 3, do Código Civil).
+    Nos 5 primeiros anos após o início do contrato, independentemente do prazo estipulado, o senhorio não pode
+    opor-se à renovação (artigo 1110.º, n.º 4, do Código Civil).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">A cessação do contrato rege-se pelo
+    disposto no presente contrato (ver o artigo <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>A renda, livremente estipulada pelas partes, é de <strong th:text="${rentAmount}">Montante</strong>
+    (periodicidade <span th:text="${paymentFrequency}">mensal</span>) e corresponde a uma prestação pecuniária
+    periódica (artigo 1075.º, n.º 1, do Código Civil).<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> O regime do imposto sobre o valor acrescentado e da retenção na fonte rege-se pelo
+    disposto no presente contrato (ver o artigo <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> O arrendatário suporta ainda os
+    encargos e despesas que assume no presente contrato (ver o artigo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">A atualização da renda rege-se
+    pelo disposto no presente contrato (ver o artigo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>As partes estipulam por escrito a possibilidade de atualização da renda e o respetivo regime (artigo 1077.º,
+    n.º 1, do Código Civil). Regime de atualização estipulado, se o houver: ______________________________</p>
+  <p>Na falta de estipulação, a renda pode ser atualizada anualmente, de acordo com os coeficientes de atualização
+    vigentes; a primeira atualização pode ser exigida 1 ano após o início da vigência do contrato e as seguintes,
+    sucessivamente, 1 ano após a atualização anterior; o senhorio comunica, por escrito e com a antecedência mínima
+    de 30 dias, o coeficiente de atualização e a nova renda dele resultante; a não atualização prejudica a
+    recuperação dos aumentos não feitos, podendo, todavia, os coeficientes ser aplicados em anos posteriores, desde
+    que não tenham passado mais de 3 anos sobre a data em que teria sido inicialmente possível a sua aplicação
+    (artigo 1077.º, n.º 2, do Código Civil).</p>
+  <p>O coeficiente de atualização anual resulta da totalidade da variação do índice de preços no consumidor, sem
+    habitação, correspondente aos últimos 12 meses e para os quais existam valores disponíveis à data de 31 de
+    agosto, apurado pelo Instituto Nacional de Estatística, e é publicado em aviso no Diário da República até 30 de
+    outubro de cada ano (artigo 24.º do NRAU). A renda atualizada é arredondada para a unidade de cêntimo
+    imediatamente superior (artigo 25.º do NRAU).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>As partes estipulam por escrito o regime dos encargos e despesas (artigo 1078.º, n.º 1, do Código Civil).
+    Encargos e despesas a cargo do arrendatário, além dos previstos na lei: ______________________________</p>
+  <p>Na falta de estipulação em contrário, os encargos e despesas correntes respeitantes ao fornecimento de bens ou
+    serviços relativos ao locado correm por conta do arrendatário e, no arrendamento de fração autónoma, os encargos
+    e despesas referentes à administração, conservação e fruição de partes comuns do edifício, bem como o pagamento
+    de serviços de interesse comum, correm por conta do senhorio (artigo 1078.º, n.os 2 e 3, do Código Civil).</p>
+  <p>Os encargos e despesas são contratados em nome de quem for responsável pelo seu pagamento. Sendo o arrendatário
+    responsável por um encargo ou despesa contratado em nome do senhorio, este apresenta, no prazo de 1 mês, o
+    comprovativo do pagamento feito, e a obrigação do arrendatário vence-se no final do mês seguinte ao da
+    comunicação pelo senhorio, devendo ser cumprida simultaneamente com a renda subsequente. Se as partes acordarem
+    uma quantia fixa mensal a pagar por conta dos encargos e despesas, os acertos são feitos semestralmente (artigo
+    1078.º, n.os 4 a 7, do Código Civil).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>A locação de bens imóveis está isenta de imposto sobre o valor acrescentado (IVA), com as exceções previstas na
+    lei (artigo 9.º, n.º 29, do Código do IVA). O senhorio que seja sujeito passivo pode renunciar à isenção quando
+    o arrendatário seja sujeito passivo que utilize o locado, total ou predominantemente, em atividades que conferem
+    direito à dedução, nos termos e condições estabelecidos em legislação especial (artigo 12.º, n.os 4 e 6, do Código
+    do IVA); nesse caso, à renda acresce o IVA à taxa legal. Renúncia à isenção (sim/não): ______________________________</p>
+  <p>Quando o arrendatário disponha ou deva dispor de contabilidade organizada, retém na fonte o imposto devido
+    sobre a renda à taxa de 25 %, tratando-se de rendimentos prediais de pessoa singular (artigo 101.º, n.º 1, alínea
+    e), do Código do IRS) ou de rendimentos de sujeito passivo de IRC (artigo 94.º, n.º 1, alínea c), e n.º 4, do
+    Código do IRC), salvo dispensa legal, e entrega ao senhorio o respetivo comprovativo.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Para garantia do cumprimento das suas obrigações, o arrendatário presta ao
+    senhorio, na data da celebração do contrato, caução em dinheiro no montante de
+    <strong th:text="${depositAmount}">Montante</strong>.</p>
+  <p th:if="${depositAmount == null}">As partes não estipulam caução. Caução eventualmente acordada:
+    ______________________________</p>
+  <p>As partes podem caucionar, por qualquer das formas legalmente previstas, o cumprimento das obrigações
+    respetivas, até ao valor correspondente a 2 rendas (artigo 1076.º, n.º 2, do Código Civil). As partes estipulam que o montante da caução não excede o valor de 2 rendas.</p>
+  <p>Findo o contrato e restituído o locado, o senhorio restitui a caução ao arrendatário, deduzidas as quantias
+    que lhe sejam devidas por força do contrato, nomeadamente rendas, encargos e despesas em dívida e a reparação de
+    deteriorações da responsabilidade do arrendatário.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> A restituição do locado rege-se pelo disposto no presente contrato (ver o
+    artigo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>O arrendatário paga a renda<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (ver o artigo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> e os encargos e despesas a seu cargo</span> com periodicidade
+    <span th:text="${paymentFrequency}">mensal</span>,
+    <span th:if="${paymentDueDay != null}">até ao dia <strong th:text="${paymentDueDay}">1</strong> do mês
+      anterior àquele a que diga respeito</span><span th:if="${paymentDueDay == null}">na data convencionada pelas
+      partes</span>, por transferência bancária para a conta indicada pelo senhorio: ______________________________.
+    Na falta de convenção em contrário, se as rendas estiverem em correspondência com os meses do calendário
+    gregoriano, a primeira vence-se no momento da celebração do contrato e cada uma das restantes no 1.º dia útil do
+    mês imediatamente anterior àquele a que diga respeito (artigo 1075.º, n.º 2, do Código Civil).</p>
+  <p>O pagamento da renda pode ser antecipado, havendo acordo escrito, por período não superior a 2 meses (artigo
+    1076.º, n.º 1, do Código Civil). O senhorio emite o recibo ou a fatura exigidos pela legislação fiscal aplicável.</p>
+  <p>Constituindo-se o arrendatário em mora, o senhorio tem o direito de exigir, além das rendas em atraso, uma
+    indemnização igual a 20 % do que for devido, salvo se o contrato for resolvido com base na falta de pagamento;
+    cessa o direito à indemnização ou à resolução do contrato se o arrendatário fizer cessar a mora no prazo de 8
+    dias a contar do seu começo (artigo 1041.º, n.os 1 e 2, do Código Civil).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>As regras relativas à responsabilidade pela realização das obras de conservação ordinária ou extraordinária,
+    requeridas por lei ou pelo fim do contrato, são livremente estabelecidas pelas partes; se as partes nada
+    convencionarem, cabe ao senhorio executar as obras de conservação, considerando-se o arrendatário autorizado a
+    realizar as obras exigidas por lei ou requeridas pelo fim do contrato (artigo 1111.º do Código Civil).
+    Estipulação das partes sobre obras de conservação: ______________________________</p>
+  <p>O arrendatário faculta ao senhorio o exame do locado, tolera as reparações urgentes e quaisquer obras ordenadas
+    pela autoridade pública e avisa imediatamente o senhorio sempre que tenha conhecimento de vícios no locado, ou
+    saiba que o ameaça algum perigo ou que terceiros se arrogam direitos em relação a ele, desde que o facto seja
+    ignorado pelo senhorio (artigo 1038.º, alíneas b), e) e h), do Código Civil). Havendo urgência, o arrendatário
+    pode fazer as reparações ou despesas urgentes nos termos do artigo 1036.º do Código Civil.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Fora dos casos previstos no artigo 1111.º do Código Civil, o arrendatário apenas pode executar quaisquer obras
+    quando o contrato o faculte ou quando seja autorizado, por escrito, pelo senhorio (artigo 1074.º, n.º 2, do
+    Código Civil). Obras de adaptação do locado autorizadas: ______________________________</p>
+  <p>As obras de adaptação do locado à atividade do arrendatário são realizadas a expensas deste, com respeito pelas
+    normas legais e regulamentares aplicáveis. Salvo estipulação em contrário, o arrendatário tem direito, no final do
+    contrato, a compensação pelas obras licitamente feitas, nos termos aplicáveis às benfeitorias realizadas por
+    possuidor de boa fé (artigo 1074.º, n.º 5, do Código Civil). Estipulação sobre a compensação ou o levantamento
+    das obras no final do contrato: ______________________________</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>É permitida a transmissão por ato entre vivos da posição do arrendatário, sem dependência da autorização do
+    senhorio, no caso de trespasse de estabelecimento comercial ou industrial, ou a pessoa que no locado continue a
+    exercer a mesma profissão liberal, ou a sociedade profissional de objeto equivalente (artigo 1112.º, n.º 1, do
+    Código Civil). Não há trespasse quando a transmissão não seja acompanhada de transferência, em conjunto, das
+    instalações, utensílios, mercadorias ou outros elementos que integram o estabelecimento, ou quando a transmissão
+    vise o exercício, no locado, de outro ramo de comércio ou indústria ou, de um modo geral, a sua afetação a outro
+    destino (artigo 1112.º, n.º 2, do Código Civil).</p>
+  <p>A transmissão deve ser celebrada por escrito e comunicada ao senhorio, que tem direito de preferência no
+    trespasse por venda ou dação em cumprimento, salvo convenção em contrário; quando, após a transmissão, seja dado
+    outro destino ao locado, ou o transmissário não continue o exercício da mesma profissão liberal, o senhorio pode
+    resolver o contrato (artigo 1112.º, n.os 3 a 5, do Código Civil). Afastamento do direito de preferência do
+    senhorio no trespasse (sim/não): ______________________________</p>
+  <p>A transferência temporária e onerosa de estabelecimento instalado no locado não carece de autorização do
+    senhorio, mas deve ser-lhe comunicada no prazo de 1 mês (artigo 1109.º, n.º 2, do Código Civil). Fora destes
+    casos, a cessão da posição do arrendatário, o subarrendamento e o comodato do locado dependem de autorização do
+    senhorio, a autorização para subarrendar deve ser dada por escrito e a cedência permitida ou autorizada é
+    comunicada ao senhorio dentro de 15 dias (artigo 1038.º, alíneas f) e g), e artigo 1088.º, n.º 1, do Código
+    Civil).</p>
+  <p>O arrendamento não caduca por morte do arrendatário, mas os sucessores podem renunciar à transmissão,
+    comunicando a renúncia ao senhorio no prazo de 3 meses, com cópia dos documentos comprovativos da ocorrência
+    (artigo 1113.º, n.º 1, do Código Civil).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>O arrendatário tem direito de preferência na compra e venda ou dação em cumprimento do locado arrendado há mais
+    de 2 anos, nos termos e com as especificidades do artigo 1091.º do Código Civil. A comunicação do projeto de
+    venda e das cláusulas do respetivo contrato é expedida por carta registada com aviso de receção, sendo o prazo de
+    resposta de 30 dias a contar da data da receção (artigo 1091.º, n.º 4, do Código Civil).</p>
+  <p>O adquirente do direito com base no qual foi celebrado o contrato sucede nos direitos e obrigações do senhorio,
+    sem prejuízo das regras do registo (artigo 1057.º do Código Civil).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>As partes estipulam que o arrendatário mantém, durante a vigência do contrato, seguro de responsabilidade civil
+    pela sua atividade no locado e seguro do seu recheio, equipamento e mercadorias, e que o senhorio mantém seguro do
+    edifício contra o risco de incêndio e outros danos.</p>
+  <p>Seguradoras e capitais seguros: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>O locado está sujeito à obrigação de certificação energética no momento da sua locação, salvo nos casos
+    excecionados pelo artigo 18.º, n.º 2, do Decreto-Lei n.º 101-D/2020, de 7 de dezembro (artigo 18.º, n.º 1,
+    alínea e), do mesmo decreto-lei).</p>
+  <p>O senhorio entregou ao arrendatário cópia do certificado energético, ou disponibilizou por via digital a informação relativa ao respetivo conteúdo, previamente à celebração do contrato-promessa, se o houver, ou do contrato, e entrega a versão original previamente à celebração do contrato definitivo (artigo 29.º, n.º 1, alínea
+    c), do Decreto-Lei n.º 101-D/2020).</p>
+  <p>Número do certificado energético e classe energética: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>O senhorio comunica o presente contrato à Autoridade Tributária e Aduaneira até ao fim do mês seguinte ao do
+    início do arrendamento, em declaração de modelo oficial, bem como as suas alterações e a sua cessação; caso o
+    senhorio não o faça, o arrendatário pode fazer essa comunicação (artigo 60.º, n.os 1, 2 e 4, do Código do Imposto
+    do Selo).</p>
+  <p>O imposto do selo devido pelo arrendamento, de 10 % sobre a renda correspondente a 1 mês, tem como sujeito
+    passivo o senhorio, que suporta o respetivo encargo (verba 2 da Tabela Geral do Imposto do Selo e artigos 2.º e
+    3.º do Código do Imposto do Selo).</p>
+  <p>O procedimento especial de despejo apenas pode ser utilizado relativamente a contratos de arrendamento cujo
+    imposto do selo tenha sido liquidado ou cujas rendas tenham sido declaradas para efeitos de IRS ou IRC (artigo
+    15.º, n.º 5, do NRAU). Não é oponível a terceiros a duração superior a 6 anos do arrendamento não registado
+    (artigo 5.º, n.º 5, do Código do Registo Predial).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>As partes anexam ao presente contrato, assinado por ambas, um documento onde se descreve o estado de
+    conservação do locado e das suas dependências, bem como do prédio (artigo 3.º, n.º 2, do Decreto-Lei n.º
+    160/2006). Na falta desse documento, presume-se que o locado foi entregue ao arrendatário em bom estado de
+    manutenção (artigo 1043.º, n.º 2, do Código Civil).</p>
+  <p>Findo o contrato, o arrendatário restitui o locado no estado em que o recebeu, ressalvadas as deteriorações
+    inerentes a uma prudente utilização, em conformidade com os fins do contrato, com as reparações que lhe
+    incumbam, e entrega todas as chaves (artigos 1043.º, n.º 1, e 1081.º, n.º 1, do Código Civil).</p>
+  <p>Durante os 3 meses anteriores à desocupação, o arrendatário mostra o locado a quem o pretender tomar de
+    arrendamento, em horário acordado com o senhorio; na falta de acordo, o horário é, nos dias úteis, das 17 horas e
+    30 minutos às 19 horas e 30 minutos e, aos sábados e domingos, das 15 às 19 horas (artigo 1081.º, n.os 3 e 4, do
+    Código Civil).</p>
+  <p>Se o locado não for restituído logo que finde o contrato, o arrendatário é obrigado, a título de indemnização, a
+    pagar até ao momento da restituição a renda estipulada, indemnização que é elevada a 2 vezes esse valor logo que o
+    arrendatário se constitua em mora (artigo 1045.º do Código Civil).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> A restituição da caução rege-se pelo disposto no presente contrato (ver o artigo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>O arrendamento cessa por acordo das partes, resolução, caducidade, denúncia ou outras causas previstas na lei,
+    e as normas sobre a resolução, a caducidade e a denúncia têm natureza imperativa, salvo disposição legal em
+    contrário (artigos 1079.º e 1080.º do Código Civil). O acordo de revogação é celebrado por escrito quando não seja
+    imediatamente executado ou quando contenha cláusulas compensatórias ou outras cláusulas acessórias (artigo
+    1082.º, n.º 2, do Código Civil).</p>
+  <p>A denúncia e a oposição à renovação pelo arrendatário regem-se pelo estipulado pelas partes e, na falta de
+    estipulação, pelas regras do arrendamento para habitação, com as especialidades do artigo 1110.º do Código
+    Civil.</p>
+  <p th:if="${!fixedTerm}">O senhorio apenas pode denunciar o contrato para demolição ou realização de obras de
+    remodelação ou restauro profundos que obriguem à desocupação do locado, nos termos e com os requisitos dos
+    artigos 1101.º, alínea b), e 1103.º do Código Civil, ou mediante comunicação ao arrendatário com antecedência não
+    inferior a 5 anos sobre a data em que pretenda a cessação, confirmada nos termos do artigo 1104.º do Código Civil
+    (artigos 1101.º, alínea c), e 1110.º-A, n.º 1, do Código Civil). A denúncia obriga o senhorio a indemnizar
+    separadamente o arrendatário e os trabalhadores do estabelecimento pelos prejuízos que, comprovadamente,
+    resultem da cessação do contrato; no que respeita ao arrendatário, a indemnização não tem lugar se o arrendamento
+    tiver sido objeto de trespasse nos 3 anos anteriores (artigo 1110.º-A, n.os 2 e 3, do Código Civil).</p>
+  <p>Qualquer das partes pode resolver o contrato, nos termos gerais de direito, com base em incumprimento pela outra
+    parte que, pela sua gravidade ou consequências, torne inexigível à outra parte a manutenção do arrendamento,
+    designadamente nos casos enumerados no artigo 1083.º, n.º 2, do Código Civil, entre os quais o uso do locado para
+    fim diverso daquele a que se destina; a resolução pelo senhorio com esses fundamentos é decretada nos termos da
+    lei de processo (artigo 1084.º, n.º 1, do Código Civil). É fundamento de resolução pelo arrendatário,
+    designadamente, a não realização pelo senhorio de obras que a este caibam, quando tal omissão comprometa a
+    aptidão do locado para o uso previsto no contrato (artigo 1083.º, n.º 5, do Código Civil).</p>
+  <p>É inexigível ao senhorio a manutenção do arrendamento em caso de mora igual ou superior a 3 meses no pagamento
+    da renda, encargos ou despesas que corram por conta do arrendatário ou de oposição por este à realização de obra
+    ordenada por autoridade pública, e ainda no caso de o arrendatário se constituir em mora superior a 8 dias, no
+    pagamento da renda, por mais de 4 vezes, seguidas ou interpoladas, num período de 12 meses, com referência a cada
+    contrato, desde que, neste último caso, o senhorio tenha informado o arrendatário, por carta registada com aviso
+    de receção, após o terceiro atraso, de que é sua intenção pôr fim ao arrendamento naqueles termos (artigo 1083.º,
+    n.os 3, 4 e 6, do Código Civil). Nestes casos, a resolução opera por comunicação à contraparte onde
+    fundamentadamente se invoque a obrigação incumprida (artigo 1084.º, n.º 2, do Código Civil).</p>
+  <p>A resolução pelo senhorio fundada na mora igual ou superior a 3 meses fica sem efeito se o arrendatário puser
+    fim à mora no prazo de 1 mês, faculdade que só pode ser usada 1 vez com referência a cada contrato (artigo
+    1084.º, n.os 3 e 4, do Código Civil). A resolução deve ser efetivada dentro do prazo de 1 ano a contar do
+    conhecimento do facto que lhe serve de fundamento, prazo reduzido para 3 meses quando o fundamento da resolução
+    seja um dos previstos no parágrafo anterior; quando se trate de facto continuado ou duradouro, o prazo não se completa antes de decorrido 1 ano da sua cessação (artigo 1085.º, n.os 1 a 3, do Código Civil). A desocupação do locado
+    é exigível após o decurso de 1 mês a contar da resolução, se outro prazo não for judicialmente fixado ou acordado
+    pelas partes (artigo 1087.º do Código Civil).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> A restituição do locado rege-se pelo disposto no presente contrato (ver o
+    artigo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>As comunicações legalmente exigíveis entre as partes relativas a cessação do contrato, atualização da renda e
+    obras são realizadas mediante escrito assinado pelo declarante e remetido por carta registada com aviso de
+    receção, ou entregue em mão, devendo o destinatário apor em cópia a sua assinatura, com nota de receção (artigo
+    9.º, n.os 1 e 6, do NRAU). Qualquer comunicação contém o endereço completo da parte que a subscreve, devendo as
+    partes comunicar mutuamente a alteração daquele (artigo 9.º, n.º 5, do NRAU).</p>
+  <p>Endereço do senhorio para comunicações: ______________________________. Domicílio convencionado do
+    arrendatário, se diferente do locado: ______________________________. O domicílio convencionado do arrendatário,
+    ainda que não coincida com o endereço do locado, constitui o local para o qual lhe devem ser remetidas as
+    comunicações relativas ao contrato (artigo 3.º, n.º 3, do Decreto-Lei n.º 160/2006). A comunicação pelo senhorio destinada à resolução do contrato que opere por comunicação à contraparte é efetuada mediante notificação avulsa, mediante contacto pessoal de advogado, solicitador ou agente de execução, comprovadamente mandatado para o efeito, feito na pessoa do notificando, ou mediante escrito assinado e remetido por carta registada com aviso de receção, este último apenas nos contratos celebrados por escrito em que tenha sido convencionado o domicílio (artigo 9.º, n.º 7, do NRAU).</p>
+  <p>Havendo pluralidade de senhorios ou de arrendatários, as comunicações obedecem ao artigo 11.º do NRAU.</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>Intervém no presente contrato, como fiador e principal pagador das obrigações do arrendatário, com renúncia ao
+    benefício da excussão prévia: ______________________________ (nome ou firma, número de identificação fiscal e
+    domicílio ou sede).</p>
+  <p>Caso exista fiança e o arrendatário não faça cessar a mora no prazo de 8 dias a contar do seu começo, o senhorio
+    deve, nos 90 dias seguintes, notificar o fiador da mora e das quantias em dívida, e apenas pode exigir do fiador a
+    satisfação dos seus direitos de crédito após efetuar essa notificação (artigo 1041.º, n.os 5 e 6, do Código
+    Civil).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Cada parte trata os dados pessoais das pessoas singulares que intervêm em representação da outra parte ou como
+    fiadores apenas na medida necessária à celebração e execução do presente contrato e ao cumprimento das suas
+    obrigações legais, nos termos do Regulamento Geral sobre a Proteção de Dados (Regulamento (UE) 2016/679) e da
+    Lei n.º 58/2019, de 8 de agosto, e não os conserva para além do tempo necessário para essas finalidades.</p>
+  <p>Os titulares dos dados podem exercer os direitos que lhes são conferidos por essa legislação e apresentar
+    reclamação à Comissão Nacional de Proteção de Dados.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>O presente contrato rege-se pela lei portuguesa, em particular pelo Código Civil e pelo NRAU. As ações referentes
+    ao arrendamento, incluindo as ações de despejo e de preferência, devem ser propostas no tribunal da situação do
+    locado (artigo 70.º, n.º 1, do Código de Processo Civil).</p>
+  <p>O procedimento especial de despejo, aplicável independentemente do fim a que se destina o arrendamento, é
+    tramitado no Balcão do Arrendatário e do Senhorio (artigo 15.º-A do NRAU). As cláusulas do presente contrato que
+    contrariem normas imperativas do Código Civil sobre o arrendamento urbano não produzem efeitos na medida dessa
+    contrariedade.</p>
+</div>
+
+</body>
+</html>

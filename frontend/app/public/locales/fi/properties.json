@@ -676,7 +676,9 @@
       "confirmLabel_other": "Poista {{count}} asiakirjaa"
     },
     "editModal": "Muokkaa asiakirjaa",
-    "downloading": "Ladataan..."
+    "downloading": "Ladataan...",
+    "generated_one": "{{count}} luotu tiedosto",
+    "generated_other": "{{count}} luotua tiedostoa"
   },
   "photos": {
     "title": "Valokuvat",

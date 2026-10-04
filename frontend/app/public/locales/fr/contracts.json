@@ -4,7 +4,8 @@
     "pending": "En attente",
     "active": "Actif",
     "expired": "Expiré",
-    "terminated": "Résilié"
+    "terminated": "Résilié",
+    "noticeGiven": "Préavis donné"
   },
   "list": {
     "title": "Contrats",
@@ -18,6 +19,7 @@
     "pendingSignature": "En attente de signature",
     "expired": "Expiré",
     "terminated": "Résilié",
+    "noticeGiven": "Préavis donné",
     "count_one": "{{count}} contrat",
     "count_other": "{{count}} contrats",
     "empty": {
@@ -26,7 +28,23 @@
     },
     "error": "Échec du chargement des contrats",
     "exportDeposits": "Exporter les dépôts",
-    "count_many": "{{count}} contrats"
+    "count_many": "{{count}} contrats",
+    "searchPlaceholder": "Rechercher par contact, bien ou numéro de contrat...",
+    "endingWithinDays": "Se termine dans (jours)",
+    "sortLabel": "Trier les contrats par",
+    "sortAsc": "Ordre croissant",
+    "sortDesc": "Ordre décroissant",
+    "sort": {
+      "endDate": "Date de fin",
+      "startDate": "Date de début",
+      "rentAmount": "Montant du loyer"
+    },
+    "savedFilters": {
+      "button": "Filtres enregistrés",
+      "namePlaceholder": "Nom du filtre",
+      "save": "Enregistrer",
+      "delete": "Supprimer {{name}}"
+    }
   },
   "create": {
     "title": "Ajouter un nouveau contrat",
@@ -46,6 +64,8 @@
     "reopenTitle": "Rouvrir ce contrat en statut brouillon",
     "duplicate": "Dupliquer",
     "duplicateTitle": "Créer une copie de ce contrat en statut brouillon",
+    "terminate": "Résilier le contrat",
+    "terminateTitle": "Donner un préavis pour résilier ce contrat actif",
     "edit": "Modifier",
     "delete": "Supprimer",
     "tabs": {
@@ -53,7 +73,8 @@
       "payments": "Paiements",
       "extensions": "Prolongations",
       "documents": "Documents",
-      "history": "Historique"
+      "leaseAgreement": "Bail",
+      "history": "Chronologie"
     },
     "deleteTitle": "Supprimer le contrat",
     "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce contrat ? Cette action est irréversible.",
@@ -309,6 +330,7 @@
   },
   "form": {
     "contractType": "Type de contrat",
+    "leaseRegime": "Régime de bail",
     "property": "Bien",
     "propertyAndParties": "Bien et parties",
     "propertyPlaceholder": "Sélectionner un bien...",
@@ -428,7 +450,8 @@
       "PENDING_SIGNATURE": "En attente de signature",
       "ACTIVE": "Actif",
       "EXPIRED": "Expiré",
-      "TERMINATED": "Résilié"
+      "TERMINATED": "Résilié",
+      "NOTICE_GIVEN": "Préavis donné"
     }
   },
   "adjustRent": {
@@ -612,6 +635,80 @@
     "applyAdjustments_many": "Appliquer {{count}} ajustements",
     "increasesFailed_many": "{{count}} augmentations échouées",
     "adjustmentPayments_many": "{{count}} paiements d'ajustement créés pour les modifications rétroactives"
+  },
+  "termination": {
+    "title": "Résilier le Contrat",
+    "subtitle": "Donner un préavis pour résilier ce contrat",
+    "steps": {
+      "whoGivesNotice": "Qui Donne le Préavis",
+      "noticeDateGround": "Date & Motif du Préavis",
+      "review": "Vérification",
+      "letterPreview": "Aperçu de la Lettre",
+      "confirmation": "Confirmation"
+    },
+    "givenByValues": {
+      "LANDLORD": "Bailleur",
+      "TENANT": "Locataire"
+    },
+    "whoGivesNotice": {
+      "question": "Qui donne le préavis pour résilier ce contrat ?",
+      "landlordDescription": "Vous résiliez le contrat en tant que bailleur.",
+      "tenantDescription": "Le locataire a donné son préavis pour résilier le contrat.",
+      "next": "Suivant : Date & Motif du Préavis"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Date du préavis",
+      "noticeDateHelp": "La date à laquelle le préavis a été, ou sera, donné.",
+      "groundCodeLabel": "Motif ou code de motif (facultatif)",
+      "groundCodeHelp": "Requis uniquement pour certains motifs de résiliation. Vous pourrez le confirmer à l'étape suivante.",
+      "next": "Suivant : Vérification"
+    },
+    "review": {
+      "computedEndDateLabel": "Date de fin calculée",
+      "noticeDaysLabel": "Délai de préavis",
+      "noticeDaysValue": "{{count}} jours",
+      "sourceLabel": "Comment ce délai a été calculé",
+      "source": {
+        "CATALOG_RULE": "Basé sur les règles de préavis de votre pays.",
+        "CONTRACT_FALLBACK": "Basé sur le paramètre de préavis propre à ce contrat.",
+        "HARDCODED_DEFAULT": "Utilisation d'une valeur par défaut de 30 jours."
+      },
+      "groundRequiredWarning": "Ce motif de résiliation requiert un code de motif.",
+      "groundCodeLabel": "Motif ou code de motif",
+      "selectGround": "Sélectionner un motif",
+      "overrideToggle": "Utiliser une date de fin antérieure",
+      "overrideHelp": "Laissez vide pour accepter la date de fin calculée ci-dessus.",
+      "effectiveEndDateLabel": "Date de fin antérieure",
+      "overrideReasonLabel": "Motif de la date de fin antérieure",
+      "overrideReasonPlaceholder": "Expliquez pourquoi ce contrat se termine plus tôt que prévu...",
+      "overrideReasonRequired": "Un motif est requis lorsque la date de fin est antérieure à la date calculée.",
+      "loading": "Calcul du délai de préavis...",
+      "error": "Impossible de calculer le délai de préavis. Vérifiez la date du préavis et réessayez.",
+      "next": "Suivant : Aperçu de la Lettre"
+    },
+    "letterPreview": {
+      "title": "Aperçu de la Lettre de Préavis",
+      "description": "Une lettre de préavis formelle sera générée et enregistrée comme document sur ce contrat.",
+      "givenByLabel": "Préavis donné par",
+      "noticeDateLabel": "Date du préavis",
+      "groundCodeLabel": "Motif",
+      "computedEndDateLabel": "Date de fin calculée",
+      "effectiveEndDateLabel": "Date de fin effective",
+      "overrideReasonLabel": "Motif de la modification",
+      "inspectionDateLabel": "Date de l'état des lieux de sortie (facultatif)",
+      "notProvided": "Non renseigné",
+      "confirm": "Confirmer & Résilier",
+      "submitting": "Résiliation en cours..."
+    },
+    "confirmation": {
+      "title": "Préavis Donné",
+      "description": "Ce contrat est passé au statut Préavis Donné.",
+      "effectiveEndDateLabel": "Date de fin effective",
+      "noticeLetterLabel": "Lettre de préavis",
+      "viewDocument": "Voir le document",
+      "depositNote": "La date limite de restitution du dépôt a été mise à jour pour correspondre à la date de fin effective.",
+      "backToContract": "Retour au contrat"
+    }
   },
   "card": {
     "start": "Début",
@@ -987,5 +1084,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Se termine dans {{days}} jours",
+  "leaseAgreement": {
+    "title": "Contrat de Bail",
+    "description": "Choisissez les clauses à inclure, puis générez le PDF du bail pour ce contrat.",
+    "empty": "Aucune clause n'est encore configurée pour le pays de ce contrat.",
+    "required": "Obligatoire",
+    "saveSelection": "Enregistrer la sélection",
+    "generate": "Générer le bail",
+    "saveAndGenerate": "Enregistrer et générer le bail",
+    "language": "Langue du bail",
+    "languagesLimited": "Les baux pour {{country}} n'existent que dans les langues proposées.",
+    "pinned": "Épinglée",
+    "moveUp": "Monter {{title}}",
+    "moveDown": "Descendre {{title}}",
+    "countryLabel": "Pays",
+    "unavailable": {
+      "title": "Pas encore disponible",
+      "description": "Nous n'avons pas encore de bail pour ce pays. Vous pouvez tout de même gérer ce contrat et importer un bail déjà signé.",
+      "action": "Aller aux Documents"
+    },
+    "noCountry": {
+      "title": "Choisissez d'abord un pays",
+      "description": "Le bail dépend du pays du bien. Ajoutez d'abord un pays au bien.",
+      "action": "Modifier le bien"
+    },
+    "error": {
+      "title": "Clauses non chargées",
+      "description": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+      "retry": "Réessayer"
+    },
+    "errors": {
+      "notAvailableForCountry": "Aucun bail n'est encore disponible pour le pays de ce bien. Importez plutôt un bail signé dans Documents.",
+      "noCountry": "Ajoutez un pays au bien avant d'utiliser le bail."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Courte durée",
+    "STUDENT_OR_MOBILITY": "Étudiant ou mobilité"
   }
 }

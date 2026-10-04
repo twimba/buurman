@@ -56,9 +56,25 @@ public class LetterTemplateService {
    * @return rendered HTML
    */
   public String renderToHtml(String documentType, Locale locale, Map<String, Object> variables) {
+    return renderTemplateToHtml(documentType + "/generic", locale, variables);
+  }
+
+  /**
+   * Renders an explicit template (name relative to {@code templates/documents/}, no extension) to
+   * PDF bytes, instead of the {@code documentType/generic} convention.
+   */
+  public byte[] renderToPdfTemplate(
+      String templateName, Locale locale, Map<String, Object> variables) {
+    String html = renderTemplateToHtml(templateName, locale, variables);
+    return pdfRenderer.render(html, PageSpec.A4_PORTRAIT);
+  }
+
+  /** Renders an explicit template name to an HTML string. */
+  public String renderTemplateToHtml(
+      String templateName, Locale locale, Map<String, Object> variables) {
     Context context = new Context(locale);
     context.setVariables(variables);
-    return templateEngine.process(documentType + "/generic", context);
+    return templateEngine.process(templateName, context);
   }
 
   /**

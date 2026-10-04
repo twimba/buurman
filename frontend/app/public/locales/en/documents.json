@@ -99,5 +99,47 @@
     "editTitleNotes": "Edit title & notes",
     "delete": "Delete",
     "download": "Download"
+  },
+  "signatureLinks": {
+    "trigger": "Get signing links",
+    "retract": "Retract signature request",
+    "title": "Signing links",
+    "description": "Send each person their own link. Anyone with a link can sign as that person.",
+    "warning": "Share each link only with its signer. Links stop working once signed or retracted.",
+    "signers": "Signers",
+    "role": {
+      "LANDLORD": "Landlord",
+      "TENANT": "Tenant"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "VIEWED": "Viewed",
+      "SIGNED": "Signed",
+      "DECLINED": "Declined"
+    },
+    "alreadySigned": "Already signed",
+    "notReady": "Link not ready yet. We will check again automatically.",
+    "unavailable": "Link no longer available. Retract and send again to issue new links.",
+    "empty": "No links to share for this request.",
+    "copyLink": "Copy link",
+    "copyLinkFor": "Copy signing link for {{name}}",
+    "copied": "Copied",
+    "copiedAnnouncement": "Link for {{name}} copied",
+    "copiedAllAnnouncement": "Message for all pending signers copied",
+    "copyAll": "Copy all as message",
+    "share": "Share",
+    "shareFor": "Share signing link for {{name}}",
+    "shareTitle": "Document to sign",
+    "shareText": "Hi {{name}}, please sign here:",
+    "message": "Hi {{name}}, please sign here: {{url}}",
+    "copyFailed": "Copying failed. Select the link below and copy it manually.",
+    "retry": "Retry",
+    "done": "Done",
+    "error": {
+      "inactive": "This request is no longer active, so there are no signing links.",
+      "forbidden": "You do not have permission to view signing links.",
+      "provider": "The signing service is not reachable right now. Try again in a moment.",
+      "generic": "Could not load signing links."
+    }
   }
 }

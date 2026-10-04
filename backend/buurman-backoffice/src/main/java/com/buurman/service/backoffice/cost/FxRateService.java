@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -97,7 +98,7 @@ public class FxRateService {
   /** Currencies needing a live rate: the DB-tracked pairs, excluding EUR (the base). */
   private java.util.Set<String> currenciesToRefresh() {
     java.util.Set<String> currencies = new java.util.TreeSet<>();
-    pairRepository.list().forEach(c -> currencies.add(c.toUpperCase()));
+    pairRepository.list().forEach(c -> currencies.add(c.toUpperCase(Locale.ROOT)));
     currencies.remove("EUR");
     return currencies;
   }
@@ -205,7 +206,7 @@ public class FxRateService {
     return toResponse(
         (currency == null || currency.isBlank())
             ? repository.allRecent(cap)
-            : repository.history(currency.toUpperCase(), cap));
+            : repository.history(currency.toUpperCase(Locale.ROOT), cap));
   }
 
   private static FxRatesResponse toResponse(java.util.List<FxRateRepository.FxRateRow> rows) {
@@ -226,7 +227,7 @@ public class FxRateService {
       throw new IllegalArgumentException("FX rate must be positive");
     }
     LocalDate on = date != null ? date : LocalDate.now(clock);
-    repository.upsert(currency.toUpperCase(), on, BigDecimal.valueOf(rate), "manual");
+    repository.upsert(currency.toUpperCase(Locale.ROOT), on, BigDecimal.valueOf(rate), "manual");
     return currentRates();
   }
 
@@ -234,7 +235,7 @@ public class FxRateService {
   @Transactional
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public FxRatesResponse deleteRate(String currency, LocalDate date) {
-    repository.delete(currency.toUpperCase(), date);
+    repository.delete(currency.toUpperCase(Locale.ROOT), date);
     return currentRates();
   }
 
@@ -271,7 +272,7 @@ public class FxRateService {
    */
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public FxPairsResponse addPair(String currency, String by) {
-    String cur = currency == null ? "" : currency.trim().toUpperCase();
+    String cur = currency == null ? "" : currency.trim().toUpperCase(Locale.ROOT);
     if (!cur.matches("[A-Z]{3}") || "EUR".equals(cur)) {
       throw new IllegalArgumentException("Invalid currency: " + currency);
     }
@@ -284,7 +285,7 @@ public class FxRateService {
   @Transactional
   @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
   public FxPairsResponse removePair(String currency) {
-    String cur = currency.toUpperCase();
+    String cur = currency.toUpperCase(Locale.ROOT);
     repository.deleteAll(cur);
     pairRepository.remove(cur);
     return listPairs();

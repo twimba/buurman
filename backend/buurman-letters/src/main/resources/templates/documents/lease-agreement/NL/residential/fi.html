@@ -1,0 +1,233 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Finnish courtesy translation of nl.html (a translation of Dutch law, Boek 7 BW, into Finnish, not Finnish law); the
+  Dutch text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Allekirjoittaneet:</p>
+  <p><strong th:text="${landlordName}">vuokranantaja</strong>, jäljempänä &rdquo;vuokranantaja&rdquo; (verhuurder), ja</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">vuokralainen</strong>, jäljempänä
+    (yhdessä) &rdquo;vuokralainen&rdquo; (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">alla allekirjoittanut vuokralainen tai allekirjoittaneet vuokralaiset, jäljempänä
+    (yhdessä) &rdquo;vuokralainen&rdquo; (huurder),</p>
+  <p>vakuuttavat sopineensa siitä, mitä tässä vuokrasopimuksessa määrätään. Jos tässä sopimuksessa
+    mainitaan useampi kuin 1 vuokralainen, kukin heistä vastaa yhteisvastuullisesti (hoofdelijk aansprakelijk) kaikkien
+    vuokralaisen tämän sopimuksen mukaisten velvoitteiden täyttämisestä.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Vuokranantaja vuokraa vuokralaiselle, joka ottaa asunnon vuokralle, asuinhuoneiston, joka sijaitsee osoitteessa
+    <strong th:text="${propertyAddress}">osoite</strong>, siihen kuuluvine kiinteine lisätiloineen,
+    jäljempänä &rdquo;vuokrakohde&rdquo; (het gehuurde).</p>
+  <p>Tähän sopimukseen sovelletaan Alankomaiden lain asuinhuoneiston vuokrausta koskevia säännöksiä (Alankomaiden siviililain, Burgerlijk Wetboek, 7 kirja,
+    4 osasto, 5 jakso). Siltä osin kuin laissa säädetään, ettei vuokralaisen vahingoksi saa poiketa laista, nämä säännökset
+    ovat etusijalla tämän sopimuksen poikkeaviin sopimusehtoihin nähden.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Tämän sopimuksen alkamispäivä on <strong th:text="${startDate}">alkamispäivä</strong>.</p>
+  <p th:if="${!fixedTerm}">Sopimus on tehty toistaiseksi voimassa olevaksi.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Sopimus on tehty määräajaksi<span th:if="${endDate != null}">, päivään
+      <strong th:text="${endDate}">päättymispäivä</strong> saakka (päivä mukaan lukien)</span>. Määräajaksi tehty
+      asuinhuoneiston vuokrasopimus ei pääty pelkästään vuokra-ajan kulumiseen. Kumpikin osapuoli voi irtisanoa
+      vuokrasuhteen vuokran maksamista varten sovitulle päivälle, ei kuitenkaan päivälle, joka on ennen
+      määräajan päättymistä (BW:n 7:271 artiklan 1 momentti).</p>
+    <p>Tämä on toisin vain, kun vuokrasuhde on enintään 2 vuoden pituinen ja vuokralainen kuuluu Alankomaiden hallituksen
+      asetuksella (algemene maatregel van bestuur) määriteltyyn ryhmään (BW:n 7:271 artiklan 2 momentti). Tällöin
+      vuokranantaja ilmoittaa vuokralaiselle kirjallisesti päivän, jona vuokrasuhde päättyy, aikaisintaan 3 kuukautta ja viimeistään 1 kuukautta ennen
+      vuokra-ajan päättymistä; jos vuokranantaja ei tee niin, vuokrasuhde jatkuu
+      vuokra-ajan päättymisen jälkeen toistaiseksi. Vuokralainen voi irtisanoa tällaisen vuokrasuhteen myös
+      ennen vuokra-ajan päättymistä vuokran maksamista varten sovitulle päivälle.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Vuokra pelkästä vuokrakohteen käytöstä (perusvuokra, kale huurprijs, BW:n 7:237 artiklan 2 momentti) on
+    <strong th:text="${rentAmount}">määrä</strong> <span th:text="${paymentFrequency}">kuukaudessa</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Lisäksi vuokralainen on
+    velvollinen maksamaan käyttö- ja palvelukustannukset (servicekosten) (ks. <span th:text="${refs['service-costs']}"></span>. artikla).</span></p>
+  <p>Siltä osin kuin vuokrakohteeseen sovelletaan lakisääteistä enimmäisvuokraa, mukaan lukien säännöt, jotka
+    on otettu käyttöön Alankomaiden lailla Wet betaalbare huur (kohtuuhintaisia vuokria koskeva laki) 1. heinäkuuta 2024, vuokralainen ei ole velvollinen maksamaan enempää kuin tätä
+    enimmäisvuokraa. Vuokralainen voi viimeistään 6 kuukauden kuluttua sen vuokrasopimuksen alkamisesta, jonka hän on ensimmäistä
+    kertaa tehnyt tästä asunnosta, pyytää vuokralautakuntaa (huurcommissie) ratkaisemaan,
+    onko sovittu vuokra kohtuullinen (BW:n 7:249 artikla).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Vuokran tarkistamiseen sovelletaan sitä, mitä tässä sopimuksessa siitä määrätään (ks. <span th:text="${refs['rent-adjustment']}"></span>. artikla).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Vuokranantaja voi tarkistaa vuokraa 1 kerran vuodessa, ensimmäisen kerran 12 kuukauden kuluttua
+    tämän sopimuksen alkamisesta. Vuokranantaja ilmoittaa tarkistuksesta vuokralaiselle ajoissa ja kirjallisesti, ilmoittaen voimassa olevan ja
+    uuden vuokran sekä voimaantulopäivän.</p>
+  <p>Tarkistus ei ole koskaan suurempi kuin lain sallima enimmäiskorotus, joka on voimassa tarkistuksen
+    voimaantulopäivänä vuokrakohteen osalta. Jos tämä ehto johtaisi suurempaan korotukseen kuin laissa
+    sallitaan, ehto on tältä osin mitätön ja vuokran katsotaan korotetun sallitulla
+    korotuksella (BW:n 7:248 artikla). Siltä osin kuin laki sen sallii, vuokralainen voi pyytää vuokralautakuntaa (huurcommissie)
+    ratkaisemaan korotuksen.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Vuokran lisäksi vuokralainen maksaa kultakin maksukaudelta ennakon yksilöllisellä mittarilla varustettujen
+    käyttökustannusten ja palvelukustannusten (servicekosten) osalta (BW:n 7:237 artiklan 3 momentti), kuten tässä
+    sopimuksessa mainitaan.</p>
+  <p>Vuokranantaja antaa vuokralaiselle joka vuosi, viimeistään 6 kuukauden kuluttua
+    kalenterivuoden päättymisestä, lajeittain eritellyn selvityksen kyseisenä kalenterivuonna veloitetuista kustannuksista,
+    ilmoittaen laskentatavan (BW:n 7:259 artiklan 2 momentti). Se, mitä ennakkoina on maksettu liikaa tai liian vähän,
+    selvitetään osapuolten kesken sen jälkeen, kun selvitys on annettu.</p>
+  <p>Jos osapuolet eivät pääse yhteisymmärrykseen maksettavista kustannuksista, kumpikin heistä voi pyytää
+    vuokralautakuntaa (huurcommissie) ratkaisemaan asian (BW:n 7:260 artikla).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Vuokralainen maksaa vuokrasuhteen alkaessa vakuuden (waarborgsom), jonka määrä on
+    <strong th:text="${depositAmount}">määrä</strong>.</p>
+  <p th:if="${depositAmount == null}">Vuokralainen maksaa vuokrasuhteen alkaessa vakuuden (waarborgsom), jonka määrä on
+    osapuolten kirjallisesti sopima.</p>
+  <p>Vakuus on turvana tässä sopimuksessa sovittujen velvoitteiden täyttämiselle, ja se on
+    enintään 2 kertaa perusvuokran (kale huurprijs) suuruinen (BW:n 7:261b artiklan 1 ja 2 momentti).</p>
+  <p>Vuokranantaja maksaa vakuuden takaisin 14 päivän kuluessa vuokrasopimuksen päättymisestä.
+    Jos vuokrakohteelle on aiheutunut vahinkoa, josta vuokralainen vastaa, tai jos vuokralaisen on vielä maksettava vuokraa,
+    palvelukustannuksia tai energiasuoritekorvaus (energieprestatievergoeding), vuokranantaja maksaa jäljelle jäävän
+    määrän takaisin 30 päivän kuluessa päättymisestä sen jälkeen, kun siitä on vähennetty osoitetut
+    korjauskustannukset tai vastaavasti vielä maksettavat määrät. Vuokranantaja ilmoittaa vuokralaiselle
+    vähennyksestä kirjallisesti ja liittää mukaan täydellisen kustannuserittelyn (BW:n 7:261b artiklan 3 ja 4 momentti).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Vahingon
+    toteamisessa ratkaisevaa on luovutus (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Vuokralainen maksaa vuokran<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (ks. <span th:text="${refs['rent']}"></span>. artikla)</span><span
+    th:if="${refs['service-costs']}"> ja palvelukustannusten ennakot</span>
+    <span th:text="${paymentFrequency}">kuukaudessa</span><span th:if="${paymentDueDay == 1}">
+    etukäteen</span>,
+    <span th:if="${paymentDueDay != null}">viimeistään kunkin maksukauden alkamiskuukauden <strong th:text="${paymentDueDay}">1</strong>. päivänä</span><span th:if="${paymentDueDay == null}">viimeistään osapuolten
+      sopimana maksupäivänä</span>, tilisiirtona tilille, jonka vuokranantaja on tätä varten kirjallisesti
+    ilmoittanut.</p>
+  <p>Jos vuokralainen ei maksa ajoissa, hän on velvollinen maksamaan erääntyneelle määrälle lakisääteisen koron
+    ja korvaa oikeudenulkoiset perintäkulut vain siltä osin kuin laki
+    sen sallii.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Vuokralainen käyttää vuokrakohdetta yksinomaan asuntona ja käyttäytyy käytössä
+    kuin hyvä vuokralainen (goed huurder) (BW:n 7:213 artikla). Vuokralainen ja ne, jotka oleskelevat
+    vuokrakohteessa hänen luvallaan, eivät aiheuta häiriötä lähiasukkaille.</p>
+  <p>Vuokrakohteen sisustukseen tai muotoon tehtävät muutokset, joita ei voida vuokrasuhteen päättyessä peruuttaa ilman
+    huomattavia kustannuksia, vuokralainen tekee vain vuokranantajan kirjallisen
+    suostumuksen jälkeen. Vuokranantaja antaa suostumuksen 8 viikon kuluessa joka tapauksessa, jos
+    muutos ei heikennä vuokrattavuutta eikä johda vuokrakohteen arvon laskuun
+    (BW:n 7:215 artikla).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Vuokralainen ei anna vuokrakohdetta kokonaan tai osittain toisen käyttöön, ellei vuokranantaja
+    ole antanut siihen etukäteen kirjallista suostumustaan.</p>
+  <p>Jos vuokralaisen pääasiallinen asuinpaikka on vuokrakohteessa, silloin kun se on itsenäinen asunto, hän on
+    lain mukaan oikeutettu antamaan osan siitä toisen käyttöön (BW:n 7:244 artikla).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Vuokranantaja korjaa vuokralaisen vaatimuksesta vuokrakohteen viat (gebreken), ellei se ole mahdotonta
+    tai vaadi menoja, joita ei vallitsevissa olosuhteissa kohtuudella voida vaatia vuokranantajalta
+    (BW:n 7:206 artikla). Vuokralainen ilmoittaa viasta vuokranantajalle mahdollisimman pian.</p>
+  <p>Vuokralainen suorittaa omalla kustannuksellaan pienet korjaukset (kleine herstellingen), ellei niiden tarve johdu siitä, että
+    vuokranantaja on laiminlyönyt velvollisuutensa korjata viat (BW:n 7:217 artikla). Mitkä
+    korjaukset katsotaan pieniksi, ilmenee niitä koskevasta lakisääteisestä sääntelystä.</p>
+  <p>Jos vuokranantaja on viivästyksessä vian korjaamisessa, vuokralainen voi korjata
+    vian itse ja periä kohtuulliset kustannukset vuokranantajalta, halutessaan vähentämällä ne
+    vuokrasta (BW:n 7:206 artiklan 3 momentti). Näistä säännöistä ei voida poiketa vuokralaisen vahingoksi
+    (BW:n 7:242 artikla).</p>
+  <p>Vuokralainen antaa vuokranantajalle tilaisuuden suorittaa kiireellisiä töitä
+    vuokrakohteessa, rajoittamatta hänen lakisääteisiä oikeuksiaan vuokranalennukseen, vuokrasopimuksen purkamiseen ja vahingonkorvaukseen
+    (BW:n 7:220 artiklan 1 momentti).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Olemassa olevan asunnon uudessa vuokrauksessa voimassa oleva energiatodistus (energielabel) on pakollinen
+    Alankomaiden asetuksen Besluit bouwwerken leefomgeving (rakennelmia ja elinympäristöä koskeva asetus) perusteella. Vuokranantaja antaa vuokralaiselle viimeistään tämän
+    sopimuksen tekemisen yhteydessä jäljennöksen vuokrakohteen voimassa olevasta energiatodistuksesta. Energiatodistus on voimassa todistuksessa
+    mainittuun päivään asti.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Vuokrasuhteen alkaessa osapuolet laativat yhdessä kuvauksen vuokrakohteen kunnosta
+    (kuntoraportti, opnamerapport). Molemmat osapuolet allekirjoittavat kuvauksen ja kumpikin saa yhden kappaleen.</p>
+  <p>Vuokrasuhteen päättyessä vuokralainen luovuttaa vuokrakohteen takaisin vuokranantajan käyttöön siinä
+    kunnossa, jossa hän on sen tämän kuvauksen mukaan vastaanottanut, lukuun ottamatta sallittuja muutoksia
+    ja lisäyksiä sekä sitä, mikä on ikääntymisen vuoksi tuhoutunut tai vaurioitunut. Jos kuvausta ei ole laadittu,
+    vuokralaisen oletetaan, ellei muuta näytetä, saaneen vuokrakohteen siinä kunnossa, jossa
+    se on vuokrasuhteen päättyessä (BW:n 7:224 artikla).</p>
+  <p>Osapuolet suorittavat ennen vuokrasuhteen päättymistä yhteisen esitarkastuksen, jotta
+    vuokralainen voi vielä itse korjata mahdolliset viat (gebreken), ja luovutuksen yhteydessä lopputarkastuksen.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Vakuuden tilitys tapahtuu
+    sen jälkeen (ks. <span th:text="${refs['deposit']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Tämän sopimuksen irtisanominen tapahtuu haastemiehen (gerechtsdeurwaarder) toimittamalla tiedoksiannolla (deurwaardersexploot) tai kirjatulla kirjeellä
+    vuokran maksamista varten sovitulle päivälle (BW:n 7:271 artiklan 3 ja 4 momentti).</p>
+  <p>Vuokralainen noudattaa irtisanomisaikaa, joka vastaa 2 peräkkäisen
+    maksupäivän välistä aikaa, kuitenkin vähintään 1 kuukautta ja enintään 3 kuukautta (BW:n 7:271 artiklan 6 momentin a
+    kohta).</p>
+  <p th:if="${fixedTerm}">Jos vuokrasuhde on tehty määräajaksi, kumpikaan osapuoli ei tästä poiketen voi
+    irtisanoa sitä päivälle, joka on ennen määräajan päättymistä<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (ks. <span th:text="${refs['term']}"></span>. artikla)</span>;
+    tämän artiklan irtisanomisaikoja sovelletaan silloin irtisanomiseen tälle päättymispäivälle tai myöhemmälle
+    maksupäivälle (BW:n 7:271 artiklan 1 momentti). Vain BW:n 7:271 artiklan 2 momentissa tarkoitetussa määräaikaisessa vuokrasuhteessa
+    vuokralainen voi irtisanoa sen myös aiemmin.</p>
+  <p>Vuokranantaja voi irtisanoa vain jollakin laissa mainitulla perusteella (BW:n 7:274 artiklan 1 momentti)
+    ja ilmoittaa nämä perusteet irtisanomisessa; irtisanominen muilla perusteilla on mitätön. Vuokranantajan
+    irtisanomisaika on vähintään 3 kuukautta, jota pidennetään 1 kuukaudella jokaiselta vuodelta, jonka vuokralainen on pitänyt vuokrakohdetta
+    sopimuksen nojalla keskeytyksettä käytössään, enintään 6 kuukauteen. Irtisanomisessa
+    vuokranantaja pyytää vuokralaista ilmoittamaan 6 viikon kuluessa, suostuuko hän päättymiseen (BW:n
+    7:271 artiklan 5 ja 6 momentin b kohta). Jos vuokralainen ei suostu kirjallisesti, sopimus pysyy voimassa,
+    kunnes tuomioistuin on lainvoimaisesti ratkaissut vuokranantajan vaatimuksen (BW:n 7:272 artikla).</p>
+  <p>Osapuolet voivat vuokrasuhteen alettua myös päättää vuokrasuhteen yhteisestä sopimuksesta
+    (BW:n 7:271 artiklan 10 momentti).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Luovutukseen sovelletaan sitä, mitä tässä sopimuksessa siitä määrätään (ks. <span th:text="${refs['handover-inspection']}"></span>. artikla).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Vakuus maksetaan takaisin siten kuin
+    tässä sopimuksessa määrätään (ks. <span th:text="${refs['deposit']}"></span>. artikla).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Vuokranantaja käsittelee vuokralaisen henkilötietoja vain siltä osin kuin se on tarpeen tämän sopimuksen tekemiseksi ja
+    täyttämiseksi sekä lakisääteisten velvoitteiden noudattamiseksi yleisen
+    tietosuoja-asetuksen mukaisesti (GDPR; hollanniksi: Algemene verordening gegevensbescherming, AVG, asetus (EU) 2016/679). Vuokranantaja säilyttää nämä
+    tiedot vain niin kauan kuin se on tarpeen.</p>
+  <p>Vuokralainen voi käyttää vuokranantajaa kohtaan GDPR:n mukaisia oikeuksiaan, mukaan lukien oikeus
+    saada pääsy henkilötietoihinsa sekä oikeus niiden oikaisemiseen ja poistamiseen, ja voi tehdä valituksen
+    valvontaviranomaiselle, Alankomaissa Autoriteit Persoonsgegevens (Alankomaiden tietosuojaviranomainen).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Tähän sopimukseen sovelletaan Alankomaiden lakia.</p>
+  <p>Riidat, jotka vuokralautakunta (huurcommissie) voi lain mukaan ratkaista, kuten vuokran kohtuullisuutta
+    ja palvelukustannuksia koskevat riidat, osapuolet voivat saattaa vuokralautakunnan ratkaistaviksi. Osapuolten katsotaan
+    sopineen siitä, minkä vuokralautakunta on ratkaisussaan vahvistanut, ellei jompikumpi heistä 8
+    viikon kuluessa ratkaisun jäljennöksen lähettämisestä vaadi tuomioistuimen ratkaisua
+    (BW:n 7:262 artikla). Muut riidat saatetaan toimivaltaisen tuomioistuimen ratkaistaviksi.</p>
+</div>
+
+</body>
+</html>

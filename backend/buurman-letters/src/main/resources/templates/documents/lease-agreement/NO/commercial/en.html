@@ -1,0 +1,344 @@
+<!--
+  legal-basis: Lov 26. mars 1999 nr. 17 om husleieavtaler (husleieloven), consolidated text on lovdata.no
+               (LOV-1999-03-26-17, "Sist endret LOV-2026-06-12-22 fra 01.07.2026", read 2026-10-04); for premises
+               (lokale) the Act may be derogated from by agreement except §§ 1-1 to 1-4, 4-1, 4-4, 4-6, 9-7, 9-8,
+               9-10, 12-3, 12-4 and chapter 13 (§ 1-2 second paragraph): § 1-1, § 1-2, § 2-1, § 2-2, § 2-8, § 3-1,
+               § 3-2, § 3-3, § 3-4, § 3-5, § 3-6, § 4-1, § 4-2, § 4-3, § 4-5, § 5-1, § 5-3, § 5-4, § 5-5, § 5-6,
+               § 7-2, § 7-5, § 7-6, § 8-1, § 8-4, § 9-1, § 9-2, § 9-4, § 9-5, § 9-6, § 9-7, § 9-8, § 9-9, § 10-2,
+               § 10-3, § 10-5, § 10-6, § 12-1, § 12-2.
+               Latest amending acts read on lovdata.no: LOV-2025-12-22-127 (§ 12-5, in force 2026-01-01) and
+               LOV-2026-06-12-22 (§ 9-3 a, dwellings only); neither changes the rules for premises.
+               Merverdiavgiftsloven (lov 19. juni 2009 nr. 58, last amended LOV-2025-12-22-121 from 2026-07-01) § 2-3
+               (voluntary registration) and § 3-11 (exemption for letting of real property), lovdata.no.
+               Tvangsfullbyrdelsesloven (lov 26. juni 1992 nr. 86) § 4-18 and § 13-2, lovdata.no (read 2026-10-04).
+               Energimerkeforskriften for bygninger (FOR-2009-12-18-1665, last amended FOR-2025-04-02-591 in force
+               2026-01-01) § 6 and § 9, lovdata.no.
+               Forsinkelsesrenteloven (lov 17. desember 1976 nr. 100), cited by name. Personopplysningsloven (lov
+               15. juni 2018 nr. 38, LOV-2018-06-15-38) and GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); Datatilsynet.
+               Forskrift om Husleietvistutvalget (FOR-2016-06-21-765) § 2: HTU handles disputes on the lease of
+               dwellings only, so not commercial leases; husleietvistutvalget.no (read 2026-10-04).
+               Pending: no government bill amending husleieloven before Stortinget in sessions 2025-2026 and 2026-2027
+               (data.stortinget.no, read 2026-10-04).
+               Pending reform: NOU 2024:19 Ny boligleielov (Husleielovutvalget, delivered 2024-10-18; no bill tabled
+               as of 2026-10-04, per huseierforbundet.no, read 2026-10-04) proposes a new act for dwellings with
+               market-rent adjustment instead of gjengs leie (§ 4-3); whether and how the rules for premises (lokale)
+               change is not verified - if enacted, re-check clause-rent-adjustment. The SV private member's motion
+               (Dokument 8:221 S, Innst. 275 S (2025-2026)) was not adopted (vote 2026-06-01, data.stortinget.no).
+               Verified 2026-10-04 against lovdata.no (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nb.html, never spelled out (nb "3 måneder" is "3 months" in English), and the paragraph (ledd) of a section is written as a digit ordinal after the section ("§ 9-2 2. ledd", en "§ 9-2, paragraph 2"), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of nb.html; the Norwegian (Bokmål) text is authoritative. It states Norwegian law
+  (husleieloven) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from nb.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (utleier),</p>
+  <p>Organisation number (organisasjonsnummer): ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (leier),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (leier),</p>
+  <p>Organisation number (organisasjonsnummer): ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>the following agreement on the lease of business premises (avtale om leie av lokale) is concluded. If there
+    are several tenants, they are jointly and severally liable (solidarisk) for all obligations under this
+    agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>,
+    with an area of approximately ________ m² and with the share of common areas, the parking spaces and the
+    appurtenances specified in this agreement, hereinafter &ldquo;the premises&rdquo; (husrommet).</p>
+  <p>The tenancy is governed by the Act of 26 March 1999 No. 17 relating to tenancy agreements (the Tenancy Act,
+    husleieloven). The premises are business premises (lokale), that is premises other than a dwelling
+    (§ 1-1, paragraph 5). For the lease of business premises the Act may be derogated from by agreement, except
+    §§ 1-1 to 1-4, 4-1, 4-4, 4-6, 9-7, 9-8, 9-10, 12-3 and 12-4 and Chapter 13 (§ 1-2, paragraph 2). Where this
+    agreement does not regulate a matter, the Tenancy Act applies.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The premises are let for the following purpose: ______________________________ (the agreed purpose). The
+    tenant may not use the premises for any purpose other than the one agreed, but may nevertheless carry on
+    another related business, provided that this is not a significant inconvenience for the landlord or the
+    other users of the property (§ 5-1, paragraph 3).</p>
+  <p>A tenant of premises for a shop or a food and drink establishment must keep the business open and in
+    ordinary daily operation, except where a temporary closure is necessary (§ 5-1, paragraph 4). The tenant
+    obtains, at the tenant&rsquo;s own expense, the public permits that the tenant&rsquo;s business requires.</p>
+  <p>The tenant may, with the landlord&rsquo;s approval, put up ordinary signs, awnings and the like; approval may
+    not be refused without an objective reason (saklig grunn) (§ 5-4, paragraph 3).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>. The landlord must place the
+    premises with appurtenances at the tenant&rsquo;s disposal from that day (§ 2-1, paragraph 1).</p>
+  <th:block th:if="${!fixedTerm}">
+    <p>The lease is for an indefinite term (tidsubestemt) and runs until it is terminated by notice under the
+      rules of this agreement and of the Tenancy Act (§ 9-1).</p>
+    <p>Neither party may terminate the lease by notice to end before: ______________ (non-termination period,
+      uoppsigelighetsperiode).</p>
+  </th:block>
+  <th:block th:if="${fixedTerm}">
+    <p>The lease is for a fixed term (tidsbestemt)<span th:if="${endDate != null}"> and ends without notice on
+      <strong th:text="${endDate}">end date</strong></span>. A fixed-term lease ends without notice when the
+      agreed term expires and may be terminated by notice during the term only if this has been agreed
+      (§ 9-2, paragraphs 1 and 2). Agreed right to terminate by notice during the term, with the notice period:
+      ______________________________</p>
+    <p>If the tenancy continues for more than 3 months after the agreed term has expired without the landlord
+      having asked the tenant in writing to move out, the lease has become a lease for an indefinite term
+      (§ 9-2, paragraph 3). The Tenancy Act gives the tenant no right to renewal of the lease. Agreed right to
+      extend (option): ______________________________</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (leie) is <strong th:text="${rentAmount}">amount</strong>
+    <span th:text="${paymentFrequency}">per month</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Value added tax (merverdiavgift) is added if the landlord is voluntarily registered for
+    the letting (see article <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant pays the costs specified in this agreement (see
+    article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent is set at a fixed amount (§ 3-1, paragraph 1). A rent that is unreasonable in relation to what is
+    usually obtained, at the time of the agreement, on a new letting of similar premises on similar terms cannot
+    be agreed; this rule cannot be derogated from for the lease of business premises (§ 4-1, § 1-2, paragraph 2).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Either party may require the rent to be changed, without terminating the tenancy, by up to 100 % of the
+    change in the consumer price index (konsumprisindeksen) of Statistics Norway (Statistisk sentralbyrå) in the
+    period since the rent was last set. The change may take effect at the earliest 1 year after the last setting
+    of the rent took effect, and the other party must be given written notice of at least 1 month before the
+    change can take effect (§ 4-2).</p>
+  <p>Adjustment to the prevailing rent (gjengs leie) under § 4-3 (applies / does not apply): ______________. If
+    § 4-3 applies, either party may, once the tenancy has lasted for at least 2 years and 6 months without any
+    change in the rent other than one that may be required under § 4-2, require the rent to be set at the
+    prevailing rent; the adjustment may take effect at the earliest 6 months after a written demand for it has
+    been made, and at the earliest 1 year after the previous change in the rent took effect
+    (§ 4-3, paragraphs 1 and 2).</p>
+  <p>If part of the rent is agreed in a fixed proportion to the turnover or the result of the tenant&rsquo;s
+    business, § 4-2 and § 4-3 do not apply to that part (§ 4-5, paragraph 2).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays a proportionate share of the common costs (felleskostnader) of the
+    property and of the landlord&rsquo;s costs for the consumption of electricity, fuel, water and sewerage in the
+    premises. Costs covered and allocation key: ______________________________________________</p>
+  <p>The tenant pays an on-account amount (akontobeløp) together with the rent. The landlord presents each year
+    an account showing the amount of the costs and their allocation, as the tenant may also require for the
+    consumption of electricity, fuel, water and sewerage under § 3-4, paragraph 1, and the difference
+    between the on-account amounts and the actual costs is settled on the next due date after the account has
+    been presented. The payment for consumption may be adjusted so that the landlord covers the necessary costs
+    of the supplies (§ 4-5, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of real property is exempt from the Act of 19 June 2009 No. 58 on value added tax (the VAT Act,
+    merverdiavgiftsloven) (§ 3-11, paragraph 1, of the VAT Act). A business or public body that lets buildings or facilities may be
+    voluntarily registered in the VAT Register (Merverdiavgiftsregisteret) if the building or facility is used
+    in a business registered under the VAT Act, or by certain public bodies (§ 2-3, paragraph 1, of the VAT
+    Act).</p>
+  <p>The landlord is voluntarily registered for the letting of the premises (yes/no): ________. If the landlord is
+    registered, the tenant pays VAT at the rate in force from time to time in addition to the rent and the other
+    amounts under this agreement. The tenant must notify the landlord immediately of any change in the use of the
+    premises that may affect the registration, and compensates the landlord&rsquo;s loss if the tenant, without
+    the landlord&rsquo;s consent, changes the use so that the landlord&rsquo;s right to deduct input VAT lapses or
+    must be adjusted.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">As security for unpaid rent, damage to the premises, costs of eviction and
+    other claims arising from the lease, the tenant provides a security deposit (depositum) of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">As security for unpaid rent, damage to the premises, costs of eviction and
+    other claims arising from the lease, the tenant provides a security deposit (depositum) of the amount the
+    parties have agreed in writing: ______________________________</p>
+  <p>For the lease of business premises, § 3-5 and § 3-6 may be derogated from by agreement (§ 1-2, paragraph 2).
+    The limit of the sum of 6 months&rsquo; rent for the deposit and a guarantee (§ 3-5, paragraph 1, § 3-6) is
+    therefore not mandatory; if the parties agree a higher amount, the excess is an agreed derogation from that
+    limit.</p>
+  <p>Unless otherwise agreed, the deposit is placed in a separate account in the tenant&rsquo;s name with
+    ordinary interest terms at a financial institution entitled to provide such a service in Norway, and
+    neither party may dispose of the amount on its own as long as the tenancy lasts
+    (§ 3-5, paragraphs 2 and 3). Agreed other form of security, for example a bank guarantee or a parent company
+    guarantee, and amount: ______________________________</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the on-account amount for the costs</span>
+    <span th:text="${paymentFrequency}">per month</span> in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of the
+      month to which the payment relates</span><span th:if="${paymentDueDay == null}">no later than day 1 of the
+      month to which the payment relates</span>, to the account designated by the landlord
+    (§ 3-2, paragraph 1, § 3-3, paragraph 1). For the lease of business premises, payment in advance for a period
+    longer than 1 month may be agreed (§ 3-2, paragraph 1, § 1-2, paragraph 2).</p>
+  <p>If the rent falls due on a Saturday or Sunday, a public holiday or on 1 or 17 May, the due date is postponed
+    to the next following working day (§ 3-2, paragraph 2). In the event of late payment the tenant owes default
+    interest under the Act of 17 December 1976 No. 100 relating to interest on overdue payments etc.
+    (forsinkelsesrenteloven).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Unless otherwise agreed, the landlord must keep the premises and the rest of the property during the
+    tenancy in the condition to which the tenant is entitled under Chapter 2 of the Tenancy Act, and the tenant
+    must maintain door locks, taps, toilets, electrical sockets and switches, water heaters and fixtures and
+    equipment that are not part of the real property, and carry out the necessary function checks, cleaning,
+    battery replacement, testing and the like of smoke alarms and fire extinguishing equipment
+    (§ 5-3, paragraphs 1 and 2).</p>
+  <p>The parties agree the following allocation of maintenance (for example external maintenance and the
+    building&rsquo;s technical installations: the landlord; internal maintenance of the premises: the tenant):
+    ______________________________________________</p>
+  <p>If the tenant discovers damage to the premises that must be repaired without delay, the tenant must notify
+    the landlord immediately; other damage must be reported within a reasonable time (§ 5-5, paragraph 1). The
+    tenant must give the landlord access to the premises for inspection and for necessary work as referred to in
+    § 5-6, with notice within a reasonable time in advance, unless measures are necessary to prevent damage and it
+    is not possible to notify the tenant.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant may not make alterations to the premises or to the rest of the property without the
+    landlord&rsquo;s consent (§ 5-4, paragraph 2). The tenant must accept alterations to the premises if the work
+    can be carried out without appreciable inconvenience for the tenant and the alteration does not reduce the
+    value of the premises for the tenant; other alterations may only be carried out with the tenant&rsquo;s
+    consent (§ 5-4, paragraph 1).</p>
+  <p>Without a specific agreement, the landlord cannot require the tenant to restore the premises to their
+    original condition in respect of alterations that the tenant was entitled to make (§ 10-2, paragraph 3).
+    Agreed reinstatement at the end of the tenancy: ______________________________</p>
+  <p>If the tenant has made significant improvements to the premises with the landlord&rsquo;s consent, the
+    tenant may claim compensation for the benefit the landlord obtains from the improvements, unless otherwise
+    agreed when consent was given (§ 10-5, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not transfer the tenant&rsquo;s rights or obligations under the lease to others without the
+    landlord&rsquo;s consent, unless otherwise provided by agreement or statute (§ 8-1). The tenant may, with the
+    landlord&rsquo;s approval, transfer the lease in connection with a transfer of the business carried on in the
+    premises; approval may be refused only if the new tenant&rsquo;s circumstances give an objective reason for
+    it, and if the landlord does not answer an application for approval within 1 month of receiving it, this
+    counts as approval (§ 8-4, paragraphs 1 and 3).</p>
+  <p>For the lease of business premises the parties may agree that this right is not to apply or is to apply on
+    other terms (§ 1-2, paragraph 2). Derogating agreement on transfer: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not sublet (framleie) or otherwise transfer the right of use of the premises or parts of them
+    to others without the landlord&rsquo;s consent, unless otherwise provided by agreement or statute (§ 7-2).
+    Agreed right to sublet: ______________________________</p>
+  <p>If the lease is for a fixed term and nothing else has been agreed, the tenant may sublet for the rest of the
+    term with the landlord&rsquo;s approval; if approval is refused although the subtenant&rsquo;s circumstances
+    give no objective reason for it and the premises do not clearly become overcrowded, the tenant may terminate
+    with the notice referred to in § 9-6 (§ 7-5). If the landlord does not answer a written application for
+    approval within 1 month of receiving it, this counts as approval (§ 7-6).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord keeps the building insured. The tenant keeps the tenant&rsquo;s own fixtures, goods and
+    equipment and the fit-out paid for by the tenant insured, and holds the liability insurance customary for the
+    tenant&rsquo;s business. The tenant must provide evidence of the insurance on request.</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Before this agreement was concluded, the landlord presented to the tenant the energy certificate
+    (energiattest) for the building or the part of the building that is let, as the owner must do under
+    § 6, paragraph 1, of the Regulation of 18 December 2009 No. 1665 on the energy labelling of buildings and the
+    energy assessment of heating and air-conditioning systems (energimerkeforskriften for bygninger), unless the
+    building is exempt from that duty under the Regulation, for example a self-contained unit in a commercial
+    building in which several units share a heating system. Energy rating (energikarakter):
+    ____________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Unless otherwise agreed, the premises with appurtenances must on handover be cleared, cleaned and in
+    ordinary good condition (§ 2-2, paragraph 1). The parties inspect the premises together at the takeover and
+    at the return and draw up a report on their condition, signed by both parties.</p>
+  <p>The tenant loses the right to rely on a defect if the landlord has not been notified that the defect is
+    invoked within a reasonable time after the tenant ought to have discovered it, unless the landlord has acted
+    with gross negligence or contrary to honesty and good faith (§ 2-8).</p>
+  <p>On the day the tenancy ends, the tenant must place the premises with appurtenances at the landlord&rsquo;s
+    disposal. Unless otherwise agreed, the premises must be cleared, cleaned and in the same condition as at the
+    takeover, except for deterioration due to ordinary wear and tear and defects that the landlord is obliged to
+    remedy (§ 10-2, paragraphs 1 and 2). If the premises are not placed at the landlord&rsquo;s disposal on the
+    day the tenancy has ended, the landlord may claim payment equal to the agreed rent until the tenant&rsquo;s
+    use ends (§ 10-3, paragraph 1).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The
+    security is then released under the rules of this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Unless otherwise agreed, either party may terminate a lease for an indefinite term by notice (oppsigelse)
+    with a notice period of 3 months, expiring at the end of a calendar month
+    (§ 9-4, § 9-5, paragraph 1, § 9-6, paragraph 1). Agreed other notice period: ______________</p>
+  <p>A notice of termination from the landlord must be in writing and state the reasons. It must state that the
+    tenant may object (protestere) in writing to the landlord within 1 month after receiving the notice, and that
+    if the tenant does not object within that period, the tenant loses the right to claim that the notice is
+    contrary to the Act, and that the landlord may then request enforced eviction (tvangsfravikelse) under
+    § 13-2, paragraph 3, letter c, of the Enforcement Act (tvangsfullbyrdelsesloven); otherwise the notice is
+    invalid, unless the tenant has moved out in accordance with it (§ 9-7). These requirements cannot be derogated from for the lease of business premises
+    (§ 1-2, paragraph 2).</p>
+  <p>If the tenant has objected in time, the notice lapses unless the landlord has brought legal proceedings
+    against the tenant within 3 months after the tenant&rsquo;s deadline expired. The court must set the notice
+    aside if, on an assessment of both parties&rsquo; circumstances, it finds that the notice would be
+    unreasonable, but not if the notice is due to a material breach on the part of the tenant (§ 9-8).</p>
+  <p>If the tenant has been given notice and the notice is not set aside under § 9-8, the tenant may claim
+    compensation for the benefit the landlord obtains from the clientele (kundekrets) the tenant has built up,
+    unless the tenant has committed a material breach (§ 10-6). Derogating agreement on compensation for
+    clientele: ______________________________</p>
+  <p th:if="${fixedTerm}">If the lease is for a fixed term<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span>, it may be terminated by
+    notice during the term only if this has been agreed (§ 9-2, paragraph 2).</p>
+  <p>The landlord may rescind (heve) the lease because of a material breach on the part of the tenant in the cases
+    listed in § 9-9, paragraph 1, among others where the tenant materially fails to fulfil the obligation to pay
+    rent. The declaration of rescission must be in writing and state the reason for the rescission
+    (§ 9-9, paragraph 2).</p>
+</div>
+
+<div th:fragment="clause-enforcement" data-clause="enforcement">
+  <p>The tenant accepts that enforced eviction (tvangsfravikelse) may be required when the rent is not paid
+    (§ 13-2, paragraph 3, letter a, of the Enforcement Act, tvangsfullbyrdelsesloven).<span th:if="${fixedTerm}">
+    The tenant also accepts that enforced eviction may be required when the term has expired
+    (§ 13-2, paragraph 3, letter b, of the Enforcement Act).</span></p>
+  <p>Enforcement may be requested when 2 weeks have passed after the landlord sent written notice (varsel) to the
+    tenant; the notice may be sent at the earliest on the due date and must draw attention to the fact that
+    enforcement will be requested if the claim is not met (§ 4-18, paragraph 1, of the Enforcement Act). Notice
+    may be dispensed with only in the cases referred to in § 4-18, paragraph 2, of the Enforcement Act. In the case of non-payment,
+    the notice must state that enforcement can be avoided if the rent, out-of-court collection costs,
+    legal costs and rent due up to the time of payment, with interest, are paid before enforcement is carried out
+    (§ 13-2, paragraph 3, letter a, of the Enforcement Act).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes personal data about the persons acting on behalf of the other party only to the extent
+    necessary to conclude and perform this agreement and to comply with legal obligations, in accordance with the
+    General Data Protection Regulation (Regulation (EU) 2016/679) and the Act of 15 June 2018 No. 38 relating to
+    the processing of personal data (personopplysningsloven). The data are not kept longer than necessary for
+    those purposes.</p>
+  <p>The data subjects may exercise their rights under the General Data Protection Regulation, including the
+    rights of access, rectification and erasure, and may lodge a complaint with the Norwegian Data Protection
+    Authority (Datatilsynet).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Norwegian law.</p>
+  <p>The Rent Disputes Tribunal (Husleietvistutvalget) deals only with disputes concerning the lease of dwellings
+    (Regulation of 21 June 2016 No. 765 on the Rent Disputes Tribunal, § 2) and cannot hear disputes under this
+    agreement. Disputes are decided by the ordinary courts, unless the parties have agreed arbitration; the
+    restriction on arbitration agreements in § 12-1 applies only to the lease of dwellings. Agreed venue or
+    arbitration: ______________________________</p>
+  <p>If the parties cannot agree on the prevailing rent or compensation for improvements, either of them may
+    require the dispute to be decided by a valuation board (takstnemnd), unless otherwise agreed
+    (§ 12-2, paragraph 1). If a provision of this agreement is invalid, this does not affect the validity of the
+    other provisions of the agreement.</p>
+</div>
+
+</body>
+</html>

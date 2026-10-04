@@ -48,7 +48,10 @@
     <p th:unless="${newEndDate != null}" th:text="#{letter.body.extension.indefinite(${extensionNumber})}"></p>
 
     <!-- Country-specific legal clause -->
-    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+    <div th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
 
     <!-- Summary table -->
     <table class="summary-table">
@@ -95,10 +98,13 @@
     <p th:text="#{letter.regards}"></p>
   </div>
 
-  <!-- Signature -->
-  <div class="letter-signature">
+  <!-- Signatures: one block per signer (landlord, then each tenant) — see signatureBlocks. -->
+  <div th:each="block : ${signatureBlocks}" class="letter-signature">
     <div class="sig-line"></div>
-    <div class="sig-label" th:text="#{letter.signature}">Landlord / Property Manager</div>
+    <div class="sig-label">
+      <span th:text="${block.label}">Landlord / Property Manager</span>
+      <span class="sig-placeholder" th:text="${block.placeholder}"></span>
+    </div>
     <div class="sig-date"><span th:text="#{letter.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
   </div>
 

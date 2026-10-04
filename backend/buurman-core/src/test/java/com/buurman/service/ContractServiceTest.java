@@ -47,6 +47,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.UnitRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.SidGenerator;
 
 /**
@@ -132,6 +133,30 @@ class ContractServiceTest {
     @DisplayName("rejects invalid transition")
     void rejectsInvalidTransition(ContractStatus from, ContractStatus to) {
       assertThatThrownBy(() -> invokeValidation(from, to))
+          .isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Invalid status transition");
+    }
+  }
+
+  @Nested
+  @DisplayName("NOTICE_GIVEN transitions")
+  class NoticeGivenTransitions {
+
+    @Test
+    @DisplayName(
+        "ACTIVE contract can transition to NOTICE_GIVEN, and NOTICE_GIVEN can transition to"
+            + " TERMINATED")
+    void activeToNoticeGivenToTerminatedIsValid() {
+      assertThatCode(() -> invokeValidation(ContractStatus.ACTIVE, ContractStatus.NOTICE_GIVEN))
+          .doesNotThrowAnyException();
+      assertThatCode(() -> invokeValidation(ContractStatus.NOTICE_GIVEN, ContractStatus.TERMINATED))
+          .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("NOTICE_GIVEN cannot transition back to ACTIVE (no withdrawal in this feature)")
+    void noticeGivenCannotRevertToActive() {
+      assertThatThrownBy(() -> invokeValidation(ContractStatus.NOTICE_GIVEN, ContractStatus.ACTIVE))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Invalid status transition");
     }
@@ -440,6 +465,7 @@ class ContractServiceTest {
           Optional.empty(),
           Optional.empty(),
           Optional.empty(),
+          Optional.empty(),
           null,
           Optional.empty(),
           Optional.empty(),
@@ -516,6 +542,80 @@ class ContractServiceTest {
 
         verify(contractRepository, never()).save(any());
       }
+
+      @Test
+      @DisplayName(
+          "refuses NOTICE_GIVEN as a target: giving notice must go through"
+              + " ContractTerminationService.terminate(), never a bare status flip")
+      void rejectsNoticeGivenAsTargetStatus() {
+        ContractIdentifier identifier = (ContractIdentifier) SidGenerator.newContractId();
+        ChangeContractStatusRequest request =
+            new ChangeContractStatusRequest(ContractStatus.NOTICE_GIVEN, Optional.empty());
+
+        assertThatThrownBy(
+                () ->
+                    contractServiceInstance.changeContractStatus(identifier, request, principal()))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessageContaining("/terminate");
+
+        verify(contractRepository, never()).save(any());
+      }
+    }
+
+    /**
+     * Once notice is given, the contract's terms back a termination record and notice letter, and
+     * the daily sweep will still process its {@code contract_terminations} row — so the generic
+     * edit/delete endpoints must refuse it exactly as they refuse an ACTIVE contract.
+     */
+    @Nested
+    @DisplayName("updateContract / deleteContract lock")
+    class EditDeleteLock {
+
+      private ContractIdentifier stubContractWithStatus(ContractStatus status) {
+        Contract contract =
+            Contract.builder()
+                .id(UUID.randomUUID())
+                .identifier(Optional.of(SidGenerator.newContractId()))
+                .teamId(TEAM_ID)
+                .unitId(UNIT_ID)
+                .status(status)
+                .build();
+        ContractIdentifier identifier = (ContractIdentifier) contract.getIdentifier().orElseThrow();
+        when(contractRepository.getByIdentifierAndTeamId(identifier, TEAM_ID)).thenReturn(contract);
+        return identifier;
+      }
+
+      @ParameterizedTest(name = "{0}")
+      @CsvSource({"ACTIVE", "NOTICE_GIVEN"})
+      @DisplayName("updateContract rejects an in-force contract and never saves")
+      @SuppressWarnings("NullAway") // the status lock fires before the request is read
+      void updateRejectsInForceContract(ContractStatus status) {
+        ContractIdentifier identifier = stubContractWithStatus(status);
+
+        assertThatThrownBy(
+                () -> contractServiceInstance.updateContract(identifier, null, principal()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(
+                status == ContractStatus.ACTIVE
+                    ? "Cannot update ACTIVE contracts. Please change status first."
+                    : "Cannot update NOTICE_GIVEN contracts. Notice has already been given on"
+                        + " this contract.");
+
+        verify(contractRepository, never()).save(any());
+      }
+
+      @ParameterizedTest(name = "{0}")
+      @CsvSource({"ACTIVE", "NOTICE_GIVEN"})
+      @DisplayName("deleteContract rejects an in-force contract and never soft-deletes it")
+      void deleteRejectsInForceContract(ContractStatus status) {
+        ContractIdentifier identifier = stubContractWithStatus(status);
+
+        assertThatThrownBy(() -> contractServiceInstance.deleteContract(identifier, principal()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageStartingWith("Cannot delete " + status.name() + " contracts.");
+
+        verify(contractRepository, never()).softDeleteByIdAndTeamId(any(), any());
+      }
     }
   }
 
@@ -555,9 +655,10 @@ class ContractServiceTest {
           ContractService.class.getDeclaredMethod(
               "updateUnitStatusBasedOnContract",
               UUID.class,
+              UUID.class,
               ContractStatus.class,
               ContractStatus.class,
-              UserPrincipal.class);
+              UUID.class);
       updateUnitStatusBasedOnContract.setAccessible(true);
     }
 
@@ -570,7 +671,7 @@ class ContractServiceTest {
     private void invoke(ContractStatus newStatus, ContractStatus oldStatus) throws Throwable {
       try {
         updateUnitStatusBasedOnContract.invoke(
-            contractServiceInstance, UNIT_ID, newStatus, oldStatus, principal(TEAM_ID));
+            contractServiceInstance, UNIT_ID, TEAM_ID, newStatus, oldStatus, USER_ID);
       } catch (InvocationTargetException e) {
         throw e.getCause();
       }
@@ -586,18 +687,6 @@ class ContractServiceTest {
           .unitType(UnitType.APARTMENT)
           .status(status)
           .build();
-    }
-
-    private UserPrincipal principal(UUID teamId) {
-      return new UserPrincipal(
-          USER_ID,
-          "usr_test",
-          "kc-123",
-          "test@example.com",
-          "Test User",
-          teamId,
-          "team_test",
-          com.buurman.domain.TeamRole.TEAM_ADMIN);
     }
 
     @Test
@@ -642,12 +731,124 @@ class ContractServiceTest {
     }
 
     @Test
+    @DisplayName(
+        "the termination sweep's NOTICE_GIVEN -> TERMINATED vacates the unit when no other"
+            + " in-force contract references it")
+    void terminatingNoticeGivenContractVacatesUnit() throws Throwable {
+      when(unitRepository.getByIdAndTeamId(UNIT_ID, TEAM_ID)).thenReturn(unit(UnitStatus.OCCUPIED));
+      when(contractRepository.countActiveByUnitId(UNIT_ID, TEAM_ID)).thenReturn(0);
+
+      invoke(ContractStatus.TERMINATED, ContractStatus.NOTICE_GIVEN);
+
+      ArgumentCaptor<Unit> captor = ArgumentCaptor.forClass(Unit.class);
+      verify(unitRepository).save(captor.capture());
+      assertThat(captor.getValue().getStatus()).isEqualTo(UnitStatus.VACANT);
+    }
+
+    @Test
+    @DisplayName("giving notice (ACTIVE -> NOTICE_GIVEN) leaves the unit occupied")
+    void givingNoticeLeavesUnitOccupied() throws Throwable {
+      invoke(ContractStatus.NOTICE_GIVEN, ContractStatus.ACTIVE);
+
+      verify(unitRepository, never()).save(any(Unit.class));
+      verify(contractRepository, never()).countActiveByUnitId(any(), any());
+    }
+
+    @Test
     @DisplayName("a transition that never touches ACTIVE leaves the unit alone")
     void nonActiveTransitionLeavesUnitAlone() throws Throwable {
       invoke(ContractStatus.DRAFT, ContractStatus.PENDING_SIGNATURE);
 
       verify(unitRepository, never()).save(any(Unit.class));
       verify(contractRepository, never()).countActiveByUnitId(any(), any());
+    }
+  }
+
+  /**
+   * {@code endingWithinDays} feeds {@code LocalDate.plusDays(...)} in the repository's filter
+   * condition: a sufficiently large value throws an unhandled {@code DateTimeException} there
+   * instead of a clean 400. The bound is enforced in the service, before the repository is ever
+   * called.
+   */
+  @Nested
+  @DisplayName("getContractsPaginated — endingWithinDays bounds")
+  class EndingWithinDaysValidation {
+
+    private static final UUID TEAM_ID = UUID.randomUUID();
+    private static final UUID USER_ID = UUID.randomUUID();
+
+    private ContractRepository contractRepository;
+    private ContractService contractServiceInstance;
+
+    @BeforeEach
+    void setUp() throws Exception {
+      contractRepository = Mockito.mock(ContractRepository.class);
+
+      contractServiceInstance =
+          Mockito.mock(
+              ContractService.class,
+              Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+
+      Field field = ContractService.class.getDeclaredField("contractRepository");
+      field.setAccessible(true);
+      field.set(contractServiceInstance, contractRepository);
+    }
+
+    private UserPrincipal principal() {
+      return new UserPrincipal(
+          USER_ID,
+          "usr_test",
+          "kc-123",
+          "test@example.com",
+          "Test User",
+          TEAM_ID,
+          "team_test",
+          com.buurman.domain.TeamRole.TEAM_ADMIN);
+    }
+
+    private com.buurman.dto.request.PageRequest pageRequest() {
+      return com.buurman.dto.request.PageRequest.of(null, null, null, (String) null);
+    }
+
+    @Test
+    @DisplayName("rejects a negative value and never queries the repository")
+    void rejectsNegativeValue() {
+      assertThatThrownBy(
+              () ->
+                  contractServiceInstance.getContractsPaginated(
+                      principal(), null, null, -1, pageRequest()))
+          .isInstanceOf(BadRequestException.class);
+
+      verify(contractRepository, never())
+          .findAllByTeamIdPaginated(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName(
+        "rejects a value large enough to risk LocalDate overflow and never queries the"
+            + " repository")
+    void rejectsExcessivelyLargeValue() {
+      assertThatThrownBy(
+              () ->
+                  contractServiceInstance.getContractsPaginated(
+                      principal(), null, null, Integer.MAX_VALUE, pageRequest()))
+          .isInstanceOf(BadRequestException.class);
+
+      verify(contractRepository, never())
+          .findAllByTeamIdPaginated(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("accepts a value within bounds and reaches the repository")
+    void acceptsValueWithinBounds() {
+      when(contractRepository.findAllByTeamIdPaginated(
+              any(), any(), any(), any(), any(), any(), any()))
+          .thenReturn(new PaginatedResult<>(List.of(), 0));
+
+      contractServiceInstance.getContractsPaginated(principal(), null, null, 3650, pageRequest());
+
+      verify(contractRepository)
+          .findAllByTeamIdPaginated(eq(TEAM_ID), any(), any(), any(), any(), eq(3650), any());
     }
   }
 }

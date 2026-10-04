@@ -99,5 +99,47 @@
     "editTitleNotes": "Redigera titel och anteckningar",
     "delete": "Ta bort",
     "download": "Ladda ned"
+  },
+  "signatureLinks": {
+    "trigger": "Hämta signeringslänkar",
+    "retract": "Återkalla signeringsbegäran",
+    "title": "Signeringslänkar",
+    "description": "Skicka en egen länk till varje person. Den som har länken kan signera som den personen.",
+    "warning": "Dela varje länk endast med den som ska signera. Länkarna slutar fungera när dokumentet är signerat eller begäran återkallad.",
+    "signers": "Undertecknare",
+    "role": {
+      "LANDLORD": "Hyresvärd",
+      "TENANT": "Hyresgäst"
+    },
+    "status": {
+      "PENDING": "Väntar",
+      "VIEWED": "Visad",
+      "SIGNED": "Signerad",
+      "DECLINED": "Avböjd"
+    },
+    "alreadySigned": "Redan signerat",
+    "notReady": "Länken är inte klar än. Vi kontrollerar igen automatiskt.",
+    "unavailable": "Länken är inte längre tillgänglig. Återkalla begäran och skicka den igen för att få nya länkar.",
+    "empty": "Det finns inga länkar att dela för den här begäran.",
+    "copyLink": "Kopiera länk",
+    "copyLinkFor": "Kopiera signeringslänk för {{name}}",
+    "copied": "Kopierad",
+    "copiedAnnouncement": "Länk för {{name}} kopierad",
+    "copiedAllAnnouncement": "Meddelande till alla väntande undertecknare kopierat",
+    "copyAll": "Kopiera alla som meddelande",
+    "share": "Dela",
+    "shareFor": "Dela signeringslänk för {{name}}",
+    "shareTitle": "Dokument att signera",
+    "shareText": "Hej {{name}}, signera här:",
+    "message": "Hej {{name}}, signera här: {{url}}",
+    "copyFailed": "Kopieringen misslyckades. Markera länken nedan och kopiera den manuellt.",
+    "retry": "Försök igen",
+    "done": "Klar",
+    "error": {
+      "inactive": "Den här begäran är inte längre aktiv, så det finns inga signeringslänkar.",
+      "forbidden": "Du har inte behörighet att visa signeringslänkar.",
+      "provider": "Signeringstjänsten går inte att nå just nu. Försök igen om en stund.",
+      "generic": "Det gick inte att läsa in signeringslänkarna."
+    }
   }
 }

@@ -72,6 +72,8 @@ tags:
     description: Recurring property fees (HOA, management, etc.)
   - name: User Preferences
     description: User preferences and notification channel settings
+  - name: Lease Agreement
+    description: Lease clause resolution, per-contract clause selection, and full lease agreement generation
   - name: Health
     description: Health and info endpoints
   - name: Geocoding
@@ -120,7 +122,13 @@ tags:
     description: Units within a property (dwellings, parking, storage, commercial space)
   - name: Expense Allocations
     description: Per-unit allocation of building-level expenses
+  - name: SavedContractFilters
+    description: Personal saved contract filter presets
 paths:
+  /saved-contract-filters:
+    $ref: 'paths/saved-contract-filters.yaml#/collection'
+  /saved-contract-filters/{identifier}:
+    $ref: 'paths/saved-contract-filters.yaml#/item'
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
   /users/me:
@@ -203,14 +211,28 @@ paths:
     $ref: 'paths/contracts.yaml#/rent-periods-document'
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
     $ref: 'paths/contracts.yaml#/rent-periods-generate-documents'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests:
+    $ref: 'paths/contracts.yaml#/signature-requests'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}:
+    $ref: 'paths/contracts.yaml#/signature-requests-item'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}/signing-links:
+    $ref: 'paths/contracts.yaml#/signature-requests-item-signing-links'
+  /contracts/{contractIdentifier}/documents/{documentIdentifier}/signature-requests/{signatureRequestIdentifier}/cancel:
+    $ref: 'paths/contracts.yaml#/signature-requests-item-cancel'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     $ref: 'paths/contracts.yaml#/payment-instructions-item'
+  /contracts/{contractIdentifier}/lease-clauses:
+    $ref: 'paths/contracts.yaml#/lease-clauses'
+  /contracts/{contractIdentifier}/lease-agreement:
+    $ref: 'paths/contracts.yaml#/lease-agreement'
   /auth/me:
     $ref: 'paths/users.yaml#/auth-me'
   /webhooks/twilio/status:
     $ref: 'paths/reference.yaml#/webhooks-twilio-status'
   /webhooks/mailgun/events:
     $ref: 'paths/reference.yaml#/webhooks-mailgun-events'
+  /webhooks/documenso/events:
+    $ref: 'paths/reference.yaml#/webhooks-documenso-events'
   /users/teams/{teamIdentifier}/leave:
     $ref: 'paths/users.yaml#/users-teams-leave'
   /users/switch-team:
@@ -327,6 +349,10 @@ paths:
     $ref: 'paths/contracts.yaml#/collection'
   /contracts/{identifier}/reopen:
     $ref: 'paths/contracts.yaml#/reopen'
+  /contracts/{identifier}/termination-preview:
+    $ref: 'paths/contracts.yaml#/termination-preview'
+  /contracts/{identifier}/terminate:
+    $ref: 'paths/contracts.yaml#/terminate'
   /contracts/{identifier}/parties:
     $ref: 'paths/contracts.yaml#/parties'
   /contracts/{identifier}/parties/change-primary:
@@ -545,6 +571,8 @@ paths:
     $ref: 'paths/imports.yaml#/error-report'
   /contracts/{identifier}/audit-log:
     $ref: 'paths/contracts.yaml#/audit-log'
+  /contracts/{identifier}/timeline:
+    $ref: 'paths/contracts.yaml#/timeline'
   /contracts/{contractIdentifier}/payment-instructions/current:
     $ref: 'paths/contracts.yaml#/payment-instructions-current'
   /contracts/metadata-schema/{countryCode}:
@@ -769,6 +797,19 @@ components:
     ContractIdentifier:
       type: string
       description: Contract identifier
+    ContractStatus:
+      type: string
+      description: Current lifecycle status of the contract
+      enum:
+        - DRAFT
+        - ACTIVE
+        - EXPIRED
+        - TERMINATED
+        - PENDING_SIGNATURE
+        - NOTICE_GIVEN
+    ContractTerminationIdentifier:
+      type: string
+      description: Contract termination identifier
     ContractExtensionIdentifier:
       type: string
       description: Contract extension identifier
@@ -787,6 +828,12 @@ components:
     DocumentIdentifier:
       type: string
       description: Document identifier
+    SavedContractFilterIdentifier:
+      type: string
+      description: Saved contract filter identifier
+    SignatureRequestIdentifier:
+      type: string
+      description: Signature request identifier
     ExpenseIdentifier:
       type: string
       description: Expense identifier
@@ -3040,6 +3087,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
       required:
         - identifier
         - property
@@ -3071,6 +3119,12 @@ components:
           type: string
         notes:
           type: string
+        sourceDocumentIdentifier:
+          type: string
+          description: >-
+            The original document this one was generated from (e.g. a signed copy or signing
+            certificate), so the UI can group it under that document. Absent for everything
+            else, including the original itself.
         uploadedAt:
           type: string
           format: date-time
@@ -3083,6 +3137,202 @@ components:
         - fileName
         - identifier
         - uploadedAt
+    CreateSavedContractFilterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+      required: [name, criteria]
+    SavedContractFilterResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        criteria:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [identifier, name, criteria, createdAt]
+    SignatureSignerResponse:
+      type: object
+      description: A single signer's status within a signature request
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+          enum: [LANDLORD, TENANT]
+        status:
+          type: string
+          enum: [PENDING, VIEWED, SIGNED, DECLINED]
+        signedAt:
+          type: string
+          format: date-time
+      required:
+        - email
+        - role
+        - status
+    SignatureSigningLinkResponse:
+      type: object
+      description: >-
+        A signer with the link they sign through. signingUrl is a bearer credential; it is absent
+        for a signer who already signed or declined.
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [LANDLORD, TENANT]
+        status:
+          type: string
+          enum: [PENDING, VIEWED, SIGNED, DECLINED]
+        signingUrl:
+          type: string
+          nullable: true
+        signed:
+          type: boolean
+      required:
+        - name
+        - email
+        - role
+        - status
+        - signed
+    SignatureRequestResponse:
+      type: object
+      description: An e-signature request for a document, with per-signer status
+      properties:
+        identifier:
+          type: string
+          example: SGR01HZQX7V8B3K5M2N4P6R9T0W
+        documentIdentifier:
+          type: string
+        signedDocumentIdentifier:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, PARTIALLY_SIGNED, COMPLETED, DECLINED, CANCELLED, FAILED]
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureSignerResponse'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - documentIdentifier
+        - status
+        - signers
+        - createdAt
+        - updatedAt
+    CancelSignatureRequestRequest:
+      type: object
+      description: Retracts a signature request before it completes
+      properties:
+        reason:
+          type: string
+          description: Shown to the provider's audit trail and, where supported, the signers themselves
+          maxLength: 500
+    LeaseAvailability:
+      type: string
+      description: Whether, and in what form, a lease agreement can be produced for a contract
+      enum:
+        - AVAILABLE_DOCUMENT
+        - AVAILABLE_EXAMPLE_TEXT
+        - UNAVAILABLE_COUNTRY
+        - UNAVAILABLE_NO_COUNTRY
+    LeaseClausesResponse:
+      type: object
+      description: Lease availability for a contract with its resolved clauses (empty when unavailable)
+      properties:
+        availability:
+          $ref: '#/components/schemas/LeaseAvailability'
+        countryCode:
+          type: string
+          nullable: true
+          description: ISO 3166-1 alpha-2 effective country (the contract's own, else its property's); absent when neither has one
+        clauses:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResolvedLeaseClauseResponse'
+        documentLanguages:
+          type: array
+          description: >-
+            ISO 639-1 languages a lease agreement can be generated in for the contract's effective
+            country and lease kind (a generate request in any other language falls back to the
+            country's national language). Ordered by preference: the country's authoritative
+            language first, then its other national languages, English and further translations.
+            Empty when unavailable.
+          items:
+            type: string
+      required:
+        - availability
+        - clauses
+        - documentLanguages
+    ResolvedLeaseClauseResponse:
+      type: object
+      description: A lease clause template resolved against a contract, with per-contract inclusion state
+      properties:
+        templateIdentifier:
+          type: string
+        clauseKey:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        included:
+          type: boolean
+        optional:
+          type: boolean
+        sortOrder:
+          type: integer
+        pinned:
+          type: boolean
+        articleNumber:
+          type: integer
+      required:
+        - templateIdentifier
+        - clauseKey
+        - title
+        - body
+        - included
+        - optional
+        - sortOrder
+        - pinned
+        - articleNumber
+    UpdateContractLeaseClausesRequest:
+      type: object
+      properties:
+        clauses:
+          type: array
+          items:
+            type: object
+            properties:
+              templateIdentifier:
+                type: string
+              included:
+                type: boolean
+              sortOrder:
+                type: integer
+            required:
+              - templateIdentifier
+              - included
+              - sortOrder
+      required:
+        - clauses
     PaymentReceivalResponse:
       type: object
       properties:
@@ -3536,6 +3786,8 @@ components:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -3858,6 +4110,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
         termsAndConditions:
           type: string
         notes:
@@ -3957,6 +4210,8 @@ components:
           items:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
         effectiveEndDate:
           type: string
           format: date
@@ -3981,6 +4236,7 @@ components:
         - createdAt
         - documentLanguages
         - extensionCount
+        - leaseRegime
         - identifier
         - landlordNoticeDays
         - parties
@@ -3995,6 +4251,101 @@ components:
         - status
         - tenantNoticeDays
         - terminationNoticeDays
+    TerminateContractRequest:
+      type: object
+      properties:
+        givenBy:
+          type: string
+          enum: [LANDLORD, TENANT]
+        noticeDate:
+          type: string
+          format: date
+        groundCode:
+          type: string
+        effectiveEndDate:
+          type: string
+          format: date
+          description: Omit to accept the computed date; providing one earlier than computed requires overrideReason
+        overrideReason:
+          type: string
+        inspectionDate:
+          type: string
+          format: date
+      required:
+        - givenBy
+        - noticeDate
+    ContractTerminationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: CTM01HZQX7V8B3K5M2N4P6R9T0W
+        contractIdentifier:
+          type: string
+        givenBy:
+          type: string
+          enum: [LANDLORD, TENANT]
+        noticeDate:
+          type: string
+          format: date
+        groundCode:
+          type: string
+        computedEndDate:
+          type: string
+          format: date
+        effectiveEndDate:
+          type: string
+          format: date
+        overrideReason:
+          type: string
+        inspectionDate:
+          type: string
+          format: date
+        noticeLetterDocumentIdentifier:
+          type: string
+        status:
+          type: string
+          enum: [NOTICE_GIVEN, TERMINATED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - contractIdentifier
+        - givenBy
+        - noticeDate
+        - computedEndDate
+        - effectiveEndDate
+        - status
+        - createdAt
+        - updatedAt
+    TerminationPreviewResponse:
+      type: object
+      description: A pure computation, no persistence — used by the wizard's review step before commit
+      properties:
+        computedEndDate:
+          type: string
+          format: date
+        noticeDays:
+          type: integer
+        groundsRequired:
+          type: boolean
+        groundsCodes:
+          type: array
+          items:
+            type: string
+        source:
+          type: string
+          enum: [CATALOG_RULE, CONTRACT_FALLBACK, HARDCODED_DEFAULT]
+          description: Where the notice-day figure came from, so the landlord can judge how much to trust it
+      required:
+        - computedEndDate
+        - noticeDays
+        - groundsRequired
+        - source
     CyContractMetadata:
       allOf:
         - $ref: "#/components/schemas/ContractCountryMetadata"
@@ -5993,6 +6344,8 @@ components:
             $ref: "#/components/schemas/LanguageCode"
           description: Preferred language(s) for generated documents (ISO 639-1 codes)
           example: ["en"]
+        leaseRegime:
+          $ref: '#/components/schemas/LeaseRegime'
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -6059,6 +6412,7 @@ components:
             - EXPIRED
             - TERMINATED
             - PENDING_SIGNATURE
+            - NOTICE_GIVEN
         reason:
           type: string
       required:
@@ -6653,6 +7007,38 @@ components:
         - newValues
         - oldValues
         - timestamp
+    TimelineEventResponse:
+      type: object
+      description: One event in a contract's unified timeline
+      properties:
+        type:
+          type: string
+          enum:
+            - CONTRACT_CREATED
+            - CONTRACT_STATUS_CHANGED
+            - RENT_CHANGED
+            - EXTENSION_CREATED
+            - EXTENSION_ACTIVATED
+            - EXTENSION_DECLINED
+            - DOCUMENT_UPLOADED
+            - DOCUMENT_GENERATED
+            - SIGNATURE_SENT
+            - SIGNATURE_COMPLETED
+            - SIGNATURE_DECLINED
+            - AUDIT_OTHER
+        timestamp:
+          type: string
+          format: date-time
+        title:
+          type: string
+        description:
+          type: string
+        relatedIdentifier:
+          type: string
+      required:
+        - type
+        - timestamp
+        - title
     CategoryExpenseSummary:
       type: object
       properties:
@@ -8543,6 +8929,10 @@ components:
         title:
           type: string
           description: Short human-readable summary
+        code:
+          type: string
+          nullable: true
+          description: Machine-readable error code (for example LEASE_NOT_AVAILABLE_FOR_COUNTRY or LEASE_CONTRACT_HAS_NO_COUNTRY); present only on errors that define one
     WwsCalculationRequest:
       type: object
       properties:
@@ -9387,6 +9777,13 @@ components:
         - NONE
         - AUTOMATIC
         - MANUAL
+    LeaseRegime:
+      type: string
+      description: Legal regime the lease falls under; selects the clause set used for the lease agreement
+      enum:
+        - STANDARD
+        - SHORT_TERM
+        - STUDENT_OR_MOBILITY
     RentAdjustmentType:
       type: string
       enum:

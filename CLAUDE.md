@@ -71,6 +71,7 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | awrust | https://awrust.local.buurman.io | S3 storage (dev) |
 | mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
 | gotenberg | http://localhost:3000 (internal, no Traefik route) | Headless-Chromium PDF renderer for booklets |
+| documenso | http://localhost:3001 (no Traefik route — internal signing sidecar) | Self-hosted e-signature (Documenso) |
 | backend | https://api.local.buurman.io | Spring Boot API |
 | app | https://app.local.buurman.io | React app |
 | prometheus | https://prometheus.local.buurman.io | Metrics collection |
@@ -103,7 +104,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `backend/buurman-jooq/src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V075)
+- Convention: `V<version>__<description>.sql` (currently at V082)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -142,7 +143,7 @@ backend/
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
 ├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
-│   ├── src/main/resources/db/migration/  (68 SQL migrations)
+│   ├── src/main/resources/db/migration/  (82 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
@@ -259,7 +260,7 @@ frontend/
 ## Testing
 
 ### Backend — JUnit 5 + Mockito + Testcontainers
-- 93 test classes across the modules; the suite runs 1,255 tests (all green).
+- 166 test classes across the modules; the suite runs 1,572 tests (all green).
 - Integration tests (`*IntegrationTest`, 6 classes) extend `AbstractRepositoryIntegrationTest`,
   which starts a `postgres:18-alpine` Testcontainer, applies all Flyway migrations once, and
   truncates between tests. **Docker must be running.**
@@ -273,7 +274,7 @@ frontend/
 - Integration only: `mvn test -pl buurman-core -am -Dtest='*RepositoryIntegrationTest'`
 
 ### Frontend — Vitest
-- 14 test files, 105 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
+- 55 test files, 477 tests. `frontend/app` runs under jsdom, `frontend/backoffice` under node.
 - Run all: `cd frontend && yarn test` (delegates to both workspaces)
 - Config: `frontend/app/vitest.config.ts` — uses `import.meta.dirname`, not `__dirname`
   (vitest 5 / Vite native config loader).
@@ -286,7 +287,7 @@ frontend/
   that a query scoped to one `team_id` cannot see another team's rows.
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V075)
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V082)
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 3. Domain POJO in `backend/buurman-common/src/.../domain/`
 4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`
@@ -381,3 +382,4 @@ sibling of `app.local.buurman.io`, not a deeper level.
 - **CORS errors**: Verify SecurityConfig allowed origin includes `https://app.local.buurman.io`
 - **Flyway failure**: Check syntax; rollback may need manual intervention
 - **S3/images**: AWRust uses direct URLs via `https://awrust.local.buurman.io`, production uses presigned URLs
+- **Documenso webhook unreachable from `make dev`**: the Documenso container needs Docker Desktop's `host.docker.internal` DNS to reach a host-run backend (webhook target `http://host.docker.internal:8081/webhooks/documenso/events`) — this only works with Docker Desktop, not plain Linux Docker Engine without the `--add-host=host.docker.internal:host-gateway` flag

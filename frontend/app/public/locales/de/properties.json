@@ -226,7 +226,9 @@
       "confirmLabel_other": "{{count}} Dokumente löschen"
     },
     "editModal": "Dokument bearbeiten",
-    "downloading": "Wird heruntergeladen..."
+    "downloading": "Wird heruntergeladen...",
+    "generated_one": "{{count}} generierte Datei",
+    "generated_other": "{{count}} generierte Dateien"
   },
   "photos": {
     "title": "Fotos",

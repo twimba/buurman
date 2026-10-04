@@ -13,6 +13,7 @@ import com.buurman.config.models.MailgunProperties;
 import com.buurman.config.models.TwilioProperties;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.WebhooksApi;
+import com.buurman.service.notification.SignatureWebhookService;
 import com.buurman.service.notification.WebhookService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebhookController implements WebhooksApi {
 
   private final WebhookService webhookService;
+  private final SignatureWebhookService signatureWebhookService;
   private final TwilioProperties twilioProperties;
   private final MailgunProperties mailgunProperties;
   private final ObjectMapper objectMapper;
@@ -62,6 +64,14 @@ public class WebhookController implements WebhooksApi {
       log.error("Error processing Twilio webhook: {}", e.getMessage(), e);
     }
     return "<Response></Response>";
+  }
+
+  @Override
+  public void handleDocumensoEvents(String body, Optional<String> xDocumensoSecret) {
+    // No catch here on purpose — see processDocumensoEvent's javadoc. A processing failure must
+    // reach the caller as a 5xx so Documenso retries the delivery instead of the event being
+    // silently lost.
+    signatureWebhookService.processDocumensoEvent(body, xDocumensoSecret.orElse(null));
   }
 
   private boolean verifyMailgunSignature(String body) {

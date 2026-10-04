@@ -1,0 +1,366 @@
+<!--
+  legal-basis: Obligationenrecht (OR, SR 220), Achter Titel "Die Miete", Art. 253-273c (Art. 274-274g repealed since
+               01.01.2011 by the ZPO), consolidated version in force 01.10.2026 (fedlex.admin.ch,
+               eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
+               01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
+               256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266i, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
+               The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
+               apply to leases of residential AND commercial premises (titles of the second and third sections); the
+               deposit cap of Art. 257e Abs. 2 applies to residential premises only.
+               Recent change: BG vom 29.09.2023 (Mietrecht: Formvorschriften), AS 2025 197, in force 01.10.2025
+               (Art. 269d Abs. 4 and 5 OR). The two other OR amendments of 29.09.2023 (subletting, Art. 262; termination
+               for own use, Art. 261 and 271a) went to the referendum vote of 24.11.2024 and are NOT in the consolidated
+               text of 01.10.2026: Art. 261, 262 and 271a are unchanged.
+               Verordnung ueber die Miete und Pacht von Wohn- und Geschaeftsraeumen (VMWG, SR 221.213.11), Stand
+               01.10.2025 (V vom 21.03.2025, AS 2025 191): Art. 4, 12a, 17, 18, 19, 19a.
+               Initial-rent form (Art. 270 Abs. 2 OR): whether a cantonal obligation also covers commercial premises
+               depends on the cantonal text (BWO "Verzeichnis fuer das Jahr 2026" of 16.09.2026,
+               www.bwo.admin.ch/de/formularpflicht); stated generally, no regionCode branch.
+               Mehrwertsteuergesetz (MWSTG, SR 641.20), Stand 31.03.2025: Art. 21 Abs. 2 Ziff. 21, Art. 22.
+               Zivilprozessordnung (ZPO, SR 272), Stand 01.07.2026: Art. 33, 35, 113, 197, 200.
+               Datenschutzgesetz (DSG, SR 235.1), Stand 07.07.2025: Art. 19, 25, 32, 49.
+               Verified 2026-10-04 against fedlex.admin.ch (consolidated texts) and bwo.admin.ch.
+               Pending: none identified for the tenancy title (consolidation of 01.07.2027 unchanged).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "6 Monaten" is "6 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  French translation of de.html (the authoritative German text).
+  Draft text, not vetted by legal counsel. Reflects Swiss federal tenancy law (OR, VMWG) for commercial premises
+  (Geschaeftsraeume). Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and
+  titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers
+  of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">Bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>Numéro d'identification des entreprises (IDE) et registre du commerce : ______________________________</p>
+  <p>Numéro TVA : ______________________________</p>
+  <p>représenté par : ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Locataire</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les locataires soussignés, ci-après
+    (ensemble) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p>Numéro d'identification des entreprises (IDE) et registre du commerce : ______________________________</p>
+  <p>Numéro TVA : ______________________________</p>
+  <p>représenté par : ______________________________,</p>
+  <p>est conclu le bail à loyer de locaux commerciaux suivant. Lorsque plusieurs personnes sont locataires, elles
+    répondent solidairement de toutes les obligations découlant du présent contrat.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur loue au locataire les locaux commerciaux sis <strong th:text="${propertyAddress}">Adresse</strong>,
+    étage ________, d'une surface d'environ ________ m², avec les surfaces annexes, places de stationnement et
+    installations suivantes : ______________________________, ci-après &laquo;&nbsp;l'objet loué&nbsp;&raquo;. Les
+    dispositions concernant les baux de locaux commerciaux s'appliquent aussi aux choses dont l'usage est cédé avec
+    ces locaux (art. 253a, al. 1, CO).</p>
+  <p>Le présent contrat est régi par les dispositions du code des obligations sur le bail à loyer (art. 253 ss CO)
+    et par l'ordonnance sur le bail à loyer et le bail à ferme d'habitations et de locaux commerciaux (OBLF). Les
+    dispositions sur la protection contre les loyers abusifs et sur la protection contre les congés s'appliquent
+    aussi aux locaux commerciaux. Lorsqu'une convention contraire est nulle en vertu de ces dispositions, celles-ci
+    l'emportent sur les clauses contraires du présent contrat.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>L'objet loué est loué exclusivement pour l'usage suivant : ______________________________ (destination). Tout
+    changement de destination requiert le consentement écrit préalable du bailleur.</p>
+  <p>Le bailleur délivre l'objet loué dans un état approprié à la destination convenue (art. 256, al. 1, CO). Le
+    locataire obtient à ses frais les autorisations administratives relatives à son exploitation ; les autorisations
+    relatives aux caractéristiques de l'objet loué incombent au bailleur, sauf convention écrite contraire des
+    parties.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail commence le <strong th:text="${startDate}">Début du bail</strong>.</p>
+  <p th:if="${!fixedTerm}">Le bail est conclu pour une durée indéterminée et peut être résilié par chacune des
+    parties conformément au présent contrat et à la loi (art. 255, al. 1, CO, art. 266a, al. 1, CO).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Le bail est conclu pour une durée déterminée<span th:if="${endDate != null}"> et prend fin sans congé le
+      <strong th:text="${endDate}">Fin du bail</strong></span>. Un bail de durée déterminée prend fin sans congé à
+      l'expiration de la durée convenue (art. 255, al. 2, CO, art. 266, al. 1, CO) ; s'il est reconduit tacitement,
+      il devient un contrat de durée indéterminée (art. 266, al. 2, CO).</p>
+    <p>Option de prolongation du locataire (durée, nombre, délai d'exercice) : ______________________________
+      (aucune si rien n'est indiqué).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer net s'élève à <strong th:text="${rentAmount}">Montant</strong>
+    <span th:text="${paymentFrequency}">par mois</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> S'y ajoute, le cas échéant, la TVA (voir l'article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> S'y ajoutent les frais accessoires
+    (voir l'article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Le loyer repose sur un taux hypothécaire de référence de ________ pour cent (art. 12a OBLF) et sur l'indice
+    suisse des prix à la consommation à ________ points (base ________). Réserves éventuelles pour une adaptation du
+    loyer qui n'a pas été entièrement invoquée (art. 18 OBLF) : ______________________________.</p>
+  <p>Le locataire peut contester le loyer initial comme abusif devant l'autorité de conciliation dans les 30 jours
+    qui suivent la réception de la chose et en demander la diminution s'il a été contraint de conclure le bail par
+    nécessité personnelle ou familiale ou en raison de la situation sur le marché local du logement et des locaux
+    commerciaux, ou si le bailleur a sensiblement augmenté le loyer initial pour la même chose par rapport au
+    précédent loyer (art. 270, al. 1, CO). La question de savoir si une obligation cantonale d'utiliser la formule
+    officielle lors de la conclusion d'un nouveau bail (art. 270, al. 2, CO) s'applique aussi aux locaux commerciaux
+    relève du droit cantonal ; si tel est le cas, le bailleur communique le loyer initial au locataire au moyen de la
+    formule agréée par le canton.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Les modifications du loyer sont régies par les dispositions du présent contrat (voir l'article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Indexation ou échelonnement du loyer convenus : ______________________________ (aucun si rien n'est
+    indiqué).</p>
+  <p>La convention prévoyant que le loyer est adapté en fonction d'un indice n'est valable que si le bail est conclu
+    pour une durée minimale de 5 ans et que la référence est l'indice suisse des prix à la consommation
+    (art. 269b CO) ; le bail est conclu pour 5 ans lorsque le bailleur ne peut pas le résilier pendant au moins
+    5 ans (art. 17, al. 4, OBLF). L'adaptation peut être annoncée moyennant un préavis d'au moins 30 jours pour la
+    fin d'un mois (art. 17, al. 3, OBLF) ; elle est notifiée au moyen de la formule officielle, au plus tôt après la
+    publication du nouvel indice (art. 19, al. 2, OBLF). Sous réserve de la contestation du loyer initial, une partie
+    peut seulement faire valoir devant l'autorité de conciliation que l'augmentation ou la diminution demandée n'est
+    pas justifiée par une variation correspondante de l'indice (art. 270c CO).</p>
+  <p>La convention prévoyant que le loyer sera majoré périodiquement d'un montant déterminé n'est valable que si le
+    bail est conclu pour une durée minimale de 3 ans, si le loyer n'est pas augmenté plus de 1 fois par an et si le
+    montant de l'augmentation est fixé en francs (art. 269c CO). Pour la notification d'une telle majoration, la
+    forme écrite suffit (art. 269d, al. 5, CO) ; elle peut intervenir au plus tôt 4 mois avant l'entrée en vigueur
+    de la majoration (art. 19a OBLF). Sous réserve de la contestation du loyer initial, le locataire ne peut pas
+    contester les loyers échelonnés (art. 270d CO).</p>
+  <p>Pour le surplus, le bailleur peut majorer le loyer pour le prochain terme de résiliation ; l'avis de
+    majoration, avec indication des motifs, doit parvenir au locataire 10 jours au moins avant le début du délai de
+    résiliation et être effectué au moyen d'une formule agréée par le canton (art. 269d, al. 1, CO). La majoration est nulle lorsque le bailleur ne la notifie pas
+    au moyen de la formule officielle, n'en indique pas les motifs ou l'assortit d'une résiliation ou d'une menace de
+    résiliation (art. 269d, al. 2, CO). Le locataire peut contester une majoration comme abusive devant
+    l'autorité de conciliation dans les 30 jours qui suivent l'avis de majoration (art. 270b, al. 1, CO) et demander
+    la diminution du loyer aux conditions de l'art. 270a CO.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Les frais accessoires ne sont à la charge du locataire que si cela a été convenu spécialement
+    (art. 257a, al. 2, CO). Les parties conviennent que le locataire supporte les frais accessoires suivants :
+    ______________________________. Le locataire ne supporte pas d'autres frais accessoires que ceux désignés
+    ici.</p>
+  <p>Les frais accessoires sont les dépenses effectives du bailleur pour des prestations en rapport avec l'usage de
+    la chose, telles que frais de chauffage, d'eau chaude et autres frais d'exploitation, ainsi que les contributions
+    publiques qui résultent de l'utilisation de la chose (art. 257b, al. 1, CO). Le locataire verse à ce titre des
+    acomptes de ________ francs par mois ; si le bailleur perçoit les frais accessoires sur la base d'un décompte, il
+    l'établit au moins 1 fois par an et le présente au locataire (art. 4, al. 1, OBLF). S'il les perçoit
+    forfaitairement, il se fonde sur les valeurs moyennes de 3 années (art. 4, al. 2, OBLF).</p>
+  <p>Le bailleur permet au locataire, à sa demande, de consulter les pièces justificatives (art. 257b, al. 2, CO).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>La mise à disposition d'immeubles ou de parties d'immeubles à des fins d'usage ou de jouissance est exclue du champ de la TVA, sous réserve des prestations imposables énumérées aux lettres a à f
+    de cette disposition, notamment la location de places de parc n'appartenant pas au domaine public, pour le
+    stationnement de véhicules, sauf s'il s'agit d'une prestation accessoire à une location d'immeuble exclue du champ
+    de l'impôt (art. 21, al. 2, ch. 21, LTVA). Le bailleur assujetti peut imposer cette prestation en faisant
+    figurer clairement l'impôt ou en la déclarant dans son décompte (option, art. 22, al. 1, LTVA) ; l'option est
+    exclue si le locataire utilise ou entend utiliser l'objet loué exclusivement à des fins d'habitation
+    (art. 22, al. 2, let. b, LTVA).</p>
+  <p>Le bailleur opte pour l'imposition du loyer et des frais accessoires : oui / non (prière d'indiquer ce qui
+    convient). S'il opte, le locataire paie en sus la TVA au taux en vigueur ; le bailleur la fait figurer clairement
+    sur les factures. Le locataire communique sans délai par écrit au bailleur toute modification de l'utilisation
+    qui affecte l'option.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Le locataire fournit au bailleur, en garantie de ses obligations, des sûretés
+    (garantie de loyer) de <strong th:text="${depositAmount}">Montant</strong>.</p>
+  <p th:if="${depositAmount == null}">Le locataire fournit au bailleur, en garantie de ses obligations, des sûretés
+    (garantie de loyer) du montant convenu par écrit entre les parties.</p>
+  <p>Le montant maximal légal de 3 mois de loyer ne s'applique qu'aux baux d'habitations (art. 257e, al. 2, CO) ;
+    pour les locaux commerciaux, la loi ne prévoit pas de montant maximal. Au lieu d'un dépôt, le locataire peut,
+    avec l'accord du bailleur, fournir une garantie irrévocable d'une banque autorisée en Suisse.</p>
+  <p>Si le locataire fournit des sûretés en espèces ou sous forme de papiers-valeurs, le bailleur les dépose auprès
+    d'une banque, sur un compte d'épargne ou de dépôt au nom du locataire (art. 257e, al. 1, CO). La banque ne peut
+    restituer les sûretés qu'avec l'accord des deux parties ou sur la base d'un commandement de payer non frappé
+    d'opposition ou d'un jugement exécutoire. Si, dans le délai de 1 an qui suit la fin du bail, le bailleur n'a fait
+    valoir aucune prétention contre le locataire dans le cadre d'une procédure judiciaire ou d'une poursuite pour
+    dettes ou d'une faillite, le locataire peut exiger de la banque la restitution des sûretés
+    (art. 257e, al. 3, CO).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Les défauts éventuels sont constatés lors
+    de la restitution de l'objet loué (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le locataire paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> et les frais accessoires</span>
+    <span th:text="${paymentFrequency}">par mois</span>,
+    <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong>e jour
+      de chaque période de paiement</span><span th:if="${paymentDueDay == null}">d'avance pour le 1er jour de
+      chaque période de paiement</span>, sur le compte désigné par écrit par le bailleur. Cette convention l'emporte sur la règle légale selon laquelle le locataire doit
+    payer le loyer et, le cas échéant, les frais accessoires à la fin de chaque mois, mais au plus tard à l'expiration
+    du bail, sauf convention ou usage local contraires (art. 257c CO).</p>
+  <p>À l'expiration du terme de paiement convenu, le locataire est en demeure sans interpellation
+    (art. 102, al. 2, CO) et doit un intérêt moratoire de 5 pour cent l'an (art. 104, al. 1, CO).</p>
+  <p>Lorsque, après la réception de la chose, le locataire a du retard pour s'acquitter d'un terme ou de frais
+    accessoires échus, le bailleur peut lui fixer par écrit un délai de paiement de 30 jours au moins et lui signifier
+    qu'à défaut de paiement dans ce délai il résiliera le bail ; faute de paiement dans le délai fixé, le bailleur
+    peut résilier le bail moyennant un délai de congé minimum de 30 jours pour la fin d'un mois
+    (art. 257d, al. 1 et 2, CO). Aucune partie ne peut renoncer à l'avance au droit de compenser les créances et les
+    dettes découlant du bail (art. 265 CO).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur délivre la chose à la date convenue, dans un état approprié à l'usage pour lequel elle a été louée,
+    et l'entretient en cet état (art. 256, al. 1, CO) ; les dérogations au détriment du locataire sont nulles dans
+    les baux de locaux commerciaux (art. 256, al. 2, CO). Le locataire remédie à ses frais, conformément à l'usage
+    local, aux défauts qui peuvent être éliminés par les menus travaux de nettoyage ou de réparation indispensables à
+    l'entretien normal de la chose (art. 259 CO).</p>
+  <p>Le locataire signale au bailleur les défauts auxquels il n'est pas tenu de remédier lui-même ; il répond du
+    dommage résultant de l'omission d'aviser le bailleur (art. 257g CO). Lorsque apparaissent des défauts qui ne sont
+    pas imputables au locataire et auxquels il n'est pas tenu de remédier à ses frais, ou lorsque le locataire est
+    empêché d'user de la chose conformément au contrat, il peut faire valoir les droits prévus à l'art. 259a CO,
+    notamment la remise en état de la chose et une réduction proportionnelle du loyer à partir du moment où le
+    bailleur a eu connaissance du défaut et jusqu'à l'élimination de ce dernier (art. 259d CO) ; la consignation du
+    loyer est régie par l'art. 259g CO et l'art. 259h CO.</p>
+  <p>Le locataire tolère les travaux destinés à remédier aux défauts de la chose ainsi qu'à réparer ou à prévenir
+    des dommages et autorise le bailleur à inspecter la chose dans la mesure où cet examen est nécessaire à
+    l'entretien, à la vente ou à une location ultérieure ; le bailleur annonce à temps les travaux et les
+    inspections et tient compte des intérêts du locataire et de son exploitation (art. 257h, al. 1 à 3, CO). Le
+    bailleur n'a le droit de rénover ou de modifier la chose que si les travaux peuvent raisonnablement être imposés
+    au locataire et que le bail n'a pas été résilié (art. 260, al. 1, CO).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Le locataire n'a le droit de rénover ou de modifier la chose, y compris par des aménagements et des enseignes
+    sur la façade, qu'avec le consentement écrit du bailleur (art. 260a, al. 1, CO). Le locataire en supporte les
+    frais et obtient les autorisations administratives nécessaires.</p>
+  <p>Lorsque le bailleur a donné son consentement, il ne peut exiger la remise en état de la chose que s'il en a été
+    convenu par écrit (art. 260a, al. 2, CO) ; les parties consignent une telle convention dans chaque consentement
+    écrit. Si, à la fin du bail, la chose présente une plus-value considérable résultant de la rénovation ou de la
+    modification acceptées par le bailleur, le locataire peut exiger une indemnité pour cette plus-value
+    (art. 260a, al. 3, CO).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Le locataire peut sous-louer tout ou partie de l'objet loué avec le consentement du bailleur
+    (art. 262, al. 1, CO). Il demande le consentement du bailleur par écrit et lui communique à cette occasion les
+    conditions de la sous-location.</p>
+  <p>Le bailleur ne peut refuser son consentement que si le locataire refuse de lui communiquer les conditions de la
+    sous-location, si les conditions de la sous-location, comparées à celles du contrat de bail principal, sont
+    abusives ou si la sous-location présente pour le bailleur des inconvénients majeurs
+    (art. 262, al. 2, CO).</p>
+  <p>Le locataire est garant envers le bailleur que le sous-locataire n'emploiera la chose qu'à l'usage autorisé par
+    le bail principal ; le bailleur peut s'adresser directement au sous-locataire à l'effet de l'y obliger
+    (art. 262, al. 3, CO). La sous-location ne peut être prolongée que pour la durée du bail principal
+    (art. 273b, al. 1, CO).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Le locataire peut transférer son bail à un tiers avec le consentement écrit du bailleur
+    (art. 263, al. 1, CO). Le bailleur ne peut refuser son consentement que pour de justes motifs
+    (art. 263, al. 2, CO).</p>
+  <p>Si le bailleur donne son consentement, le tiers est subrogé au locataire (art. 263, al. 3, CO). Le locataire est
+    libéré de ses obligations envers le bailleur ; il répond toutefois solidairement avec le tiers jusqu'à
+    l'expiration de la durée du bail ou la résiliation de celui-ci selon le contrat ou la loi, mais dans tous les cas
+    pour 2 ans au plus (art. 263, al. 4, CO).</p>
+</div>
+
+<div th:fragment="clause-retention-right" data-clause="retention-right">
+  <p>Le bailleur a, pour garantie du loyer de l'année écoulée et du semestre courant, un droit de rétention sur les
+    meubles qui se trouvent dans les locaux loués et qui servent soit à l'aménagement, soit à l'usage de ceux-ci
+    (art. 268, al. 1, CO). Ce droit grève aussi les meubles apportés par le sous-locataire dans la mesure où celui-ci
+    n'a pas payé son loyer (art. 268, al. 2, CO) ; ne sont pas soumis au droit de rétention les biens qui ne
+    pourraient être saisis par les créanciers du locataire (art. 268, al. 3, CO).</p>
+  <p>Les droits des tiers sur des choses dont le bailleur savait ou devait savoir qu'elles n'étaient pas la propriété
+    du locataire prévalent sur le droit de rétention ; il en va de même pour les choses que le possesseur a perdues,
+    qui lui ont été volées ou dont il est dessaisi de quelque autre manière contre sa volonté (art. 268a, al. 1, CO). Lorsque le locataire veut déménager ou a
+    l'intention d'emporter les meubles qui se trouvent dans les locaux loués, le bailleur peut, avec l'assistance de
+    l'autorité compétente, en retenir autant qu'il en faut pour garantir sa créance (art. 268b, al. 1, CO).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Le bailleur assure le bâtiment dans la mesure usuelle. Le locataire assure à ses frais ses installations,
+    marchandises et aménagements et maintient pendant toute la durée du bail une assurance responsabilité civile
+    d'entreprise d'un montant approprié ; il en justifie sur demande.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Lors de la remise de l'objet loué, les parties établissent ensemble un état des lieux d'entrée consignant l'état
+    de l'objet loué, les relevés des compteurs et les clés remises ; les deux parties le signent et en reçoivent
+    chacune un exemplaire. Le locataire peut signaler par écrit au bailleur, dans les 14 jours qui suivent la remise,
+    les défauts qui ne figurent pas dans l'état des lieux. Si un procès-verbal a été établi lors de la restitution de
+    la chose à la fin du bail précédent, le bailleur le présente au locataire, sur demande, lors de la remise
+    (art. 256a, al. 1, CO).</p>
+  <p>À la fin du bail, le locataire restitue la chose libre de tout objet et dans l'état qui résulte d'un usage
+    conforme au contrat (art. 267, al. 1, CO). Est nulle toute convention conclue avant la fin du bail et prévoyant
+    que le locataire devra verser une indemnité destinée à couvrir autre chose qu'un dommage éventuel
+    (art. 267, al. 2, CO).</p>
+  <p>Lors de la restitution, le bailleur vérifie l'état de la chose et avise immédiatement le locataire des défauts
+    dont celui-ci répond ; s'il néglige de le faire, le locataire est déchargé de toute responsabilité, à moins qu'il
+    ne s'agisse de défauts qui ne pouvaient pas être découverts à l'aide des vérifications usuelles, et le bailleur
+    signale immédiatement de tels défauts au locataire dès leur découverte (art. 267a, al. 1 à 3, CO).<span class="clause-ref" data-ref="alterations"
+    th:if="${refs['alterations']}"> Les rénovations et modifications du locataire sont régies par les dispositions
+    du présent contrat (voir l'article <span th:text="${refs['alterations']}"></span>).</span><span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> La restitution de la garantie de loyer est régie par les dispositions du présent
+    contrat (voir l'article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Le bailleur et le locataire doivent donner le congé par écrit. Le bailleur doit donner le congé en utilisant une
+    formule agréée par le canton et qui indique au locataire la manière dont il doit procéder s'il entend contester
+    le congé ou demander la prolongation du bail (art. 266l, al. 1 et 2, CO). Le congé qui ne satisfait pas à ces
+    exigences de forme est nul (art. 266o CO).</p>
+  <p th:if="${!fixedTerm}">Chaque partie peut résilier le bail de durée indéterminée moyennant un délai de congé
+    d'au moins 6 mois pour les termes suivants : ______________________________. À défaut d'indication, le congé
+    peut être donné pour le terme fixé par l'usage local ou, à défaut d'un tel usage, pour la fin d'un trimestre de
+    bail de 3 mois (art. 266d CO). Lorsque le délai ou le terme de congé n'est pas respecté, la résiliation produit
+    effet pour le prochain terme pertinent (art. 266a, al. 2, CO).</p>
+  <p th:if="${fixedTerm}">Le bail de durée déterminée<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (voir l'article <span th:text="${refs['term']}"></span>)</span> prend fin sans congé à
+    l'expiration de la durée convenue ; une résiliation ordinaire avant cette date n'est possible que si les parties
+    l'ont convenue. Les droits de résiliation extraordinaire sont réservés.</p>
+  <p>Le congé est annulable lorsqu'il contrevient aux règles de la bonne foi et doit être motivé si l'autre partie
+    le demande (art. 271, al. 1 et 2, CO) ; le congé donné par le bailleur est notamment annulable dans les cas
+    prévus à l'art. 271a CO. La partie qui veut contester le congé doit saisir l'autorité de conciliation dans les
+    30 jours qui suivent la réception du congé (art. 273, al. 1, CO).</p>
+  <p>Le locataire peut demander la prolongation du bail lorsque la fin du contrat aurait pour lui ou sa famille des
+    conséquences pénibles sans que les intérêts du bailleur le justifient (art. 272, al. 1, CO) ; la prolongation est
+    exclue dans les cas prévus à l'art. 272a CO. Le bail de locaux commerciaux peut être prolongé de 6 ans au
+    maximum ; dans cette limite, 1 ou 2 prolongations peuvent être accordées (art. 272b, al. 1, CO). La demande doit
+    être adressée à l'autorité de conciliation, pour un bail de durée indéterminée, dans les 30 jours qui suivent la
+    réception du congé et, pour un bail de durée déterminée, au plus tard 60 jours avant l'expiration du contrat
+    (art. 273, al. 2, CO).</p>
+  <p>Les congés extraordinaires sont régis par la loi, notamment en cas de demeure du locataire (art. 257d CO), de
+    violation grave par le locataire de son devoir de diligence ou de graves manques d'égards envers les voisins
+    (art. 257f, al. 3 et 4, CO), pour de justes motifs rendant l'exécution du contrat intolérable pour une partie
+    (art. 266g CO), en cas de décès du locataire, par ses héritiers (art. 266i CO),
+    et en cas de faillite du locataire après la délivrance de la chose, lorsque les sûretés exigées par le bailleur
+    pour les loyers à échoir ne lui sont pas fournies dans le délai convenable fixé (art. 266h, al. 1 et 2, CO). Si le bailleur aliène la chose, le bail passe
+    à l'acquéreur ; celui-ci peut le résilier en observant le délai de congé légal pour le prochain terme légal s'il
+    fait valoir un besoin urgent pour lui-même ou ses proches parents ou alliés (art. 261, al. 1 et 2, CO).</p>
+  <p>Lorsque le locataire restitue la chose sans observer les délai ou terme de congé, il n'est libéré de ses
+    obligations envers le bailleur que s'il lui présente un nouveau locataire qui soit solvable, que le bailleur ne
+    puisse raisonnablement refuser et qui soit disposé à reprendre le bail aux mêmes conditions
+    (art. 264, al. 1, CO). Le locataire ne peut renoncer aux droits que lui confèrent les dispositions sur la
+    protection contre les congés que si celles-ci le prévoient expressément (art. 273c, al. 1, CO).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La restitution est régie par les dispositions du présent contrat (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Chaque partie ne traite les données personnelles de l'autre partie, de ses représentants et de ses personnes de
+    contact, conformément à la loi fédérale sur la protection des données (LPD), que dans la mesure nécessaire à la
+    conclusion et à l'exécution du présent contrat et au respect d'obligations légales, et ne les conserve pas plus
+    longtemps que nécessaire à ces fins. Elle informe les personnes concernées de la collecte de données
+    personnelles (art. 19 LPD).</p>
+  <p>Les personnes concernées peuvent demander si des données personnelles les concernant sont traitées
+    (art. 25, al. 1, LPD) et exiger la rectification des données personnelles inexactes (art. 32, al. 1, LPD). Elles
+    peuvent dénoncer une violation des dispositions de protection des données au Préposé fédéral à la protection des
+    données et à la transparence (PFPDT) (art. 49, al. 1, LPD).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent contrat est régi par le droit suisse.</p>
+  <p>En cas de litige découlant du présent bail, la procédure au fond est précédée d'une tentative de conciliation
+    devant l'autorité de conciliation (art. 197 CPC) ; celle-ci se compose d'un président et de représentants
+    siégeant paritairement (art. 200, al. 1, CPC). Dans la procédure de conciliation, il n'est pas perçu de frais
+    judiciaires pour les litiges relevant du bail à loyer de locaux commerciaux (art. 113, al. 2, let. c, CPC).</p>
+  <p>Le tribunal du lieu où l'immeuble est situé est compétent pour connaître des actions découlant du présent bail
+    (art. 33 CPC) ; le locataire ne peut pas renoncer à ce for à l'avance ou par acceptation tacite
+    (art. 35, al. 1, let. b, CPC). Si une disposition du présent contrat est nulle, la validité des autres
+    dispositions n'en est pas affectée ; la réglementation légale s'y substitue.</p>
+</div>
+
+</body>
+</html>

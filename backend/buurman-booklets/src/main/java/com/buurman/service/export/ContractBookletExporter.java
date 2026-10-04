@@ -34,6 +34,7 @@ import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
@@ -46,6 +47,7 @@ import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
@@ -74,6 +76,7 @@ public class ContractBookletExporter {
   private final PaymentInstructionRepository paymentInstructionRepository;
   private final ContractRentPeriodRepository rentPeriodRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final ContractPartyService contractPartyService;
   private final DocumentRenderer pdfRenderer;
   private final TemplateEngine templateEngine;
@@ -95,6 +98,7 @@ public class ContractBookletExporter {
       PaymentInstructionRepository paymentInstructionRepository,
       ContractRentPeriodRepository rentPeriodRepository,
       ContractExtensionRepository contractExtensionRepository,
+      ContractTerminationRepository contractTerminationRepository,
       ContractPartyService contractPartyService,
       DocumentRenderer pdfRenderer,
       @Qualifier("contractBookletTemplateEngine") TemplateEngine templateEngine,
@@ -114,6 +118,7 @@ public class ContractBookletExporter {
     this.paymentInstructionRepository = paymentInstructionRepository;
     this.rentPeriodRepository = rentPeriodRepository;
     this.contractExtensionRepository = contractExtensionRepository;
+    this.contractTerminationRepository = contractTerminationRepository;
     this.contractPartyService = contractPartyService;
     this.pdfRenderer = pdfRenderer;
     this.templateEngine = templateEngine;
@@ -183,8 +188,11 @@ public class ContractBookletExporter {
     // Compute effective end date (latest active extension overrides contract end date)
     List<ContractExtension> extensions =
         contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    Optional<ContractTermination> termination =
+        contractTerminationRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Optional<LocalDate> effectiveEndDate =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+        EffectiveEndDateHelper.computeEffectiveEndDate(
+            contract.getEndDate(), extensions, termination);
 
     Map<String, Object> model =
         buildModel(

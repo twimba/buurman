@@ -682,7 +682,10 @@
       "message_many": "Sta per eliminare {{count}} documenti. Questa azione non può essere annullata."
     },
     "editModal": "Modifica documento",
-    "downloading": "Download..."
+    "downloading": "Download...",
+    "generated_one": "{{count}} file generato",
+    "generated_other": "{{count}} file generati",
+    "generated_many": "{{count}} di file generati"
   },
   "photos": {
     "title": "Foto",

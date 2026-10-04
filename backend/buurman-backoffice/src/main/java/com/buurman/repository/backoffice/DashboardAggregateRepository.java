@@ -33,6 +33,7 @@ import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Contract;
 import com.buurman.dto.response.backoffice.dashboard.CountryStats;
 import com.buurman.dto.response.backoffice.dashboard.ProductEntitiesResponse.EntityCount;
 import com.buurman.dto.response.backoffice.dashboard.TopTeamsResponse.TopTeam;
@@ -324,7 +325,7 @@ public class DashboardAggregateRepository {
 
   /**
    * Per-country rollup grouped by the team's default country: teams, properties, contracts, and the
-   * normalized monthly rent of active contracts (EUR cents). Excludes demo + soft-deleted teams.
+   * normalized monthly rent of in-force contracts (EUR cents). Excludes demo + soft-deleted teams.
    */
   public List<CountryStats> countryStats() {
     // [teams, properties, contracts, monthlyValueMinor]
@@ -352,7 +353,7 @@ public class DashboardAggregateRepository {
 
     Field<java.math.BigDecimal> monthlyActive =
         DSL.when(
-                CONTRACTS.STATUS.eq("ACTIVE"),
+                CONTRACTS.STATUS.in(Contract.ContractStatus.IN_FORCE_NAMES),
                 DSL.choose(CONTRACTS.PAYMENT_FREQUENCY)
                     .when("MONTHLY", CONTRACTS.RENT_AMOUNT)
                     .when("QUARTERLY", CONTRACTS.RENT_AMOUNT.divide(3))

@@ -61,6 +61,18 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Real Flyway + Postgres for LeaseDocumentCatalogDatabaseIntegrationTest. Docker must be
+             running. Flyway, the Postgres driver, jOOQ and the migrations come from buurman-core. -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-jdbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

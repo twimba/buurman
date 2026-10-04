@@ -676,7 +676,9 @@
       "confirmLabel_other": "Ta bort {{count}} dokument"
     },
     "editModal": "Redigera dokument",
-    "downloading": "Laddar ner..."
+    "downloading": "Laddar ner...",
+    "generated_one": "{{count}} genererad fil",
+    "generated_other": "{{count}} genererade filer"
   },
   "photos": {
     "title": "Foton",

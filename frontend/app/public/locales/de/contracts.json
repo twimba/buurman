@@ -4,7 +4,8 @@
     "pending": "Ausstehend",
     "active": "Aktiv",
     "expired": "Abgelaufen",
-    "terminated": "Gekündigt"
+    "terminated": "Gekündigt",
+    "noticeGiven": "Kündigung eingereicht"
   },
   "list": {
     "title": "Verträge",
@@ -18,6 +19,7 @@
     "pendingSignature": "Warten auf Unterschrift",
     "expired": "Abgelaufen",
     "terminated": "Gekündigt",
+    "noticeGiven": "Kündigung eingereicht",
     "count_one": "{{count}} Vertrag",
     "count_other": "{{count}} Verträge",
     "empty": {
@@ -25,7 +27,23 @@
       "description": "Beginnen Sie mit der Erstellung Ihres ersten Mietvertrags"
     },
     "error": "Verträge konnten nicht geladen werden",
-    "exportDeposits": "Kautionen exportieren"
+    "exportDeposits": "Kautionen exportieren",
+    "searchPlaceholder": "Suche nach Kontakt, Immobilie oder Vertragsnr...",
+    "endingWithinDays": "Endet innerhalb von (Tagen)",
+    "sortLabel": "Verträge sortieren nach",
+    "sortAsc": "Aufsteigend sortieren",
+    "sortDesc": "Absteigend sortieren",
+    "sort": {
+      "endDate": "Enddatum",
+      "startDate": "Startdatum",
+      "rentAmount": "Mietbetrag"
+    },
+    "savedFilters": {
+      "button": "Gespeicherte Filter",
+      "namePlaceholder": "Filtername",
+      "save": "Speichern",
+      "delete": "{{name}} löschen"
+    }
   },
   "create": {
     "title": "Neuen Vertrag hinzufügen",
@@ -45,6 +63,8 @@
     "reopenTitle": "Diesen Vertrag in den Entwurfsstatus zurücksetzen",
     "duplicate": "Duplizieren",
     "duplicateTitle": "Eine Kopie dieses Vertrags im Entwurfsstatus erstellen",
+    "terminate": "Vertrag kündigen",
+    "terminateTitle": "Diesen aktiven Vertrag kündigen",
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "tabs": {
@@ -52,7 +72,8 @@
       "payments": "Zahlungen",
       "extensions": "Verlängerungen",
       "documents": "Dokumente",
-      "history": "Verlauf"
+      "leaseAgreement": "Mietvertrag",
+      "history": "Zeitstrahl"
     },
     "deleteTitle": "Vertrag löschen",
     "deleteMessage": "Sind Sie sicher, dass Sie diesen Vertrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -307,6 +328,7 @@
   },
   "form": {
     "contractType": "Vertragsart",
+    "leaseRegime": "Mietregime",
     "property": "Immobilie",
     "propertyAndParties": "Immobilie & Parteien",
     "propertyPlaceholder": "Immobilie auswählen...",
@@ -426,7 +448,8 @@
       "PENDING_SIGNATURE": "Warten auf Unterschrift",
       "ACTIVE": "Aktiv",
       "EXPIRED": "Abgelaufen",
-      "TERMINATED": "Gekündigt"
+      "TERMINATED": "Gekündigt",
+      "NOTICE_GIVEN": "Kündigung eingereicht"
     }
   },
   "adjustRent": {
@@ -605,6 +628,80 @@
     "adjustmentPayments_one": "{{count}} Anpassungszahlung für rückwirkende Änderungen erstellt",
     "adjustmentPayments_other": "{{count}} Anpassungszahlungen für rückwirkende Änderungen erstellt",
     "status": "Status"
+  },
+  "termination": {
+    "title": "Vertrag Kündigen",
+    "subtitle": "Kündigung aussprechen, um diesen Vertrag zu beenden",
+    "steps": {
+      "whoGivesNotice": "Wer Kündigt",
+      "noticeDateGround": "Kündigungsdatum & Grund",
+      "review": "Überprüfung",
+      "letterPreview": "Vorschau des Schreibens",
+      "confirmation": "Bestätigung"
+    },
+    "givenByValues": {
+      "LANDLORD": "Vermieter",
+      "TENANT": "Mieter"
+    },
+    "whoGivesNotice": {
+      "question": "Wer kündigt diesen Vertrag?",
+      "landlordDescription": "Sie beenden den Vertrag als Vermieter.",
+      "tenantDescription": "Der Mieter hat den Vertrag gekündigt.",
+      "next": "Weiter: Kündigungsdatum & Grund"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Kündigungsdatum",
+      "noticeDateHelp": "Das Datum, an dem die Kündigung ausgesprochen wurde oder wird.",
+      "groundCodeLabel": "Kündigungsgrund oder -code (optional)",
+      "groundCodeHelp": "Nur für bestimmte Kündigungsgründe erforderlich. Sie können dies im nächsten Schritt bestätigen.",
+      "next": "Weiter: Überprüfung"
+    },
+    "review": {
+      "computedEndDateLabel": "Berechnetes Enddatum",
+      "noticeDaysLabel": "Kündigungsfrist",
+      "noticeDaysValue": "{{count}} Tage",
+      "sourceLabel": "Wie dies berechnet wurde",
+      "source": {
+        "CATALOG_RULE": "Basierend auf den Kündigungsfristregeln Ihres Landes.",
+        "CONTRACT_FALLBACK": "Basierend auf der eigenen Kündigungsfrist dieses Vertrags.",
+        "HARDCODED_DEFAULT": "Verwendet einen Standardwert von 30 Tagen."
+      },
+      "groundRequiredWarning": "Dieser Kündigungsgrund erfordert einen Begründungscode.",
+      "groundCodeLabel": "Kündigungsgrund oder -code",
+      "selectGround": "Einen Grund auswählen",
+      "overrideToggle": "Früheres Enddatum verwenden",
+      "overrideHelp": "Leer lassen, um das oben berechnete Enddatum zu akzeptieren.",
+      "effectiveEndDateLabel": "Früheres Enddatum",
+      "overrideReasonLabel": "Begründung für das frühere Enddatum",
+      "overrideReasonPlaceholder": "Erklären Sie, warum dieser Vertrag früher endet als berechnet...",
+      "overrideReasonRequired": "Eine Begründung ist erforderlich, wenn das Enddatum früher als das berechnete Datum liegt.",
+      "loading": "Kündigungsfrist wird berechnet...",
+      "error": "Die Kündigungsfrist konnte nicht berechnet werden. Überprüfen Sie das Kündigungsdatum und versuchen Sie es erneut.",
+      "next": "Weiter: Vorschau des Schreibens"
+    },
+    "letterPreview": {
+      "title": "Vorschau des Kündigungsschreibens",
+      "description": "Ein formelles Kündigungsschreiben wird erstellt und als Dokument im Vertrag gespeichert.",
+      "givenByLabel": "Gekündigt von",
+      "noticeDateLabel": "Kündigungsdatum",
+      "groundCodeLabel": "Grund",
+      "computedEndDateLabel": "Berechnetes Enddatum",
+      "effectiveEndDateLabel": "Tatsächliches Enddatum",
+      "overrideReasonLabel": "Begründung der Änderung",
+      "inspectionDateLabel": "Termin für Wohnungsabnahme (optional)",
+      "notProvided": "Nicht angegeben",
+      "confirm": "Bestätigen & Kündigen",
+      "submitting": "Wird gekündigt..."
+    },
+    "confirmation": {
+      "title": "Kündigung Eingereicht",
+      "description": "Dieser Vertrag hat den Status Kündigung Eingereicht erreicht.",
+      "effectiveEndDateLabel": "Tatsächliches Enddatum",
+      "noticeLetterLabel": "Kündigungsschreiben",
+      "viewDocument": "Dokument ansehen",
+      "depositNote": "Das Rückgabedatum der Kaution wurde an das tatsächliche Enddatum angepasst.",
+      "backToContract": "Zurück zum Vertrag"
+    }
   },
   "card": {
     "start": "Start",
@@ -973,5 +1070,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Endet in {{days}} Tagen",
+  "leaseAgreement": {
+    "title": "Mietvertrag",
+    "description": "Wählen Sie die einzuschließenden Klauseln aus und erstellen Sie anschließend das Mietvertrags-PDF für diesen Vertrag.",
+    "empty": "Für das Land dieses Vertrags sind noch keine Klauseln konfiguriert.",
+    "required": "Erforderlich",
+    "saveSelection": "Auswahl speichern",
+    "generate": "Mietvertrag erstellen",
+    "saveAndGenerate": "Speichern und Mietvertrag erstellen",
+    "language": "Sprache des Mietvertrags",
+    "languagesLimited": "Mietverträge für {{country}} gibt es nur in den angezeigten Sprachen.",
+    "pinned": "Fixiert",
+    "moveUp": "{{title}} nach oben verschieben",
+    "moveDown": "{{title}} nach unten verschieben",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Noch nicht verfügbar",
+      "description": "Für dieses Land gibt es noch keinen Mietvertrag. Sie können den Vertrag weiter verwalten und einen unterschriebenen Mietvertrag hochladen.",
+      "action": "Zu Dokumenten"
+    },
+    "noCountry": {
+      "title": "Zuerst Land wählen",
+      "description": "Der Mietvertrag hängt vom Land der Immobilie ab. Fügen Sie der Immobilie zuerst ein Land hinzu.",
+      "action": "Immobilie bearbeiten"
+    },
+    "error": {
+      "title": "Klauseln nicht geladen",
+      "description": "Bei uns ist etwas schiefgelaufen. Bitte versuchen Sie es gleich noch einmal.",
+      "retry": "Erneut versuchen"
+    },
+    "errors": {
+      "notAvailableForCountry": "Für das Land dieser Immobilie ist noch kein Mietvertrag verfügbar. Laden Sie stattdessen unter Dokumente einen unterschriebenen Mietvertrag hoch.",
+      "noCountry": "Fügen Sie der Immobilie ein Land hinzu, bevor Sie den Mietvertrag verwenden."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Kurzzeitmiete",
+    "STUDENT_OR_MOBILITY": "Studenten- oder Mobilitätsmiete"
   }
 }

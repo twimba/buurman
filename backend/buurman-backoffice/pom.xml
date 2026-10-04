@@ -30,6 +30,10 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-notifications</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-letters</artifactId>
+        </dependency>
 
         <!-- Lombok -->
         <dependency>
@@ -54,6 +58,36 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Test-scoped dependencies are not transitive, so the integration base class
+             pulled in from buurman-core's test-jar needs these declared here too. -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -105,11 +139,14 @@
                                 <documentationProvider>none</documentationProvider>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
+                                <generateJsonIncludeAnnotations>false</generateJsonIncludeAnnotations>
+                                <generateJsonSetterNullsAnnotations>false</generateJsonSetterNullsAnnotations>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
                             </typeMappings>
                             <schemaMappings>
+                                <schemaMapping>DocumentLanguage=java.lang.String</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeTeamResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeUserResponse=com.buurman.dto.response.PageResponse</schemaMapping>
@@ -126,6 +163,7 @@
                                 <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
                                 <schemaMapping>BroadcastMessageIdentifier=com.buurman.domain.identifier.BroadcastMessageIdentifier</schemaMapping>
                                 <schemaMapping>ImpersonationSessionIdentifier=com.buurman.domain.identifier.ImpersonationSessionIdentifier</schemaMapping>
+                                <schemaMapping>LeaseClauseTemplateIdentifier=com.buurman.domain.identifier.LeaseClauseTemplateIdentifier</schemaMapping>
                                 <schemaMapping>PageResponseImpersonationSessionResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
@@ -166,6 +204,8 @@
                                 <importMapping>RentRegulationCountryResponse=com.buurman.dto.response.RentRegulationCountryResponse</importMapping>
                                 <importMapping>RentRegulationRegionResponse=com.buurman.dto.response.RentRegulationRegionResponse</importMapping>
                                 <importMapping>RentRegulationRuleResponse=com.buurman.dto.response.RentRegulationRuleResponse</importMapping>
+                                <importMapping>RentRegulationTenancyRuleResponse=com.buurman.dto.response.RentRegulationTenancyRuleResponse</importMapping>
+                                <importMapping>TenancyRuleTopic=com.buurman.domain.TenancyRuleTopic</importMapping>
                                 <importMapping>BulkImportResult=com.buurman.dto.response.BulkImportResult</importMapping>
                                 <importMapping>CountryRegulationRequestSummary=com.buurman.dto.response.CountryRegulationRequestSummary</importMapping>
                                 <importMapping>CountryRegulationRequester=com.buurman.dto.response.CountryRegulationRequester</importMapping>
@@ -247,6 +287,21 @@
                                 <importMapping>RateLimitConfigSummary=com.buurman.dto.response.backoffice.RateLimitConfigSummary</importMapping>
                                 <importMapping>RateLimitBucketSummaryResponse=com.buurman.dto.response.backoffice.RateLimitBucketSummaryResponse</importMapping>
                                 <importMapping>RateLimitBucketDeleteResponse=com.buurman.dto.response.backoffice.RateLimitBucketDeleteResponse</importMapping>
+                                <importMapping>LeaseKind=com.buurman.domain.LeaseKind</importMapping>
+                                <importMapping>LeaseClauseTemplateResponse=com.buurman.dto.response.LeaseClauseTemplateResponse</importMapping>
+                                <importMapping>UpsertLeaseClauseTemplateRequest=com.buurman.dto.request.backoffice.UpsertLeaseClauseTemplateRequest</importMapping>
+                                <importMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</importMapping>
+                                <importMapping>LeasePreviewContractType=com.buurman.domain.Contract.ContractType</importMapping>
+                                <importMapping>LeasePreviewPaymentFrequency=com.buurman.domain.Contract.PaymentFrequency</importMapping>
+                                <importMapping>LeasePreviewRentComponentType=com.buurman.domain.RentComponentType</importMapping>
+                                <importMapping>LeasePreviewSource=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse.Source</importMapping>
+                                <importMapping>LeasePreviewRentComponent=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.RentComponent</importMapping>
+                                <importMapping>LeasePreviewMoney=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.Money</importMapping>
+                                <importMapping>LeasePreviewSample=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.Sample</importMapping>
+                                <importMapping>LeasePreviewClauseChoice=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest.ClauseChoice</importMapping>
+                                <importMapping>LeasePreviewClause=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse.Clause</importMapping>
+                                <importMapping>LeaseAgreementPreviewRequest=com.buurman.dto.request.backoffice.LeaseAgreementPreviewRequest</importMapping>
+                                <importMapping>LeaseAgreementPreviewResponse=com.buurman.dto.response.backoffice.LeaseAgreementPreviewResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

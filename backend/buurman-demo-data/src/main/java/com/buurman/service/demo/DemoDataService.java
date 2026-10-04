@@ -102,10 +102,11 @@ public class DemoDataService {
 
     DemoDataContext ctx = new DemoDataContext();
 
-    // 1. Cleanup existing demo data
-    cleanup();
+    // 1. Cleanup existing demo data. Keycloak users are kept so their ids (the JWT subject) stay
+    // stable: recreating them would orphan every token already issued to a demo user.
+    cleanupDemoData();
 
-    // 2. Create Keycloak users (external, non-transactional)
+    // 2. Ensure Keycloak users exist (external, non-transactional); existing ones are reused
     keycloakSetup.createUsers(ctx);
 
     // 3. Generate database records (transactional)
@@ -123,7 +124,8 @@ public class DemoDataService {
       log.warn("Document generation failed (non-fatal): {}", e.getMessage());
     }
 
-    // 5. Force logout demo user so they get fresh session with reset data
+    // 5. Force logout demo user so they get fresh session with reset data (the access token stays
+    // valid until expiry and still resolves to the regenerated DB user via its stable subject)
     keycloakSetup.logoutDemoUser();
 
     long durationMs = clock.millis() - startTime;
@@ -190,7 +192,13 @@ public class DemoDataService {
         });
   }
 
+  /** Removes all demo data, including the demo users' Keycloak accounts. */
   public void cleanup() {
+    cleanupDemoData();
+    keycloakSetup.deleteUsers(new DemoDataContext());
+  }
+
+  private void cleanupDemoData() {
     log.info("Cleaning up existing demo data...");
 
     // Find demo team IDs
@@ -199,9 +207,6 @@ public class DemoDataService {
 
     if (demoTeamIds.isEmpty()) {
       log.info("No existing demo data found");
-      // Still try to clean up Keycloak users
-      DemoDataContext cleanupCtx = new DemoDataContext();
-      keycloakSetup.deleteUsers(cleanupCtx);
       return;
     }
 
@@ -214,10 +219,6 @@ public class DemoDataService {
 
     // Delete S3 files (non-transactional, after DB cleanup)
     deleteS3Files(s3Keys);
-
-    // Clean up Keycloak users
-    DemoDataContext cleanupCtx = new DemoDataContext();
-    keycloakSetup.deleteUsers(cleanupCtx);
 
     log.info("Demo data cleanup completed");
   }

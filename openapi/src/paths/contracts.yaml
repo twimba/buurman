@@ -587,17 +587,14 @@ collection:
     parameters:
       - name: status
         in: query
-        description: Filter by status
+        description: Filter by status — repeat the param to match multiple statuses
         required: false
         schema:
-          type: string
-          description: Current lifecycle status of the contract
-          enum:
-            - DRAFT
-            - ACTIVE
-            - EXPIRED
-            - TERMINATED
-            - PENDING_SIGNATURE
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractStatus'
+        style: form
+        explode: true
       - name: propertyIdentifier
         in: query
         description: Property identifier
@@ -610,6 +607,19 @@ collection:
         required: false
         schema:
           type: string
+      - name: search
+        in: query
+        description: Free-text search across contact name, property address/city, and contract identifier
+        required: false
+        schema:
+          type: string
+      - name: endingWithinDays
+        in: query
+        description: Only contracts whose effective end date falls within this many days from today
+        required: false
+        schema:
+          type: integer
+          format: int32
       - name: page
         in: query
         description: Page number (0-based)
@@ -2469,6 +2479,722 @@ payment-plans-cancel:
               $ref: '#/components/schemas/ProblemDetail'
       "409":
         description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+signature-requests:
+  get:
+    tags:
+      - Signatures
+    summary: List a document's signature requests
+    description: Returns every signature request ever raised for the given document, newest first, so a client can rehydrate the state of an in-flight request instead of offering to send a duplicate
+    operationId: listSignatureRequests
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+    responses:
+      "200":
+        description: The document's signature requests, newest first
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+  post:
+    tags:
+      - Signatures
+    summary: Send a document for e-signature
+    description: Sends the given document to the landlord and every tenant contract party with an email, in parallel, via the configured e-signature provider
+    operationId: createSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+    responses:
+      "201":
+        description: Signature request created and sent
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+signature-requests-item:
+  get:
+    tags:
+      - Signatures
+    summary: Get a signature request's status
+    description: Returns the current status of a signature request and every signer's status, for polling
+    operationId: getSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    responses:
+      "200":
+        description: Signature request status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+signature-requests-item-signing-links:
+  get:
+    tags:
+      - Signatures
+    summary: Get the signing links of a pending signature request
+    description: |
+      Live-fetches one signing link per signer from the signature provider. The links are bearer
+      credentials (anyone holding one can sign as that person), so nothing is stored, the response
+      is sent with Cache-Control no-store, and the links must never be logged or persisted.
+      Signers who already signed or declined have no signingUrl. Only TEAM_ADMIN and TEAM_EDITOR
+      may call this.
+    operationId: getSigningLinks
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    responses:
+      "200":
+        description: One entry per signer
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SignatureSigningLinkResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions (TEAM_VIEWER)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - the request already reached a final state, so there are no links
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "502":
+        description: The signature provider could not be reached
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+signature-requests-item-cancel:
+  post:
+    tags:
+      - Signatures
+    summary: Retract a signature request
+    description: Cancels a signature request that has not yet completed — the signers can no longer sign it, and the provider's audit trail (and, where supported, the signers themselves) is told why
+    operationId: cancelSignatureRequest
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: documentIdentifier
+        in: path
+        description: Document identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DocumentIdentifier'
+      - name: signatureRequestIdentifier
+        in: path
+        description: Signature request identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/SignatureRequestIdentifier'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CancelSignatureRequestRequest'
+    responses:
+      "200":
+        description: Signature request cancelled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequestResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - the request already reached a final state and can no longer be cancelled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+lease-clauses:
+  get:
+    tags:
+      - Lease Agreement
+    summary: Get resolved lease clauses
+    description: Returns the lease availability state for the contract's country and, when available, every lease clause that applies, combined with any per-contract overrides, in sort order with each clause's current inclusion state
+    operationId: getLeaseClauses
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+    responses:
+      "200":
+        description: Availability of a lease agreement for the contract plus the resolved clause list (empty when unavailable)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaseClausesResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+  put:
+    tags:
+      - Lease Agreement
+    summary: Update per-contract lease clause selection
+    description: Replaces the contract's lease clause overrides with the given selection and sort order. A non-optional clause cannot be excluded — the server rejects that with 400 regardless of what the client sends
+    operationId: updateLeaseClauses
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateContractLeaseClausesRequest'
+    responses:
+      "200":
+        description: Updated availability envelope with the resolved clause list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaseClausesResponse'
+      "400":
+        description: Bad request - validation error or malformed input, including an attempt to exclude a non-optional clause
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+lease-agreement:
+  post:
+    tags:
+      - Lease Agreement
+    summary: Generate and persist the lease agreement document
+    description: Renders the full lease agreement PDF from the contract's currently included clauses, uploads it to S3, and persists it as a contract document
+    operationId: generateLeaseAgreement
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: lang
+        in: query
+        description: >-
+          Document language (ISO 639-1 code, same set as the booklets). When omitted, the contract's
+          first supported document language is used. A country without a document in the requested
+          language falls back to its national language with a courtesy notice. An unsupported code
+          is rejected with 400.
+        required: false
+        schema:
+          type: string
+          enum: [en, nl, de, es, fr, pt, it, sv, fi, el, pl, da, nb]
+    responses:
+      "200":
+        description: Generated document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+timeline:
+  get:
+    tags:
+      - Contracts
+    summary: Get unified timeline
+    description: Get a merged, chronological feed of everything that happened to a contract — audit events, rent changes, extensions, documents, and signature requests
+    operationId: getContractTimeline
+    parameters:
+      - name: identifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TimelineEventResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+
+termination-preview:
+  get:
+    tags:
+      - Contracts
+    summary: Preview a contract termination's computed notice period
+    description: Pure computation, no persistence — resolves the notice period the same way `terminate` would, for the wizard's review step
+    operationId: previewContractTermination
+    parameters:
+      - name: identifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: givenBy
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [LANDLORD, TENANT]
+      - name: noticeDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TerminationPreviewResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+terminate:
+  post:
+    tags:
+      - Contracts
+    summary: Terminate contract
+    description: Give notice on an ACTIVE contract, computing the legally-required notice period and transitioning to NOTICE_GIVEN
+    operationId: terminateContract
+    parameters:
+      - name: identifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TerminateContractRequest'
+    responses:
+      "200":
+        description: Termination recorded, contract moved to NOTICE_GIVEN
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractTerminationResponse'
+      "400":
+        description: Bad request - validation error or malformed input (e.g. override without overrideReason)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - contract already has a termination on record
         content:
           application/json:
             schema:

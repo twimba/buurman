@@ -1,0 +1,244 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Italian courtesy translation of nl.html (a translation of Dutch law (Boek 7 BW), not Italian law); the Dutch
+  text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments,
+  th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>I sottoscritti:</p>
+  <p><strong th:text="${landlordName}">locatore</strong>, di seguito denominato «il locatore» (verhuurder), e</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">conduttore</strong>, di seguito
+    denominato (congiuntamente) «il conduttore» (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">il conduttore o i conduttori sottoscritti qui di seguito, di seguito
+    denominati (congiuntamente) «il conduttore» (huurder),</p>
+  <p>dichiarano di aver convenuto quanto stabilito nel presente contratto di locazione. Se il presente contratto
+    indica più di 1 conduttore, ciascuno di essi risponde in solido (hoofdelijk aansprakelijk) dell’adempimento di
+    tutte le obbligazioni del conduttore derivanti dal presente contratto.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Il locatore concede in locazione al conduttore, che lo accetta in locazione, l’immobile abitativo situato in
+    <strong th:text="${propertyAddress}">indirizzo</strong>, con le relative pertinenze immobiliari,
+    di seguito denominato «l’immobile locato» (het gehuurde).</p>
+  <p>Al presente contratto si applicano le disposizioni di legge sulla locazione di immobili abitativi (Libro 7,
+    Titolo 4, Sezione 5 del Codice civile olandese, Burgerlijk Wetboek). Nella misura in cui la legge stabilisca
+    che non si può derogare a tali disposizioni a danno del conduttore, esse prevalgono sulle pattuizioni
+    difformi del presente contratto.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Il presente contratto ha inizio il <strong th:text="${startDate}">data di inizio</strong>.</p>
+  <p th:if="${!fixedTerm}">Il contratto è concluso a tempo indeterminato.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Il contratto è concluso a tempo determinato<span th:if="${endDate != null}">, fino al
+      <strong th:text="${endDate}">data di fine</strong> incluso</span>. Una locazione abitativa conclusa a
+      tempo determinato non termina per il semplice decorso della durata della locazione. Ciascuna delle due parti
+      può recedere dalla locazione per un giorno convenuto per il pagamento del canone, ma non per un giorno anteriore al termine
+      del tempo determinato (art. 7:271, comma 1 del BW).</p>
+    <p>La situazione è diversa solo per una locazione di al massimo 2 anni con un conduttore appartenente a una
+      categoria individuata con regolamento del Governo olandese (algemene maatregel van bestuur) (art. 7:271, comma 2
+      del BW). In tal caso il locatore informa per iscritto il conduttore, non prima di 3 mesi e al più tardi
+      1 mese prima della scadenza della durata della locazione, del giorno in cui la locazione termina; se non lo
+      fa, la locazione è prorogata a tempo indeterminato dopo la scadenza della durata. Anche il conduttore può
+      recedere da tale locazione prima della scadenza della durata, per un giorno convenuto per il pagamento del
+      canone.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Il canone per il semplice godimento dell’immobile locato (canone base, kale huurprijs, art. 7:237, comma 2
+    del BW) ammonta a <strong th:text="${rentAmount}">importo</strong> <span th:text="${paymentFrequency}">al mese</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Inoltre il conduttore deve
+    corrispondere i compensi per le utenze e le spese di servizio (servicekosten) (si veda l’articolo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Nella misura in cui all’immobile locato si applichi un canone massimo legale, comprese le norme introdotte
+    dalla Wet betaalbare huur (legge sugli affitti accessibili) il 1° luglio 2024, il conduttore non deve più di
+    tale canone massimo. Il conduttore può, al più tardi 6 mesi dopo l’inizio di un contratto di locazione da lui
+    concluso per la prima volta con riguardo a questo immobile abitativo, chiedere alla commissione affitti
+    (huurcommissie) di pronunciarsi sulla congruità del canone convenuto (art. 7:249 del BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">All’adeguamento del canone si applica quanto stabilito al riguardo nel presente contratto (si veda l’articolo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Il locatore può adeguare il canone 1 volta all’anno, per la prima volta 12 mesi dopo la data di inizio
+    del presente contratto. Il locatore comunica l’adeguamento al conduttore, indicando il canone vigente e il
+    nuovo canone nonché la data di decorrenza, tempestivamente e per iscritto.</p>
+  <p>L’adeguamento non è mai superiore all’aumento massimo del canone consentito dalla legge che si applica
+    all’immobile locato alla data di decorrenza dell’adeguamento. Se questa clausola comporta un aumento superiore
+    a quello consentito dalla legge, la clausola è nulla in tale misura e il canone si considera aumentato
+    dell’aumento consentito (art. 7:248 del BW). Nella misura in cui la legge lo consenta, il conduttore può
+    chiedere alla commissione affitti (huurcommissie) di pronunciarsi su un aumento.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Oltre al canone, il conduttore versa, per ogni periodo di pagamento, un acconto sui costi delle
+    utenze con contatore individuale e sulle spese di servizio (servicekosten) (art. 7:237, comma 3 del BW),
+    come indicato nel presente contratto.</p>
+  <p>Ogni anno, al più tardi 6 mesi dopo la fine di un anno solare, il locatore consegna al conduttore un
+    rendiconto, suddiviso per tipo, dei costi addebitati in tale anno solare, con indicazione del metodo di
+    calcolo (art. 7:259, comma 2 del BW). Quanto pagato in più o in meno a titolo di acconti viene conguagliato
+    tra le parti dopo la consegna di tale rendiconto.</p>
+  <p>Se le parti non raggiungono un accordo sui costi dovuti, ciascuna di esse può chiedere alla
+    commissione affitti (huurcommissie) di pronunciarsi al riguardo (art. 7:260 del BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">All’inizio della locazione il conduttore versa un deposito cauzionale (waarborgsom) di
+    <strong th:text="${depositAmount}">importo</strong>.</p>
+  <p th:if="${depositAmount == null}">All’inizio della locazione il conduttore versa un deposito cauzionale (waarborgsom)
+    pari all’importo convenuto per iscritto tra le parti.</p>
+  <p>Il deposito cauzionale serve a garanzia dell’adempimento di quanto convenuto nel presente contratto e
+    ammonta al massimo a 2 volte il canone base (kale huurprijs) (art. 7:261b, commi 1 e 2 del BW).</p>
+  <p>Il locatore restituisce il deposito cauzionale entro 14 giorni dalla cessazione del contratto di locazione.
+    Se vi è un danno all’immobile locato di cui il conduttore è responsabile, o se il conduttore deve ancora
+    pagare canone, spese di servizio o un compenso per la prestazione energetica
+    (energieprestatievergoeding), il locatore restituisce il residuo entro 30 giorni dalla cessazione,
+    dopo aver detratto i costi di ripristino comprovatamente sostenuti ovvero, a seconda dei casi, gli importi
+    ancora dovuti. Il locatore informa per iscritto il conduttore di ogni detrazione, con un’analitica
+    specificazione dei costi (art. 7:261b, commi 3 e 4 del BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Per
+    l’accertamento dei danni rileva la riconsegna (si veda l’articolo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Il conduttore paga il canone<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (si veda l’articolo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> e gli acconti sulle spese di servizio</span>
+    <span th:text="${paymentFrequency}">al mese</span><span th:if="${paymentDueDay == 1}"> in via
+    anticipata</span>,
+    <span th:if="${paymentDueDay != null}">al più tardi il giorno <strong th:text="${paymentDueDay}">1</strong> del
+      mese in cui inizia il periodo di pagamento</span><span th:if="${paymentDueDay == null}">al più tardi il giorno di pagamento
+      convenuto tra le parti</span>, mediante bonifico sul conto che il locatore ha
+    indicato a tal fine per iscritto.</p>
+  <p>Se il conduttore non paga tempestivamente, è tenuto agli interessi legali sull’importo in arretrato
+    e rimborsa le spese stragiudiziali di recupero crediti solo nella misura in cui la legge
+    lo consenta.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Il conduttore utilizza l’immobile locato esclusivamente come abitazione e, quanto al suo uso, si comporta
+    da buon conduttore (goed huurder) (art. 7:213 del BW). Il conduttore e le persone che si trovano
+    nell’immobile locato con il suo consenso non arrecano disturbo ai vicini.</p>
+  <p>Le modifiche alla disposizione o alla forma dell’immobile locato che alla fine della locazione non possano
+    essere eliminate senza costi rilevanti sono apportate dal conduttore solo previo consenso scritto del
+    locatore. Il locatore presta il consenso entro 8 settimane in ogni caso se la
+    modifica non pregiudica la possibilità di rilocare e non comporta una diminuzione di valore dell’immobile
+    locato (art. 7:215 del BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Il conduttore non concede in uso a terzi l’immobile locato, in tutto o in parte, salvo che il locatore
+    vi abbia previamente acconsentito per iscritto.</p>
+  <p>Se il conduttore ha la residenza principale nell’immobile locato, quando questo sia un’abitazione
+    autonoma, è legalmente autorizzato a concederne in uso una parte a terzi (art. 7:244 del BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Su richiesta del conduttore, il locatore elimina i difetti (gebreken) dell’immobile locato, salvo che ciò sia
+    impossibile o richieda spese che, nelle circostanze date, non possano ragionevolmente essere pretese dal
+    locatore (art. 7:206 del BW). Il conduttore segnala un difetto al locatore il più presto possibile.</p>
+  <p>Il conduttore esegue a proprie spese le piccole riparazioni (kleine herstellingen), salvo che siano divenute
+    necessarie perché il locatore è venuto meno al proprio obbligo di eliminare i difetti (art. 7:217 del BW).
+    Quali riparazioni siano considerate piccole risulta dalla relativa disciplina legale.</p>
+  <p>Se il locatore è in mora nell’eliminazione di un difetto, il conduttore può eliminare egli stesso il difetto
+    e rivalersi sul locatore per i costi ragionevoli, se lo desidera detraendoli dal
+    canone (art. 7:206, comma 3 del BW). Non si può derogare a tali norme a danno del conduttore
+    (art. 7:242 del BW).</p>
+  <p>Il conduttore consente al locatore di eseguire lavori urgenti sull’immobile locato, fatti salvi i suoi
+    diritti legali alla riduzione del canone, alla risoluzione e al risarcimento del danno
+    (art. 7:220, comma 1 del BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>In caso di nuova locazione di un’abitazione esistente è obbligatorio un attestato di prestazione energetica
+    (energielabel) valido, ai sensi del Besluit bouwwerken leefomgeving (decreto sulle costruzioni e
+    sull’ambiente di vita). Il locatore consegna al conduttore, al più tardi alla conclusione del presente
+    contratto, una copia dell’attestato di prestazione energetica valido dell’immobile locato. Un attestato è
+    valido fino alla data in esso indicata.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>All’inizio della locazione le parti redigono congiuntamente una descrizione dello stato dell’immobile locato
+    (opnamerapport). Entrambe le parti sottoscrivono la descrizione e ciascuna ne riceve un esemplare.</p>
+  <p>Alla fine della locazione il conduttore rimette l’immobile locato a disposizione del locatore, nello stato
+    in cui lo ha accettato secondo tale descrizione, ad eccezione delle modifiche e
+    aggiunte consentite e di ciò che è perito o si è deteriorato per vetustà. Se non è stata redatta alcuna
+    descrizione, si presume, salvo prova contraria, che il conduttore abbia ricevuto l’immobile locato nello stato in
+    cui si trova alla fine della locazione (art. 7:224 del BW).</p>
+  <p>Prima della fine della locazione le parti effettuano un sopralluogo preliminare congiunto, affinché il
+    conduttore possa ancora riparare da sé eventuali difetti, e alla riconsegna un sopralluogo
+    finale.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Il conteggio del deposito cauzionale segue
+    successivamente (si veda l’articolo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Il recesso dal presente contratto avviene mediante atto di ufficiale giudiziario
+    (deurwaardersexploot) o mediante lettera raccomandata, per un giorno convenuto per il pagamento del canone
+    (art. 7:271, commi 3 e 4 del BW).</p>
+  <p>Il conduttore osserva un preavviso pari al tempo intercorrente tra 2 giorni di pagamento
+    consecutivi, ma non inferiore a 1 mese né superiore a 3 mesi (art. 7:271, comma 6, lettera a
+    del BW).</p>
+  <p th:if="${fixedTerm}">Se la locazione è conclusa a tempo determinato, in deroga a quanto precede nessuna delle due parti può
+    recedere per un giorno anteriore al termine del tempo determinato<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (si veda l’articolo <span th:text="${refs['term']}"></span>)</span>;
+    i preavvisi del presente articolo si applicano allora al recesso per tale termine o per un giorno di
+    pagamento successivo (art. 7:271, comma 1 del BW). Solo in una locazione temporanea ai sensi
+    dell’art. 7:271, comma 2 del BW il conduttore può recedere anche prima.</p>
+  <p>Il locatore può recedere solo per uno dei motivi che la legge a tal fine elenca (art. 7:274,
+    comma 1 del BW) e indica tali motivi nel recesso; un recesso per altri motivi è nullo. Il
+    preavviso del locatore è di almeno 3 mesi, prolungato di 1 mese per ogni anno in cui il conduttore
+    abbia avuto il godimento ininterrotto dell’immobile locato in forza di un contratto, fino a un
+    massimo di 6 mesi. Nel recesso il locatore chiede al conduttore di comunicare entro
+    6 settimane se acconsente alla cessazione (art. 7:271, commi 5 e 6, lettera b del BW). Se il conduttore non
+    acconsente per iscritto, il contratto rimane in vigore finché il giudice non abbia deciso in via definitiva
+    su una domanda del locatore (art. 7:272 del BW).</p>
+  <p>Le parti possono anche, dopo l’inizio della locazione, porvi fine di comune accordo
+    (art. 7:271, comma 10 del BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Alla riconsegna si applica quanto stabilito al riguardo nel presente contratto (si veda l’articolo <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Il deposito cauzionale è restituito come
+    previsto nel presente contratto (si veda l’articolo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Il locatore tratta i dati personali del conduttore solo nella misura necessaria alla conclusione e
+    all’esecuzione del presente contratto e all’adempimento di obblighi di legge, in conformità al
+    Regolamento generale sulla protezione dei dati (RGPD; in olandese: Algemene verordening
+    gegevensbescherming, AVG, Regolamento (UE) 2016/679). Il locatore non conserva tali dati più a lungo
+    di quanto necessario a tale scopo.</p>
+  <p>Il conduttore può esercitare nei confronti del locatore i propri diritti ai sensi del RGPD, tra cui il
+    diritto di accesso, rettifica e cancellazione dei propri dati personali, e può proporre reclamo
+    all’autorità di controllo, nei Paesi Bassi l’Autoriteit Persoonsgegevens (autorità olandese per la protezione
+    dei dati).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Il presente contratto è disciplinato dal diritto olandese.</p>
+  <p>Le controversie sulle quali la commissione affitti (huurcommissie) può pronunciarsi secondo la legge, come
+    quelle relative alla congruità del canone e alle spese di servizio, possono essere sottoposte dalle parti
+    alla commissione affitti. Le parti si considerano d’accordo su quanto la commissione affitti ha stabilito
+    nella propria decisione, salvo che una di esse, entro 8 settimane dall’invio di una copia della
+    decisione, chieda una decisione al giudice (art. 7:262 del BW). Le altre controversie sono sottoposte al
+    giudice competente.</p>
+</div>
+
+</body>
+</html>

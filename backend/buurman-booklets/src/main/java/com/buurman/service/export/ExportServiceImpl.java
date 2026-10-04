@@ -4,11 +4,13 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -220,13 +222,25 @@ public class ExportServiceImpl implements ExportService {
 
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
-  public byte[] generateContractsCSV(UUID teamId) {
-    return withMetrics("contracts_csv", () -> contractCsvExporter.generate(teamId));
+  public byte[] generateContractsCSV(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
+    return withMetrics(
+        "contracts_csv",
+        () -> contractCsvExporter.generate(teamId, status, search, endingWithinDays));
   }
 
   @Override
-  public byte[] generateContractsExcel(UUID teamId) {
-    return withMetrics("contracts_excel", () -> contractExcelExporter.generate(teamId));
+  public byte[] generateContractsExcel(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
+    return withMetrics(
+        "contracts_excel",
+        () -> contractExcelExporter.generate(teamId, status, search, endingWithinDays));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {

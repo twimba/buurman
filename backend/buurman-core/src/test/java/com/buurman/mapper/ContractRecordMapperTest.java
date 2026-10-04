@@ -96,6 +96,7 @@ class ContractRecordMapperTest {
       assertThat(contract.getCreatedBy()).isEqualTo(CREATED_BY);
       assertThat(contract.getUpdatedBy()).isEqualTo(UPDATED_BY);
       assertThat(contract.getDeletedAt()).isEmpty();
+      assertThat(contract.getLeaseRegime()).isEqualTo(com.buurman.domain.LeaseRegime.SHORT_TERM);
     }
 
     @Test
@@ -436,6 +437,7 @@ class ContractRecordMapperTest {
     record.setTeamId(TEAM_ID);
     record.setPropertyId(PROPERTY_ID);
     record.setUnitId(UNIT_ID);
+    record.setLeaseRegime("SHORT_TERM");
     record.setContractType("FIXED_TERM");
     record.setStartDate(LocalDate.of(2026, 1, 1));
     record.setEndDate(LocalDate.of(2027, 1, 1));

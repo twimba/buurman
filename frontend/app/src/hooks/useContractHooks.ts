@@ -17,7 +17,6 @@ import {
   getContractDocuments,
   uploadContractDocument,
   deleteContractDocument,
-  getContractAuditLog,
   generatePayments,
   getMetadataSchema,
   addParty,
@@ -32,6 +31,7 @@ import {
   getContractPaymentPlans,
   createContractPaymentPlan,
   cancelContractPaymentPlan,
+  getContractTimeline,
 } from '../generated/api/contracts/contracts';
 import {
   CreateContractRequest,
@@ -133,6 +133,10 @@ export const useUpdateContract = (id: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.contracts.auditLog(id),
+      });
+      // The lease availability depends on the contract's country.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.leaseClauses(id),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.all(),
@@ -338,14 +342,6 @@ export const useDeleteContractDocument = (contractId: string) => {
         queryKey: queryKeys.contracts.auditLog(contractId),
       });
     },
-  });
-};
-
-export const useContractAuditLog = (contractId: string | undefined) => {
-  return useQuery({
-    queryKey: queryKeys.contracts.auditLog(contractId),
-    queryFn: () => getContractAuditLog(contractId ?? ''),
-    enabled: !!contractId,
   });
 };
 
@@ -606,5 +602,13 @@ export const useCancelPaymentPlan = (
       invalidateAfterPlanChange(queryClient, contractId);
       trackEvent(AnalyticsEvent.PAYMENT_PLAN_CANCELLED);
     },
+  });
+};
+
+export const useContractTimeline = (contractId: string | undefined) => {
+  return useQuery({
+    queryKey: queryKeys.contracts.timeline(contractId),
+    queryFn: () => getContractTimeline(contractId ?? ''),
+    enabled: !!contractId,
   });
 };

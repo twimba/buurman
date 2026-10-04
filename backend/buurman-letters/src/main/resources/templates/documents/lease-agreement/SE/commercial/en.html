@@ -1,0 +1,378 @@
+<!--
+  legal-basis: Jordabalk (1970:994), 12 kap. Hyra (hyreslagen), consolidated text "Andrad t.o.m. SFS 2026:1498" read
+               in full on www.riksdagen.se and checked against the amendment register (SFSR) on rkrattsbaser.gov.se:
+               12 kap. 1, 1 b, 1 d, 2, 3, 4, 6, 7, 8, 9, 11, 15, 19, 20, 23, 24, 26, 28, 32, 36, 39, 40, 42, 44, 56,
+               57, 57 a, 58, 58 a, 58 b, 59, 61, 63, 66, 69, 70, 71 (the rules of 12 kap. that concern lokaler; the
+               residential rules of 45-55 f are not applied). Recent amendments reflected: Lag (2024:313) (in force
+               2024-07-01: 42, 63), Lag (2026:773) (prop. 2025/26:187, in force 2026-07-01: 1-1 f, 69, 70), Lag
+               (2026:844) (in force 2026-07-02: 26).
+               Mervardesskattelag (2023:200), consolidated to SFS 2026:1025: 10 kap. 35 § (exemption for letting of
+               real property), 12 kap. 5 and 8 §§ (frivillig beskattning) - rkrattsbaser.gov.se.
+               Lag (1973:188) om arrendenamnder och hyresnamnder, 4 § (medling, local competence of the hyresnamnd).
+               Lag (2006:985) om energideklaration for byggnader, consolidated to SFS 2026:747: 5, 6 b, 7, 13 §§.
+               Rantelagen (1975:635) (cited generally). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); Lag (2018:218) med kompletterande bestammelser till EU:s dataskyddsforordning.
+               Pending: Lag (2026:1498) (new 12 kap. 22 a §, county administrative boards) enters into force
+               2027-01-01; Lag (2026:1025) changes 8 kap. 15 § of the VAT act on 2026-11-20; neither changes the
+               clauses of this document.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against www.riksdagen.se and rkrattsbaser.gov.se (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in sv.html, never spelled out (sv "9 månader" is "9 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of sv.html; the Swedish text is authoritative. It states Swedish law (jordabalken,
+  the Land Code, Chapter 12, rules on commercial premises) in English and is not the law of any other country.
+  Draft text, not vetted by legal counsel. Only prose differs from sv.html: fragments, th: expressions and
+  attributes are identical (enforced by LeaseDocumentFidelityTest). Citations are written "(Land Code, Chapter 12,
+  section 58, paragraph 1)": the chapter before the section, every section with its own "section", the stycke as
+  "paragraph" and the punkt as "point". Each clause-<key> fragment holds only the clause body; the shell supplies
+  article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease of commercial premises has been concluded between the following parties.</p>
+  <p>Landlord: <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;
+    (hyresvärden). Company registration number (organisationsnummer): ______________________________. VAT
+    registration number: ______________________________. Authorised signatory or representative:
+    ______________________________.</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Tenant: <strong th:text="${tenantNames}">tenant</strong>,
+    hereinafter &ldquo;the tenant&rdquo; (hyresgästen).</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">Tenant: the tenant or tenants who sign this agreement, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (hyresgästen).</p>
+  <p>Company registration number of the tenant: ______________________________. VAT registration number:
+    ______________________________. Authorised signatory or representative: ______________________________.</p>
+  <p>Where several persons are tenants, the parties agree that they are jointly and severally liable for all
+    obligations under this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the premises at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the premises&rdquo;.</p>
+  <p>Property designation, floor and floor area of the premises: ______________________________. Spaces included in
+    the letting (for example storage, parking spaces or common areas): ______________________________.
+    Drawing or description annexed to this agreement: ______________________________.</p>
+  <p>This agreement is governed by Chapter 12 of the Land Code (jordabalken, JB; the Tenancy Act, hyreslagen).
+    Commercial premises (lokal) means premises other than a dwelling (Land Code, Chapter 12, section 1 b,
+    paragraph 2). Contract terms that conflict with a provision of Chapter 12 of the Land Code have no effect
+    against the tenant or against a person entitled to take the tenant&rsquo;s place, unless otherwise provided
+    (Land Code, Chapter 12, section 1 d). The lease must be drawn up in writing if the landlord or the tenant so
+    requests (Land Code, Chapter 12, section 2, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The premises are let to be used for the following business: ______________________________. The tenant is
+    responsible for obtaining the official permits that the business requires.</p>
+  <p>The tenant may not use the premises for any purpose other than the intended one unless the Regional Rent
+    Tribunal (hyresnämnden) grants permission. Such permission must be granted if the tenant has held the premises
+    for longer than 2 years and has good reasons for a change of use and the landlord has no justified reason to
+    oppose it. The permission may be subject to conditions (Land Code, Chapter 12, section 23, paragraph 2).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy begins on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The lease runs until further notice (for an indefinite term) and must be terminated by
+    notice in order to end (Land Code, Chapter 12, section 3, paragraph 1).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The lease is concluded for a fixed term<span th:if="${endDate != null}"> up to and including
+      <strong th:text="${endDate}">end date</strong></span>. A fixed-term lease ends when the term expires, unless
+      otherwise agreed. Where the tenancy has lasted more than 9 months in a row, however, the lease must always be
+      terminated by notice in order to end (Land Code, Chapter 12, section 3, paragraph 2).</p>
+    <p>If the lease is not terminated in time, it is extended by ______________ at a time (extension period). If the
+      lease contains no provision on the effect of a failure to give notice and is not terminated by the end of the
+      term although notice is required, it is deemed extended for an indefinite term (Land Code, Chapter 12,
+      section 3, paragraph 3, point 1).</p>
+    <p>The lease is also deemed extended for an indefinite term if the tenant, although the lease has ended without
+      notice, has continued to use the premises 1 month after the end of the term without the landlord having
+      requested the tenant to move out (Land Code, Chapter 12, section 3, paragraph 3, point 2).</p>
+  </th:block>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Termination is governed by this
+    agreement (see Article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (base rent) is <strong th:text="${rentAmount}">amount</strong>
+    (<span th:text="${paymentFrequency}">per month</span>), excluding value added tax.<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> Supplements to the rent are governed separately by
+    this agreement (see Article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent for commercial premises must be stated as a fixed amount in the lease, to the extent that it does not
+    include charges referred to in Chapter 12, section 19, paragraph 1, of the Land Code. A term providing that the
+    rent is payable in an amount bearing a certain relation to the tenant&rsquo;s business income (turnover rent,
+    omsättningshyra) is, however, valid (Land Code, Chapter 12, section 19, paragraph 3). Turnover rent, if the
+    parties have agreed on it: ______________________________.</p>
+  <p>Where an agreement has been made in breach of these provisions, the rent is payable in an amount that is
+    reasonable having regard primarily to the parties&rsquo; intentions and the other circumstances when the
+    agreement was made (Land Code, Chapter 12, section 19, paragraph 5).<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> Value added tax is governed by this agreement (see
+    Article <span
+    th:text="${refs['vat']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by this agreement (see Article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>If the lease is concluded for a fixed term and the term is at least 3 years, a term providing that the rent is
+    payable in an amount determined on another basis of calculation, for example an index, is also valid (Land Code,
+    Chapter 12, section 19, paragraph 3). Only on that condition does the following index clause apply: the rent is
+    adjusted annually on ______________ in proportion to the change in the consumer price index (KPI) published by
+    Statistics Sweden (Statistiska centralbyrån), with the base month ______________; the rent may not fall below
+    the base rent.</p>
+  <p>If the lease runs until further notice or the term is shorter than 3 years, this agreement contains no index
+    clause; the rent may then be changed by agreement between the parties or in connection with an extension of the
+    tenancy.<span class="clause-ref" data-ref="renewal"
+    th:if="${refs['renewal']}"> The terms of extension are governed by this agreement (see Article <span
+    th:text="${refs['renewal']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the base rent, the tenant pays the following supplements, with their basis of calculation:
+    heating ______, cooling ______, hot water ______, electricity ______, water and sewerage ______, other
+    ______________________________.</p>
+  <p>If a cost relating to the heating, cooling, hot water or electricity supply of the premises can be charged to the
+    tenant on the basis of individual metering, the charge for that cost must be calculated on the basis of the
+    metered consumption (Land Code, Chapter 12, section 19, paragraph 4). Other supplements must, like the base rent,
+    meet the requirements of Chapter 12, section 19, paragraph 3, of the Land Code.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of tenancies of real property is exempt from value added tax (Chapter 10, section 35, paragraph 1,
+    of the Value Added Tax Act (mervärdesskattelagen, 2023:200), ML). The letting may, among other cases, be covered by
+    voluntary taxation (frivillig beskattning) if the tenant rents the premises for permanent use in a business whose
+    transactions give a right of deduction or of refund under the provisions referred to in Chapter 12, section 5 of
+    the VAT Act; this does not apply, however, if the letting concerns a permanent home. A landlord who opts for
+    voluntary taxation by stating VAT on an invoice is liable to pay VAT on the letting (VAT Act, Chapter 12,
+    section 8, paragraph 1).</p>
+  <p>The landlord has opted or intends to opt for voluntary taxation of the premises: yes ______ / no ______. In that
+    case the tenant pays VAT at the applicable rate in addition to the rent and the supplements. The tenant must
+    inform the landlord without delay of any change in the use of the premises that may affect the voluntary
+    taxation.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">As security for the tenant&rsquo;s obligations under this agreement, the tenant
+    provides security (a deposit or a bank guarantee) of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">As security for the tenant&rsquo;s obligations under this agreement, the tenant
+    provides security (a deposit, a bank guarantee or a guarantee) of the following amount:
+    ______________________________.</p>
+  <p>The security is provided by ______________ and is returned or repaid after the tenancy has ended and the
+    premises have been vacated, deducting claims that have fallen due which the landlord has against the tenant
+    arising from the tenancy.</p>
+  <p>Where a pledge or a guarantee has been given as security for the performance of the lease and the security
+    deteriorates, the tenant must, on demand, provide new security with which the landlord can reasonably be
+    satisfied. If the tenant does not do so within 1 month, the landlord may terminate the lease (Land Code, Chapter
+    12, section 28).</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The rent and the supplements are paid in advance and fall due <span th:if="${paymentDueDay != null}">on day
+    <strong th:text="${paymentDueDay}">1</strong> of each payment period</span><span
+    th:if="${paymentDueDay == null}">no later than the last weekday before the start of each payment period</span>
+    (<span th:text="${paymentFrequency}">per month</span>), into the following account (bankgiro, plusgiro or
+    bank account): ______________________________.</p>
+  <p>If no agreement has been made on when the rent is to be paid, the rent must be paid no later than the last
+    weekday before the start of each calendar month (Land Code, Chapter 12, section 20, paragraph 1). Payment may
+    always be made through a bank or another similar payment service provider (Land Code, Chapter 12, section 20,
+    paragraph 2).</p>
+  <p>If the tenant does not pay on time, the landlord is entitled to default interest under the Interest Act
+    (räntelagen, 1975:635). The tenancy is forfeited if the tenant is more than 2 working days late in paying the
+    rent after the due date (Land Code, Chapter 12, section 42, paragraph 1, point 2). If the rent is to be paid in
+    advance for a period longer than 1 month, this applies only if the tenant is more than 2 working days late in
+    paying the rent attributable to the calendar month after the start of that month or, as regards the rent for the
+    first calendar month of the tenancy, after the due date (Land Code, Chapter 12, section 42, paragraph 2).</p>
+  <p>If the landlord has terminated the lease because of the delay, the tenant may not be evicted from the premises
+    on account of the delay if the rent is paid within 2 weeks after the tenant has been served with a notification
+    that the tenant will regain the tenancy by paying the rent, subject to the other conditions set out in Chapter
+    12, section 44 of the Land Code.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>On the date of entry the landlord must provide the premises in such a condition that, according to the general
+    view in the locality, they are fully usable for their intended purpose, unless a better condition has been
+    agreed; for commercial premises, however, the parties may agree on a lower condition (Land Code, Chapter 12,
+    section 9). During the term of the lease, the landlord must keep the premises in that condition, unless otherwise
+    agreed (Land Code, Chapter 12, section 15, paragraph 1). If the premises have been let in their existing
+    condition, Chapter 12, section 11, paragraph 2, of the Land Code applies.</p>
+  <p>Agreed allocation of maintenance between the parties (for example the tenant&rsquo;s responsibility for fittings,
+    surfaces and installations for the business): ______________________________. For commercial premises, an
+    agreement extending the tenant&rsquo;s liability for damage beyond what is provided in Chapter 12,
+    section 24, paragraphs 1-4, of the Land Code, is valid (Land Code, Chapter 12, section 24, paragraph 5).</p>
+  <p>The tenant must take good care of the premises and notify the landlord of damage and defects in the manner set
+    out in Chapter 12, section 24, paragraph 2, of the Land Code. On request, the landlord is entitled to immediate
+    access to the premises to carry out necessary supervision or improvement work that cannot be postponed without
+    damage (Land Code, Chapter 12, section 26, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant may make alterations and installations in the premises only with the landlord&rsquo;s written
+    consent. Works to which the landlord has consented: ______________________________. When the tenancy ends, the
+    tenant must restore the premises to their original condition, unless otherwise agreed:
+    ______________________________.</p>
+  <p>If the tenant has suffered a loss because the tenancy has ended and the loss is connected with the tenant having
+    paid for an alteration of the premises, the loss is taken into account in compensation under Chapter 12,
+    section 58 b, paragraph 2, of the Land Code only if the landlord consented to the alteration or the tenant
+    entered into
+    the lease on the basis that the tenant would be allowed to carry out the alteration.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not transfer the tenancy without the landlord&rsquo;s consent, unless otherwise provided by
+    Chapter 12, section 36 of the Land Code (Land Code, Chapter 12, section 32, paragraph 1). If consent is refused
+    without reasonable cause, or if the landlord gives no answer within 3 weeks after consent was requested, the
+    tenant may terminate the lease (Land Code, Chapter 12, section 32, paragraph 2).</p>
+  <p>A person who rents premises in order to use them wholly or to a substantial extent for trade, crafts, industry
+    or another business may transfer the tenancy to the person who is to take over the business if the Regional Rent
+    Tribunal grants permission for the transfer. Permission must be granted if the landlord has no justified reason
+    to oppose the transfer; if the tenant has held the premises for less than 3 years, permission may be granted only
+    if there are exceptional reasons. The permission may be subject to conditions (Land Code, Chapter 12,
+    section 36).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not, without the landlord&rsquo;s consent, sublet the premises or otherwise make them available
+    second-hand to another person for independent use (Land Code, Chapter 12, section 39, paragraph 1), unless the
+    Regional Rent Tribunal grants permission under Chapter 12, section 40 of the Land Code.</p>
+  <p>The tenancy is forfeited if the tenant, without the necessary consent or permission, transfers the tenancy,
+    otherwise puts someone else in the tenant&rsquo;s place or sublets the premises and, after being told to do so,
+    does not without delay either remedy the situation or apply for permission and have the application granted
+    (Land Code, Chapter 12, section 42, paragraph 1, point 4).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Throughout the term of the lease, the tenant must hold customary business and liability insurance for the
+    business and for the tenant&rsquo;s property in the premises. The landlord must keep the property insured. The
+    tenant must produce the insurance certificate on request.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The owner of a building that is let, wholly or in part, under a right of use must ensure that an energy
+    performance certificate (energideklaration) has been drawn up for the building (section 5, paragraph 1, point 3,
+    of the Energy Performance of Buildings Act (2006:985)). The owner must ensure that the most recent energy
+    performance certificate is displayed in a clearly visible place in the building, shown to a prospective user and
+    handed over to a new user (section 13, paragraph 1,
+    of the Energy Performance of Buildings Act). An energy performance certificate may be used for 10 years after it
+    was drawn up (section 6 b of the same Act). Exceptions may follow from regulations issued under section 7 of the
+    same Act.</p>
+  <p>The energy performance certificate of the building has been shown to the tenant and a copy has been handed over.
+    Drawn up on: ______________; energy performance: ______________; or reason why there is no certificate:
+    ______________________________.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The tenant takes possession of the premises on <strong th:text="${startDate}">date of entry</strong>. The
+    parties inspect the premises together at entry and when the tenancy ends and record their condition in an
+    inspection report signed by both parties.</p>
+  <p>When the term of the lease has expired, the tenant must vacate the premises no later than the following day and,
+    by 12 o&rsquo;clock on that day at the latest, make them available to the person who is to take possession of
+    them. If the day on which the premises are to be taken over or vacated falls on a Sunday, another public holiday,
+    a Saturday, Midsummer Eve, Christmas Eve or New Year&rsquo;s Eve, this takes place instead on the next weekday,
+    unless otherwise agreed (Land Code, Chapter 12, section 7).</p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>The tenant has indirect security of tenure (indirekt besittningsskydd). If the landlord has terminated the lease
+    and refuses to extend the tenancy, or if an extension does not come about because the tenant does not accept the
+    terms that the landlord demands for an extension, the tenant is entitled to compensation, except in the cases set
+    out in Chapter 12, section 57, paragraph 1, of the Land Code. A demanded rent is not to be regarded as reasonable
+    in that respect if it exceeds the rent that the premises can be expected to command on the open market at the end
+    of the term (market rent, marknadshyra, Land Code, Chapter 12, section 57 a, paragraph 1). The right to
+    compensation also applies if the tenant has terminated the lease under Chapter 12, section 58 a of the Land
+    Code (Land Code, Chapter 12, section 57, paragraph 2).</p>
+  <p>The compensation always amounts to at least the annual rent for the premises under the terminated lease; the
+    landlord must compensate to a reasonable extent a loss not covered by that amount (Land Code, Chapter 12,
+    section 58 b). If the tenancy is to end after a notice of termination, the Regional Rent Tribunal may, on
+    application,
+    grant a reasonable postponement of the move, but for at most 2 years from the end of the term; the application
+    must have reached the Regional Rent Tribunal before the end of the term (Land Code, Chapter 12, section 59).</p>
+  <p>The security of tenure does not apply if the tenancy ends before it has lasted longer than 9 months in a row, or
+    if it ends because the tenancy is forfeited or because of a circumstance referred to in Chapter 12, section 28
+    of the Land Code (Land Code, Chapter 12, section 56, paragraph 1).</p>
+  <p>If the parties have agreed in a separate document on terms that depart from the security of tenure, the
+    agreement is valid; if it was made before the tenancy had lasted longer than 9 months in a row, it is valid only
+    if approved by the Regional Rent Tribunal (Land Code, Chapter 12, section 56, paragraph 2). An agreement is valid
+    even without such approval if it is made for a period of at most 5 years from the start of the tenancy and
+    provides that the security of tenure is not to apply if the landlord is to carry on the landlord&rsquo;s own
+    business in the premises or, for premises let second-hand, if the tenancy between the property owner and the
+    owner&rsquo;s tenant is to end (Land Code, Chapter 12, section 56, paragraph 3). This agreement contains no such
+    agreement.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${!fixedTerm}">Unless a longer notice period has been agreed, the lease may be terminated with effect
+    from the turn of the month that falls immediately after 9 months from the notice (Land Code, Chapter 12,
+    section 4, paragraph 1, point 2). Agreed longer notice period: ______________.</p>
+  <p th:if="${fixedTerm}">If the lease must be terminated by notice in order to end and no longer notice period has
+    been agreed, notice must be given at the latest 1 day in advance if the term is at most 2 weeks, 1 week in
+    advance if the term is longer than 2 weeks but at most 3 months, 3 months in advance if the term is longer than
+    3 months but at most 9 months, and 9 months in advance if the term is longer than 9 months (Land Code, Chapter
+    12, section 4, paragraph 2). Agreed longer notice period: ______________.</p>
+  <p>Notice must be in writing if the tenancy has lasted longer than 3 months in a row at the date on which it is to
+    end (Land Code, Chapter 12, section 8, paragraph 1). Written notices are served in the manner set out in
+    Chapter 12, section 8 of the
+    Land Code. A notice may be sent by registered letter only if the recipient is resident in Sweden and it is
+    not an early termination under Chapter 12, section 42 of the Land Code or the landlord&rsquo;s notice under
+    Chapter 12, section 58 of the Land Code (Land Code, Chapter 12, section 8, paragraph 4).</p>
+  <p>If the landlord wishes to terminate the lease, the landlord must inform the tenant in the notice of the terms
+    the landlord demands for extending the tenancy or of the reason why the landlord refuses an extension, and that
+    the tenant, if the tenant does not agree to move out without compensation, must refer the dispute to the
+    Regional Rent Tribunal for mediation within 2 months of the notice (Land Code, Chapter 12, section 58,
+    paragraph 1). If the landlord fails to do so, the notice has no effect (Land Code, Chapter 12, section 58,
+    paragraph 2). If the landlord has done so and the tenant does not wish to leave the premises without
+    compensation, the tenant must refer the dispute to the Regional Rent Tribunal within the same period;
+    otherwise the right to compensation lapses, unless a dispute has been referred within the same period under
+    Chapter 12, section 58 a, paragraph 1, of the Land Code (Land Code, Chapter 12, section 58, paragraph 3).</p>
+  <p>If the tenant wishes to terminate the lease in order to extend it on changed terms, the tenant must inform the
+    landlord in the notice of the change requested and, if no agreement is reached, refer the dispute to the
+    Regional Rent Tribunal for mediation within 2 months of the notice (Land Code, Chapter 12, section 58 a,
+    paragraph 1).<span class="clause-ref"
+    data-ref="renewal" th:if="${refs['renewal']}"> The tenant&rsquo;s security of tenure is governed by this
+    agreement (see Article
+    <span th:text="${refs['renewal']}"></span>).</span></p>
+  <p>The landlord may terminate the lease early if the tenancy is forfeited (förverkad) on one of the grounds set out
+    in Chapter 12, section 42, paragraph 1, of the Land Code, and the lease then ends immediately, unless otherwise
+    provided by Chapter 12, section 44 of the Land Code (Land Code, Chapter 12, section 6, paragraph 1). The tenancy
+    is not forfeited if what the tenant is responsible for is of minor significance, or if forfeiture is
+    unreasonable because what the tenant is responsible for results from a close relative or former close
+    relative having subjected the tenant or a member of the tenant&rsquo;s household to a crime (Land Code,
+    Chapter 12, section 42, paragraph 5).</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this agreement are given in writing to the following addresses, unless a party has given another
+    address: the landlord ______________________________; the tenant ______________________________.</p>
+  <p>A notice referred to in Chapter 12, section 63, paragraph 1, of the Land Code is deemed given when it has been
+    sent by registered letter to the recipient&rsquo;s usual address. If the tenant or the landlord has given an
+    address to which notices are to be sent, that address is deemed the usual address; if the tenant has not given
+    any particular address, the landlord may send notices to the address of the let premises (Land Code, Chapter 12,
+    section 63, paragraph 2).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The parties process personal data about each other&rsquo;s representatives and contact persons only to the
+    extent necessary to conclude and perform this agreement and to comply with their legal obligations, in
+    accordance with the General Data Protection Regulation (Regulation (EU) 2016/679) and the Act (2018:218)
+    containing supplementary provisions to the EU General Data Protection Regulation, and do not keep it longer than
+    necessary for those purposes.</p>
+  <p>The data subjects may exercise the rights conferred by that legislation and may lodge a complaint with the
+    Swedish Authority for Privacy Protection (Integritetsskyddsmyndigheten, IMY).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Swedish law. The Regional Rent Tribunal mediates in tenancy disputes and decides
+    the matters that Chapter 12 of the Land Code assigns to it (Land Code, Chapter 12, section 69). A case is heard by
+    the Regional Rent Tribunal for the area where the property is located (section 4 of the Act (1973:188) on
+    Regional Agricultural Tenancies Tribunals and Regional Rent Tribunals). In the cases set out in Chapter 12,
+    section 70 of the Land Code, decisions of the Regional Rent Tribunal may be appealed to the Svea Court of Appeal
+    (Svea hovrätt) (Land Code, Chapter 12, section 71). Other disputes, among others on compensation under Chapter 12,
+    section 58 b of the Land Code, are decided by the general courts.</p>
+  <p>An agreement that future disputes are to be decided by arbitrators without a reservation of the right to
+    challenge the award cannot be relied on in the matters set out in Chapter 12, section 66 of the Land Code. A
+    party wishing to bring a claim arising from the tenancy must bring an action within 2 years after the tenant
+    left the premises, failing which the right of action is lost, unless otherwise agreed (Land Code, Chapter 12,
+    section 61).</p>
+</div>
+
+</body>
+</html>

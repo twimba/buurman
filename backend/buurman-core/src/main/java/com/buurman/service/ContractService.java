@@ -3,6 +3,7 @@ package com.buurman.service;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.DRAFT;
 import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
+import static com.buurman.domain.Contract.ContractStatus.NOTICE_GIVEN;
 import static com.buurman.domain.Contract.ContractStatus.PENDING_SIGNATURE;
 import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
@@ -38,6 +39,7 @@ import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
@@ -74,6 +76,7 @@ import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.RentRegulationRepository;
@@ -94,6 +97,7 @@ public class ContractService {
 
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository extensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final ContractExtensionService contractExtensionService;
   private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRentComponentMapper rentComponentMapper;
@@ -298,10 +302,12 @@ public class ContractService {
   }
 
   /**
-   * Guards against two ACTIVE contracts on the same unit. Scoped by <em>unit</em>, not property —
-   * BUUR-106 made it valid for two different units of the same property to each have their own
-   * active contract, so this must never widen back out to property scope (that was Critical 1 of
-   * the final review: the old property-scoped guard made a second unit of an already-let building
+   * Guards against two in-force contracts ({@code ACTIVE} or {@code NOTICE_GIVEN}, via {@link
+   * ContractRepository#findActiveByUnitId}) on the same unit: a tenant under notice still occupies
+   * it until the termination's effective end date. Scoped by <em>unit</em>, not property — BUUR-106
+   * made it valid for two different units of the same property to each have their own active
+   * contract, so this must never widen back out to property scope (that was Critical 1 of the final
+   * review: the old property-scoped guard made a second unit of an already-let building
    * un-lettable, and its {@code fetchOptional()} would 500 once two units really could both be
    * active). {@code excludeContractId} lets {@link #changeContractStatus} re-activate a contract
    * that is itself the one found "active" (e.g. a no-op transition) without rejecting itself;
@@ -327,11 +333,23 @@ public class ContractService {
     return toResponses(contracts, principal.requireTeamId());
   }
 
+  /** Beyond this, any realistic lease filter is already covered; larger values risk overflow. */
+  private static final int MAX_ENDING_WITHIN_DAYS = 3650;
+
   public PageResponse<ContractResponse> getContractsPaginated(
-      UserPrincipal principal, @Nullable String status, PageRequest pageRequest) {
+      UserPrincipal principal,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays,
+      PageRequest pageRequest) {
+    if (endingWithinDays != null
+        && (endingWithinDays < 0 || endingWithinDays > MAX_ENDING_WITHIN_DAYS)) {
+      throw new BadRequestException(
+          "endingWithinDays must be between 0 and " + MAX_ENDING_WITHIN_DAYS);
+    }
     PaginatedResult<Contract> result =
         contractRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), status, null, null, pageRequest);
+            principal.requireTeamId(), status, null, null, search, endingWithinDays, pageRequest);
     List<ContractResponse> responses = toResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -378,10 +396,16 @@ public class ContractService {
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    // Prevent updates to ACTIVE, TERMINATED, or EXPIRED contracts (except via status change)
+    // Prevent updates to ACTIVE, NOTICE_GIVEN, TERMINATED, or EXPIRED contracts (except via status
+    // change). NOTICE_GIVEN is locked like ACTIVE: its termination record and notice letter were
+    // computed from the contract's current terms.
     if (contract.getStatus() == ACTIVE) {
       throw new IllegalArgumentException(
           "Cannot update ACTIVE contracts. Please change status first.");
+    }
+    if (contract.getStatus() == NOTICE_GIVEN) {
+      throw new IllegalArgumentException(
+          "Cannot update NOTICE_GIVEN contracts. Notice has already been given on this contract.");
     }
     if (contract.getStatus() == TERMINATED) {
       throw new IllegalArgumentException("Cannot update TERMINATED contracts.");
@@ -626,6 +650,12 @@ public class ContractService {
       throw new IllegalArgumentException(
           "Cannot delete ACTIVE contracts. Please terminate the contract first.");
     }
+    // A contract under notice has a contract_terminations row the daily sweep will still process;
+    // deleting the contract would orphan it.
+    if (contract.getStatus() == NOTICE_GIVEN) {
+      throw new IllegalArgumentException(
+          "Cannot delete NOTICE_GIVEN contracts. Notice has already been given on this contract.");
+    }
 
     contractPartyService.softDeletePartiesForContract(contract.getId(), teamId);
     rentComponentRepository.softDeleteByContractIdAndTeamId(contract.getId(), teamId);
@@ -642,11 +672,46 @@ public class ContractService {
       ContractIdentifier identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
+    // Giving notice is not a bare status flip: it needs a termination record (notice period,
+    // grounds, effective end date), a notice letter and a deposit deadline, all created by
+    // ContractTerminationService.terminate(), which calls transitionStatus directly.
+    if (request.status() == NOTICE_GIVEN) {
+      throw new BadRequestException(
+          "Use POST /contracts/{identifier}/terminate to give notice on a contract");
+    }
+
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
+    Contract updatedContract =
+        transitionStatus(contract, request.status(), principal.getUserId(), request.reason());
+
+    return toResponse(updatedContract, teamId);
+  }
+
+  /**
+   * The actual status-transition logic behind {@link #changeContractStatus}: validation,
+   * persistence, extension auto-cancel, metrics, payment scheduling, unit-status sync, audit log,
+   * and the status-changed notification. Extracted so the system-triggered contract termination
+   * sweep ({@code ContractTerminationService.sweepDueTerminations()}) can drive the same transition
+   * — it runs with no authenticated {@link UserPrincipal} (see {@code
+   * ContractTerminationRepository#findDueForTransition}'s javadoc), so it cannot satisfy {@link
+   * #changeContractStatus}'s {@code @PreAuthorize} gate or its {@code UserPrincipal} parameter.
+   *
+   * <p>Package-private and unguarded: this method performs no authorization check of its own.
+   * Callers outside this package must go through the role-gated {@link #changeContractStatus}
+   * instead of calling this directly. The one exception to that is {@code NOTICE_GIVEN}, which
+   * {@link #changeContractStatus} refuses: {@code ContractTerminationService.terminate()} (itself
+   * role-gated) is the only path to it and calls this method directly.
+   */
+  Contract transitionStatus(
+      Contract contract,
+      Contract.ContractStatus newStatus,
+      UUID actingUserId,
+      Optional<String> reason) {
+    UUID teamId = contract.getTeamId();
     UUID contractId = contract.getId();
     Contract.ContractStatus oldStatus = contract.getStatus();
-    Contract.ContractStatus newStatus = request.status();
+    Sid contractIdentifier = contract.getIdentifier().orElseThrow();
 
     // Validate status transitions
     validateStatusTransition(oldStatus, newStatus);
@@ -703,7 +768,7 @@ public class ContractService {
             .build();
 
     contract.setStatus(newStatus);
-    contract.setUpdatedBy(principal.getUserId());
+    contract.setUpdatedBy(actingUserId);
     contract.setUpdatedAt(clock.instant());
 
     Contract updatedContract = contractRepository.save(contract);
@@ -714,8 +779,7 @@ public class ContractService {
           .findDraftByContractId(contract.getId(), teamId)
           .ifPresent(
               draft -> {
-                extensionRepository.cancelByIdAndTeamId(
-                    draft.getId(), teamId, principal.getUserId());
+                extensionRepository.cancelByIdAndTeamId(draft.getId(), teamId, actingUserId);
               });
     }
 
@@ -728,28 +792,29 @@ public class ContractService {
 
     log.info(
         "Contract status changed: {} from {} to {} in team {}",
-        identifier,
+        contractIdentifier,
         oldStatus,
         newStatus,
         teamId);
 
     // Trigger payment scheduling on status change
     paymentSchedulingService.handleContractStatusChange(
-        contractId, newStatus, teamId, principal.getUserId());
+        contractId, newStatus, teamId, actingUserId);
 
     // Update the unit's status based on the contract's status
-    updateUnitStatusBasedOnContract(contract.getUnitId(), newStatus, oldStatus, principal);
+    updateUnitStatusBasedOnContract(
+        contract.getUnitId(), teamId, newStatus, oldStatus, actingUserId);
 
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("status", newStatus);
-    request.reason().ifPresent(r -> changedFields.put("statusChangeReason", r));
+    reason.ifPresent(r -> changedFields.put("statusChangeReason", r));
 
     auditService.logUpdate(
         teamId,
         "CONTRACT",
         updatedContract.getId(),
-        principal.getUserId(),
+        actingUserId,
         oldContract,
         updatedContract,
         changedFields);
@@ -761,7 +826,7 @@ public class ContractService {
     String scPropertyName =
         statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
-            : identifier.value();
+            : contractIdentifier.value();
     String scContactName = primaryContact.getDisplayName();
     String scBase = appProperties.email().baseUrl();
     String scPropertySid =
@@ -787,13 +852,13 @@ public class ContractService {
                     "baseUrl",
                     scBase,
                     "primaryUrl",
-                    scBase + "/contracts/" + identifier.value(),
+                    scBase + "/contracts/" + contractIdentifier.value(),
                     "secondaryUrl",
                     scBase + "/properties/" + scPropertySid))
-            .createdBy(principal.getUserId())
+            .createdBy(actingUserId)
             .build());
 
-    return toResponse(updatedContract, teamId);
+    return updatedContract;
   }
 
   @Transactional
@@ -1061,7 +1126,8 @@ public class ContractService {
         switch (from) {
           case DRAFT -> to == PENDING_SIGNATURE || to == ACTIVE;
           case PENDING_SIGNATURE -> to == DRAFT || to == ACTIVE;
-          case ACTIVE -> to == TERMINATED || to == EXPIRED;
+          case ACTIVE -> to == TERMINATED || to == EXPIRED || to == NOTICE_GIVEN;
+          case NOTICE_GIVEN -> to == TERMINATED;
           case EXPIRED, TERMINATED -> false;
         };
 
@@ -1098,8 +1164,11 @@ public class ContractService {
     // Compute effective end date and extension statistics
     List<ContractExtension> extensions =
         contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
+    Optional<ContractTermination> termination =
+        contractTerminationRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Optional<LocalDate> effectiveEndDate =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+        EffectiveEndDateHelper.computeEffectiveEndDate(
+            contract.getEndDate(), extensions, termination);
     int extensionCount = contractExtensionService.getExtensionCount(contract.getId(), teamId);
     Optional<Integer> extensionsRemaining =
         contract.getMaxRenewals().map(max -> max - extensionCount);
@@ -1145,6 +1214,7 @@ public class ContractService {
         contract.getLandlordType(),
         contract.getRegionCode(),
         contract.getDocumentLanguages(),
+        contract.getLeaseRegime(),
         effectiveEndDate,
         extensionCount,
         extensionsRemaining,
@@ -1198,6 +1268,11 @@ public class ContractService {
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
 
+    // Batch load terminations for all contracts, so a contract under notice reports its actual
+    // (earlier) effective end date instead of its stale, unchanged contracts.end_date.
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
+
     // Batch load current rent period components
     Map<UUID, List<ContractRentComponent>> componentsByContract =
         contractRentPeriodService.getCurrentRentComponentsBatch(contractIds, teamId);
@@ -1240,7 +1315,10 @@ public class ContractService {
               List<ContractExtension> extensions =
                   extensionsByContract.getOrDefault(contract.getId(), List.of());
               Optional<LocalDate> effectiveEndDate =
-                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+                  EffectiveEndDateHelper.computeEffectiveEndDate(
+                      contract.getEndDate(),
+                      extensions,
+                      Optional.ofNullable(terminationsByContract.get(contract.getId())));
               int extensionCount =
                   (int)
                       extensions.stream()
@@ -1295,6 +1373,7 @@ public class ContractService {
                   contract.getLandlordType(),
                   contract.getRegionCode(),
                   contract.getDocumentLanguages(),
+                  contract.getLeaseRegime(),
                   effectiveEndDate,
                   extensionCount,
                   extensionsRemaining,
@@ -1435,38 +1514,44 @@ public class ContractService {
    *
    * <ul>
    *   <li>{@code newStatus == ACTIVE && oldStatus != ACTIVE}: the unit becomes {@code OCCUPIED}.
-   *   <li>{@code oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)}: the
-   *       unit becomes {@code VACANT}, but ONLY when no OTHER active contract still references it.
-   *       A unit can carry two overlapping tenancies (e.g. mid-transition between tenants), and
-   *       must stay {@code OCCUPIED} while any of them is still {@code ACTIVE}.
+   *   <li>{@code oldStatus} in force ({@code ACTIVE} or {@code NOTICE_GIVEN}) {@code && (newStatus
+   *       == EXPIRED || newStatus == TERMINATED)}: the unit becomes {@code VACANT}, but ONLY when
+   *       no OTHER in-force contract still references it. The termination sweep moves a contract
+   *       {@code NOTICE_GIVEN -> TERMINATED}, so {@code NOTICE_GIVEN} must count here. A unit can
+   *       carry two overlapping tenancies (legacy data predating the V072 index), and must stay
+   *       {@code OCCUPIED} while any of them is still in force.
    * </ul>
    *
    * <p>By the time this runs, the caller has already persisted {@code newStatus} on {@code
-   * contract} ({@link #changeContractStatus}), so {@link ContractRepository#countActiveByUnitId}
+   * contract} ({@link #transitionStatus}), so {@link ContractRepository#countActiveByUnitId}
    * naturally excludes the contract that just expired or was terminated — no explicit
    * self-exclusion is needed.
+   *
+   * <p>Takes a team id and an acting user id rather than a {@link UserPrincipal} because {@link
+   * #transitionStatus} — whose callers include the system-triggered contract termination sweep,
+   * which has no authenticated {@link UserPrincipal} — is the sole caller.
    */
   private void updateUnitStatusBasedOnContract(
       UUID unitId,
+      UUID teamId,
       Contract.ContractStatus newStatus,
       Contract.ContractStatus oldStatus,
-      UserPrincipal principal) {
-    UUID teamId = principal.requireTeamId();
+      UUID actingUserId) {
     if (newStatus == ACTIVE && oldStatus != ACTIVE) {
-      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, principal);
+      setUnitStatus(unitId, teamId, UnitStatus.OCCUPIED, actingUserId);
       return;
     }
-    if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
+    if (oldStatus.isInForce() && (newStatus == EXPIRED || newStatus == TERMINATED)) {
       if (contractRepository.countActiveByUnitId(unitId, teamId) == 0) {
-        setUnitStatus(unitId, teamId, UnitStatus.VACANT, principal);
+        setUnitStatus(unitId, teamId, UnitStatus.VACANT, actingUserId);
       }
     }
   }
 
-  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UserPrincipal principal) {
+  private void setUnitStatus(UUID unitId, UUID teamId, UnitStatus status, UUID actingUserId) {
     Unit unit = unitRepository.getByIdAndTeamId(unitId, teamId);
     unit.setStatus(status);
-    unit.setUpdatedBy(Optional.of(principal.getUserId()));
+    unit.setUpdatedBy(Optional.of(actingUserId));
     unitRepository.save(unit);
   }
 }

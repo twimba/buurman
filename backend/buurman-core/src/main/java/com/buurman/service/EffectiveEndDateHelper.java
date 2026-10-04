@@ -3,20 +3,29 @@ package com.buurman.service;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jooq.Field;
 import org.jooq.impl.DSL;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 
 /**
  * Shared helper for computing effective end date from contract extensions. Provides both a JOOQ
  * {@link Field} for SQL queries and a Java method for in-memory computation.
  *
  * <p>The effective end date is the new_end_date from the latest ACTIVE extension, falling back to
- * the contract's original end_date.
+ * the contract's original end_date. When a termination is on record (notice given or already
+ * terminated), the result is further capped by the termination's effective end date, since the
+ * contract's own end_date is never rewritten when notice is given.
  */
 public final class EffectiveEndDateHelper {
 
@@ -31,6 +40,12 @@ public final class EffectiveEndDateHelper {
       DSL.field("contract_extensions.extension_number", Integer.class);
   private static final Field<LocalDate> CE_NEW_END_DATE =
       DSL.field("contract_extensions.new_end_date", LocalDate.class);
+
+  private static final org.jooq.Table<?> CT = DSL.table("contract_terminations");
+  private static final Field<java.util.UUID> CT_CONTRACT_ID =
+      DSL.field("contract_terminations.contract_id", java.util.UUID.class);
+  private static final Field<LocalDate> CT_EFFECTIVE_END_DATE =
+      DSL.field("contract_terminations.effective_end_date", LocalDate.class);
 
   private EffectiveEndDateHelper() {}
 
@@ -55,24 +70,40 @@ public final class EffectiveEndDateHelper {
    * <p>Use this in WHERE clauses: PostgreSQL does not allow SELECT-list aliases to be referenced in
    * WHERE, so the aliased variant renders as a bare {@code "effective_end_date"} reference and
    * fails with "column does not exist". The aliased variant is only safe in SELECT and ORDER BY.
+   *
+   * <p>Also capped by the contract's termination, if one is on record — same rule as {@link
+   * #capByTermination}, expressed in SQL via {@code LEAST()}: Postgres's {@code LEAST} ignores a
+   * NULL argument rather than propagating it, so an open-ended (NULL) extension/contract end date
+   * capped against a non-NULL termination date correctly yields the termination date, and a
+   * contract with no termination row (NULL from the uncorrelated subquery) is left unaffected.
    */
   public static Field<LocalDate> effectiveEndDateExpr() {
-    return DSL.when(
-            DSL.exists(
-                DSL.selectOne()
-                    .from(CE)
-                    .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
-                    .and(CE_STATUS.eq("ACTIVE"))
-                    .and(CE_DELETED_AT.isNull())),
-            DSL.field(
-                DSL.select(CE_NEW_END_DATE)
-                    .from(CE)
-                    .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
-                    .and(CE_STATUS.eq("ACTIVE"))
-                    .and(CE_DELETED_AT.isNull())
-                    .orderBy(CE_EXTENSION_NUMBER.desc())
-                    .limit(1)))
-        .otherwise(CONTRACTS.END_DATE);
+    Field<LocalDate> extensionOrContractEndDate =
+        DSL.when(
+                DSL.exists(
+                    DSL.selectOne()
+                        .from(CE)
+                        .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
+                        .and(CE_STATUS.eq("ACTIVE"))
+                        .and(CE_DELETED_AT.isNull())),
+                DSL.field(
+                    DSL.select(CE_NEW_END_DATE)
+                        .from(CE)
+                        .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
+                        .and(CE_STATUS.eq("ACTIVE"))
+                        .and(CE_DELETED_AT.isNull())
+                        .orderBy(CE_EXTENSION_NUMBER.desc())
+                        .limit(1)))
+            .otherwise(CONTRACTS.END_DATE);
+
+    Field<LocalDate> terminationEffectiveEndDate =
+        DSL.field(
+            DSL.select(CT_EFFECTIVE_END_DATE)
+                .from(CT)
+                .where(CT_CONTRACT_ID.eq(CONTRACTS.ID))
+                .limit(1));
+
+    return DSL.least(extensionOrContractEndDate, terminationEffectiveEndDate);
   }
 
   /**
@@ -91,5 +122,53 @@ public final class EffectiveEndDateHelper {
         .max(java.util.Comparator.comparingInt(ContractExtension::getExtensionNumber))
         .flatMap(ContractExtension::getNewEndDate)
         .or(() -> contractEndDate);
+  }
+
+  /**
+   * Termination-aware variant: the extension-aware effective end date, capped by the effective end
+   * date of the contract's termination when one is on record.
+   *
+   * @return the earlier of the two dates; empty only if open-ended and no termination exists
+   */
+  public static Optional<LocalDate> computeEffectiveEndDate(
+      Optional<LocalDate> contractEndDate,
+      List<ContractExtension> extensions,
+      Optional<ContractTermination> termination) {
+    return capByTermination(
+        computeEffectiveEndDate(contractEndDate, extensions),
+        termination.map(ContractTermination::getEffectiveEndDate));
+  }
+
+  /**
+   * Caps {@code effectiveEnd} by {@code terminationEnd}: the earlier of the two when both exist,
+   * the termination date when the contract is otherwise open-ended.
+   */
+  public static Optional<LocalDate> capByTermination(
+      Optional<LocalDate> effectiveEnd, Optional<LocalDate> terminationEnd) {
+    return terminationEnd
+        .map(t -> effectiveEnd.filter(c -> c.isBefore(t)).orElse(t))
+        .or(() -> effectiveEnd);
+  }
+
+  /**
+   * Batch variant over already-loaded extensions and terminations: maps every contract ID to its
+   * termination-aware effective end date (empty means open-ended).
+   */
+  public static Map<UUID, Optional<LocalDate>> computeEffectiveEndDates(
+      Collection<Contract> contracts,
+      Collection<ContractExtension> extensions,
+      Map<UUID, ContractTermination> terminationsByContractId) {
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        extensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, Optional<LocalDate>> result = new HashMap<>();
+    for (Contract c : contracts) {
+      result.put(
+          c.getId(),
+          computeEffectiveEndDate(
+              c.getEndDate(),
+              extensionsByContract.getOrDefault(c.getId(), List.of()),
+              Optional.ofNullable(terminationsByContractId.get(c.getId()))));
+    }
+    return result;
   }
 }

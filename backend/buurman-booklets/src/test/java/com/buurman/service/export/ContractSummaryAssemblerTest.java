@@ -30,6 +30,7 @@ import com.buurman.domain.Team;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
@@ -47,6 +48,7 @@ class ContractSummaryAssemblerTest {
   @Mock private PropertyRepository propertyRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private ContractPartyService contractPartyService;
   @Mock private TeamRepository teamRepository;
 
@@ -64,6 +66,7 @@ class ContractSummaryAssemblerTest {
             propertyRepository,
             paymentRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             contractPartyService,
             teamRepository,
             new BookletFormatter(),

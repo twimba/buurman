@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -122,37 +123,92 @@ class LetterExporterHelper {
   /** Variables every letter starts with: generation date and the contract reference. */
   static Map<String, Object> headerVariables(
       Contract contract, LocalDate today, DateTimeFormatter dateFmt) {
-    Map<String, Object> vars = new HashMap<>();
-    vars.put("generatedDate", today.format(dateFmt));
-    vars.put(
-        "contractIdentifier",
+    return headerVariables(
         contract
             .getIdentifier()
             .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
-            .value());
+            .value(),
+        today,
+        dateFmt);
+  }
+
+  /** Same variables from an already-resolved contract reference (no contract needed). */
+  static Map<String, Object> headerVariables(
+      String contractIdentifier, LocalDate today, DateTimeFormatter dateFmt) {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("generatedDate", today.format(dateFmt));
+    vars.put("contractIdentifier", contractIdentifier);
     return vars;
   }
 
-  /** Country code plus the country-specific legal clause under the given key prefix. */
+  /** Country code plus the country-specific legal clauses under the given key prefix. */
   Map<String, Object> legalVariables(
-      MessageSource messageSource, String keyPrefix, Contract contract, Locale locale) {
+      MessageSource messageSource,
+      String keyPrefix,
+      String documentType,
+      Contract contract,
+      Locale locale) {
     Map<String, Object> vars = new HashMap<>();
     Optional<String> countryCode = contract.getCountryCode();
     vars.put("countryCode", countryCode.orElse(null));
     vars.put(
-        "legalClause",
-        resolveLegalClause(messageSource, keyPrefix, countryCode, locale).orElse(null));
+        "legalClauses",
+        resolveLegalClauses(messageSource, keyPrefix, documentType, countryCode, locale));
     return vars;
+  }
+
+  /**
+   * Resolves the ordered legal clauses for a letter: a {@link CountryLetterClauseCatalog} entry for
+   * {@code documentType}/country if one exists (each clause pre-resolved to a {@code {title, body}}
+   * string map — {@link LetterClauseKey#titleKey()} is required, every catalog entry supplies one),
+   * else the single legacy {@code keyPrefix + COUNTRY} clause wrapped as a one-item list (body
+   * only, no title), else empty.
+   */
+  List<Map<String, String>> resolveLegalClauses(
+      MessageSource messageSource,
+      String keyPrefix,
+      String documentType,
+      Optional<String> countryCode,
+      Locale locale) {
+    return countryCode
+        .map(
+            code -> {
+              List<LetterClauseKey> catalogClauses =
+                  CountryLetterClauseCatalog.resolve(documentType, code);
+              if (!catalogClauses.isEmpty()) {
+                return catalogClauses.stream()
+                    .map(
+                        clause -> {
+                          Map<String, String> resolved = new HashMap<>();
+                          resolved.put(
+                              "title", messageSource.getMessage(clause.titleKey(), null, locale));
+                          resolved.put(
+                              "body", messageSource.getMessage(clause.bodyKey(), null, locale));
+                          return resolved;
+                        })
+                    .toList();
+              }
+              return resolveLegalClause(messageSource, keyPrefix, Optional.of(code), locale)
+                  .map(body -> List.of(Map.of("body", body)))
+                  .orElse(List.<Map<String, String>>of());
+            })
+        .orElse(List.of());
   }
 
   /** The tenant a letter is addressed to, with their mailing address when known. */
   record Addressee(Optional<Contact> contact, Optional<ContactAddress> address) {
     Map<String, Object> variables() {
-      Map<String, Object> vars = new HashMap<>();
-      vars.put("primaryContactName", contact.map(Contact::getDisplayName).orElse(null));
-      vars.put("contactAddress", buildAddressMap(address).orElse(null));
-      return vars;
+      return addresseeVariables(contact.map(Contact::getDisplayName), buildAddressMap(address));
     }
+  }
+
+  /** The addressee template variables from already-resolved values. */
+  static Map<String, Object> addresseeVariables(
+      Optional<String> contactName, Optional<Map<String, String>> contactAddress) {
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("primaryContactName", contactName.orElse(null));
+    vars.put("contactAddress", contactAddress.orElse(null));
+    return vars;
   }
 
   /** The contract's primary tenant as addressee. */
@@ -180,6 +236,64 @@ class LetterExporterHelper {
         contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
             .collect(toMap(Contact::getId, t -> t));
     return new PartyData(parties, contactMap);
+  }
+
+  /**
+   * Signature blocks for a document that may be sent for e-signature: the landlord always first
+   * with a fixed placeholder, then one block per distinct tenant email (deduped, in contract-party
+   * order), numbered {@code "signature-tenant-N"}.
+   *
+   * <p>These placeholders are matched against this exact literal text in the rendered PDF by {@code
+   * DocumensoClient} to place each signer's signature field, so they must agree exactly with {@code
+   * SignatureService}'s own numbering — both sides independently iterate the same contract-party
+   * list in the same order, which is what keeps the two in sync without the two modules sharing a
+   * dependency.
+   */
+  List<Map<String, String>> signatureBlocks(
+      UUID contractId,
+      UUID teamId,
+      MessageSource messageSource,
+      String landlordLabelKey,
+      Locale locale) {
+    return assembleSignatureBlocks(
+        messageSource.getMessage(landlordLabelKey, null, locale),
+        tenantSignerLabels(contractId, teamId));
+  }
+
+  /**
+   * The display label of each distinct tenant signer, in contract-party order. Position {@code i}
+   * (zero-based) is the signer behind placeholder {@code "signature-tenant-" + (i + 1)}.
+   */
+  List<String> tenantSignerLabels(UUID contractId, UUID teamId) {
+    PartyData partyData = loadPartyData(contractId, teamId);
+    List<String> labels = new ArrayList<>();
+    Set<String> seenEmails = new HashSet<>();
+    for (ContractParty party : partyData.parties()) {
+      Optional<Contact> contact = party.getContactId().map(partyData.contactMap()::get);
+      Optional<String> email = contact.flatMap(Contact::getEmail);
+      if (email.isEmpty() || !seenEmails.add(email.get().toLowerCase(Locale.ROOT))) {
+        continue;
+      }
+      labels.add(contact.map(Contact::getDisplayName).orElse(email.get()));
+    }
+    return labels;
+  }
+
+  /**
+   * Builds the blocks from already-resolved labels: the landlord first with the fixed placeholder
+   * {@code "signature-landlord"}, then one block per tenant label numbered {@code
+   * "signature-tenant-N"} (1-based). Needs no repository, so a synthetic document can supply sample
+   * labels.
+   */
+  static List<Map<String, String>> assembleSignatureBlocks(
+      String landlordLabel, List<String> tenantLabels) {
+    List<Map<String, String>> blocks = new ArrayList<>();
+    blocks.add(Map.of("label", landlordLabel, "placeholder", "signature-landlord"));
+    for (int i = 0; i < tenantLabels.size(); i++) {
+      blocks.add(
+          Map.of("label", tenantLabels.get(i), "placeholder", "signature-tenant-" + (i + 1)));
+    }
+    return blocks;
   }
 
   /** Finds the primary tenant contact from a list of contract parties. */

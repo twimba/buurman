@@ -6,6 +6,8 @@ interface EmptyStateProps {
   description?: string;
   actions?: React.ReactNode;
   variant?: 'page' | 'section' | 'inline';
+  /** Colours the icon only; copy always stays in the primary/secondary text colours. */
+  tone?: 'neutral' | 'info' | 'error';
   className?: string;
 }
 
@@ -13,6 +15,12 @@ const variantStyles = {
   page: 'py-16',
   section: 'py-12',
   inline: 'py-6',
+} as const;
+
+const toneStyles = {
+  neutral: 'text-text-muted',
+  info: 'text-info-text',
+  error: 'text-error-text',
 } as const;
 
 const iconSizes = {
@@ -27,6 +35,7 @@ export function EmptyState({
   description,
   actions,
   variant = 'section',
+  tone = 'neutral',
   className,
 }: EmptyStateProps) {
   return (
@@ -40,7 +49,7 @@ export function EmptyState({
     >
       {icon && (
         <div
-          className={cn('mb-4 text-text-muted', iconSizes[variant])}
+          className={cn('mb-4', toneStyles[tone], iconSizes[variant])}
           aria-hidden="true"
         >
           {icon}

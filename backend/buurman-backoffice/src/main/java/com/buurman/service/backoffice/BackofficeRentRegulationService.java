@@ -3,6 +3,9 @@ package com.buurman.service.backoffice;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ import com.buurman.dto.response.CountryRegulationRequestSummary;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
+import com.buurman.dto.response.RentRegulationTenancyRuleResponse;
 import com.buurman.mapper.RentRegulationMapper;
 import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -172,6 +176,25 @@ public class BackofficeRentRegulationService {
     RentRegulationCountry country = repository.getCountryByCode(code);
     return repository.findRulesByCountryId(country.getId()).stream()
         .map(mapper::toRuleResponse)
+        .toList();
+  }
+
+  /**
+   * Display-only tenancy-law facts of a country (seeded from the bundled catalog), with notes, so
+   * admins can review caveats the landlord-facing page does not show.
+   */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
+  public List<RentRegulationTenancyRuleResponse> listTenancyRules(String code) {
+    RentRegulationCountry country = repository.getCountryByCode(code);
+    Map<UUID, String> regionCodesById =
+        repository.findRegionsByCountryId(country.getId()).stream()
+            .collect(
+                Collectors.toMap(RentRegulationRegion::getId, RentRegulationRegion::getRegionCode));
+    return repository.findTenancyRulesByCountryId(country.getId()).stream()
+        .map(
+            rule ->
+                mapper.toTenancyRuleResponse(rule, rule.getRegionId().map(regionCodesById::get)))
         .toList();
   }
 

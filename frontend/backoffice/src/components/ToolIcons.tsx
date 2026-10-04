@@ -40,6 +40,12 @@ export const TraefikIcon = (props: IconProps) => (
   </Icon>
 );
 
+export const DocumensoIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 1.5L18.5 8H14a1 1 0 0 1-1-1V3.5zM8 13h8v1.5H8V13zm0 3.5h8V18H8v-1.5zm0-7h4v1.5H8V9.5z" />
+  </Icon>
+);
+
 export const MailpitIcon = (props: IconProps) => (
   <Icon {...props}>
     <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-.4 4.25-7.07 4.42c-.32.2-.74.2-1.06 0L4.4 8.25a.85.85 0 1 1 .9-1.44L12 11l6.7-4.19a.85.85 0 1 1 .9 1.44z" />

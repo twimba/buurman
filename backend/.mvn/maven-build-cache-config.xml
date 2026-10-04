@@ -14,7 +14,7 @@
 
     <input>
         <global>
-            <glob>{*.java,*.xml,*.sql,*.yaml,*.yml,*.properties}</glob>
+            <glob>{*.java,*.xml,*.sql,*.yaml,*.yml,*.properties,*.html,*.txt}</glob>
             <excludes>
                 <exclude>target/**</exclude>
             </excludes>

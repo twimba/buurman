@@ -66,6 +66,9 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("contract_payment_instructions")).execute();
     dsl.deleteFrom(DSL.table("contract_parties")).execute();
     dsl.deleteFrom(DSL.table("contract_extensions")).execute();
+    dsl.deleteFrom(DSL.table("contract_terminations")).execute();
+    dsl.deleteFrom(DSL.table("contract_lease_clauses")).execute();
+    dsl.deleteFrom(DSL.table("lease_clause_templates")).execute();
     dsl.deleteFrom(DSL.table("contracts")).execute();
     dsl.deleteFrom(DSL.table("contact_tags")).execute();
     dsl.deleteFrom(DSL.table("contact_relationships")).execute();
@@ -81,6 +84,8 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("property_insurances")).execute();
     dsl.deleteFrom(DSL.table("property_financings")).execute();
     dsl.deleteFrom(DSL.table("property_acquisitions")).execute();
+    dsl.deleteFrom(DSL.table("signature_signers")).execute();
+    dsl.deleteFrom(DSL.table("signature_requests")).execute();
     dsl.deleteFrom(DSL.table("documents")).execute();
     dsl.deleteFrom(DSL.table("photos")).execute();
     dsl.deleteFrom(DSL.table("expense_allocations")).execute();
@@ -90,6 +95,7 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("wws_calculations")).execute();
     dsl.deleteFrom(DSL.table("units")).execute();
     dsl.deleteFrom(DSL.table("properties")).execute();
+    dsl.deleteFrom(DSL.table("saved_contract_filters")).execute();
     dsl.deleteFrom(DSL.table("team_preferences")).execute();
     dsl.deleteFrom(DSL.table("team_members")).execute();
     dsl.deleteFrom(DSL.table("teams"))

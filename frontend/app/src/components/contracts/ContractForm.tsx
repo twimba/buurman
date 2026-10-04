@@ -38,6 +38,7 @@ import {
   useChangePrimaryContact,
 } from '@/hooks/useContractHooks';
 import { useTranslation } from 'react-i18next';
+import { LeaseRegimeSelect } from './LeaseRegimeSelect';
 
 interface ContractFormProps {
   contract?: ContractResponse;
@@ -139,6 +140,7 @@ export const ContractForm = ({
     propertyIdentifier:
       prefilledPropertyId || contract?.property.identifier || '',
     contractType: contract?.contractType ?? ContractType.FIXED_TERM,
+    leaseRegime: contract?.leaseRegime ?? 'STANDARD',
     startDate: contract?.startDate ?? '',
     endDate: contract?.endDate ?? '',
     signedDate: contract?.signedDate ?? '',
@@ -866,6 +868,12 @@ export const ContractForm = ({
                 </select>
               </div>
 
+              <LeaseRegimeSelect
+                value={formData.leaseRegime ?? 'STANDARD'}
+                onChange={(regime) => handleChange('leaseRegime', regime)}
+                disabled={isLoading}
+              />
+
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
                   {t('form.startDate')}{' '}
@@ -1196,7 +1204,7 @@ export const ContractForm = ({
                       }`}
                     >
                       {t(`form.lateFeeRegulation.${lateFeePolicy}`, {
-                        countryCode: countryName || propertyCountryCode,
+                        country: countryName || propertyCountryCode,
                         percentage: lateFeeCap ?? '',
                       })}
                       {lateFeeOverCap &&
@@ -1300,7 +1308,7 @@ export const ContractForm = ({
                 <p className="text-xs text-text-muted mt-1">
                   {regulation?.formalNoticeDays != null
                     ? t('form.formalNoticeDaysCountryDefault', {
-                        countryCode: countryName || propertyCountryCode,
+                        country: countryName || propertyCountryCode,
                         count: regulation.formalNoticeDays,
                       })
                     : t('form.formalNoticeDaysHelp', { count: 14 })}
@@ -1375,12 +1383,12 @@ export const ContractForm = ({
             <div>
               <h3 className="text-lg font-semibold text-text-primary mb-2">
                 {countryName
-                  ? t('form.countryRentalDetails', { countryCode: countryName })
+                  ? t('form.countryRentalDetails', { country: countryName })
                   : t('overview.countrySpecificDetails')}
               </h3>
               <p className="text-sm text-text-secondary mb-4">
                 {t('form.countryRegulatoryFields', {
-                  countryCode: countryName || propertyCountryCode,
+                  country: countryName || propertyCountryCode,
                 })}
               </p>
               <CountryMetadataForm

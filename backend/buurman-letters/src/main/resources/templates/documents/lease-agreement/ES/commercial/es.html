@@ -1,0 +1,328 @@
+<!--
+  legal-basis: Ley 29/1994, de 24 de noviembre, de Arrendamientos Urbanos (LAU), consolidated text BOE-A-1994-26003
+               as published on www.boe.es (ultima actualizacion publicada el 02/10/2026): art. 3, 4 (4.1, 4.3, 4.4,
+               4.5, 4.6), titulo III art. 29, 30, 31, 32, 33, 34, 35; by reference art. 19, 21, 22, 23, 25, 26,
+               27; titulo IV art. 36; disposicion adicional tercera (deposito de fianzas).
+               State of the LAU on 2026-10-04: the amendments of Real Decreto-ley 26/2026, de 29 de septiembre (in
+               force 01/10/2026, incl. a new art. 3.2 wording), were set aside by the Congreso de los Diputados
+               (derogation published 02/10/2026, BOE-A-2026-20526); the text in force is the earlier version.
+               Codigo Civil (BOE-A-1889-4763): art. 1108, 1124, 1555, 1561, 1562, 1563, 1564, 1565, 1566.
+               Ley 37/1992, de 28 de diciembre, del IVA (BOE-A-1992-28740): art. 20.Uno.23 (exemption limited to
+               dwellings), art. 90 (general rate 21 per cent).
+               Reglamento del IRPF, Real Decreto 439/2007 (BOE-A-2007-6820): art. 100 (withholding 19 per cent on
+               rents of urban properties, reduced by 60 per cent in Ceuta and Melilla).
+               Texto refundido de la Ley Reguladora de las Haciendas Locales, Real Decreto Legislativo 2/2004
+               (BOE-A-2004-4214): art. 63.2 (IBI may be passed on under the rules of private law).
+               Real Decreto 390/2021, de 1 de junio (BOE-A-2021-9176): art. 3 (scope and exclusions), art. 17.2.
+               Ley de Enjuiciamiento Civil 1/2000 (BOE-A-2000-323): art. 52.1.7.
+               Ley Hipotecaria art. 34 (referred to in LAU art. 29, not re-read).
+               Cataluna: Llei 13/1996, de 29 de juliol, del Registre i el diposit de fiances (INCASOL, deposit within
+               2 months, also for leases for other uses; page incasol.gencat.cat read 2026-10-04); regionCode branch
+               CAT/CT in the deposit clause, general text for any other or unknown region.
+               RGPD: Reglamento (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Ley Organica 3/2018, de 5 de
+               diciembre (LOPDGDD).
+               Verified 2026-10-04 against www.boe.es (consolidated texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in es.html, never spelled out (es "2 mensualidades de renta" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Spanish law (Ley de Arrendamientos Urbanos, titulo III:
+  arrendamiento para uso distinto del de vivienda). Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>De una parte, <strong th:text="${landlordName}">Arrendador</strong>, en adelante &laquo;el arrendador&raquo;,</p>
+  <p>NIF y domicilio o domicilio social: ______________________________</p>
+  <p>datos de inscripción en el Registro Mercantil, en su caso: ______________________________</p>
+  <p>representado por: ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">y de otra, <strong th:text="${tenantNames}">Arrendatario</strong>,
+    en adelante (conjuntamente) &laquo;el arrendatario&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">y de otra, el arrendatario o los arrendatarios que firman al pie, en
+    adelante (conjuntamente) &laquo;el arrendatario&raquo;,</p>
+  <p>NIF y domicilio o domicilio social: ______________________________</p>
+  <p>datos de inscripción en el Registro Mercantil, en su caso: ______________________________</p>
+  <p>representado por: ______________________________,</p>
+  <p>celebran el presente contrato de arrendamiento para uso distinto del de vivienda, sujeto a la Ley 29/1994, de
+    24 de noviembre, de Arrendamientos Urbanos, en adelante &laquo;la LAU&raquo;. Cuando varias personas sean
+    arrendatarias, responden solidariamente de todas las obligaciones derivadas del presente contrato.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>El arrendador da en arrendamiento al arrendatario, que lo acepta, el local situado en
+    <strong th:text="${propertyAddress}">Dirección</strong>, en adelante &laquo;el local&raquo;, con una superficie
+    de ________ m², referencia catastral ______________________________ y las siguientes dependencias e
+    instalaciones: ______________________________</p>
+  <p>El arrendamiento recae sobre una edificación cuyo destino primordial es distinto del de vivienda (artículo 3
+    de la LAU). Sin perjuicio de lo dispuesto con carácter imperativo en los títulos I y IV de la LAU, el contrato se
+    rige por la voluntad de las partes, en su defecto por el título III de la LAU y, supletoriamente, por el Código
+    Civil (artículo 4.3 de la LAU). La exclusión de la aplicación de los preceptos de la LAU, cuando sea posible,
+    debe hacerse de forma expresa respecto de cada uno de ellos (artículo 4.4 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>El local se destina exclusivamente a la actividad siguiente: ______________________________. El cambio de
+    actividad requiere el consentimiento previo y escrito del arrendador.</p>
+  <p>El arrendatario obtiene a su cargo las licencias, autorizaciones y comunicaciones administrativas que exija
+    el ejercicio de su actividad, y usa el local como un diligente padre de familia, destinándolo al uso pactado
+    (artículo 1555 del Código Civil). No desarrolla en el local actividades molestas, insalubres, nocivas,
+    peligrosas o ilícitas.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>El contrato entra en vigor el <strong th:text="${startDate}">fecha de inicio</strong>.</p>
+  <p th:if="${fixedTerm}">La duración del contrato, libremente pactada por las partes, es determinada<span
+    th:if="${endDate != null}">, hasta el <strong th:text="${endDate}">fecha de fin</strong></span>; llegado su
+    término, el contrato concluye el día prefijado sin necesidad de requerimiento (artículo 1565 del Código
+    Civil).</p>
+  <p th:if="${!fixedTerm}">Las partes no pactan una duración determinada. Duración convenida y, en su caso, plazo
+    de preaviso para su terminación: ______________________________</p>
+  <p>La LAU no impone a este arrendamiento una duración mínima ni una prórroga obligatoria. Si al terminar el
+    contrato el arrendatario permanece 15 días disfrutando del local con aquiescencia del arrendador, se entiende
+    que hay tácita reconducción por el tiempo que establece el Código Civil, a menos que haya precedido
+    requerimiento (artículo 1566 del Código Civil).</p>
+  <p>Facultad de desistimiento del arrendatario pactada, plazo de preaviso e indemnización, en su caso: ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>La renta, libremente pactada por las partes, se fija en <strong th:text="${rentAmount}">Importe</strong>
+    (periodicidad <span th:text="${paymentFrequency}">mensual</span>), sin incluir impuestos.<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> A la renta se añaden los impuestos que procedan
+    (véase el artículo <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> El arrendatario abona además los gastos que asume en
+    el presente contrato (véase el artículo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>El arrendador tiene derecho a elevar la renta por las obras de mejora que realice desde el comienzo del
+    arrendamiento en los términos del artículo 19 de la LAU, salvo pacto en contrario (artículos 4.3 y 30 de la LAU).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">La actualización de la renta se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>La renta se actualiza cada año, en la fecha en que se cumpla cada anualidad de vigencia del contrato, conforme
+    a la variación del índice siguiente, publicado por el Instituto Nacional de Estadística u otro organismo
+    oficial, tomando como referencia el último índice publicado en la fecha de actualización: ______________________________</p>
+  <p>La parte interesada notifica por escrito a la otra la renta actualizada, expresando el porcentaje de
+    variación aplicado; la renta actualizada es exigible a partir del mes siguiente a la notificación. Las partes
+    pactan que la actualización se aplique tanto al alza como a la baja, salvo que convengan otra cosa en este
+    apartado: ______________________________</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Son a cargo del arrendatario los gastos generales del inmueble que correspondan al local según su cuota de
+    participación o, en su defecto, según su superficie, y los gastos por servicios del local que se individualicen
+    mediante aparatos contadores. Conceptos y importe anual estimado a la fecha del contrato: ______________________________</p>
+  <p>Las partes pactan, en su caso, que el arrendador repercuta al arrendatario el importe del Impuesto sobre Bienes
+    Inmuebles correspondiente al local, conforme a las normas de derecho común (artículo 63.2 del texto refundido
+    de la Ley Reguladora de las Haciendas Locales). Repercusión del IBI pactada (sí/no): ______________________________</p>
+  <p>El arrendador justifica anualmente los gastos repercutidos, y el arrendatario los abona junto con la renta.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>El arrendamiento del local está sujeto al Impuesto sobre el Valor Añadido y no exento: la exención del
+    artículo 20.Uno.23.º de la Ley 37/1992, en cuanto a edificios, solo alcanza a los arrendamientos de edificios o partes de los mismos
+    destinados exclusivamente a viviendas. El arrendador repercute el impuesto sobre la renta y las demás cantidades
+    que constituyan la contraprestación, al tipo vigente en el momento del devengo (en la fecha de verificación, el
+    tipo general del 21 %, artículo 90 de la Ley 37/1992). En los territorios en que no se aplica este impuesto, se
+    repercute el tributo indirecto que corresponda.</p>
+  <p>Cuando el arrendatario esté obligado por la normativa tributaria a practicar retención a cuenta del impuesto
+    sobre la renta del arrendador, la practica e ingresa, y entrega al arrendador el certificado correspondiente; en
+    la fecha de verificación, la retención sobre los rendimientos del arrendamiento de inmuebles urbanos es del 19 %
+    de todos los conceptos satisfechos al arrendador, excluido el Impuesto sobre el Valor Añadido, y se reduce en
+    el 60 % cuando el inmueble esté situado en Ceuta o Melilla (artículo 100 del Reglamento del Impuesto sobre la
+    Renta de las Personas Físicas).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">A la celebración del contrato, el arrendatario entrega al arrendador en
+    concepto de fianza en metálico la cantidad de <strong th:text="${depositAmount}">Importe</strong>.</p>
+  <p th:if="${depositAmount == null}">A la celebración del contrato, el arrendatario entrega al arrendador en
+    concepto de fianza en metálico una cantidad equivalente a 2 mensualidades de renta.</p>
+  <p>La exigencia y prestación de fianza en metálico, en cantidad equivalente a 2 mensualidades de renta, es
+    obligatoria en el arrendamiento para uso distinto del de vivienda (artículo 36.1 de la LAU). Durante los
+    5 primeros años de duración del contrato, o los 7 primeros años si el arrendador fuese persona jurídica, la
+    fianza no está sujeta a actualización; cada vez que el arrendamiento se prorrogue, el arrendador puede exigir que
+    la fianza sea incrementada, o el arrendatario que disminuya, hasta hacerse igual a 2 mensualidades de la renta
+    vigente al tiempo de la prórroga (artículo 36.2 de la LAU). Durante el periodo en que el plazo pactado exceda de
+    5 años, o de 7 años si el arrendador fuese persona jurídica, la actualización de la fianza se rige por lo pactado
+    y, a falta de pacto específico, por lo acordado sobre actualización de la renta (artículo 36.3 de la LAU).</p>
+  <p>Las partes pueden pactar cualquier tipo de garantía del cumplimiento por el arrendatario de sus obligaciones
+    adicional a la fianza en metálico (artículo 36.5 de la LAU). La cantidad entregada que exceda de
+    2 mensualidades de renta tiene la consideración de garantía adicional. Garantía adicional pactada (aval bancario, depósito
+    u otra), en su caso: ______________________________</p>
+  <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">El local está situado en
+    Cataluña: el arrendador deposita la fianza en el Institut Català del Sòl (INCASÒL) en el plazo de 2 meses a
+    contar desde la formalización del contrato, conforme a la Llei 13/1996, de 29 de juliol, del Registre i el
+    dipòsit de fiances dels contractes de lloguer de finques urbanes.</p>
+  <p th:if="${!(countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT'))}">Cuando la comunidad
+    autónoma en que se ubique el local lo haya establecido, el arrendador deposita el importe de la fianza, sin
+    devengo de interés, a disposición de la Administración autonómica o del ente público que se designe hasta la
+    extinción del contrato (disposición adicional tercera de la LAU). Pueden aplicarse, por tanto, normas
+    autonómicas sobre el depósito de la fianza.</p>
+  <p>El saldo de la fianza que deba ser restituido al arrendatario al final del arriendo devenga el interés legal
+    transcurrido 1 mes desde la entrega de las llaves sin que se haya hecho efectiva la restitución (artículo 36.4
+    de la LAU).<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La
+    devolución del local se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>El arrendatario paga la renta<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (véase el artículo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> y los gastos a su cargo</span> por anticipado, con periodicidad
+    <span th:text="${paymentFrequency}">mensual</span>,
+    <span th:if="${paymentDueDay != null}">a más tardar el día <strong th:text="${paymentDueDay}">1</strong> de
+      cada periodo de pago</span><span th:if="${paymentDueDay == null}">en la fecha convenida por las partes</span>,
+    mediante transferencia a la cuenta que designe el arrendador: ______________________________</p>
+  <p>El arrendador emite la factura correspondiente a cada pago, con expresión separada de la renta, de los gastos
+    repercutidos y de los impuestos. Las cantidades no pagadas a su vencimiento devengan el interés de demora
+    pactado o, a falta de convenio, el interés legal (artículo 1108 del Código Civil).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Salvo lo que las partes pacten en el presente contrato, se aplican a este arrendamiento los artículos 21, 22,
+    23 y 26 de la LAU (artículos 4.3 y 30 de la LAU): el arrendador realiza, sin derecho a elevar por ello la renta, las
+    reparaciones necesarias para conservar el local en condiciones de servir al uso convenido, salvo cuando el
+    deterioro sea imputable al arrendatario conforme a los artículos 1563 y 1564 del Código Civil; el arrendatario
+    soporta las obras de conservación y las de mejora que no puedan razonablemente diferirse hasta la conclusión del
+    arrendamiento, con las reducciones de renta e indemnizaciones previstas en dichos artículos; y las pequeñas
+    reparaciones que exija el desgaste por el uso ordinario del local son de cargo del arrendatario.</p>
+  <p>El arrendatario pone en conocimiento del arrendador, en el plazo más breve posible, la necesidad de las
+    reparaciones que correspondan a este, y puede realizar, previa comunicación al arrendador, las que sean urgentes
+    para evitar un daño inminente o una incomodidad grave, y exigir de inmediato su importe al arrendador. Reparto
+    de las obligaciones de conservación pactado, en su caso: ______________________________</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>El arrendatario no puede realizar sin el consentimiento del arrendador, expresado por escrito, obras que
+    modifiquen la configuración del local o de sus accesorios, ni en ningún caso obras que provoquen una
+    disminución en la estabilidad o seguridad del edificio (artículos 23 y 30 de la LAU). Las obras de adaptación
+    autorizadas se ejecutan a cargo del arrendatario, con las licencias necesarias y conforme a la normativa
+    técnica aplicable.</p>
+  <p>Al terminar el contrato, el arrendador que no haya autorizado las obras puede exigir que el arrendatario
+    reponga las cosas al estado anterior o conservar la modificación efectuada, sin que este pueda reclamar
+    indemnización alguna. Destino de las obras autorizadas al término del contrato: ______________________________</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>En defecto de pacto distinto, cuando en el local se ejerza una actividad empresarial o profesional, el
+    arrendatario puede subarrendar el local o ceder el contrato sin necesidad del consentimiento del arrendador; el
+    arrendador tiene derecho a una elevación de la renta del 10 % de la renta en vigor en caso de subarriendo
+    parcial, y del 20 % en caso de cesión del contrato o subarriendo total. No se reputa cesión el cambio en la
+    persona del arrendatario por fusión, transformación o escisión de la sociedad arrendataria, pero el arrendador
+    tiene derecho a la misma elevación de la renta. La cesión y el subarriendo se notifican de forma fehaciente al
+    arrendador en el plazo de 1 mes desde que se hayan concertado (artículo 32 de la LAU).</p>
+  <p>Pacto de las partes sobre cesión y subarriendo, en su caso: ______________________________</p>
+  <p>En caso de fallecimiento del arrendatario, el heredero o legatario que continúe el ejercicio de la actividad
+    puede subrogarse en sus derechos y obligaciones hasta la extinción del contrato, notificándolo por escrito al
+    arrendador dentro de los 2 meses siguientes a la fecha del fallecimiento (artículo 33 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>En caso de venta del local, el arrendatario tiene los derechos de tanteo y retracto previstos en el
+    artículo 25 de la LAU (artículo 31 de la LAU): el tanteo puede ejercitarse en un plazo de 30 días naturales a
+    contar desde el siguiente a aquel en que se le notifique en forma fehaciente la decisión de vender, el precio y
+    las demás condiciones esenciales de la transmisión; el retracto, en los casos y plazos de dicho artículo. Las
+    partes pueden pactar la renuncia del arrendatario a estos derechos. Renuncia pactada (sí/no): ______________________________</p>
+  <p>El adquirente del local queda subrogado en los derechos y obligaciones del arrendador, salvo que concurran en
+    él los requisitos del artículo 34 de la Ley Hipotecaria (artículo 29 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>El arrendatario contrata y mantiene durante toda la vigencia del contrato un seguro de responsabilidad civil
+    que cubra los daños que su actividad pueda causar al local, al edificio y a terceros, y un seguro de su
+    contenido; a solicitud del arrendador, acredita la vigencia de las pólizas y el pago de las primas.</p>
+  <p>El arrendador asegura el edificio o, en su caso, el local frente a los riesgos de daños materiales habituales.
+    Capitales asegurados mínimos convenidos, en su caso: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Se anexa al presente contrato una copia de la etiqueta de eficiencia energética del local, y el arrendador
+    entrega al arrendatario una copia del documento de recomendaciones de uso para el usuario (artículo 17.2 del
+    Real Decreto 390/2021, de 1 de junio), salvo que el local esté excluido del ámbito de aplicación de dicho real
+    decreto.</p>
+  <p>Calificación energética y número de registro del certificado de eficiencia energética: ______________________________</p>
+</div>
+
+<div th:fragment="clause-goodwill-compensation" data-clause="goodwill-compensation">
+  <p>La extinción por transcurso del término convencional del arrendamiento de un local en el que durante los
+    últimos 5 años se haya venido ejerciendo una actividad comercial de venta al público da al arrendatario derecho
+    a una indemnización a cargo del arrendador, siempre que el arrendatario haya manifestado con 4 meses de
+    antelación a la expiración del plazo su voluntad de renovar el contrato por un mínimo de 5 años más y por una
+    renta de mercado; se considera renta de mercado la que acuerden las partes y, en defecto de pacto, la que
+    determine el árbitro designado por ellas (artículo 34 de la LAU).</p>
+  <p>Si el arrendatario inicia en el mismo municipio, dentro de los 6 meses siguientes a la expiración del
+    arrendamiento, la misma actividad, la indemnización comprende los gastos del traslado y los perjuicios
+    derivados de la pérdida de clientela, calculada con respecto a la habida durante los 6 primeros meses de la
+    nueva actividad. Si dentro de los 6 meses siguientes a la extinción el arrendatario inicia una actividad
+    diferente o no inicia actividad alguna, y el arrendador o un tercero desarrollan en el local dentro del mismo
+    plazo la misma actividad o una afín, la indemnización es de 1 mensualidad por año de duración del contrato, con
+    un máximo de 18 mensualidades. A falta de acuerdo sobre la cuantía, la fija el árbitro designado por las
+    partes.</p>
+  <p>Las partes pueden excluir expresamente la aplicación del artículo 34 de la LAU (artículos 4.3 y 4.4 de la
+    LAU). Pacto sobre esta indemnización (se mantiene / se excluye expresamente): ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Las partes firman en la entrega de las llaves un acta del estado del local y de sus instalaciones, que se anexa
+    al presente contrato. A falta de expresión del estado del local al tiempo de arrendarlo, se presume que el
+    arrendatario lo recibió en buen estado, salvo prueba en contrario (artículo 1562 del Código Civil).</p>
+  <p>Al concluir el arrendamiento, el arrendatario devuelve el local tal como lo recibió, salvo lo que hubiese
+    perecido o se hubiera menoscabado por el tiempo o por causa inevitable (artículo 1561 del Código Civil), libre
+    de enseres propios y con entrega de todas las llaves. Responde del deterioro o pérdida, a no ser que pruebe
+    haberse ocasionado sin culpa suya, y del deterioro causado por las personas de su casa (artículos 1563 y 1564
+    del Código Civil).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La restitución de la
+    fianza se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>El incumplimiento por cualquiera de las partes de las obligaciones resultantes del contrato da derecho a la
+    parte que hubiere cumplido las suyas a exigir el cumplimiento de la obligación o a promover la resolución del
+    contrato de acuerdo con el artículo 1124 del Código Civil.</p>
+  <p>El arrendador puede resolver de pleno derecho el contrato por la falta de pago de la renta o, en su caso, de
+    cualquiera de las cantidades cuyo pago haya asumido o corresponda al arrendatario; por la falta de pago del
+    importe de la fianza o de su actualización; por la realización de daños causados dolosamente en el local o de
+    obras no consentidas por el arrendador cuando el consentimiento de este sea necesario; cuando en el local tengan
+    lugar actividades molestas, insalubres, nocivas, peligrosas o ilícitas; y por la cesión o subarriendo del local
+    incumpliendo lo dispuesto en el artículo 32 de la LAU (artículo 35 de la LAU).</p>
+  <p>Cuando la ejecución de obras de conservación o de obras acordadas por una autoridad competente haga inhabitable
+    el local, el arrendatario puede optar entre suspender el contrato o desistir de él, sin indemnización alguna,
+    salvo pacto distinto (artículos 4.3, 26 y 30 de la LAU). Las partes pueden poner fin al contrato de mutuo
+    acuerdo.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La
+    devolución del local se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Las comunicaciones entre las partes se dirigen a los domicilios siguientes, salvo cambio comunicado por
+    escrito: arrendador: ______________________________; arrendatario: ______________________________</p>
+  <p>A efectos de las notificaciones previstas en la LAU, las partes señalan las direcciones electrónicas
+    siguientes, siempre que se garantice la autenticidad de la comunicación y de su contenido y quede constancia
+    fehaciente de la remisión y recepción íntegras y del momento en que se hicieron (artículo 4.6 de la LAU):
+    arrendador: ______________________________; arrendatario: ______________________________</p>
+  <p>Las notificaciones que la ley exige practicar en forma fehaciente, como la notificación de la cesión o del
+    subarriendo (artículo 32.4 de la LAU) o la de la decisión de vender el local, se realizan por un medio que deje
+    constancia de su contenido y de su recepción, como el burofax con certificación de texto y acuse de recibo o el
+    requerimiento notarial.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Cada parte trata los datos personales de las personas físicas que intervienen en el presente contrato en
+    nombre de la otra únicamente en la medida necesaria para su celebración y ejecución y para el cumplimiento de
+    sus obligaciones legales, conforme al Reglamento General de Protección de Datos (Reglamento (UE) 2016/679) y a
+    la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos
+    digitales, y no los conserva más allá del tiempo necesario para dichos fines.</p>
+  <p>Los interesados pueden ejercer los derechos de acceso, rectificación y supresión y los demás que les reconoce
+    dicha normativa, y presentar una reclamación ante la Agencia Española de Protección de Datos.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>El presente contrato se rige por la legislación española, en particular por lo pactado, por el título III de
+    la LAU y, supletoriamente, por el Código Civil. Para los juicios sobre el arrendamiento y los de desahucio es
+    competente el tribunal del lugar en que esté sita la finca (artículo 52.1.7.º de la Ley de Enjuiciamiento
+    Civil).</p>
+  <p>Las partes pueden pactar la sumisión a mediación o arbitraje de las controversias que por su naturaleza
+    puedan resolverse a través de estas formas de resolución de conflictos, de conformidad con la legislación
+    reguladora de la mediación en asuntos civiles y mercantiles y del arbitraje (artículo 4.5 de la LAU).</p>
+</div>
+
+</body>
+</html>

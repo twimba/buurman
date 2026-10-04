@@ -44,6 +44,7 @@ import com.buurman.dto.response.OccupancyPeriodResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFinancingRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
@@ -60,6 +61,7 @@ class OccupancyPeriodServiceTest {
   @Mock private UnitRepository unitRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PropertyAcquisitionRepository acquisitionRepository;
   @Mock private PropertyFinancingRepository financingRepository;
 
@@ -89,6 +91,7 @@ class OccupancyPeriodServiceTest {
             unitRepository,
             contractRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             acquisitionRepository,
             financingRepository,
             clock);
@@ -224,6 +227,59 @@ class OccupancyPeriodServiceTest {
       assertThatThrownBy(() -> service.create(PROPERTY_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
           .hasMessage("Cannot create self-occupancy period: overlaps with an existing period");
+    }
+
+    @Test
+    @DisplayName(
+        "allows a self-occupancy period starting after a contract's termination date, even though"
+            + " the contract's stale end_date is later")
+    void allowsSelfOccupancyAfterTerminationEffectiveEndDate() {
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
+      when(unitRepository.findAllByPropertyIdAndTeamId(PROPERTY_ID, TEAM_ID))
+          .thenReturn(List.of(unit));
+      when(repository.findOverlapping(
+              eq(UNIT_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
+          .thenReturn(List.of());
+
+      UUID contractId = UUID.randomUUID();
+      // Notice given, but end_date is never rewritten on the contract row itself — only the
+      // termination's effective_end_date reflects the real, earlier end.
+      Contract terminatingContract =
+          Contract.builder()
+              .id(contractId)
+              .teamId(TEAM_ID)
+              .unitId(UNIT_ID)
+              .startDate(LocalDate.of(2024, 1, 1))
+              .endDate(Optional.of(LocalDate.of(2027, 1, 1)))
+              .status(Contract.ContractStatus.NOTICE_GIVEN)
+              .build();
+      when(contractRepository.findByUnitId(UNIT_ID, TEAM_ID))
+          .thenReturn(List.of(terminatingContract));
+      when(contractExtensionRepository.findByContractIdsAndTeamId(List.of(contractId), TEAM_ID))
+          .thenReturn(List.of());
+      com.buurman.domain.ContractTermination termination =
+          com.buurman.domain.ContractTermination.builder()
+              .contractId(contractId)
+              .effectiveEndDate(LocalDate.of(2026, 3, 31))
+              .build();
+      when(contractTerminationRepository.findByContractIdsAndTeamId(List.of(contractId), TEAM_ID))
+          .thenReturn(java.util.Map.of(contractId, termination));
+
+      // Starts the day after the termination's real end date, well before the stale end_date —
+      // must be allowed.
+      CreateOccupancyPeriodRequest request =
+          new CreateOccupancyPeriodRequest(
+              LocalDate.of(2026, 4, 1),
+              OccupancyType.PERSONAL,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              null);
+
+      service.create(PROPERTY_SID, request, principal);
+
+      verify(propertyRepository, never()).save(any(Property.class));
     }
 
     @Test

@@ -99,5 +99,47 @@
     "editTitleNotes": "Editar título e notas",
     "delete": "Eliminar",
     "download": "Descarregar"
+  },
+  "signatureLinks": {
+    "trigger": "Obter ligações de assinatura",
+    "retract": "Retirar o pedido de assinatura",
+    "title": "Ligações de assinatura",
+    "description": "Envie a cada pessoa a sua própria ligação. Quem tiver a ligação pode assinar em nome dessa pessoa.",
+    "warning": "Partilhe cada ligação apenas com o respetivo signatário. As ligações deixam de funcionar depois de assinadas ou de o pedido ser retirado.",
+    "signers": "Signatários",
+    "role": {
+      "LANDLORD": "Senhorio",
+      "TENANT": "Inquilino"
+    },
+    "status": {
+      "PENDING": "Pendente",
+      "VIEWED": "Visualizado",
+      "SIGNED": "Assinado",
+      "DECLINED": "Recusado"
+    },
+    "alreadySigned": "Já assinado",
+    "notReady": "Ligação ainda não disponível. Voltaremos a verificar automaticamente.",
+    "unavailable": "Ligação já não disponível. Retire o pedido e envie-o novamente para gerar novas ligações.",
+    "empty": "Não há ligações para partilhar neste pedido.",
+    "copyLink": "Copiar ligação",
+    "copyLinkFor": "Copiar a ligação de assinatura de {{name}}",
+    "copied": "Copiado",
+    "copiedAnnouncement": "Ligação de {{name}} copiada",
+    "copiedAllAnnouncement": "Mensagem para todos os signatários pendentes copiada",
+    "copyAll": "Copiar tudo como mensagem",
+    "share": "Partilhar",
+    "shareFor": "Partilhar a ligação de assinatura de {{name}}",
+    "shareTitle": "Documento para assinar",
+    "shareText": "Olá {{name}}, assine aqui, por favor:",
+    "message": "Olá {{name}}, assine aqui, por favor: {{url}}",
+    "copyFailed": "Não foi possível copiar. Selecione a ligação abaixo e copie-a manualmente.",
+    "retry": "Tentar novamente",
+    "done": "Concluído",
+    "error": {
+      "inactive": "Este pedido já não está ativo, pelo que não existem ligações de assinatura.",
+      "forbidden": "Não tem permissão para ver as ligações de assinatura.",
+      "provider": "O serviço de assinatura não está acessível neste momento. Tente novamente dentro de instantes.",
+      "generic": "Não foi possível carregar as ligações de assinatura."
+    }
   }
 }

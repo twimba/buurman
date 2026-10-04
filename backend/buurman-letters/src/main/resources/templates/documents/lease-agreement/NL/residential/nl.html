@@ -1,0 +1,234 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Each clause-<key> fragment holds only the clause body; the shell
+  supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Ondergetekenden:</p>
+  <p><strong th:text="${landlordName}">verhuurder</strong>, hierna te noemen &ldquo;de verhuurder&rdquo;, en</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">huurder</strong>, hierna
+    (gezamenlijk) te noemen &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">de hieronder ondertekende huurder(s), hierna (gezamenlijk) te
+    noemen &ldquo;de huurder&rdquo;,</p>
+  <p>verklaren te zijn overeengekomen zoals in deze huurovereenkomst is bepaald. Noemt deze overeenkomst
+    meer dan 1 huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle
+    verplichtingen van de huurder uit deze overeenkomst.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>De verhuurder verhuurt aan de huurder, die in huur aanneemt, de woonruimte gelegen aan
+    <strong th:text="${propertyAddress}">adres</strong>, met de daarbij behorende onroerende aanhorigheden,
+    hierna te noemen &ldquo;het gehuurde&rdquo;.</p>
+  <p>Op deze overeenkomst zijn de wettelijke bepalingen over huur van woonruimte van toepassing (Boek 7,
+    titel 4, afdeling 5 van het Burgerlijk Wetboek). Voor zover de wet bepaalt dat daarvan niet ten nadele van
+    de huurder kan worden afgeweken, gaan die bepalingen voor op afwijkende afspraken in deze
+    overeenkomst.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Deze overeenkomst gaat in op <strong th:text="${startDate}">ingangsdatum</strong>.</p>
+  <p th:if="${!fixedTerm}">De overeenkomst is aangegaan voor onbepaalde tijd.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>De overeenkomst is aangegaan voor bepaalde tijd<span th:if="${endDate != null}">, tot en met
+      <strong th:text="${endDate}">einddatum</strong></span>. Een voor bepaalde tijd aangegane huur van
+      woonruimte eindigt niet door het enkele verloop van de huurtijd. Elk van beide partijen kan de huur
+      opzeggen tegen een voor de betaling van de huurprijs overeengekomen dag, maar niet eerder dan tegen het
+      einde van de bepaalde tijd (artikel 7:271 lid 1 BW).</p>
+    <p>Dit is alleen anders bij een huur voor ten hoogste 2 jaar aan een huurder die behoort tot een bij
+      algemene maatregel van bestuur aangewezen categorie (artikel 7:271 lid 2 BW). In dat geval informeert de
+      verhuurder de huurder niet eerder dan 3 maanden en uiterlijk 1 maand v&oacute;&oacute;r het verstrijken
+      van de huurtermijn schriftelijk over de dag waarop de huur eindigt; doet de verhuurder dat niet, dan wordt
+      de huur na het verstrijken van de termijn voor onbepaalde tijd verlengd. De huurder kan zo&rsquo;n huur ook
+      v&oacute;&oacute;r het verstrijken van de termijn opzeggen tegen een voor de betaling van de huurprijs
+      overeengekomen dag.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>De huurprijs voor het enkele gebruik van het gehuurde (kale huurprijs, artikel 7:237 lid 2 BW) bedraagt
+    <strong th:text="${rentAmount}">bedrag</strong> <span th:text="${paymentFrequency}">per maand</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Daarnaast is de huurder de
+    vergoedingen voor nutsvoorzieningen en servicekosten verschuldigd (zie artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Voor zover op het gehuurde een wettelijke maximale huurprijs van toepassing is, waaronder de regels die
+    met de Wet betaalbare huur per 1 juli 2024 zijn ingevoerd, is de huurder niet meer verschuldigd dan die
+    maximale huurprijs. De huurder kan tot uiterlijk 6 maanden na het ingaan van een door hem voor de eerste
+    maal met betrekking tot deze woonruimte aangegane huurovereenkomst de huurcommissie verzoeken uitspraak te
+    doen over de redelijkheid van de overeengekomen huurprijs (artikel 7:249 BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Voor de aanpassing van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>De verhuurder kan de huurprijs 1 maal per jaar aanpassen, voor het eerst 12 maanden na de
+    ingangsdatum van deze overeenkomst. De verhuurder deelt de aanpassing, met vermelding van de geldende en de
+    nieuwe huurprijs en de ingangsdatum, tijdig en schriftelijk aan de huurder mee.</p>
+  <p>De aanpassing is nooit hoger dan de wettelijk maximaal toegestane huurverhoging die op de ingangsdatum
+    van de aanpassing voor het gehuurde geldt. Leidt dit beding tot een hogere verhoging dan wettelijk is
+    toegelaten, dan is het beding in zoverre nietig en geldt de huurprijs als verhoogd met de toegelaten
+    verhoging (artikel 7:248 BW). Voor zover de wet dat toelaat, kan de huurder de huurcommissie verzoeken
+    uitspraak te doen over een verhoging.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Naast de huurprijs betaalt de huurder per betalingstermijn een voorschot op de kosten voor
+    nutsvoorzieningen met een individuele meter en op de servicekosten (artikel 7:237 lid 3 BW), zoals in deze
+    overeenkomst vermeld.</p>
+  <p>De verhuurder verstrekt de huurder elk jaar, uiterlijk 6 maanden na het verstrijken van een
+    kalenderjaar, een naar soort uitgesplitst overzicht van de in dat kalenderjaar in rekening gebrachte kosten,
+    met vermelding van de wijze van berekening (artikel 7:259 lid 2 BW). Wat te veel of te weinig aan
+    voorschotten is betaald, wordt na verstrekking van dat overzicht tussen partijen verrekend.</p>
+  <p>Bereiken partijen geen overeenstemming over de verschuldigde kosten, dan kan ieder van hen de
+    huurcommissie verzoeken daarover uitspraak te doen (artikel 7:260 BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">De huurder betaalt bij aanvang van de huur een waarborgsom van
+    <strong th:text="${depositAmount}">bedrag</strong>.</p>
+  <p th:if="${depositAmount == null}">De huurder betaalt bij aanvang van de huur een waarborgsom ter hoogte van
+    het tussen partijen schriftelijk overeengekomen bedrag.</p>
+  <p>De waarborgsom strekt tot zekerheid van de nakoming van wat in deze overeenkomst is overeengekomen en
+    bedraagt ten hoogste 2 maal de kale huurprijs (artikel 7:261b leden 1 en 2 BW).</p>
+  <p>De verhuurder betaalt de waarborgsom terug binnen 14 dagen na beëindiging van de huurovereenkomst.
+    Is er schade aan het gehuurde waarvoor de huurder aansprakelijk is, of heeft de huurder nog huurprijs,
+    servicekosten of een energieprestatievergoeding te voldoen, dan betaalt de verhuurder het restant terug
+    binnen 30 dagen na beëindiging, na verrekening van de aantoonbaar gemaakte herstelkosten
+    respectievelijk de nog verschuldigde bedragen. Van een verrekening stelt de verhuurder de huurder
+    schriftelijk in kennis, met een volledige kostenspecificatie (artikel 7:261b leden 3 en 4 BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Voor de vaststelling
+    van schade geldt de oplevering (zie artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zie artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> en de voorschotten op de servicekosten</span>
+    <span th:text="${paymentFrequency}">per maand</span><span th:if="${paymentDueDay == 1}"> bij
+    vooruitbetaling</span>,
+    <span th:if="${paymentDueDay != null}">uiterlijk op de <strong th:text="${paymentDueDay}">1</strong>e dag van
+      de maand waarin de betalingstermijn aanvangt</span><span th:if="${paymentDueDay == null}">uiterlijk op de tussen partijen
+      overeengekomen betaaldag</span>, door overmaking naar de rekening die de verhuurder daarvoor schriftelijk
+    heeft opgegeven.</p>
+  <p>Betaalt de huurder niet tijdig, dan is hij over het achterstallige bedrag de wettelijke rente
+    verschuldigd, en vergoedt hij buitengerechtelijke incassokosten uitsluitend voor zover de wet dat
+    toestaat.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>De huurder gebruikt het gehuurde uitsluitend als woonruimte en gedraagt zich ten aanzien van het gebruik
+    als een goed huurder (artikel 7:213 BW). De huurder en degenen die zich met zijn toestemming in het
+    gehuurde bevinden, veroorzaken geen overlast voor omwonenden.</p>
+  <p>Veranderingen aan de inrichting of gedaante van het gehuurde die bij het einde van de huur niet zonder
+    noemenswaardige kosten ongedaan kunnen worden gemaakt, brengt de huurder alleen aan na schriftelijke
+    toestemming van de verhuurder. De verhuurder verleent binnen 8 weken toestemming in ieder geval als de
+    verandering de verhuurbaarheid niet schaadt en niet tot een waardedaling van het gehuurde leidt
+    (artikel 7:215 BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>De huurder geeft het gehuurde niet geheel of gedeeltelijk aan een ander in gebruik, tenzij de verhuurder
+    daarvoor vooraf schriftelijk toestemming heeft gegeven.</p>
+  <p>Heeft de huurder in het gehuurde, als dat een zelfstandige woning is, zijn hoofdverblijf, dan is hij
+    wettelijk bevoegd een deel daarvan aan een ander in gebruik te geven (artikel 7:244 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>De verhuurder verhelpt op verlangen van de huurder gebreken aan het gehuurde, tenzij dit onmogelijk is
+    of uitgaven vereist die in de gegeven omstandigheden redelijkerwijs niet van de verhuurder zijn te vergen
+    (artikel 7:206 BW). De huurder meldt een gebrek zo spoedig mogelijk aan de verhuurder.</p>
+  <p>De huurder verricht op eigen kosten de kleine herstellingen, tenzij deze nodig zijn geworden doordat de
+    verhuurder is tekortgeschoten in zijn verplichting gebreken te verhelpen (artikel 7:217 BW). Welke
+    herstellingen als klein gelden, volgt uit de wettelijke regeling daarvan.</p>
+  <p>Is de verhuurder met het verhelpen van een gebrek in verzuim, dan kan de huurder het gebrek zelf
+    verhelpen en de redelijke kosten op de verhuurder verhalen, desgewenst door die in mindering op de
+    huurprijs te brengen (artikel 7:206 lid 3 BW). Van deze regels kan niet ten nadele van de huurder worden
+    afgeweken (artikel 7:242 BW).</p>
+  <p>De huurder geeft de verhuurder gelegenheid tot het uitvoeren van dringende werkzaamheden aan het
+    gehuurde, onverminderd zijn wettelijke aanspraken op huurvermindering, ontbinding en schadevergoeding
+    (artikel 7:220 lid 1 BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Bij nieuwe verhuur van een bestaande woning is een geldig energielabel verplicht op grond van het
+    Besluit bouwwerken leefomgeving. De verhuurder verstrekt de huurder uiterlijk bij het aangaan van deze
+    overeenkomst een afschrift van het geldige energielabel van het gehuurde. Een energielabel is geldig tot de
+    op het label vermelde datum.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Bij aanvang van de huur maken partijen gezamenlijk een beschrijving op van de staat van het gehuurde
+    (opnamerapport). Beide partijen ondertekenen de beschrijving en ieder ontvangt een exemplaar.</p>
+  <p>Bij het einde van de huur stelt de huurder het gehuurde weer ter beschikking van de verhuurder, in de
+    staat waarin hij het volgens die beschrijving heeft aanvaard, met uitzondering van geoorloofde veranderingen
+    en toevoegingen en van wat door ouderdom is tenietgegaan of beschadigd. Is geen beschrijving opgemaakt, dan
+    wordt de huurder, behoudens tegenbewijs, verondersteld het gehuurde te hebben ontvangen in de staat waarin
+    het zich bij het einde van de huur bevindt (artikel 7:224 BW).</p>
+  <p>Partijen voeren v&oacute;&oacute;r het einde van de huur een gezamenlijke voorinspectie uit, zodat de
+    huurder eventuele gebreken nog zelf kan herstellen, en bij de oplevering een eindinspectie.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> De afrekening van de waarborgsom volgt
+    daarna (zie artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Opzegging van deze overeenkomst geschiedt bij deurwaardersexploot of bij aangetekende brief, tegen een
+    voor de betaling van de huurprijs overeengekomen dag (artikel 7:271 leden 3 en 4 BW).</p>
+  <p>De huurder neemt een opzegtermijn in acht die gelijk is aan de tijd tussen 2 opeenvolgende
+    betaaldagen, maar niet korter dan 1 maand en niet langer dan 3 maanden (artikel 7:271 lid 6 onder a
+    BW).</p>
+  <p th:if="${fixedTerm}">Is de huur voor bepaalde tijd aangegaan, dan kan in afwijking hiervan geen van beide
+    partijen opzeggen tegen een dag die valt v&oacute;&oacute;r het einde van de bepaalde tijd<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (zie artikel <span th:text="${refs['term']}"></span>)</span>;
+    de opzegtermijnen van dit artikel gelden dan voor opzegging tegen dat einde of een latere betaaldag
+    (artikel 7:271 lid 1 BW). Alleen bij een tijdelijke huur als bedoeld in artikel 7:271 lid 2 BW kan de
+    huurder ook eerder opzeggen.</p>
+  <p>De verhuurder kan slechts opzeggen op een van de gronden die de wet daarvoor noemt (artikel 7:274 lid 1
+    BW) en vermeldt die gronden in de opzegging; een opzegging op andere gronden is nietig. De opzegtermijn voor
+    de verhuurder is ten minste 3 maanden, verlengd met 1 maand voor elk jaar dat de huurder het gehuurde
+    krachtens overeenkomst ononderbroken in gebruik heeft gehad, tot ten hoogste 6 maanden. Bij de opzegging
+    vraagt de verhuurder de huurder binnen 6 weken mee te delen of hij in de beëindiging toestemt (artikel
+    7:271 leden 5 en 6 onder b BW). Stemt de huurder niet schriftelijk in, dan blijft de overeenkomst van kracht
+    totdat de rechter onherroepelijk heeft beslist op een vordering van de verhuurder (artikel 7:272 BW).</p>
+  <p>Partijen kunnen de huur, nadat deze is ingegaan, ook met wederzijds goedvinden beëindigen
+    (artikel 7:271 lid 10 BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Voor de oplevering geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> De waarborgsom wordt terugbetaald zoals
+    in deze overeenkomst bepaald (zie artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>De verhuurder verwerkt persoonsgegevens van de huurder alleen voor zover dat nodig is voor het aangaan en
+    uitvoeren van deze overeenkomst en voor het voldoen aan wettelijke verplichtingen, overeenkomstig de
+    Algemene verordening gegevensbescherming (AVG, Verordening (EU) 2016/679). De verhuurder bewaart die
+    gegevens niet langer dan daarvoor noodzakelijk is.</p>
+  <p>De huurder kan bij de verhuurder zijn rechten op grond van de AVG uitoefenen, waaronder het recht op
+    inzage, rectificatie en wissing van zijn persoonsgegevens, en kan een klacht indienen bij de
+    toezichthoudende autoriteit, in Nederland de Autoriteit Persoonsgegevens.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Op deze overeenkomst is Nederlands recht van toepassing.</p>
+  <p>Geschillen waarover de huurcommissie volgens de wet uitspraak kan doen, zoals over de redelijkheid van de
+    huurprijs en over servicekosten, kunnen partijen aan de huurcommissie voorleggen. Partijen worden geacht te
+    zijn overeengekomen wat de huurcommissie in haar uitspraak heeft vastgesteld, tenzij een van hen binnen
+    8 weken nadat een afschrift van de uitspraak is verzonden een beslissing van de rechter vordert
+    (artikel 7:262 BW). Andere geschillen worden voorgelegd aan de bevoegde rechter.</p>
+</div>
+
+</body>
+</html>

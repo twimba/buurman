@@ -122,6 +122,7 @@ public class DocumentRepository {
           .set(DOCUMENTS.MIME_TYPE, document.getMimeType())
           .set(DOCUMENTS.TITLE, document.getTitle().orElse(null))
           .set(DOCUMENTS.NOTES, document.getNotes().orElse(null))
+          .set(DOCUMENTS.SOURCE_DOCUMENT_ID, document.getSourceDocumentId().orElse(null))
           .set(DOCUMENTS.UPLOADED_BY, document.getUploadedBy())
           .set(DOCUMENTS.UPLOADED_AT, uploadedAt)
           .execute();

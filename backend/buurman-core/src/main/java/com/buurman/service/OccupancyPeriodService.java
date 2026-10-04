@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.PropertyFinancing;
@@ -38,6 +39,7 @@ import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFinancingRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
@@ -58,6 +60,7 @@ public class OccupancyPeriodService {
   private final UnitRepository unitRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PropertyAcquisitionRepository acquisitionRepository;
   private final PropertyFinancingRepository financingRepository;
   private final Clock clock;
@@ -325,6 +328,8 @@ public class OccupancyPeriodService {
     java.util.Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream()
             .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+    java.util.Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
 
     List<TimelineEntry> entries = new ArrayList<>();
 
@@ -347,7 +352,8 @@ public class OccupancyPeriodService {
       }
       List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
       Optional<LocalDate> effectiveEndDate =
-          EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts);
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              c.getEndDate(), exts, Optional.ofNullable(terminationsByContract.get(c.getId())));
       entries.add(
           new TimelineEntry(
               TimelineEntryType.CONTRACT,
@@ -392,6 +398,8 @@ public class OccupancyPeriodService {
     java.util.Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream()
             .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+    java.util.Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
 
     for (Contract c : contracts) {
       if (c.getStartDate() == null) {
@@ -403,7 +411,8 @@ public class OccupancyPeriodService {
       }
       List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
       Optional<LocalDate> effectiveEndDate =
-          EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts);
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              c.getEndDate(), exts, Optional.ofNullable(terminationsByContract.get(c.getId())));
       LocalDate contractEnd = effectiveEndDate.orElse(LocalDate.of(9999, 12, 31));
       boolean overlaps = !startDate.isAfter(contractEnd) && !endDate.isBefore(c.getStartDate());
       if (overlaps) {

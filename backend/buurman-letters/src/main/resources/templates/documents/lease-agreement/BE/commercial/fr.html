@@ -1,0 +1,338 @@
+<!--
+  legal-basis: Handelshuurwet: wet van 30 april 1951, inserted as oud Burgerlijk Wetboek, boek III, titel VIII,
+               hoofdstuk II, afdeling 2bis "Regels betreffende de handelshuur in het bijzonder", art. 1-31, consolidated
+               text www.ejustice.just.fgov.be (Justel 1951043003, text updated to 14-05-2019), with the regional
+               versions: art. 1 (Walloon Region: § 2 and § 3, DWG 2018-07-17, in force 18-10-2018), art. 2, 1° (Flemish
+               Region: DVR 2016-06-17, in force 01-09-2016; Walloon Region: DWG 2018-03-15, in force 01-05-2018;
+               Brussels-Capital Region: ORD 2019-04-25, in force 19-05-2019: a lease concluded in writing for 1 year or
+               less is excluded and governed by the regional short-term commercial lease rules), art. 3 and 13 (Walloon
+               Region: agreement evidenced by a written document presented for registration, DWG 2018-03-15, in force
+               07-04-2018). Commercial leases are a regional competence since the sixth state reform; no region has
+               replaced the Handelshuurwet itself (checked 2026-10-04; Flemish Parliament proposals on brewery-tied
+               leases not adopted). Region branches on countryCode == 'BE' and the catalog region codes VLG / WAL / BRU
+               only where the regional versions differ (art. 1, 3, 13); general text otherwise.
+               Oud Burgerlijk Wetboek (Justel PDF 1804032154, updated to 28-05-2024): art. 1720, 1724, 1728bis, 1730,
+               1731, 1754, 1762bis (general lease rules, applicable to commercial leases in all regions).
+               VAT: Btw-Wetboek (exemption of the letting of immovable property and the optional taxed letting of
+               business buildings, cited generally). Registration duties: fiscal law, cited generally.
+               GDPR: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against www.ejustice.just.fgov.be.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 jaar huur" is "3 years' rent" in English, "3 années de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Draft text, not vetted by legal counsel. Reflects Belgian law in French (translation of nl.html, which is
+  authoritative; bail commercial: lease of premises used mainly for retail trade or by a craftsman in direct contact
+  with the public). Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and
+  titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers
+  of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>forme juridique, siège social et numéro d'entreprise (Banque-Carrefour des Entreprises)&nbsp;:
+    ______________________________</p>
+  <p>numéro d'identification à la TVA&nbsp;: ______________________________</p>
+  <p>représenté par&nbsp;: ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">preneur</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le preneur&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les preneurs soussignés, ci-après (ensemble) &laquo;&nbsp;le
+    preneur&nbsp;&raquo;,</p>
+  <p>forme juridique, siège social et numéro d'entreprise (Banque-Carrefour des Entreprises)&nbsp;:
+    ______________________________</p>
+  <p>numéro d'identification à la TVA&nbsp;: ______________________________</p>
+  <p>représenté par&nbsp;: ______________________________,</p>
+  <p>il est conclu le présent bail commercial. Lorsqu'il y a plusieurs preneurs, ils sont tenus solidairement et
+    indivisiblement de toutes les obligations découlant du présent bail.</p>
+  <p>Le présent bail est soumis aux règles particulières aux baux commerciaux (livre III, titre VIII, chapitre II,
+    section 2bis, de l'ancien Code civil, ci-après &laquo;&nbsp;la loi sur les baux commerciaux&nbsp;&raquo;) et, pour
+    le surplus, aux règles générales de l'ancien Code civil relatives au louage des choses. Depuis la sixième réforme
+    de l'État, les Régions sont compétentes pour le bail commercial&nbsp;; la loi sur les baux commerciaux reste
+    applicable dans les 3 Régions, avec les modifications apportées par chaque Région.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur donne en location au preneur, qui accepte, l'immeuble situé
+    <strong th:text="${propertyAddress}">adresse</strong>, d'une superficie d'environ ________ m², comprenant&nbsp;:
+    ______________________________, ci-après &laquo;&nbsp;le bien loué&nbsp;&raquo;.</p>
+  <p>Locaux affectés à l'habitation ou locaux accessoires loués avec le bien&nbsp;: ______________________________.
+    Lorsque des locaux affectés à l'habitation font partie de l'ensemble de l'établissement commercial et que le
+    bailleur est le même, ou que des locaux accessoires sont nécessaires à l'exercice du commerce et que cette
+    affectation est expressément mentionnée dans le présent bail, la durée légale s'applique aussi à ces locaux
+    (article 4 de la loi sur les baux commerciaux).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Le bien loué est affecté principalement au commerce de détail ou à l'activité d'artisan directement en contact
+    avec le public suivant&nbsp;: ______________________________. Toute autre activité requiert l'accord préalable et
+    écrit du bailleur. Le preneur se procure les autorisations nécessaires à son activité.</p>
+  <p>La loi sur les baux commerciaux s'applique aux baux d'immeubles qui, soit de manière expresse ou tacite dès
+    l'entrée en jouissance du preneur, soit de l'accord exprès des parties en cours de bail, sont affectés
+    principalement par le preneur ou par un sous-locataire à l'exercice d'un commerce de détail ou à l'activité d'un
+    artisan directement en contact avec le public (article 1 de la loi sur les baux commerciaux). Un bail conclu par
+    écrit pour une durée de 1 an au plus n'y est pas soumis et relève des règles régionales sur le bail commercial de
+    courte durée (article 2 de la loi sur les baux commerciaux). Si l'usage ne relève pas de la loi sur les baux
+    commerciaux, les règles générales de l'ancien Code civil s'appliquent et les stipulations du présent bail relatives
+    à la durée, au renouvellement et à l'indemnité d'éviction n'ont qu'une valeur contractuelle.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">En Région wallonne, la loi sur les baux commerciaux
+    s'applique aussi intégralement aux baux conclus dans le cadre d'un accord de partenariat commercial au sens de
+    l'article I.11, 2°, du Code de droit économique, et toute clause portant exclusivement sur les locaux loués pour
+    l'exploitation d'une marque déterminée est réputée non écrite (article 1, § 3, de la loi sur les baux
+    commerciaux).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail prend cours le <strong th:text="${startDate}">date de prise de cours</strong>.</p>
+  <p th:if="${fixedTerm}">Il est conclu pour une durée déterminée<span th:if="${endDate != null}"> et prend fin le
+    <strong th:text="${endDate}">date de fin</strong></span>&nbsp;; la durée du bail ne peut être inférieure à
+    9 ans (article 3 de la loi sur les baux commerciaux).</p>
+  <p th:if="${!fixedTerm}">Il est conclu pour une durée de 9 ans, durée minimale légale (article 3 de la loi sur les
+    baux commerciaux).</p>
+  <p>Le preneur peut mettre fin au bail en cours à l'expiration de chaque triennat, moyennant un préavis d'au moins
+    6 mois notifié par exploit d'huissier ou par lettre recommandée.</p>
+  <p>Faculté pour le bailleur de mettre fin au bail à l'expiration de chaque triennat, moyennant un préavis de 1 an
+    notifié par exploit d'huissier ou par lettre recommandée, en vue d'exercer effectivement lui-même un commerce dans
+    l'immeuble ou de le faire exercer effectivement par les proches ou la société de personnes visés à l'article 3 de
+    la loi sur les baux commerciaux, à toutes les conditions de cet article&nbsp;: accordée / non accordée (biffer la
+    mention inutile). Le bailleur qui fait usage de cette faculté peut être redevable d'une indemnité d'éviction
+    (article 26 de la loi sur les baux commerciaux).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Les parties peuvent mettre fin au bail en cours à tout
+    moment d'un commun accord, à condition que leur accord soit constaté par un écrit présenté à l'enregistrement
+    (article 3 de la loi sur les baux commerciaux, tel qu'applicable en Région wallonne).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">Les parties peuvent mettre fin
+    au bail en cours à tout moment d'un commun accord, à condition que leur accord soit constaté par acte authentique
+    ou par une déclaration faite devant le juge (article 3 de la loi sur les baux commerciaux).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Les
+    parties peuvent mettre fin au bail en cours à tout moment d'un commun accord, à condition que leur accord soit
+    constaté dans la forme prescrite par la Région&nbsp;: un acte authentique ou une déclaration faite devant le juge
+    en Région flamande et en Région de Bruxelles-Capitale, un écrit présenté à l'enregistrement en Région wallonne
+    (article 3 de la loi sur les baux commerciaux).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer, hors frais, charges et impôts, s'élève à <strong th:text="${rentAmount}">montant</strong>
+    (<span th:text="${paymentFrequency}">par mois</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Le preneur paie en outre les frais et charges (voir l'article
+    <span th:text="${refs['service-costs']}"></span>).</span><span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> La taxe sur la valeur ajoutée obéit aux stipulations du présent bail (voir l'article
+    <span th:text="${refs['vat']}"></span>).</span></p>
+  <p>Les parties fixent librement le loyer.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">L'indexation et la révision
+    du loyer obéissent aux stipulations du présent bail (voir l'article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Indexation du loyer convenue&nbsp;: oui / non (biffer la mention inutile). Si une adaptation du loyer au coût de
+    la vie a été convenue, elle n'est admise que 1 fois par année de location et au plus tôt au jour anniversaire de
+    l'entrée en vigueur du bail&nbsp;; le loyer adapté ne peut dépasser&nbsp;: loyer de base x nouvel indice / indice
+    de départ, calculé sur la base de l'indice calculé et nommé à cet effet (indice santé)&nbsp;; le nouvel indice est
+    celui du mois qui précède celui de l'anniversaire, l'indice de départ celui du mois qui précède le mois pendant
+    lequel la convention a été conclue. Les dispositions contractuelles qui vont au-delà sont réductibles à cette
+    adaptation (article 1728bis de l'ancien Code civil). Indice de départ (mois et année de base)&nbsp;: ______________________________</p>
+  <p>À l'expiration de chaque triennat, chaque partie peut demander au juge de paix la révision du loyer, à charge
+    d'établir que la valeur locative normale du bien loué est, par le fait de circonstances nouvelles, supérieure ou
+    inférieure de 15 % au moins au loyer stipulé dans le bail ou fixé lors de la dernière révision. Le juge statue en
+    équité, sans tenir compte du rendement favorable ou défavorable dû exclusivement au preneur. La demande ne peut
+    être introduite qu'au cours des 3 derniers mois du triennat en cours&nbsp;; le loyer révisé produit ses effets à
+    compter du premier jour du triennat suivant (article 6 de la loi sur les baux commerciaux).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Outre le loyer, le preneur paie les frais, charges et impôts suivants, énumérés ici de manière limitative, avec
+    leur clé de répartition et l'indication de leur caractère forfaitaire ou provisionnel&nbsp;: ______________________________&nbsp;;
+    montant du forfait ou de la provision&nbsp;: ________ euros par mois.</p>
+  <p>Les provisions font l'objet d'un décompte au moins annuel sur la base des dépenses réelles&nbsp;; le bailleur
+    tient les justificatifs à la disposition du preneur. Les frais et charges non mentionnés dans le présent bail
+    restent à charge du bailleur.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>La location de biens immeubles est en principe exemptée de la taxe sur la valeur ajoutée, sauf exceptions et
+    sauf la possibilité d'opter, aux conditions du Code de la TVA, pour une location de bâtiments professionnels
+    soumise à la TVA.</p>
+  <p>Option pour une location soumise à la TVA&nbsp;: oui / non (biffer la mention inutile). Si les parties optent
+    pour cette taxation ou si la location est taxable de plein droit, le loyer et les charges sont majorés de la TVA
+    au taux en vigueur, et le bailleur mentionne la TVA sur ses factures.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Pour assurer le respect de ses obligations, le preneur constitue une garantie
+    locative de <strong th:text="${depositAmount}">montant</strong>.</p>
+  <p th:if="${depositAmount == null}">Pour assurer le respect de ses obligations, le preneur constitue une garantie
+    locative du montant convenu par écrit entre les parties.</p>
+  <p>Forme de la garantie locative (compte bloqué au nom du preneur, garantie bancaire ou autre forme)&nbsp;:
+    ______________________________</p>
+  <p>Pour le bail commercial, la loi ne fixe ni montant maximal ni forme obligatoire de la garantie locative&nbsp;;
+    les plafonds régionaux applicables au bail d'habitation ne s'appliquent pas. La garantie est libérée à la fin du
+    bail, déduction faite des sommes dues par le preneur au bailleur.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le preneur paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> et les frais et
+    charges</span> par terme (<span th:text="${paymentFrequency}">par mois</span>),
+    <span th:if="${paymentDueDay != null}">au plus tard le jour <strong th:text="${paymentDueDay}">1</strong> de
+      chaque période de paiement</span><span th:if="${paymentDueDay == null}">au jour convenu entre les
+      parties</span>, par virement sur le compte bancaire du bailleur portant le numéro (IBAN)&nbsp;: ______________________________</p>
+  <p>En cas de retard de paiement, le preneur doit, après mise en demeure, les intérêts au taux légal sur les sommes
+    arriérées, sans préjudice d'une clause indemnitaire convenue ci-après par les parties&nbsp;:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur délivre le bien loué en bon état de réparations de toute espèce et y fait, pendant la durée du bail,
+    toutes les réparations qui peuvent devenir nécessaires, autres que les réparations locatives (article 1720 de
+    l'ancien Code civil). Sauf stipulation contraire ci-dessous, le preneur est tenu des réparations locatives ou de
+    menu entretien désignées comme telles par l'usage des lieux (article 1754 de l'ancien Code civil).</p>
+  <p>Le preneur souffre les réparations urgentes qui ne peuvent être différées jusqu'à la fin du bail&nbsp;; si elles
+    durent plus de 40 jours, le loyer est diminué à proportion du temps et de la partie du bien loué dont il a été
+    privé (article 1724 de l'ancien Code civil).</p>
+  <p>Répartition dérogatoire des réparations et de l'entretien entre les parties&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Le preneur a le droit d'effectuer dans le bien loué toutes transformations utiles à son entreprise dont le coût
+    ne dépasse pas 3 années de loyer, à condition qu'elles ne compromettent ni la sécurité, ni la salubrité, ni la
+    valeur esthétique du bâtiment et qu'il informe préalablement le bailleur, par lettre recommandée ou par exploit
+    d'huissier, de toutes les transformations envisagées, en communiquant les plans et devis. Le bailleur qui entend
+    s'y opposer pour de justes motifs le fait dans les mêmes formes dans les 30 jours de la réception de
+    l'avis, faute de quoi il est présumé y consentir&nbsp;; le preneur qui persiste dans son intention le cite dans les
+    30 jours (article 7 de la loi sur les baux commerciaux).</p>
+  <p>Les travaux sont exécutés aux risques du preneur et le bailleur peut exiger que le preneur assure sa
+    responsabilité à cet égard (article 8 de la loi sur les baux commerciaux). Si des transformations ont été
+    effectuées aux frais du preneur avec l'accord exprès ou tacite du bailleur ou en vertu d'une décision judiciaire,
+    le bailleur ne peut, sauf convention contraire, en exiger l'enlèvement au départ du preneur, mais il peut s'y
+    opposer&nbsp;; si elles ne sont pas enlevées, il paie à son choix la valeur des matériaux et de la main-d'œuvre ou
+    la plus-value acquise par le bien. Pour les transformations faites sans autorisation, le bailleur peut exiger la
+    remise des lieux dans leur état antérieur, sans préjudice de dommages et intérêts, ou les conserver sans indemnité
+    (article 9 de la loi sur les baux commerciaux).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Sous réserve de ce qui suit, le preneur ne peut céder le bail ni sous-louer le bien sans l'accord préalable et
+    écrit du bailleur.</p>
+  <p>L'interdiction de céder le bail ou de sous-louer le bien ne peut faire obstacle à une cession ou à une
+    sous-location faite en même temps que la cession ou la location du fonds de commerce et portant sur l'intégralité
+    des droits du locataire principal, sauf si le bailleur ou sa famille habite une partie de l'immeuble. Le preneur
+    signifie le projet d'acte au bailleur par lettre recommandée ou par exploit d'huissier&nbsp;; le bailleur qui a de
+    justes motifs de s'y opposer notifie son opposition motivée dans les mêmes formes dans les 30 jours de la
+    signification, faute de quoi il est présumé y consentir. L'opposition est notamment fondée lorsque le preneur
+    exerce le commerce dans le bien loué depuis moins de 2 ans ou a obtenu le renouvellement depuis moins de 2 ans,
+    sauf décès ou autres circonstances exceptionnelles&nbsp;; le preneur peut se pourvoir en justice contre
+    l'opposition dans les 15 jours (article 10 de la loi sur les baux commerciaux). En cas de cession, le preneur
+    originaire reste solidairement tenu de toutes les obligations découlant du bail (article 11 de la loi sur les baux
+    commerciaux).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Le preneur assure sa responsabilité pour l'incendie et les dégâts des eaux, sa responsabilité locative ainsi que
+    le contenu et l'aménagement du bien loué&nbsp;; le bailleur assure le bâtiment. Chaque partie fournit à l'autre, à
+    sa demande, la preuve de l'assurance et du paiement de la prime.</p>
+  <p>Assureurs, numéros de police et éventuel abandon de recours réciproque&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Dans la mesure où la réglementation de la Région où le bien est situé requiert un certificat de performance
+    énergétique pour la location du bien loué, le bailleur en dispose et en remet une copie au preneur.</p>
+  <p>Numéro, date et classe énergétique ou indice de performance du certificat&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>Le bail est présenté à l'enregistrement dans le délai et moyennant le droit fixés par la législation
+    fiscale&nbsp;; l'enregistrement lui confère date certaine à l'égard des tiers.</p>
+  <p>Partie qui supporte les droits d'enregistrement&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Les parties dressent contradictoirement et à frais communs un état des lieux détaillé, soit au cours de la
+    période où les locaux sont inoccupés, soit au cours du premier mois d'utilisation&nbsp;; il est annexé au bail et
+    enregistré. À défaut d'accord, le juge de paix désigne un expert sur requête (article 1730 de l'ancien Code
+    civil).</p>
+  <p>S'il a été fait un état des lieux détaillé, le preneur doit rendre le bien tel qu'il l'a reçu suivant cet état,
+    excepté ce qui a péri ou a été dégradé par vétusté ou force majeure&nbsp;; à défaut, le preneur est présumé avoir
+    reçu le bien dans l'état où il se trouve à la fin du bail, sauf preuve contraire (article 1731 de l'ancien Code
+    civil).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La libération de la garantie
+    locative suit l'état des lieux de sortie (voir l'article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>Le preneur a le droit d'obtenir, de préférence à toutes autres personnes, le renouvellement de son bail pour
+    continuer le même commerce, soit à l'expiration de celui-ci, soit à l'expiration du premier ou du deuxième
+    renouvellement, chaque fois pour une durée de 9 ans&nbsp;; ce droit est limité à 3 renouvellements (article 13 de
+    la loi sur les baux commerciaux).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Une autre durée du renouvellement ne peut être convenue
+    que par un accord des parties constaté par un écrit présenté à l'enregistrement (article 13 de la loi sur les baux
+    commerciaux, tel qu'applicable en Région wallonne).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">Une autre durée du
+    renouvellement ne peut être convenue que par un accord des parties constaté par acte authentique ou par une
+    déclaration faite devant le juge (article 13 de la loi sur les baux commerciaux).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Une
+    autre durée du renouvellement ne peut être convenue que par un accord des parties dans la forme prescrite par la
+    Région&nbsp;: un acte authentique ou une déclaration faite devant le juge en Région flamande et en Région de
+    Bruxelles-Capitale, un écrit présenté à l'enregistrement en Région wallonne.</p>
+  <p>Le preneur qui souhaite le renouvellement le notifie au bailleur, à peine de déchéance, par exploit d'huissier ou
+    par lettre recommandée, 18 mois au plus tôt et 15 mois au plus tard avant l'expiration du bail en cours. La
+    notification indique, à peine de nullité, les conditions auxquelles le preneur est disposé à conclure le nouveau
+    bail, et que le bailleur est présumé consentir au renouvellement à ces conditions s'il ne notifie pas dans les
+    mêmes formes, dans les 3 mois, son refus motivé, d'autres conditions ou l'offre d'un tiers (article 14 de la loi
+    sur les baux commerciaux).</p>
+  <p>Le bailleur peut refuser le renouvellement pour l'un des motifs et aux conditions de l'article 16 de la loi sur
+    les baux commerciaux, ou sans motif moyennant le paiement d'une indemnité d'éviction égale à 3 années de loyer,
+    éventuellement majorée d'une somme suffisante pour réparer intégralement le préjudice causé. Si le preneur a
+    régulièrement manifesté sa volonté d'obtenir le renouvellement et que celui-ci lui est refusé, il a droit, dans
+    les cas de l'article 25 de la loi sur les baux commerciaux, à l'indemnité d'éviction forfaitaire qui y est
+    prévue&nbsp;; tant qu'il n'a pas reçu l'indemnité à laquelle il a droit, ou la partie de celle-ci qui n'est pas
+    sérieusement contestée, il peut conserver la jouissance du bien sans être redevable d'aucun loyer (article 27 de la
+    loi sur les baux commerciaux).</p>
+  <p>À partir du début du dix-huitième mois précédant l'expiration du bail en cours, le preneur permet, selon
+    l'usage, la visite du bien par d'éventuels amateurs.</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p>Même si le bail réserve le droit d'expulser le preneur en cas d'aliénation, l'acquéreur du bien ne peut expulser
+    le preneur que dans les cas visés à l'article 16, I, 1° à 4°, de la loi sur les baux commerciaux, moyennant un
+    congé de 1 an donné dans les 3 mois de l'acquisition avec indication précise du motif, le tout à peine de
+    déchéance. Il en va de même lorsque le bail n'a pas acquis date certaine avant l'aliénation et que le preneur
+    occupe le bien depuis 6 mois au moins (article 12 de la loi sur les baux commerciaux). L'acquéreur peut être
+    redevable d'une indemnité d'éviction.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Le preneur peut mettre fin au bail à l'expiration de chaque triennat et le bailleur ne le peut que si le présent
+    bail lui en accorde la faculté, aux conditions et moyennant les préavis applicables<span class="clause-ref"
+    data-ref="term" th:if="${refs['term']}"> (voir l'article <span th:text="${refs['term']}"></span>)</span>.</p>
+  <p>Si le preneur déchu du droit au renouvellement est laissé en possession du bien après l'expiration du bail, il
+    se forme un nouveau bail à durée indéterminée, auquel le bailleur peut mettre fin moyennant un congé d'au moins
+    18 mois, sans préjudice du droit du preneur de demander le renouvellement (article 14 de la loi sur les baux
+    commerciaux).</p>
+  <p>Si une partie ne remplit pas ses obligations, l'autre partie peut demander au juge la résolution du bail&nbsp;;
+    la clause résolutoire expresse est réputée non écrite (article 1762bis de l'ancien Code civil). À la fin du bail,
+    le preneur restitue le bien libre de personnes et de biens.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Un état des lieux de sortie est alors dressé (voir l'article
+    <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Chaque partie traite les données à caractère personnel de l'autre partie et des personnes qui agissent pour elle
+    uniquement dans la mesure nécessaire à la conclusion et à l'exécution du présent bail et au respect de ses
+    obligations légales, conformément au règlement général sur la protection des données (RGPD, règlement (UE)
+    2016/679) et à la législation belge qui l'exécute, et ne les conserve pas au-delà de la durée nécessaire.</p>
+  <p>Les personnes concernées peuvent exercer les droits que leur confère le RGPD et introduire une réclamation
+    auprès de l'Autorité de protection des données.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent bail est soumis au droit belge. Les actions fondées sur la loi sur les baux commerciaux sont, nonobstant
+    toute convention contraire conclue avant la naissance du litige, de la compétence du juge de paix du lieu où est
+    situé l'immeuble principal (article 29 de la loi sur les baux commerciaux).</p>
+  <p>Avant d'introduire une demande, le demandeur peut, par requête, faire appeler le futur défendeur en conciliation
+    devant le juge de paix (article 30 de la loi sur les baux commerciaux). Les stipulations du présent bail contraires
+    aux dispositions impératives de la loi sur les baux commerciaux sont sans effet.</p>
+</div>
+
+</body>
+</html>

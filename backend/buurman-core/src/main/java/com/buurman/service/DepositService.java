@@ -297,6 +297,27 @@ public class DepositService {
     return toResponse(saved, contract);
   }
 
+  /**
+   * Sets the deposit's return-due deadline as a side effect of contract termination; a no-op if the
+   * contract has no deposit recorded yet.
+   */
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public void updateReturnDueDate(
+      ContractIdentifier contractIdentifier, LocalDate returnDueDate, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
+    depositRepository
+        .findByContractIdAndTeamId(contract.getId(), teamId)
+        .ifPresent(
+            deposit -> {
+              deposit.setReturnDueDate(Optional.of(returnDueDate));
+              deposit.setUpdatedBy(principal.getUserId());
+              deposit.setUpdatedAt(clock.instant());
+              depositRepository.save(deposit);
+            });
+  }
+
   private Deposit requireDeposit(Contract contract, UUID teamId) {
     return depositRepository
         .findByContractIdAndTeamId(contract.getId(), teamId)

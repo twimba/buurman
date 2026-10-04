@@ -61,7 +61,7 @@ public class CostService {
   private final ObjectProvider<CostService> self;
 
   /** A fully-resolved snapshot row, ready to persist (provider HTTP + FX already done). */
-  private record ResolvedSnapshot(
+  record ResolvedSnapshot(
       String provider,
       String sourceType,
       LocalDate periodMonth,

@@ -1,0 +1,382 @@
+<!--
+  legal-basis: Loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation et modifiant certaines dispositions du
+               Code civil, texte coordonne du 01/08/2024 published by the ministere du Logement
+               (logement.public.lu, bl-loi-modifiee-du-21-09-2006.pdf, linked as the current text on the page
+               updated 05.02.2026): art. 1er, 2, 2bis-2sexies, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16-18,
+               19, 31, 33bis.
+               Loi du 23 juillet 2024 (Memorial A n° 311 du 25 juillet 2024, legilux.public.lu filestore, in force
+               01/08/2024): colocation (art. 2bis-2sexies), 10 % cap per rent adaptation, garantie locative cut to
+               2 months with restitution rules (art. 5, paragraphe 2bis), agency fees shared by half, art. 1714 Code
+               civil (written form). Transitional rules art. 33bis: the new rules on art. 4, art. 5 paragraphe 1er
+               (second sentence of alinea 1 and alinea 2) and art. 12 paragraphe 1er apply to leases concluded after
+               01/08/2024; colocation only for colocation leases concluded after that date.
+               Code civil art. 1714, 1736, 1758, 1761 (wording as set by the loi du 21 septembre 2006, art. 31, and
+               the loi du 23 juillet 2024, art. 12).
+               Loi du 20 decembre 2019 (salubrite, hygiene, securite et habitabilite des logements) and reglement
+               grand-ducal du 20 decembre 2019; loi du 6 decembre 2019 (detecteurs autonomes de fumee); loi modifiee
+               du 5 aout 1993 and reglements grand-ducaux on the energy performance of residential buildings - as
+               summarised on guichet.public.lu (pages updated 26.06.2025, 26.08.2025 and 03.05.2022).
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi du 1er aout 2018 portant
+               organisation de la Commission nationale pour la protection des donnees (Memorial A n° 686).
+               Verified 2026-10-04 against the coordinated text, the Memorial A texts (legilux.public.lu filestore)
+               and guichet.public.lu.
+               Pending: reform of the rent-capping method (5 % of the invested capital) under study only; no bill
+               adopted as of 2026-10-04 - re-verify the rent and rent-adjustment clauses.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "2 mois de loyer" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  German courtesy translation of fr.html; the French text is authoritative (Luxembourg legislation is enacted in
+  French). It states Luxembourg law (loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation) in German and
+  is not German or Austrian law. Draft text, not vetted by legal counsel. Only prose differs from fr.html: fragments,
+  th: expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment
+  holds only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Zwischen</p>
+  <p><strong th:text="${landlordName}">Vermieter</strong>, nachstehend &bdquo;der Vermieter&ldquo; (bailleur),</p>
+  <p>vollständige Identität des Vermieters (Name und Vornamen oder Firma, Wohnsitz oder Sitz, gegebenenfalls Nummer
+    im Handels- und Firmenregister): ______________________________, und</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Mieter</strong>, nachstehend
+    (gemeinsam) &bdquo;der Mieter&ldquo; (locataire),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">dem oder den unterzeichnenden Mietern, nachstehend (gemeinsam)
+    &bdquo;der Mieter&ldquo; (locataire),</p>
+  <p>vollständige Identität jedes Mieters (Name, Vornamen, Geburtsdatum und -ort, derzeitiger Wohnsitz): ______________________________</p>
+  <p>wird der vorliegende Wohnraummietvertrag (bail à usage d'habitation) geschlossen, für den die Artikel des
+    Zivilgesetzbuches (Code civil) über die Sachmiete gelten, vorbehaltlich der besonderen Vorschriften des geänderten
+    Gesetzes vom 21. September 2006 über die Wohnraummiete und zur Änderung bestimmter Vorschriften des
+    Zivilgesetzbuches, nachstehend &bdquo;das geänderte Gesetz vom 21. September 2006&ldquo; (Artikel 1 Absatz 1 des
+    geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Dieser Vertrag wird bei sonstiger Nichtigkeit schriftlich errichtet (Artikel 5 Absatz 1 des geänderten Gesetzes
+    vom 21. September 2006; Artikel 1714 des Zivilgesetzbuches). Die Parteien vereinbaren, dass er in so vielen
+    Ausfertigungen errichtet wird, wie es Parteien gibt.
+    Sind mehrere Mieter Parteien dieses Vertrags, ohne der Regelung der Wohngemeinschaft zu unterliegen, so vereinbaren
+    die Parteien, dass sie für alle sich daraus ergebenden Verpflichtungen gesamtschuldnerisch haften.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Der Vermieter vermietet dem Mieter, der annimmt, die Wohnung in
+    <strong th:text="${propertyAddress}">Anschrift</strong>, nachstehend &bdquo;die Wohnung&ldquo;.</p>
+  <p>Katasterbezeichnung der Wohnung: ______________________________</p>
+  <p>Bezeichnung aller Räume und Gebäudeteile, die Gegenstand des Mietvertrags sind (Wohnräume, Küche, sanitäre
+    Anlagen, Keller, Dachboden, Garage, Stellplatz, Garten, Gemeinschaftsteile): ______________________________</p>
+  <p>möblierte Wohnung: ja / nein; gegebenenfalls ist das Inventar der Möbel diesem Vertrag beigefügt.</p>
+  <p>Vorbehaltlich der Artikel 16 bis 18 des geänderten Gesetzes vom 21. September 2006 gilt dieses Gesetz
+    ausschließlich für die Vermietung von Wohnungen zu Wohnzwecken an
+    natürliche Personen, unabhängig von der im Mietvertrag vereinbarten Zweckbestimmung, vorbehaltlich eines
+    berechtigten Widerspruchs des Vermieters bei einer Zweckänderung durch den Mieter während der Vertragsdauer (Artikel 1
+    Absatz 2 des geänderten Gesetzes vom 21. September 2006). Es gilt insbesondere nicht für Gebäude, die gewerblichen,
+    administrativen, industriellen oder handwerklichen Zwecken oder der Ausübung eines freien Berufs dienen, für
+    Zweitwohnsitze, für Räume, die kein Zubehör der Wohnung bilden, und für Hotelzimmer (Artikel 1
+    Absatz 3 desselben Gesetzes); für diese Fälle ist dieses Muster nicht geeignet.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Der Mietvertrag beginnt am <strong th:text="${startDate}">Beginn</strong>.</p>
+  <p>Der Mietvertrag kann auf bestimmte oder unbestimmte Zeit geschlossen werden (Artikel 12 Absatz 1 des geänderten
+    Gesetzes vom 21. September 2006). Der Mietvertrag über eine Wohnung gilt als auf unbestimmte Zeit geschlossen, wenn
+    im schriftlichen Mietvertrag nicht angegeben ist, für welche Dauer sich die Parteien binden wollten (Artikel 1758
+    des Zivilgesetzbuches).</p>
+  <p th:if="${fixedTerm}">Dieser Vertrag wird auf bestimmte Zeit geschlossen<span th:if="${endDate != null}">
+    und endet am <strong th:text="${endDate}">Ende</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Dieser Vertrag wird auf unbestimmte Zeit geschlossen.</p>
+  <p>Jeder unter das geänderte Gesetz vom 21. September 2006 fallende Mietvertrag, der aus welchem Grund auch immer
+    endet, verlängert sich auf unbestimmte Zeit, außer in den in Artikel 12 Absatz 2 dieses Gesetzes aufgeführten
+    Fällen.<span class="clause-ref" data-ref="termination" th:if="${refs['termination']}"> Die
+    Kündigungsregelungen sind in diesem Vertrag festgelegt (siehe Artikel <span th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Die Miete ohne Nebenkosten beträgt <strong th:text="${rentAmount}">Betrag</strong> (zahlbar
+    <span th:text="${paymentFrequency}">monatlich</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Die Vorauszahlungen oder die Pauschale für Nebenkosten werden gesondert festgelegt (siehe Artikel
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Die Vermietung einer Wohnung zu Wohnzwecken darf dem Vermieter kein jährliches Einkommen einbringen, das einen Satz
+    von 5 % des in die Wohnung investierten Kapitals übersteigt (Artikel 3 Absatz 1 des geänderten Gesetzes vom 21. September 2006).
+    Das investierte Kapital wird nach den Regeln von Artikel 3 Absätze 2 bis 4 dieses Gesetzes ermittelt, neu bewertet
+    und gegebenenfalls wegen Alters gemindert. Bei einer Wohngemeinschaft oder einer Vermietung mit mehreren
+    Mietverträgen darf die Summe der Mieten diese Höchstmiete nicht übersteigen.</p>
+  <p>Mietzuschlag für die Möbel bei einer möblierten Wohnung (höchstens 1,5 % des Gesamtbetrags der Rechnungen der Möbel
+    der Wohnung, wobei nur Möbel berücksichtigt werden, deren Rechnungen am Tag des Vertragsabschlusses oder der
+    Mietanpassung weniger als 10 Jahre alt sind): ________ Euro monatlich.</p>
+  <p>Bietet der Vermieter dem Mieter eine oder mehrere Dienstleistungen an, so wird der Betrag der monatlichen Kosten
+    jeder Dienstleistung vom Betrag der Monatsmiete unterschieden (Artikel 4 des geänderten Gesetzes vom 21. September 2006).
+    Dienstleistungen und deren jeweilige monatliche Kosten, gegebenenfalls: ______________________________</p>
+  <p>Der Abschluss des Mietvertrags darf nicht von der Zahlung anderer Beträge als der Miete abhängig gemacht werden.
+    Wirkt ein Immobilienmakler oder ein anderer Dritter bei der Vermietung der Wohnung mit, so werden dessen Kosten und
+    Honorare zwischen Vermieter und Mieter je zur Hälfte (par moitié) geteilt (Artikel 5 Absatz 1 des geänderten
+    Gesetzes vom 21. September 2006).</p>
+  <p>Die Parteien können bei einem Streit über die Festsetzung der Miete die Mietkommission (commission des loyers)
+    nach Artikel 8 des geänderten Gesetzes vom 21. September 2006 anrufen.<span class="clause-ref" data-ref="disputes"
+    th:if="${refs['disputes']}"> Das Verfahren ist in diesem Vertrag beschrieben (siehe Artikel
+    <span th:text="${refs['disputes']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Die Anpassung der Miete richtet sich nach den Bestimmungen dieses Vertrags (siehe Artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Die Miete und der Mietzuschlag für die Möbel dürfen, gleich ob sie durch Vereinbarung der Parteien, durch die
+    Mietkommission oder gerichtlich festgesetzt wurden, nur alle 2 Jahre angepasst werden. Dieser Zeitraum von 2 Jahren
+    endet nicht durch einen Wechsel des Vermieters; er endet von Rechts wegen bei einem Wechsel des Mieters,
+    unbeschadet der Fortsetzung des Mietvertrags nach Artikel 13 Unterabsatz 1 des geänderten Gesetzes vom 21. September 2006
+    (Artikel 3 Absatz 5 desselben Gesetzes).</p>
+  <p>Die Mieterhöhung darf 10 % nicht übersteigen, und die angepasste Miete bleibt an die Obergrenze von 5 % des
+    investierten Kapitals gebunden. Richtet der Mieter bei einer Mieterhöhung um mehr als 10 % eine Beanstandung per
+    Einschreiben an den Vermieter, so ist der Teil der Miete, der die Erhöhung um 10 % übersteigt, ab dem ersten
+    Zahlungstermin nach dem Datum dieser Beanstandung nicht geschuldet.</p>
+  <p>Vertragliche Wertsicherungsklauseln (clauses de valeur), die von der gesetzlichen Regelung abweichen, verlieren ihre Wirkung ab dem ersten Zahlungstermin nach dem Datum einer
+    per Einschreiben an den Vermieter gerichteten Beanstandung (Artikel 5 Absatz 5 des geänderten Gesetzes vom 21. September 2006). Die Parteien gehen davon aus, dass eine
+    Klausel über die automatische Indexierung der Miete eine solche Wertsicherungsklausel ist.</p>
+  <p>Die Partei, die eine Erhöhung oder Herabsetzung der Miete verlangt, teilt der anderen Partei ihre Absicht zuvor
+    schriftlich mit, andernfalls ist ihr Antrag bei der Mietkommission unzulässig; die Festsetzung der Miete durch die
+    Kommission oder das Gericht wirkt erst ab dem ersten Zahlungstermin, der nach der Befassung des Bürgermeister- und
+    Schöffenrats (collège des bourgmestre et échevins) fällig wird (Artikel 8 und 11 des geänderten Gesetzes vom 21. September
+    2006).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Der Vermieter darf dem Mieter nur Beträge in Rechnung stellen, die er nachweislich selbst für Rechnung des Mieters
+    ausgelegt hat. Dem Mieter dürfen nur die Kosten für den Energieverbrauch, für die laufende Instandhaltung der
+    Wohnung und der Gemeinschaftsteile, für kleine Reparaturen sowie die mit der Nutzung der Wohnung verbundenen Abgaben
+    auferlegt werden (Artikel 5 Absatz 3 des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Höhe der Nebenkostenvorauszahlungen oder der Nebenkostenpauschale: ________ Euro monatlich (Vorauszahlungen /
+    Pauschale). Die Vorauszahlungen können an die in früheren Abrechnungsjahren tatsächlich für Rechnung des Mieters
+    entstandenen Kosten angepasst werden. Die Pauschale ist nur zulässig, wenn sie dem normalen Verbrauch und den
+    normalen Kosten des Mieters entspricht; sie kann während der Mietdauer angepasst werden, und die Parteien können
+    während der Mietdauer den Wechsel von einer Regelung zur anderen vereinbaren (Artikel 5 Absatz 4 desselben Gesetzes).</p>
+  <p>Die mehreren Wohnungen gemeinsamen Nebenkosten werden jährlich nach folgendem, zwischen den Parteien vereinbartem
+    Berechnungsschlüssel verteilt: ______________________________. Die Parteien vereinbaren, dass der Vermieter dem
+    Mieter eine jährliche Nebenkostenabrechnung mit den Belegen oder deren Kopien übermittelt. Ergeben sich die Kosten
+    aus einer von der Generalversammlung genehmigten Abrechnung eines Gebäudes in Miteigentum, so gelten die zulasten
+    des Mieters gehenden Posten dieser Abrechnung als begründet und fällig, wobei der Gegenbeweis zulässig ist; auf
+    Verlangen des Mieters übermittelt ihm der Vermieter eine Kopie der Auszüge aus der Miteigentumsordnung über die
+    Zweckbestimmung des Gebäudes, die Nutzung der Sonder- und Gemeinschaftsteile und den Anteil der vermieteten Einheit
+    an jeder Kostenkategorie.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Der Mieter stellt dem Vermieter eine Mietkaution (garantie locative) in Höhe von
+    <strong th:text="${depositAmount}">Betrag</strong> zur Sicherung der Zahlung der Miete oder der übrigen
+    Verpflichtungen aus dem Mietvertrag.</p>
+  <p th:if="${depositAmount == null}">Der Mieter stellt dem Vermieter eine Mietkaution (garantie locative) in
+    folgender Höhe zur Sicherung der Zahlung der Miete oder der übrigen Verpflichtungen aus dem Mietvertrag: ________ Euro.</p>
+  <p>Die Mietkaution darf 2 Monatsmieten nicht übersteigen (Artikel 5 Absatz 2 des geänderten Gesetzes vom
+    21. September 2006); die Parteien vereinbaren, dass der Betrag der Mietkaution 2 Monatsmieten nicht
+    übersteigt. Der Vermieter darf eine Mietkaution in Form einer Bankgarantie auch nach Abschluss des Mietvertrags
+    nicht ablehnen. Vereinbarte Form der Sicherheit (Bankgarantie, Überweisung auf das Konto des Vermieters, andere
+    Form): ______________________________</p>
+  <p>Entspricht bei Mietende das Auszugsprotokoll dem Einzugsprotokoll, abgesehen von normaler Abnutzung und
+    Alterung, und hat der Vermieter keine Ansprüche wegen Mietrückständen oder Mietschäden, so wird die Hälfte der
+    Mietkaution innerhalb einer Frist von höchstens 1 Monat ab der Rückgabe der Schlüssel an den Vermieter oder
+    seinen Beauftragten, persönlich oder per Einschreiben mit Rückschein, zurückgezahlt. Die endgültige Abrechnung und
+    die Rückzahlung des Restbetrags, nach Abzug der dem Vermieter noch geschuldeten und ordnungsgemäß belegten Beträge,
+    erfolgen spätestens innerhalb des Monats nach entweder dem Eingang der Abrechnungen über die Nebenkosten, die der
+    Vermieter bei den verschiedenen Diensten und Verwaltungen spätestens 1 Monat nach Mietende anfordern muss, oder der
+    endgültigen Genehmigung der Jahresabrechnung des Gebäudes in der nächsten Generalversammlung der Miteigentümer (Artikel 5
+    Absatz 2bis des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Entspricht das Einzugsprotokoll nicht dem Auszugsprotokoll, abgesehen von normaler Abnutzung oder Alterung, oder
+    erhebt der Vermieter Einwände, so kann er von der Mietkaution die ihm noch geschuldeten Beträge sowie jeden
+    Betrag einbehalten, für den er anstelle des Mieters haften könnte, sofern dieser innerhalb der genannten Frist von
+    höchstens 1 Monat durch Belege ordnungsgemäß nachgewiesen wird.</p>
+  <p>Erfolgt die Rückzahlung nicht fristgerecht, so erhöht sich ab einer vom Mieter an den Vermieter oder dessen
+    Beauftragten per Einschreiben mit Rückschein gerichteten Mahnung (mise en demeure) der dem Mieter noch geschuldete
+    Teil der Sicherheit um einen Betrag von 10 % der monatlichen Grundmiete für jeden angefangenen Monat des Verzugs,
+    es sei denn, die verspätete Rückzahlung beruht auf einem dem Mieter zuzurechnenden Grund.
+    Bei einem Eigentumsübergang an der Wohnung gehen die Sicherheiten von Rechts wegen auf den neuen
+    Eigentümer über.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">
+    Das Übergabeprotokoll wird nach den Bestimmungen dieses Vertrags erstellt (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Der Mieter zahlt die Miete<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (siehe Artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> und die Vorauszahlungen oder die Pauschale für Nebenkosten</span>
+    <span th:text="${paymentFrequency}">monatlich</span> im Voraus,
+    <span th:if="${paymentDueDay != null}">spätestens am <strong th:text="${paymentDueDay}">1</strong>. Tag jedes
+      Zahlungszeitraums</span><span th:if="${paymentDueDay == null}">zu dem zwischen den Parteien vereinbarten Termin</span>,
+    durch Überweisung auf das vom Vermieter bezeichnete Konto oder auf eine andere vereinbarte Weise.</p>
+  <p>Bankkonto des Vermieters (IBAN): ______________________________</p>
+  <p>Bei Fälligkeit nicht gezahlte Beträge sind unter den im Zivilgesetzbuch vorgesehenen Voraussetzungen, insbesondere
+    nach einer Mahnung, zum gesetzlichen Zinssatz zu verzinsen. Die Parteien vereinbaren, dass der Vermieter dem Mieter
+    auf Verlangen eine Quittung über die erhaltenen Zahlungen ausstellt.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Der Mieter nutzt die Wohnung mit der Sorgfalt eines guten Familienvaters (en bon père de famille) entsprechend
+    ihrer Zweckbestimmung zu Wohnzwecken und beachtet die Hausordnung des Gebäudes sowie gegebenenfalls die ihm
+    mitgeteilten Auszüge aus der Miteigentumsordnung. Der Vermieter kann einer Zweckänderung der Wohnung durch den
+    Mieter während der Vertragsdauer aus berechtigten Gründen widersprechen (Artikel 1 Absatz 2 des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Der Mieter nimmt ohne vorherige schriftliche Zustimmung des Vermieters keine Veränderungen an der Wohnung vor. Er
+    gewährt Zugang zur Wohnung für dringende Reparaturen und, nach rechtzeitiger Ankündigung, für die zur Instandhaltung
+    der Wohnung erforderlichen Besichtigungen sowie bei Mietende oder im Fall eines Verkaufs für Besichtigungen durch
+    Mietinteressenten oder Kaufinteressenten, an den zwischen den Parteien vereinbarten Tagen und zu den vereinbarten Zeiten.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Die Abtretung (cession) eines Wohnraummietvertrags ist nur verboten, wenn der Mietvertrag eine ausdrückliche
+    vertragliche Bestimmung hierzu enthält (Artikel 2 des geänderten Gesetzes vom 21. September 2006). Abtretung des
+    Mietvertrags verboten: ja / nein.</p>
+  <p>Die Parteien vereinbaren, dass der Mieter die Wohnung ganz oder teilweise nur mit vorheriger schriftlicher
+    Zustimmung des Vermieters untervermietet. Die Vorschriften des geänderten Gesetzes vom 21. September 2006 über die
+    Festsetzung der Miete, die Nebenkosten, die Mietkaution und die Mietkommission gelten auch im Verhältnis zwischen
+    Hauptmietern und Untermietern oder Abtretungsempfängern (Artikel 2 Unterabsatz 2 dieses Gesetzes).</p>
+</div>
+
+<div th:fragment="clause-shared-tenancy" data-clause="shared-tenancy">
+  <p>Dieser Artikel gilt nur, wenn sich die Mieter mit ausdrücklicher Zustimmung des Vermieters für die Regelung der
+    Wohngemeinschaft (colocation) entscheiden, indem sie spätestens am Tag der Unterzeichnung dieses einheitlichen
+    Vertrags einen Wohngemeinschaftspakt (pacte de colocation) unterzeichnen; eine Vermietung ausschließlich an
+    Ehegatten oder an durch eine gesetzliche Partnerschaft verbundene Partner ist keine Wohngemeinschaft, und die
+    Wohnung umfasst mindestens einen Wohnraum oder einen Sanitärraum, der allen Mitmietern gemeinsam ist
+    (Artikel 2bis des geänderten Gesetzes vom 21. September 2006). Diese Vorschriften sind zwingend (d'ordre public).</p>
+  <p>Regelung der Wohngemeinschaft: ja / nein; Datum der Unterzeichnung des Wohngemeinschaftspakts: ______________________________;
+    gegebenenfalls Anteil des mitbewohnenden Vermieters an den Kosten des gemeinsamen Wohnens: ______________________________</p>
+  <p>Die Mitmieter haften gegenüber dem Vermieter gesamtschuldnerisch für die Verpflichtungen aus dem Mietvertrag
+    (Artikel 2quater desselben Gesetzes). Beenden alle Mitmieter den Mietvertrag gleichzeitig, so wird die Kündigung
+    von jedem von ihnen unterzeichnet und dem Vermieter per Einschreiben mit Rückschein mitgeteilt, mit einer
+    Kündigungsfrist von 3 Monaten. Ein Mitmieter, der vor Ablauf des Mietvertrags von seinen Verpflichtungen befreit
+    werden möchte, teilt dies dem Vermieter per Einschreiben mit Rückschein und zugleich seinen Mitmietern mit einer
+    Frist von 3 Monaten mit und sucht einen Ersatzmitmieter unter den in Artikel 2quinquies Absatz 2 desselben Gesetzes
+    vorgesehenen Bedingungen.</p>
+  <p>Haben mindestens die Hälfte der Mitmieter, die den Mietvertrag unterzeichnet haben, innerhalb eines Zeitraums von
+    3 Monaten gekündigt, so kann der Vermieter den Vertrag innerhalb von 1 Monat ab der Mitteilung der letzten Kündigung
+    mit einer Kündigungsfrist von 3 Monaten durch ein an jeden Mitmieter gerichtetes Einschreiben mit Rückschein
+    beenden (Artikel 2quinquies Absatz 4 desselben Gesetzes). Der ausscheidende Mitmieter und sein Bürge werden für
+    die Zukunft in den Fällen und zu den Zeitpunkten befreit, die in Artikel 2sexies desselben Gesetzes vorgesehen sind.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Der Vermieter übergibt die Wohnung in gutem Zustand in jeder Hinsicht, erhält sie in einem zum Wohnen geeigneten
+    Zustand und führt während der Mietdauer alle notwendig werdenden Reparaturen durch, mit Ausnahme der dem Mieter
+    obliegenden Reparaturen (réparations locatives), gemäß dem Zivilgesetzbuch. Die Wohnung erfüllt die Kriterien der
+    Gesundheit, Hygiene, Sicherheit und Bewohnbarkeit nach dem Gesetz vom 20. Dezember 2019 und der dazu ergangenen
+    großherzoglichen Verordnung.</p>
+  <p>Der Mieter trägt die laufende Instandhaltung der Wohnung, kleine Reparaturen und die dem Mieter obliegenden
+    Reparaturen, sofern sie nicht auf Alterung oder höhere Gewalt zurückzuführen sind. Er meldet dem Vermieter
+    unverzüglich jeden Schaden und jede dem Vermieter obliegende Reparatur.</p>
+  <p>Der Vermieter stattet die Wohnung nach dem Gesetz vom 6. Dezember 2019 mit autonomen Rauchmeldern aus; die
+    Parteien vereinbaren, dass der Mieter deren laufende Wartung übernimmt.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Der Vermieter übergibt dem Mieter eine beglaubigte Kopie des gültigen Energiepasses (certificat de performance
+    énergétique) der Wohnung, der nach dem geänderten Gesetz vom 5. August 1993 über die rationelle Energienutzung und
+    den großherzoglichen Verordnungen über die Gesamtenergieeffizienz von Wohngebäuden erstellt wurde.</p>
+  <p>Energieeffizienzklasse: ________; Wärmeschutzklasse: ________;
+    Datum der Ausstellung des Energiepasses: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>Ein Mieter, dessen Mietvertrag seit mindestens 18 Jahren besteht, hat ein Vorkaufsrecht an der vermieteten
+    Wohnung, es sei denn, sie wird öffentlich versteigert, an ein mit dem Vermieter bis einschließlich zum dritten Grad
+    verwandtes oder verschwägertes Familienmitglied übertragen oder unentgeltlich übertragen. Dieses Recht kann nur
+    ausgeübt werden, wenn der Mieter das gesamte Gebäude gemietet hat oder die vermietete Wohnung dem Miteigentumsrecht
+    unterliegt (Artikel 15 des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Der Vermieter übermittelt dem Mieter das Verkaufsangebot per Einschreiben und weist ihn darauf hin, dass er ein
+    Gegenangebot machen kann. Der Mieter hat 1 Monat Zeit, um sein Recht auszuüben und gegebenenfalls ein Gegenangebot
+    zu machen; sein Schweigen gilt als Ablehnung des Angebots. Diese Frist verlängert sich um 1 Monat, wenn der Mieter
+    bei einem im Großherzogtum niedergelassenen Finanzinstitut einen Kredit beantragt hat. Die Wohnung darf an einen
+    Dritten nur zu einem höheren Preis als dem vom Mieter angebotenen verkauft werden. Wird sie trotz dieses Rechts an
+    einen Dritten verkauft, kann der benachteiligte Mieter vom Verkäufer Schadensersatz verlangen, der nicht niedriger
+    sein darf als die Miete für 1 Jahr.</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>Verlässt der Mieter die Wohnung endgültig oder stirbt er, so wird der Mietvertrag auf unbestimmte Zeit fortgesetzt
+    zugunsten des Ehegatten, der mit dem Mieter zusammengelebt hat, oder des Partners, der mit dem Mieter eine
+    Partnerschaftserklärung abgegeben und mit ihm als Paar gelebt hat, sowie zugunsten der Abkömmlinge, der Verwandten
+    in aufsteigender Linie oder des Lebensgefährten (concubin), die mit ihm seit mindestens 6 Monaten
+    am Tag des Verlassens oder des Todes in häuslicher Gemeinschaft lebten und während dieses Zeitraums ihren Wohnsitz bei der Gemeinde in der Wohnung gemeldet hatten
+    (Artikel 13 des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Bei mehreren Anträgen entscheidet das Gericht nach den betroffenen Interessen. Die Rechte des Vermieters gegenüber
+    dem Mieter, der die Wohnung verlassen hat, bleiben unberührt. Erfüllt keine Person diese Voraussetzungen, so endet
+    der Mietvertrag mit dem Tod des Mieters von Rechts wegen.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Ein Einzugsprotokoll (état des lieux) wird von den Parteien oder einem von ihnen gewählten Sachverständigen
+    schriftlich und kontradiktorisch erstellt und spätestens am Tag der Inbesitznahme der Räume durch den Mieter
+    unterzeichnet; ist eine Mietkaution vereinbart, so ist dieses Protokoll vorgeschrieben (Artikel 5 Absatz 2 des
+    geänderten Gesetzes vom 21. September 2006). Ein Auszugsprotokoll wird bei der Rückgabe der Schlüssel in gleicher Weise erstellt.</p>
+  <p>Die Parteien vereinbaren, dass die Kosten eines einvernehmlich gewählten Sachverständigen zwischen ihnen je zur
+    Hälfte geteilt werden und jede Partei eine unterzeichnete Ausfertigung jedes Protokolls erhält.<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> Die Rückzahlung der Mietkaution richtet sich nach dem Vergleich
+    der Protokolle (siehe Artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${!fixedTerm}">Der Mieter kann diesen auf unbestimmte Zeit geschlossenen Vertrag mit einer Kündigungsfrist von
+    3 Monaten kündigen, sofern dieser Vertrag keine längere Frist vorsieht (Artikel 1736 des Zivilgesetzbuches).</p>
+  <p th:if="${fixedTerm}">Der Mieter ist bis zum vereinbarten Ende gebunden, sofern der Vermieter nicht zustimmt. Die
+    Parteien vereinbaren, dass der Mieter, der eine Fortsetzung des Mietvertrags über dessen Ende hinaus nicht wünscht,
+    dies dem Vermieter per Einschreiben mit Rückschein mindestens 3 Monate vor diesem Ende mitteilt. Der Vermieter kann
+    den befristeten Vertrag vor seinem Ende nicht kündigen, selbst wenn er erklärt, die Wohnung selbst bewohnen zu
+    wollen, es sei denn, es wurde etwas anderes vereinbart (Artikel 1761 des Zivilgesetzbuches).</p>
+  <p>Von den Parteien gegebenenfalls vereinbarte längere Kündigungsfrist: ________ Monate.</p>
+  <p>Ein Vertrag, der aus welchem Grund auch immer endet, verlängert sich auf unbestimmte Zeit, es sei denn,
+    a) der Vermieter erklärt, die vermieteten Räume zu benötigen, um sie selbst zu bewohnen oder sie tatsächlich von
+    einem bis einschließlich zum dritten Grad Verwandten oder Verschwägerten bewohnen zu lassen; b) der Mieter erfüllt
+    seine Verpflichtungen nicht; c) es liegen andere schwerwiegende und berechtigte, vom Vermieter nachzuweisende Gründe
+    vor, wobei der Eigentumsübergang an der Wohnung keinen schwerwiegenden und berechtigten Grund darstellt (Artikel 12
+    Absatz 2 des geänderten Gesetzes vom 21. September 2006).</p>
+  <p>Im Fall von Buchstabe a) beträgt die Kündigungsfrist 6 Monate. Das Kündigungsschreiben muss schriftlich abgefasst,
+    begründet und gegebenenfalls mit den entsprechenden Belegen versehen sein und per Einschreiben mit Rückschein
+    versandt werden; es muss bei sonstiger Nichtigkeit den Wortlaut von Artikel 12
+    Absatz 3 des geänderten Gesetzes vom 21. September 2006 wiedergeben. Der Mieter kann unter den in diesem Absatz
+    vorgesehenen Voraussetzungen und Fristen beim Friedensrichter (juge de paix) eine Verlängerung der Kündigungsfrist beantragen.</p>
+  <p>Der Erwerber der Wohnung kann einen Mieter, dessen Mietvertrag vor der Erwerbsurkunde kein sicheres Datum (date
+    certaine) hat, der aber vor diesem Datum in den Besitz der Räume eingewiesen wurde, nur zur Räumung zwingen, wenn eine der in
+    Artikel 12 Absatz 2 desselben Gesetzes festgelegten Bedingungen erfüllt ist. Ein Erwerber, der die Wohnung selbst
+    oder durch einen bis einschließlich zum dritten Grad Verwandten oder Verschwägerten bewohnen will, muss dem Mieter
+    innerhalb von 3 Monaten nach dem Erwerb ein Kündigungsschreiben per Einschreiben übersenden; Absatz 3 dieses
+    Artikels gilt, jedoch muss der Mieter die Wohnung spätestens 12 Monate nach dem Versanddatum des Kündigungsschreibens räumen
+    (Artikel 12 Absatz 6 desselben Gesetzes).</p>
+  <p>Die Registrierung dieses Vertrags bei der Registrierungs-, Domänen- und Mehrwertsteuerverwaltung (Administration
+    de l'enregistrement, des domaines et de la TVA) ist keine Wirksamkeitsvoraussetzung; sie kann ihm ein sicheres
+    Datum (date certaine) verschaffen, insbesondere gegenüber einem Erwerber der Wohnung.</p>
+  <p>Außer bei höherer Gewalt hat der frühere Mieter Anspruch auf Schadensersatz, wenn die Räume innerhalb der 3 Monate
+    nach seinem Auszug nicht zu dem als Kündigungsgrund angegebenen Zweck genutzt werden, wobei diese Frist für die
+    Dauer tatsächlich durchgeführter Renovierungs- und Umbauarbeiten gehemmt ist. Stellt das
+    Gericht fest, dass der zur Verhinderung der gesetzlichen Verlängerung angeführte Grund arglistig war, so darf dieser
+    Schadensersatz nicht niedriger sein als die Miete für 1 Jahr (Artikel 14 des geänderten Gesetzes vom 21. September
+    2006).</p>
+  <p>Die Parteien können den Vertrag einvernehmlich beenden, vorzugsweise schriftlich. Der Friedensrichter kann unter
+    den in Artikel 16 bis 18 des geänderten Gesetzes vom 21. September 2006 vorgesehenen Voraussetzungen einen Aufschub
+    der Vollstreckung einer Räumungsentscheidung gewähren.<span class="clause-ref" data-ref="shared-tenancy"
+    th:if="${refs['shared-tenancy']}"> Bei einer Wohngemeinschaft gelten die besonderen Kündigungsregeln
+    (siehe Artikel <span th:text="${refs['shared-tenancy']}"></span>).</span><span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Bei der Rückgabe der Räume wird ein
+    Auszugsprotokoll erstellt (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Der Vermieter verarbeitet personenbezogene Daten des Mieters nur, soweit dies für den Abschluss und die
+    Durchführung dieses Vertrags und die Erfüllung seiner gesetzlichen Pflichten erforderlich ist, im Einklang mit der
+    Datenschutz-Grundverordnung (DSGVO, Verordnung (EU) 2016/679) und dem Gesetz vom 1. August 2018
+    über die Organisation der Nationalen Kommission für den Datenschutz. Er bewahrt diese Daten nicht
+    länger auf, als es für diese Zwecke erforderlich ist.</p>
+  <p>Der Mieter kann gegenüber dem Vermieter die ihm nach der DSGVO zustehenden Rechte ausüben, insbesondere die Rechte
+    auf Auskunft, Berichtigung und Löschung, und kann bei der Nationalen Kommission für den Datenschutz (Commission
+    nationale pour la protection des données, CNPD) Beschwerde einlegen.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Dieser Vertrag unterliegt luxemburgischem Recht.</p>
+  <p>Die Partei, die sich für berechtigt hält, eine Erhöhung oder Herabsetzung der Miete zu verlangen, teilt der anderen
+    Partei ihre Absicht zuvor schriftlich mit; ist innerhalb von 1 Monat keine Einigung erzielt worden, so kann sie
+    einen Antrag beim Bürgermeister- und Schöffenrat der Gemeinde stellen, in der die Wohnung liegt, der ihn
+    an die zuständige Mietkommission weiterleitet. Der Antrag ist während der ersten 6 Monate des
+    Mietvertrags unzulässig (Artikel 8 des geänderten Gesetzes vom 21. September 2006). Die Kommission bemüht sich um eine
+    Schlichtung zwischen den Parteien und setzt andernfalls die Miete fest; ihre Entscheidung kann beim Friedensrichter
+    des Ortes, an dem die Wohnung liegt, bei sonstigem Rechtsverlust innerhalb des Monats nach Zustellung ihres
+    Protokolls angefochten werden (Artikel 9 und 10 desselben Gesetzes).</p>
+  <p>Der Friedensrichter des Ortes, an dem die Wohnung liegt, ist für alle Streitigkeiten zwischen Vermietern, Mietern
+    oder Mitmietern über das Bestehen und die Durchführung des Mietvertrags zuständig (Artikel 19 des geänderten
+    Gesetzes vom 21. September 2006). Jede Bestimmung dieses Vertrags, die eine Vorschrift dieses Gesetzes unwirksam
+    machen soll, ist von Rechts wegen nichtig (Artikel 5 Absatz 5 desselben Gesetzes).</p>
+</div>
+
+</body>
+</html>

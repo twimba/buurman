@@ -4,6 +4,7 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class CloudflareCostSource implements CostSource {
    * treated conservatively as monthly (no amortization) with a warning.
    */
   private double monthsPerPeriod(String frequency) {
-    String freq = frequency == null ? "" : frequency.toLowerCase();
+    String freq = frequency == null ? "" : frequency.toLowerCase(Locale.ROOT);
     return switch (freq) {
       case "weekly" -> 1.0 / 4.33;
       case "monthly", "" -> 1.0;
@@ -95,7 +96,7 @@ public class CloudflareCostSource implements CostSource {
       return ProviderReading.of(
           id(),
           CostSourceType.SUBSCRIPTION,
-          currency.toUpperCase(),
+          currency.toUpperCase(Locale.ROOT),
           Math.round(monthly * 100),
           breakdown);
     } catch (RuntimeException | com.fasterxml.jackson.core.JsonProcessingException e) {

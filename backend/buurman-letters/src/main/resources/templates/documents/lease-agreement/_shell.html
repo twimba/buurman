@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+<style>
+.clause { margin: 18px 0; }
+.clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; }
+.clause p { font-size: 13px; color: #292524; line-height: 1.6; margin: 0 0 6px 0; }
+.lease-notice { margin: 12px 0; padding: 10px 14px; background-color: #fffbeb;
+  border: 1px solid #fde68a; border-radius: 6px; font-size: 12px; color: #78350f; }
+</style>
+</head>
+<body>
+
+<div class="letter">
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="#{lease.ref(${contractIdentifier})}"></div>
+  </div>
+
+  <div class="letter-addressee">
+    <div th:if="${primaryContactName != null}">
+      <div class="addressee-name" th:text="${primaryContactName}"></div>
+      <div th:if="${contactAddress != null}">
+        <div th:text="${contactAddress.street}"></div>
+        <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+        <div th:text="${contactAddress.countryCode}"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="letter-subject" th:text="#{lease.title}">Lease Agreement</div>
+
+  <!--/* noNationalVersion (CZ): the courtesy notice would point to a national version that does not exist. */-->
+  <div th:if="${!authoritative and noNationalVersion != true}" class="lease-notice" th:text="#{lease.notice.courtesy}"></div>
+  <div th:if="${!authoritative and noNationalVersion == true}" class="lease-notice" th:text="#{lease.notice.noNationalVersion}"></div>
+  <div th:if="${fallbackUsed}" class="lease-notice" th:text="#{lease.notice.fallback(${requestedLang})}"></div>
+
+  <div class="letter-body">
+    <table th:if="${rentComponents != null and not #lists.isEmpty(rentComponents)}" class="summary-table">
+      <tr th:each="component : ${rentComponents}">
+        <td class="st-label" th:text="${component.type}"></td>
+        <td class="st-value" th:text="${component.amount}"></td>
+      </tr>
+    </table>
+
+    <!--
+      "clauses" holds only the included clauses, already in final order with their article numbers
+      assigned by LeaseClauseResolver. The legal text of each clause is the "clause-{key}" fragment
+      of the per-language document named by clauseSource.
+    -->
+    <div th:each="clause : ${clauses}" class="clause">
+      <h2 class="clause-title"><span th:text="${clause.articleNumber}"></span>. <span th:text="${clause.title}"></span></h2>
+      <div th:insert="~{${clauseSource} :: ${'clause-' + clause.clauseKey}}"></div>
+    </div>
+  </div>
+
+  <div th:each="block : ${signatureBlocks}" class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label">
+      <span th:text="${block.label}">Landlord / Property Manager</span>
+      <span class="sig-placeholder" th:text="${block.placeholder}"></span>
+    </div>
+    <div class="sig-date"><span th:text="#{letter.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
+  </div>
+
+  <div class="letter-footer">
+    <span th:text="#{letter.generated(${generatedDate})}"></span>
+    <span> &mdash; </span>
+    <span th:text="#{letter.footer}"></span>
+  </div>
+</div>
+
+</body>
+</html>

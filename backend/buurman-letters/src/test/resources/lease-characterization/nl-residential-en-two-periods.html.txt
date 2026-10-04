@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style> @page { margin: 60px 60px 70px 60px; size: A4; } body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #292524; font-size: 13px; line-height: 1.6; } .letter { max-width: 100%; } .letter-header { margin-bottom: 40px; } .letter-date { font-size: 14px; color: #292524; font-weight: 500; } .letter-ref { font-size: 12px; color: #78716c; margin-top: 4px; letter-spacing: 0.5px; } .letter-addressee { margin-bottom: 30px; line-height: 1.5; font-size: 14px; color: #292524; } .addressee-name { font-weight: 600; font-size: 15px; } .letter-subject { font-size: 16px; font-weight: 700; color: #0c4a6e; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #0c4a6e; } .letter-body { font-size: 13px; color: #292524; line-height: 1.7; } .letter-body p { margin: 0 0 14px 0; } .letter-body strong { font-weight: 600; } .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px 0; border: 1px solid #e7e5e4; border-radius: 6px; } .summary-table tr { border-bottom: 1px solid #e7e5e4; } .summary-table tr:last-child { border-bottom: none; } .st-label { padding: 10px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #78716c; font-weight: 600; width: 40%; background-color: #fafaf9; vertical-align: top; } .st-value { padding: 10px 16px; font-size: 13px; color: #292524; vertical-align: top; } .legal-clause { margin: 16px 0; padding: 12px 16px; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0c4a6e; line-height: 1.5; } .letter-signature { margin-top: 50px; width: 50%; } .sig-line { border-bottom: 1px solid #292524; margin-bottom: 8px; height: 40px; } .sig-label { font-size: 13px; color: #57534e; font-weight: 500; } .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; display: flex; gap: 4px; } .sig-date-line { flex: 1; border-bottom: 1px solid #78716c; margin-bottom: 2px; } /* Carries a signer's placeholder as faint, tiny text alongside the visible label — present in the PDF's text layer (so Documenso's placeholder-text matching finds it) without reading as visible clutter. Do not use display:none/visibility:hidden: some PDF text extraction paths drop such content from the text layer entirely. */ .sig-placeholder { font-size: 5px; color: #e7e5e4; letter-spacing: 0; } .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c; line-height: 1.5; font-style: italic; } .letter-footer { text-align: center; margin-top: 30px; font-size: 10px; color: #a8a29e; } </style>
+<style> .clause { margin: 18px 0; } .clause-title { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 6px; } .clause p { font-size: 13px; color: #292524; line-height: 1.6; margin: 0 0 6px 0; } .lease-notice { margin: 12px 0; padding: 10px 14px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; font-size: 12px; color: #78350f; } </style>
+</head>
+<body>
+<div class="letter">
+<div class="letter-header">
+<div class="letter-date">15 January 2026</div>
+<div class="letter-ref">Ref.: CON00000000000000000000001</div>
+</div>
+<div class="letter-addressee">
+<div>
+<div class="addressee-name">A. Tenant</div>
+</div>
+</div>
+<div class="letter-subject">Lease Agreement</div>
+<div class="lease-notice">This is a courtesy translation. Only the version in the national language of the country is legally authoritative.</div>
+<div class="letter-body">
+<table class="summary-table">
+<tr>
+<td class="st-label">Base Rent</td>
+<td class="st-value">€850.00</td>
+</tr>
+<tr>
+<td class="st-label">Service Costs</td>
+<td class="st-value">€40.00</td>
+</tr>
+<tr>
+<td class="st-label">Other</td>
+<td class="st-value">€5.00</td>
+</tr>
+</table>
+<!-- "clauses" holds only the included clauses, already in final order with their article numbers assigned by LeaseClauseResolver. The legal text of each clause is the "clause-{key}" fragment of the per-language document named by clauseSource. -->
+<div class="clause">
+<h2 class="clause-title"><span>1</span>. <span>Parties</span></h2>
+<div><div data-clause="parties">
+<p>The undersigned:</p>
+<p><strong>Verhuur Voorbeeld BV</strong>, hereinafter referred to as &ldquo;the landlord&rdquo;, and</p>
+<p><strong>A. Tenant, B. Tenant, C. Tenant</strong>, hereinafter (jointly) referred to as &ldquo;the tenant&rdquo;,</p>
+<p>declare that they have agreed as set out in this lease agreement. If this agreement names more than 1 tenant, each of them is jointly and severally liable (hoofdelijk aansprakelijk) for the performance of all obligations of the tenant under this agreement.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>2</span>. <span>Premises</span></h2>
+<div><div data-clause="premises">
+<p>The landlord lets to the tenant, who accepts the letting, the residential premises located at <strong>Keizersgracht 12, 1015 CJ Amsterdam</strong>, together with the immovable appurtenances belonging to it, hereinafter referred to as &ldquo;the leased property&rdquo; (het gehuurde).</p>
+<p>The statutory provisions on the letting of residential premises apply to this agreement (Book 7, Title 4, Section 5 of the Dutch Civil Code, Burgerlijk Wetboek). Where the law provides that no deviation to the tenant&rsquo;s disadvantage is possible, those provisions prevail over deviating arrangements in this agreement.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>3</span>. <span>Term</span></h2>
+<div><div data-clause="term">
+<p>This agreement starts on <strong>1 February 2026</strong>.</p>
+<p>The agreement has been entered into for an indefinite period.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>4</span>. <span>Rent</span></h2>
+<div><div data-clause="rent">
+<p>The rent for the mere use of the leased property (net rent, kale huurprijs, article 7:237 paragraph 2 of the Civil Code) is <strong>€850.00</strong>
+<span>monthly</span>.<span class="clause-ref" data-ref="service-costs"> In addition, the tenant owes the payments for utilities and service charges (servicekosten) (see article <span>6</span>).</span></p>
+<p>Where a statutory maximum rent applies to the leased property, including the rules introduced by the Wet betaalbare huur (Affordable Rent Act) on 1 July 2024, the tenant owes no more than that maximum rent. No later than 6 months after the start of a lease first entered into by the tenant in respect of these residential premises, the tenant may ask the rent assessment committee (huurcommissie) to rule on the reasonableness of the agreed rent (article 7:249 of the Civil Code).</p>
+<p class="clause-ref" data-ref="rent-adjustment">The adjustment of the rent is governed by what this agreement provides on the subject (see article <span>5</span>).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>5</span>. <span>Rent adjustment</span></h2>
+<div><div data-clause="rent-adjustment">
+<p>The landlord may adjust the rent 1 time per year, for the first time 12 months after the start date of this agreement. The landlord notifies the tenant of the adjustment in good time and in writing, stating the current and the new rent and the effective date.</p>
+<p>The adjustment is never higher than the statutory maximum permitted rent increase that applies to the leased property on the effective date of the adjustment. If this provision leads to a higher increase than the law permits, the provision is void to that extent and the rent is deemed to have been increased by the permitted increase (article 7:248 of the Civil Code). Where the law permits, the tenant may ask the rent assessment committee to rule on an increase.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>6</span>. <span>Service costs</span></h2>
+<div><div data-clause="service-costs">
+<p>In addition to the rent, the tenant pays, for each payment period, an advance on the costs of utilities with an individual meter and on the service charges (servicekosten) (article 7:237 paragraph 3 of the Civil Code), as stated in this agreement.</p>
+<p>Every year, no later than 6 months after the end of a calendar year, the landlord provides the tenant with an overview, broken down by type, of the costs charged in that calendar year, stating the method of calculation (article 7:259 paragraph 2 of the Civil Code). Any amount overpaid or underpaid in advances is settled between the parties after that overview has been provided.</p>
+<p>If the parties cannot agree on the costs owed, either of them may ask the rent assessment committee to rule on the matter (article 7:260 of the Civil Code).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>7</span>. <span>Deposit</span></h2>
+<div><div data-clause="deposit">
+<p>At the start of the lease the tenant pays a security deposit (waarborgsom) in the amount agreed in writing between the parties.</p>
+<p>The security deposit serves as security for the performance of what has been agreed in this agreement and is at most 2 times the net rent (article 7:261b paragraphs 1 and 2 of the Civil Code).</p>
+<p>The landlord repays the security deposit within 14 days after the lease agreement ends. If there is damage to the leased property for which the tenant is liable, or if the tenant still owes rent, service charges or an energy performance fee, the landlord repays the remainder within 30 days after the end of the lease, after deducting the demonstrably incurred costs of repair or the amounts still owed, respectively. The landlord notifies the tenant of any deduction in writing, with a full specification of costs (article 7:261b paragraphs 3 and 4 of the Civil Code).<span class="clause-ref" data-ref="handover-inspection"> The determination of damage is governed by the handover (see article <span>13</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>8</span>. <span>Payment</span></h2>
+<div><div data-clause="payment">
+<p>The tenant pays the rent<span class="clause-ref" data-ref="rent"> (see article <span>4</span>)</span><span> and the advances on the service charges</span>
+<span>monthly</span>, <span>no later than the payment day agreed between the parties</span>, by transfer to the account that the landlord has designated in writing for that purpose.</p>
+<p>If the tenant does not pay on time, the tenant owes statutory interest on the overdue amount, and reimburses extrajudicial collection costs only to the extent the law permits.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>9</span>. <span>Use</span></h2>
+<div><div data-clause="use">
+<p>The tenant uses the leased property solely as residential premises and behaves as a good tenant (goed huurder) with regard to its use (article 7:213 of the Civil Code). The tenant and those who are present in the leased property with the tenant&rsquo;s permission cause no nuisance to neighbours.</p>
+<p>Changes to the layout or appearance of the leased property that cannot be undone at the end of the lease without significant cost are made by the tenant only after written permission from the landlord. The landlord gives permission within 8 weeks in any case if the change does not harm the lettability and does not reduce the value of the leased property (article 7:215 of the Civil Code).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>10</span>. <span>Subletting</span></h2>
+<div><div data-clause="subletting">
+<p>The tenant does not allow another person to use the leased property, in whole or in part, unless the landlord has given prior written permission to do so.</p>
+<p>If the leased property is a self-contained dwelling and the tenant has his main residence there, the tenant is legally entitled to allow another person to use part of it (article 7:244 of the Civil Code).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>11</span>. <span>Maintenance and repairs</span></h2>
+<div><div data-clause="maintenance">
+<p>At the tenant&rsquo;s request, the landlord remedies defects (gebreken) in the leased property, unless this is impossible or requires expenditure that, in the circumstances, cannot reasonably be required of the landlord (article 7:206 of the Civil Code). The tenant reports a defect to the landlord as soon as possible.</p>
+<p>The tenant carries out minor repairs (kleine herstellingen) at his own expense, unless they have become necessary because the landlord has failed in his obligation to remedy defects (article 7:217 of the Civil Code). Which repairs count as minor follows from the statutory provisions on the matter.</p>
+<p>If the landlord is in default in remedying a defect, the tenant may remedy the defect himself and recover the reasonable costs from the landlord, if desired by deducting them from the rent (article 7:206 paragraph 3 of the Civil Code). These rules cannot be deviated from to the tenant&rsquo;s disadvantage (article 7:242 of the Civil Code).</p>
+<p>The tenant gives the landlord the opportunity to carry out urgent work on the leased property, without prejudice to the tenant&rsquo;s statutory claims to rent reduction, dissolution and damages (article 7:220 paragraph 1 of the Civil Code).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>12</span>. <span>Energy label</span></h2>
+<div><div data-clause="energy-label">
+<p>On a new letting of an existing dwelling, a valid energy label is mandatory under the Besluit bouwwerken leefomgeving (Buildings and Living Environment Decree). The landlord provides the tenant, at the latest when entering into this agreement, with a copy of the valid energy label of the leased property. An energy label is valid until the date stated on the label.</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>13</span>. <span>Inspection and handover</span></h2>
+<div><div data-clause="handover-inspection">
+<p>At the start of the lease the parties jointly draw up a description of the condition of the leased property (opnamerapport). Both parties sign the description and each receives a copy.</p>
+<p>At the end of the lease the tenant makes the leased property available to the landlord again, in the condition in which the tenant accepted it according to that description, except for permitted changes and additions and for whatever has perished or been damaged through age. If no description has been drawn up, the tenant is, unless proven otherwise, presumed to have received the leased property in the condition in which it is at the end of the lease (article 7:224 of the Civil Code).</p>
+<p>Before the end of the lease the parties carry out a joint pre-inspection, so that the tenant can still repair any defects himself, and a final inspection at the handover.<span class="clause-ref" data-ref="deposit"> The settlement of the security deposit follows afterwards (see article <span>7</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>14</span>. <span>Termination</span></h2>
+<div><div data-clause="termination">
+<p>Notice of termination of this agreement is given by bailiff&rsquo;s writ or by registered letter, with effect from a day agreed for the payment of the rent (article 7:271 paragraphs 3 and 4 of the Civil Code).</p>
+<p>The tenant observes a notice period equal to the time between 2 consecutive payment days, but not shorter than 1 month and not longer than 3 months (article 7:271 paragraph 6 under a of the Civil Code).</p>
+<p>The landlord may give notice only on one of the grounds that the law lists for that purpose (article 7:274 paragraph 1 of the Civil Code) and states those grounds in the notice; notice on other grounds is void. The notice period for the landlord is at least 3 months, extended by 1 month for each year that the tenant has had the leased property in uninterrupted use under an agreement, up to a maximum of 6 months. In the notice, the landlord asks the tenant to state within 6 weeks whether the tenant consents to the termination (article 7:271 paragraphs 5 and 6 under b of the Civil Code). If the tenant does not consent in writing, the agreement remains in force until the court has given an irrevocable decision on a claim by the landlord (article 7:272 of the Civil Code).</p>
+<p>After it has started, the parties may also terminate the lease by mutual consent (article 7:271 paragraph 10 of the Civil Code).<span class="clause-ref" data-ref="handover-inspection"> The handover is governed by what this agreement provides on the subject (see article <span>13</span>).</span><span class="clause-ref" data-ref="deposit"> The security deposit is repaid as provided in this agreement (see article <span>7</span>).</span></p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>15</span>. <span>Data protection</span></h2>
+<div><div data-clause="data-protection">
+<p>The landlord processes the tenant&rsquo;s personal data only to the extent necessary for entering into and performing this agreement and for complying with legal obligations, in accordance with the General Data Protection Regulation (GDPR; in Dutch: Algemene verordening gegevensbescherming, AVG, Regulation (EU) 2016/679). The landlord does not keep that data longer than necessary for that purpose.</p>
+<p>The tenant may exercise his rights under the GDPR against the landlord, including the right of access, rectification and erasure of his personal data, and may lodge a complaint with the supervisory authority, in the Netherlands the Autoriteit Persoonsgegevens (Dutch Data Protection Authority).</p>
+</div></div>
+</div>
+<div class="clause">
+<h2 class="clause-title"><span>16</span>. <span>Disputes</span></h2>
+<div><div data-clause="disputes">
+<p>This agreement is governed by Dutch law.</p>
+<p>Disputes on which the rent assessment committee (huurcommissie) can rule under the law, such as on the reasonableness of the rent and on service charges, the parties may submit to the rent assessment committee. The parties are deemed to have agreed what the rent assessment committee has determined in its decision, unless one of them, within 8 weeks after a copy of the decision was sent, claims a decision from the court (article 7:262 of the Civil Code). Other disputes are submitted to the competent court.</p>
+</div></div>
+</div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>Landlord / Property Manager</span>
+<span class="sig-placeholder">signature-landlord</span>
+</div>
+<div class="sig-date"><span>Date:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-signature">
+<div class="sig-line"></div>
+<div class="sig-label">
+<span>A. Tenant</span>
+<span class="sig-placeholder">signature-tenant-1</span>
+</div>
+<div class="sig-date"><span>Date:</span>
+<span class="sig-date-line"></span></div>
+</div>
+<div class="letter-footer">
+<span>Document generated on 15 January 2026</span>
+<span> &mdash; </span>
+<span>Buurman Property Management</span>
+</div>
+</div>
+</body>
+</html>

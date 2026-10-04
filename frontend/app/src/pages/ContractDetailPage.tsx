@@ -13,6 +13,7 @@ import {
   useChangeContractStatus,
   useReopenContract,
   useDuplicateContract,
+  useContractTimeline,
 } from '@/hooks/useContractHooks';
 import {
   exportContractBooklet,
@@ -28,7 +29,8 @@ import { ContractOverviewTab } from '@/components/contracts/ContractOverviewTab'
 import { ContractPaymentsTab } from '@/components/contracts/ContractPaymentsTab';
 import { ContractExtensionsTab } from '@/components/contracts/ContractExtensionsTab';
 import { ContractDocumentsTab } from '@/components/contracts/ContractDocumentsTab';
-import { ContractHistoryTab } from '@/components/contracts/ContractHistoryTab';
+import { ContractLeaseAgreementTab } from '@/components/contracts/ContractLeaseAgreementTab';
+import { ContractTimeline } from '@/components/contracts/ContractTimeline';
 import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
@@ -41,6 +43,8 @@ import {
   RotateCcw,
   Copy,
   Repeat,
+  FileWarning,
+  FileSignature,
 } from 'lucide-react';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 
@@ -64,10 +68,17 @@ export const ContractDetailPage = () => {
     'payments',
     'extensions',
     'documents',
+    'leaseAgreement',
     'history',
   ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
+
+  const {
+    data: timelineEvents = [],
+    isLoading: timelineLoading,
+    isError: timelineError,
+  } = useContractTimeline(id);
 
   const { data: contract, isLoading, error } = useContract(id);
   const contractIdentifier = contract?.identifier;
@@ -192,8 +203,10 @@ export const ContractDetailPage = () => {
     );
   }
 
+  // NOTICE_GIVEN is locked like ACTIVE: the backend refuses edits/deletes once notice is given.
   const isLocked =
     contract.status === ContractStatus.ACTIVE ||
+    contract.status === ContractStatus.NOTICE_GIVEN ||
     contract.status === ContractStatus.TERMINATED ||
     contract.status === ContractStatus.EXPIRED;
   const canDelete = !isLocked;
@@ -217,6 +230,17 @@ export const ContractDetailPage = () => {
                 onDownloadBooklet={handleDownloadBooklet}
                 onDownloadSummary={handleDownloadSummary}
               />
+              {contract.status === ContractStatus.ACTIVE && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<FileWarning />}
+                  onClick={() => navigate(`/contracts/${id}/terminate`)}
+                  title={t('detail.terminateTitle')}
+                  disabled={!canEditData}
+                >
+                  {t('detail.terminate')}
+                </Button>
+              )}
               {!canReopen && (
                 <Button
                   variant="primary"
@@ -323,6 +347,17 @@ export const ContractDetailPage = () => {
               {t('detail.tabs.documents')}
             </button>
             <button
+              onClick={() => setActiveTab('leaseAgreement')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'leaseAgreement'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <FileSignature className="h-4 w-4" />
+              {t('detail.tabs.leaseAgreement')}
+            </button>
+            <button
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
@@ -378,7 +413,33 @@ export const ContractDetailPage = () => {
 
         {activeTab === 'documents' && <ContractDocumentsTab contractId={id} />}
 
-        {activeTab === 'history' && <ContractHistoryTab contractId={id} />}
+        {activeTab === 'leaseAgreement' && (
+          <ContractLeaseAgreementTab
+            contractId={id}
+            onGoToDocuments={() => setActiveTab('documents')}
+            onEditProperty={
+              canEditData && contract.property?.identifier
+                ? () =>
+                    navigate(
+                      `/properties/${contract.property?.identifier}/edit`
+                    )
+                : undefined
+            }
+          />
+        )}
+
+        {activeTab === 'history' && (
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
+              {t('history.title')}
+            </h2>
+            <ContractTimeline
+              events={timelineEvents}
+              isLoading={timelineLoading}
+              isError={timelineError}
+            />
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Modal */}

@@ -325,6 +325,8 @@
                                 <documentationProvider>none</documentationProvider>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
+                                <generateJsonIncludeAnnotations>false</generateJsonIncludeAnnotations>
+                                <generateJsonSetterNullsAnnotations>false</generateJsonSetterNullsAnnotations>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
@@ -357,6 +359,9 @@
                                 <schemaMapping>GenerateExtensionDocumentsRequest=com.buurman.dto.request.GenerateExtensionDocumentsRequest</schemaMapping>
                                 <schemaMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</schemaMapping>
                                 <schemaMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</schemaMapping>
+                                <schemaMapping>LeaseRegime=com.buurman.domain.LeaseRegime</schemaMapping>
+                                <schemaMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</schemaMapping>
+                                <schemaMapping>LeaseClausesResponse=com.buurman.dto.response.LeaseClausesResponse</schemaMapping>
                                 <schemaMapping>PaymentType=com.buurman.domain.Payment.PaymentType</schemaMapping>
                                 <schemaMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</schemaMapping>
                                 <schemaMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</schemaMapping>
@@ -394,6 +399,7 @@
                                 <schemaMapping>ContractRentPeriodIdentifier=com.buurman.domain.identifier.ContractRentPeriodIdentifier</schemaMapping>
                                 <schemaMapping>ContractExtensionIdentifier=com.buurman.domain.identifier.ContractExtensionIdentifier</schemaMapping>
                                 <schemaMapping>DocumentIdentifier=com.buurman.domain.identifier.DocumentIdentifier</schemaMapping>
+                                <schemaMapping>SignatureRequestIdentifier=com.buurman.domain.identifier.SignatureRequestIdentifier</schemaMapping>
                                 <schemaMapping>ExpenseIdentifier=com.buurman.domain.identifier.ExpenseIdentifier</schemaMapping>
                                 <schemaMapping>FinancingPaymentIdentifier=com.buurman.domain.identifier.FinancingPaymentIdentifier</schemaMapping>
                                 <schemaMapping>NotificationIdentifier=com.buurman.domain.identifier.NotificationIdentifier</schemaMapping>
@@ -471,6 +477,15 @@
                                 <schemaMapping>UnitType=com.buurman.domain.UnitType</schemaMapping>
                                 <schemaMapping>UnitStatus=com.buurman.domain.UnitStatus</schemaMapping>
                                 <schemaMapping>AllocationBasis=com.buurman.domain.AllocationBasis</schemaMapping>
+                                <!-- BUUR-105: Saved contract filters schema mappings -->
+                                <schemaMapping>SavedContractFilterIdentifier=com.buurman.domain.identifier.SavedContractFilterIdentifier</schemaMapping>
+                                <schemaMapping>CreateSavedContractFilterRequest=com.buurman.dto.request.CreateSavedContractFilterRequest</schemaMapping>
+                                <schemaMapping>SavedContractFilterResponse=com.buurman.dto.response.SavedContractFilterResponse</schemaMapping>
+                                <!-- Contract termination schema mappings -->
+                                <schemaMapping>ContractTerminationIdentifier=com.buurman.domain.identifier.ContractTerminationIdentifier</schemaMapping>
+                                <schemaMapping>TerminateContractRequest=com.buurman.dto.request.TerminateContractRequest</schemaMapping>
+                                <schemaMapping>ContractTerminationResponse=com.buurman.dto.response.ContractTerminationResponse</schemaMapping>
+                                <schemaMapping>TerminationPreviewResponse=com.buurman.dto.response.TerminationPreviewResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -517,6 +532,9 @@
                                 <importMapping>OccupancyTrendResponse=com.buurman.dto.response.OccupancyTrendResponse</importMapping>
                                 <importMapping>PaymentInstructionResponse=com.buurman.dto.response.PaymentInstructionResponse</importMapping>
                                 <importMapping>PaymentReceivalResponse=com.buurman.dto.response.PaymentReceivalResponse</importMapping>
+                                <importMapping>SignatureRequestResponse=com.buurman.dto.response.SignatureRequestResponse</importMapping>
+                                <importMapping>SignatureSignerResponse=com.buurman.dto.response.SignatureSignerResponse</importMapping>
+                                <importMapping>SignatureSigningLinkResponse=com.buurman.dto.response.SignatureSigningLinkResponse</importMapping>
                                 <importMapping>PaymentResponse=com.buurman.dto.response.PaymentResponse</importMapping>
                                 <importMapping>PaymentStatsResponse=com.buurman.dto.response.PaymentStatsResponse</importMapping>
                                 <importMapping>PaymentSummary=com.buurman.dto.response.PaymentSummary</importMapping>
@@ -636,6 +654,9 @@
                                 <importMapping>GenerateExtensionDocumentsRequest=com.buurman.dto.request.GenerateExtensionDocumentsRequest</importMapping>
                                 <importMapping>GenerateRentChangeDocumentsRequest=com.buurman.dto.request.GenerateRentChangeDocumentsRequest</importMapping>
                                 <importMapping>LateFeePolicy=com.buurman.domain.LateFeePolicy</importMapping>
+                                <importMapping>LeaseRegime=com.buurman.domain.LeaseRegime</importMapping>
+                                <importMapping>LeaseAvailability=com.buurman.domain.LeaseAvailability</importMapping>
+                                <importMapping>LeaseClausesResponse=com.buurman.dto.response.LeaseClausesResponse</importMapping>
                                 <importMapping>PaymentType=com.buurman.domain.Payment.PaymentType</importMapping>
                                 <importMapping>ContactCreditIdentifier=com.buurman.domain.identifier.ContactCreditIdentifier</importMapping>
                                 <importMapping>CancelPaymentRequest=com.buurman.dto.request.CancelPaymentRequest</importMapping>
@@ -727,6 +748,11 @@
                                 <importMapping>ExpenseAllocationResponse=com.buurman.dto.response.ExpenseAllocationResponse</importMapping>
                                 <importMapping>ManualAllocationRequest=com.buurman.dto.request.ManualAllocationRequest</importMapping>
                                 <importMapping>UpdateAllocationRequest=com.buurman.dto.request.UpdateAllocationRequest</importMapping>
+                                <!-- BUUR-105: Contract timeline import mapping -->
+                                <importMapping>TimelineEventResponse=com.buurman.dto.response.TimelineEventResponse</importMapping>
+                                <!-- Lease agreement import mappings -->
+                                <importMapping>ResolvedLeaseClauseResponse=com.buurman.dto.response.ResolvedLeaseClauseResponse</importMapping>
+                                <importMapping>UpdateContractLeaseClausesRequest=com.buurman.dto.request.UpdateContractLeaseClausesRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

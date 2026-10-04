@@ -688,7 +688,11 @@
       "confirmLabel_other": "Usuń {{count}} dokumentów"
     },
     "editModal": "Edytuj dokument",
-    "downloading": "Pobieranie..."
+    "downloading": "Pobieranie...",
+    "generated_one": "{{count}} wygenerowany plik",
+    "generated_few": "{{count}} wygenerowane pliki",
+    "generated_many": "{{count}} wygenerowanych plików",
+    "generated_other": "{{count}} wygenerowanego pliku"
   },
   "photos": {
     "title": "Zdjęcia",

@@ -4,7 +4,8 @@
     "pending": "Odottaa",
     "active": "Aktiivinen",
     "expired": "Vanhentunut",
-    "terminated": "Paattynyt"
+    "terminated": "Paattynyt",
+    "noticeGiven": "Irtisanomisilmoitus annettu"
   },
   "list": {
     "title": "Sopimukset",
@@ -18,6 +19,7 @@
     "pendingSignature": "Odottaa allekirjoitusta",
     "expired": "Vanhentunut",
     "terminated": "Paattynyt",
+    "noticeGiven": "Irtisanomisilmoitus annettu",
     "count_one": "{{count}} sopimus",
     "count_other": "{{count}} sopimusta",
     "empty": {
@@ -25,7 +27,23 @@
       "description": "Aloita luomalla ensimmainen vuokrasopimuksesi"
     },
     "error": "Sopimusten lataus epaonnistui",
-    "exportDeposits": "Vie vakuudet"
+    "exportDeposits": "Vie vakuudet",
+    "searchPlaceholder": "Hae yhteyshenkilön, kiinteistön tai sopimusnumeron mukaan...",
+    "endingWithinDays": "Päättyy (päivän) kuluessa",
+    "sortLabel": "Lajittele sopimukset",
+    "sortAsc": "Järjestä nousevasti",
+    "sortDesc": "Järjestä laskevasti",
+    "sort": {
+      "endDate": "Päättymispäivä",
+      "startDate": "Alkamispäivä",
+      "rentAmount": "Vuokran määrä"
+    },
+    "savedFilters": {
+      "button": "Tallennetut suodattimet",
+      "namePlaceholder": "Suodattimen nimi",
+      "save": "Tallenna",
+      "delete": "Poista {{name}}"
+    }
   },
   "create": {
     "title": "Lisaa uusi sopimus",
@@ -45,6 +63,8 @@
     "reopenTitle": "Avaa sopimus uudelleen luonnos-tilaan",
     "duplicate": "Kopioi",
     "duplicateTitle": "Luo kopio tasta sopimuksesta luonnos-tilaan",
+    "terminate": "Irtisano sopimus",
+    "terminateTitle": "Anna irtisanomisilmoitus tästä aktiivisesta sopimuksesta",
     "edit": "Muokkaa",
     "delete": "Poista",
     "tabs": {
@@ -52,7 +72,8 @@
       "payments": "Maksut",
       "extensions": "Jatkot",
       "documents": "Asiakirjat",
-      "history": "Historia"
+      "leaseAgreement": "Vuokrasopimus",
+      "history": "Aikajana"
     },
     "deleteTitle": "Poista sopimus",
     "deleteMessage": "Haluatko varmasti poistaa taman sopimuksen? Tata toimintoa ei voi kumota.",
@@ -307,6 +328,7 @@
   },
   "form": {
     "contractType": "Sopimustyyppi",
+    "leaseRegime": "Vuokrajärjestelmä",
     "property": "Kohde",
     "propertyAndParties": "Kohde ja osapuolet",
     "propertyPlaceholder": "Valitse kohde...",
@@ -426,7 +448,8 @@
       "PENDING_SIGNATURE": "Odottaa allekirjoitusta",
       "ACTIVE": "Aktiivinen",
       "EXPIRED": "Vanhentunut",
-      "TERMINATED": "Paattynyt"
+      "TERMINATED": "Paattynyt",
+      "NOTICE_GIVEN": "Irtisanomisilmoitus annettu"
     }
   },
   "adjustRent": {
@@ -605,6 +628,80 @@
     "adjustmentPayments_other": "{{count}} tarkistusmaksua luotu takautuville muutoksille",
     "status": "Tila",
     "leaseOfTotal": "Sopimus {{index}}/{{total}} tässä kohteessa"
+  },
+  "termination": {
+    "title": "Irtisano Sopimus",
+    "subtitle": "Anna irtisanomisilmoitus tämän sopimuksen päättämiseksi",
+    "steps": {
+      "whoGivesNotice": "Kuka Irtisanoo",
+      "noticeDateGround": "Irtisanomispäivä & Peruste",
+      "review": "Tarkistus",
+      "letterPreview": "Kirjeen Esikatselu",
+      "confirmation": "Vahvistus"
+    },
+    "givenByValues": {
+      "LANDLORD": "Vuokranantaja",
+      "TENANT": "Vuokralainen"
+    },
+    "whoGivesNotice": {
+      "question": "Kuka irtisanoo tämän sopimuksen?",
+      "landlordDescription": "Päätät sopimuksen vuokranantajana.",
+      "tenantDescription": "Vuokralainen on irtisanonut sopimuksen.",
+      "next": "Seuraava: Irtisanomispäivä & Peruste"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Irtisanomispäivä",
+      "noticeDateHelp": "Päivä, jolloin irtisanomisilmoitus annettiin tai annetaan.",
+      "groundCodeLabel": "Irtisanomisperuste tai -koodi (valinnainen)",
+      "groundCodeHelp": "Vaaditaan vain joissakin irtisanomisperusteissa. Voit vahvistaa tämän seuraavassa vaiheessa.",
+      "next": "Seuraava: Tarkistus"
+    },
+    "review": {
+      "computedEndDateLabel": "Laskettu päättymispäivä",
+      "noticeDaysLabel": "Irtisanomisaika",
+      "noticeDaysValue": "{{count}} päivää",
+      "sourceLabel": "Miten tämä laskettiin",
+      "source": {
+        "CATALOG_RULE": "Perustuu maasi irtisanomisaikasääntöihin.",
+        "CONTRACT_FALLBACK": "Perustuu tämän sopimuksen omaan irtisanomisasetukseen.",
+        "HARDCODED_DEFAULT": "Käytetään 30 päivän oletusarvoa."
+      },
+      "groundRequiredWarning": "Tämä irtisanomisperuste vaatii perustekoodin.",
+      "groundCodeLabel": "Irtisanomisperuste tai -koodi",
+      "selectGround": "Valitse peruste",
+      "overrideToggle": "Käytä aikaisempaa päättymispäivää",
+      "overrideHelp": "Jätä tyhjäksi hyväksyäksesi yllä lasketun päättymispäivän.",
+      "effectiveEndDateLabel": "Aikaisempi päättymispäivä",
+      "overrideReasonLabel": "Perustelu aikaisemmalle päättymispäivälle",
+      "overrideReasonPlaceholder": "Selitä, miksi tämä sopimus päättyy laskettua aikaisemmin...",
+      "overrideReasonRequired": "Perustelu vaaditaan, kun päättymispäivä on aikaisempi kuin laskettu päivä.",
+      "loading": "Lasketaan irtisanomisaikaa...",
+      "error": "Irtisanomisaikaa ei voitu laskea. Tarkista irtisanomispäivä ja yritä uudelleen.",
+      "next": "Seuraava: Kirjeen Esikatselu"
+    },
+    "letterPreview": {
+      "title": "Irtisanomiskirjeen Esikatselu",
+      "description": "Virallinen irtisanomiskirje luodaan ja tallennetaan asiakirjana tähän sopimukseen.",
+      "givenByLabel": "Irtisanoja",
+      "noticeDateLabel": "Irtisanomispäivä",
+      "groundCodeLabel": "Peruste",
+      "computedEndDateLabel": "Laskettu päättymispäivä",
+      "effectiveEndDateLabel": "Todellinen päättymispäivä",
+      "overrideReasonLabel": "Muutoksen perustelu",
+      "inspectionDateLabel": "Muuttotarkastuksen päivä (valinnainen)",
+      "notProvided": "Ei annettu",
+      "confirm": "Vahvista & Irtisano",
+      "submitting": "Irtisanotaan..."
+    },
+    "confirmation": {
+      "title": "Irtisanomisilmoitus Annettu",
+      "description": "Tämä sopimus on siirtynyt tilaan Irtisanomisilmoitus Annettu.",
+      "effectiveEndDateLabel": "Todellinen päättymispäivä",
+      "noticeLetterLabel": "Irtisanomiskirje",
+      "viewDocument": "Näytä asiakirja",
+      "depositNote": "Vakuuden palautuksen eräpäivä on päivitetty vastaamaan todellista päättymispäivää.",
+      "backToContract": "Takaisin sopimukseen"
+    }
   },
   "card": {
     "start": "Alku",
@@ -973,5 +1070,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Päättyy {{days}} päivän kuluttua",
+  "leaseAgreement": {
+    "title": "Vuokrasopimus",
+    "description": "Valitse mukaan otettavat lausekkeet ja luo tämän sopimuksen vuokrasopimus-PDF.",
+    "empty": "Tämän sopimuksen maalle ei ole vielä määritetty lausekkeita.",
+    "required": "Pakollinen",
+    "saveSelection": "Tallenna valinta",
+    "generate": "Luo vuokrasopimus",
+    "saveAndGenerate": "Tallenna ja luo vuokrasopimus",
+    "language": "Vuokrasopimuksen kieli",
+    "languagesLimited": "Vuokrasopimukset maalle {{country}} ovat saatavilla vain näytetyillä kielillä.",
+    "pinned": "Kiinnitetty",
+    "moveUp": "Siirrä {{title}} ylös",
+    "moveDown": "Siirrä {{title}} alas",
+    "countryLabel": "Maa",
+    "unavailable": {
+      "title": "Ei vielä saatavilla",
+      "description": "Tälle maalle ei ole vielä vuokrasopimusta. Voit silti hallita tätä sopimusta ja ladata jo allekirjoitetun vuokrasopimuksen.",
+      "action": "Siirry asiakirjoihin"
+    },
+    "noCountry": {
+      "title": "Valitse ensin maa",
+      "description": "Vuokrasopimus riippuu kohteen maasta. Lisää ensin maa kohteelle.",
+      "action": "Muokkaa kohdetta"
+    },
+    "error": {
+      "title": "Lausekkeita ei ladattu",
+      "description": "Meidän päässämme tapahtui virhe. Yritä hetken kuluttua uudelleen.",
+      "retry": "Yritä uudelleen"
+    },
+    "errors": {
+      "notAvailableForCountry": "Kohteen maalle ei ole vielä saatavilla vuokrasopimusta. Lataa sen sijaan allekirjoitettu vuokrasopimus Asiakirjat-osiossa.",
+      "noCountry": "Lisää kohteelle maa ennen kuin käytät vuokrasopimusta."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Vakio",
+    "SHORT_TERM": "Lyhytaikainen",
+    "STUDENT_OR_MOBILITY": "Opiskelija- tai liikkuvuusvuokra"
   }
 }

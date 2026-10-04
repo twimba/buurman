@@ -676,7 +676,9 @@
       "confirmLabel_other": "Slet {{count}} dokumenter"
     },
     "editModal": "Rediger dokument",
-    "downloading": "Downloader..."
+    "downloading": "Downloader...",
+    "generated_one": "{{count}} genereret fil",
+    "generated_other": "{{count}} genererede filer"
   },
   "photos": {
     "title": "Fotos",

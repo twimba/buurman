@@ -3,10 +3,13 @@ package com.buurman.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +21,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContactRecordMapperImpl;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import com.buurman.util.SidGenerator;
 
 @DisplayName("ContactRepository Integration")
 class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
@@ -298,6 +302,64 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       Contact saved = repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
 
       assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_B_ID)).isEmpty();
+    }
+  }
+
+  @Nested
+  @DisplayName("active contract counts")
+  class ActiveContractCounts {
+
+    @Test
+    @DisplayName(
+        "a NOTICE_GIVEN contract still counts as active for its contact (list badge + tabular"
+            + " export), a TERMINATED one does not, and counts never cross teams")
+    void noticeGivenContractCountsAsActive() {
+      UUID contactId = TestDataHelper.insertContact(dsl, TEAM_A_ID, USER_ID);
+      UUID underNotice = insertContractWithStatus(TEAM_A_ID, "NOTICE_GIVEN");
+      UUID terminated = insertContractWithStatus(TEAM_A_ID, "TERMINATED");
+      insertContractParty(underNotice, contactId, TEAM_A_ID);
+      insertContractParty(terminated, contactId, TEAM_A_ID);
+
+      assertThat(repo.countActiveContractsByContactIds(List.of(contactId), TEAM_A_ID))
+          .isEqualTo(Map.of(contactId, 1));
+      assertThat(
+              repo.findAllByTeamIdPaginatedWithCounts(
+                      TEAM_A_ID,
+                      null,
+                      null,
+                      null,
+                      PageRequest.of(0, 25, null, (SortDirection) null))
+                  .items())
+          .singleElement()
+          .extracting(ContactRepository.ContactWithCount::activeContractCount)
+          .isEqualTo(1);
+      assertThat(repo.countActiveContractsByContactIds(List.of(contactId), TEAM_B_ID)).isEmpty();
+    }
+
+    private UUID insertContractWithStatus(UUID teamId, String status) {
+      UUID propertyId = TestDataHelper.insertProperty(dsl, teamId, USER_ID);
+      UUID contractId = TestDataHelper.insertContract(dsl, teamId, propertyId, USER_ID);
+      dsl.update(DSL.table("contracts"))
+          .set(DSL.field("status", String.class), status)
+          .where(DSL.field("id", UUID.class).eq(contractId))
+          .execute();
+      return contractId;
+    }
+
+    private void insertContractParty(UUID contractId, UUID contactId, UUID teamId) {
+      LocalDateTime now = LocalDateTime.of(2026, 3, 1, 12, 0, 0);
+      dsl.insertInto(DSL.table("contract_parties"))
+          .set(DSL.field("id", UUID.class), UUID.randomUUID())
+          .set(DSL.field("identifier", String.class), SidGenerator.newContractPartyId().value())
+          .set(DSL.field("team_id", UUID.class), teamId)
+          .set(DSL.field("contract_id", UUID.class), contractId)
+          .set(DSL.field("contact_id", UUID.class), contactId)
+          .set(DSL.field("role", String.class), "PRIMARY_TENANT")
+          .set(DSL.field("created_at", LocalDateTime.class), now)
+          .set(DSL.field("updated_at", LocalDateTime.class), now)
+          .set(DSL.field("created_by", UUID.class), USER_ID)
+          .set(DSL.field("updated_by", UUID.class), USER_ID)
+          .execute();
     }
   }
 }

@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
-import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
@@ -48,6 +46,7 @@ import com.buurman.dto.response.TaxSummaryResponse;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -66,6 +65,7 @@ public class ReportService {
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PropertyMapper propertyMapper;
   private final TeamService teamService;
 
@@ -481,7 +481,7 @@ public class ReportService {
     // Fetch all active contracts once, outside the loop
     List<Contract> allActiveContracts =
         contractRepository.findAllByTeamId(teamId).stream()
-            .filter(c -> c.getStatus() == ACTIVE)
+            .filter(c -> c.getStatus().isInForce())
             .toList();
 
     // Batch-load extensions for effective end date computation
@@ -531,7 +531,7 @@ public class ReportService {
 
     List<Contract> allActiveContracts =
         contractRepository.findAllByTeamId(teamId).stream()
-            .filter(c -> c.getStatus() == ACTIVE)
+            .filter(c -> c.getStatus().isInForce())
             .toList();
 
     // Batch-load extensions for effective end date computation
@@ -699,23 +699,17 @@ public class ReportService {
   // Helper methods
 
   /**
-   * Batch-loads contract extensions and computes effective end dates for all given contracts.
-   * Returns a map of contract ID to effective end date (which may be empty for indefinite
-   * contracts).
+   * Batch-loads extensions and terminations and computes each contract's effective end date, capped
+   * by its termination's effective end date when notice has been given (the contract's own end_date
+   * is never rewritten by a termination). Empty means open-ended.
    */
   private Map<UUID, Optional<LocalDate>> buildEffectiveEndDateMap(
       java.util.Collection<Contract> contracts, UUID teamId) {
     Set<UUID> contractIds = contracts.stream().map(Contract::getId).collect(toSet());
-    List<ContractExtension> allExtensions =
-        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
-    Map<UUID, List<ContractExtension>> extensionsByContract =
-        allExtensions.stream().collect(groupingBy(ContractExtension::getContractId));
-    Map<UUID, Optional<LocalDate>> result = new java.util.HashMap<>();
-    for (Contract c : contracts) {
-      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
-      result.put(c.getId(), EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts));
-    }
-    return result;
+    return EffectiveEndDateHelper.computeEffectiveEndDates(
+        contracts,
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId),
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId));
   }
 
   private Optional<UUID> getPropertyIdFromContract(
@@ -782,7 +776,7 @@ public class ReportService {
       Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     long totalDays = 0;
     for (Contract contract : contracts) {
-      if (contract.getStatus() != ACTIVE) {
+      if (!contract.getStatus().isInForce()) {
         continue;
       }
 

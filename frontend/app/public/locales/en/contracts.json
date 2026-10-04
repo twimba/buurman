@@ -4,7 +4,8 @@
     "pending": "Pending",
     "active": "Active",
     "expired": "Expired",
-    "terminated": "Terminated"
+    "terminated": "Terminated",
+    "noticeGiven": "Notice Given"
   },
   "list": {
     "title": "Contracts",
@@ -18,6 +19,7 @@
     "pendingSignature": "Pending Signature",
     "expired": "Expired",
     "terminated": "Terminated",
+    "noticeGiven": "Notice Given",
     "count_one": "{{count}} contract",
     "count_other": "{{count}} contracts",
     "empty": {
@@ -25,7 +27,23 @@
       "description": "Get started by creating your first rental agreement"
     },
     "error": "Failed to load contracts",
-    "exportDeposits": "Export deposits"
+    "exportDeposits": "Export deposits",
+    "searchPlaceholder": "Search by contact, property, or contract #...",
+    "endingWithinDays": "Ending within (days)",
+    "sortLabel": "Sort contracts by",
+    "sortAsc": "Sort ascending",
+    "sortDesc": "Sort descending",
+    "sort": {
+      "endDate": "End Date",
+      "startDate": "Start Date",
+      "rentAmount": "Rent Amount"
+    },
+    "savedFilters": {
+      "button": "Saved filters",
+      "namePlaceholder": "Filter name",
+      "save": "Save",
+      "delete": "Delete {{name}}"
+    }
   },
   "create": {
     "title": "Add New Contract",
@@ -45,6 +63,8 @@
     "reopenTitle": "Reopen this contract to draft status",
     "duplicate": "Duplicate",
     "duplicateTitle": "Create a copy of this contract in draft status",
+    "terminate": "Terminate Contract",
+    "terminateTitle": "Give notice to end this active contract",
     "edit": "Edit",
     "delete": "Delete",
     "tabs": {
@@ -52,7 +72,8 @@
       "payments": "Payments",
       "extensions": "Extensions",
       "documents": "Documents",
-      "history": "History"
+      "leaseAgreement": "Lease Agreement",
+      "history": "Timeline"
     },
     "deleteTitle": "Delete Contract",
     "deleteMessage": "Are you sure you want to delete this contract? This action cannot be undone.",
@@ -307,6 +328,7 @@
   },
   "form": {
     "contractType": "Contract Type",
+    "leaseRegime": "Lease regime",
     "property": "Property",
     "propertyAndParties": "Property & Parties",
     "propertyPlaceholder": "Select a property...",
@@ -426,7 +448,8 @@
       "PENDING_SIGNATURE": "Pending Signature",
       "ACTIVE": "Active",
       "EXPIRED": "Expired",
-      "TERMINATED": "Terminated"
+      "TERMINATED": "Terminated",
+      "NOTICE_GIVEN": "Notice Given"
     }
   },
   "adjustRent": {
@@ -605,6 +628,80 @@
     "adjustmentPayments_one": "{{count}} adjustment payment created for retroactive changes",
     "adjustmentPayments_other": "{{count}} adjustment payments created for retroactive changes",
     "status": "Status"
+  },
+  "termination": {
+    "title": "Terminate Contract",
+    "subtitle": "Give notice to end this contract",
+    "steps": {
+      "whoGivesNotice": "Who Gives Notice",
+      "noticeDateGround": "Notice Date & Ground",
+      "review": "Review",
+      "letterPreview": "Letter Preview",
+      "confirmation": "Confirmation"
+    },
+    "givenByValues": {
+      "LANDLORD": "Landlord",
+      "TENANT": "Tenant"
+    },
+    "whoGivesNotice": {
+      "question": "Who is giving notice to end this contract?",
+      "landlordDescription": "You are ending the contract as the landlord.",
+      "tenantDescription": "The tenant has given notice to end the contract.",
+      "next": "Next: Notice Date & Ground"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Notice date",
+      "noticeDateHelp": "The date notice was, or will be, given.",
+      "groundCodeLabel": "Ground or reason code (optional)",
+      "groundCodeHelp": "Only required for some termination grounds. You can confirm this on the next step.",
+      "next": "Next: Review"
+    },
+    "review": {
+      "computedEndDateLabel": "Computed end date",
+      "noticeDaysLabel": "Notice period",
+      "noticeDaysValue": "{{count}} days",
+      "sourceLabel": "How this was calculated",
+      "source": {
+        "CATALOG_RULE": "Based on your country's notice-period rules.",
+        "CONTRACT_FALLBACK": "Based on this contract's own notice setting.",
+        "HARDCODED_DEFAULT": "Using a 30-day default."
+      },
+      "groundRequiredWarning": "This termination ground requires a reason code.",
+      "groundCodeLabel": "Ground or reason code",
+      "selectGround": "Select a ground",
+      "overrideToggle": "Use an earlier end date",
+      "overrideHelp": "Leave empty to accept the computed end date above.",
+      "effectiveEndDateLabel": "Earlier end date",
+      "overrideReasonLabel": "Reason for the earlier end date",
+      "overrideReasonPlaceholder": "Explain why this contract ends earlier than computed...",
+      "overrideReasonRequired": "A reason is required when the end date is earlier than the computed date.",
+      "loading": "Calculating notice period...",
+      "error": "Could not calculate the notice period. Check the notice date and try again.",
+      "next": "Next: Letter Preview"
+    },
+    "letterPreview": {
+      "title": "Notice Letter Preview",
+      "description": "A formal notice letter will be generated and stored as a document on this contract.",
+      "givenByLabel": "Given by",
+      "noticeDateLabel": "Notice date",
+      "groundCodeLabel": "Ground",
+      "computedEndDateLabel": "Computed end date",
+      "effectiveEndDateLabel": "Effective end date",
+      "overrideReasonLabel": "Override reason",
+      "inspectionDateLabel": "Move-out inspection date (optional)",
+      "notProvided": "Not provided",
+      "confirm": "Confirm & Terminate",
+      "submitting": "Terminating..."
+    },
+    "confirmation": {
+      "title": "Notice Given",
+      "description": "This contract has moved to Notice Given status.",
+      "effectiveEndDateLabel": "Effective end date",
+      "noticeLetterLabel": "Notice letter",
+      "viewDocument": "View document",
+      "depositNote": "The deposit return due date has been updated to match the effective end date.",
+      "backToContract": "Back to Contract"
+    }
   },
   "card": {
     "start": "Start",
@@ -973,5 +1070,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Ending in {{days}} days",
+  "leaseAgreement": {
+    "title": "Lease Agreement",
+    "description": "Choose which clauses to include, then generate the lease agreement PDF for this contract.",
+    "empty": "No clauses are configured for this contract's country yet.",
+    "required": "Required",
+    "saveSelection": "Save selection",
+    "generate": "Generate lease agreement",
+    "saveAndGenerate": "Save and generate lease agreement",
+    "language": "Agreement language",
+    "languagesLimited": "Lease agreements for {{country}} exist only in the languages shown.",
+    "pinned": "Pinned",
+    "moveUp": "Move up {{title}}",
+    "moveDown": "Move down {{title}}",
+    "countryLabel": "Country",
+    "unavailable": {
+      "title": "Not available here yet",
+      "description": "We don't have a lease agreement for this country yet. You can still manage this contract and upload a lease you've already signed.",
+      "action": "Go to Documents"
+    },
+    "noCountry": {
+      "title": "Choose a country first",
+      "description": "The lease agreement depends on the country of the property. Add a country to the property first.",
+      "action": "Edit property"
+    },
+    "error": {
+      "title": "We couldn't load the clauses",
+      "description": "Something went wrong on our side. Please try again in a moment.",
+      "retry": "Try again"
+    },
+    "errors": {
+      "notAvailableForCountry": "A lease agreement isn't available for this property's country yet. Upload a signed lease in Documents instead.",
+      "noCountry": "Add a country to the property before using the lease agreement."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Short-term",
+    "STUDENT_OR_MOBILITY": "Student or mobility"
   }
 }

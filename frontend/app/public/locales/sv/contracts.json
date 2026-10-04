@@ -4,7 +4,8 @@
     "pending": "Vantande",
     "active": "Aktiv",
     "expired": "Utgangen",
-    "terminated": "Uppsagd"
+    "terminated": "Uppsagd",
+    "noticeGiven": "Uppsägning lämnad"
   },
   "list": {
     "title": "Kontrakt",
@@ -18,6 +19,7 @@
     "pendingSignature": "Vantar pa signering",
     "expired": "Utgangen",
     "terminated": "Uppsagd",
+    "noticeGiven": "Uppsägning lämnad",
     "count_one": "{{count}} kontrakt",
     "count_other": "{{count}} kontrakt",
     "empty": {
@@ -25,7 +27,23 @@
       "description": "Kom igang genom att skapa ditt forsta hyresavtal"
     },
     "error": "Det gick inte att ladda kontrakt",
-    "exportDeposits": "Exportera depositioner"
+    "exportDeposits": "Exportera depositioner",
+    "searchPlaceholder": "Sök efter kontakt, fastighet eller kontraktsnummer...",
+    "endingWithinDays": "Löper ut inom (dagar)",
+    "sortLabel": "Sortera kontrakt efter",
+    "sortAsc": "Sortera stigande",
+    "sortDesc": "Sortera fallande",
+    "sort": {
+      "endDate": "Slutdatum",
+      "startDate": "Startdatum",
+      "rentAmount": "Hyresbelopp"
+    },
+    "savedFilters": {
+      "button": "Sparade filter",
+      "namePlaceholder": "Filternamn",
+      "save": "Spara",
+      "delete": "Ta bort {{name}}"
+    }
   },
   "create": {
     "title": "Lagg till nytt kontrakt",
@@ -45,6 +63,8 @@
     "reopenTitle": "Aterooppna detta kontrakt till utkaststatus",
     "duplicate": "Duplicera",
     "duplicateTitle": "Skapa en kopia av detta kontrakt i utkaststatus",
+    "terminate": "Säg upp kontrakt",
+    "terminateTitle": "Säg upp detta aktiva kontrakt",
     "edit": "Redigera",
     "delete": "Ta bort",
     "tabs": {
@@ -52,7 +72,8 @@
       "payments": "Betalningar",
       "extensions": "Forlangningar",
       "documents": "Dokument",
-      "history": "Historik"
+      "leaseAgreement": "Hyresavtal",
+      "history": "Tidslinje"
     },
     "deleteTitle": "Ta bort kontrakt",
     "deleteMessage": "Ar du saker pa att du vill ta bort detta kontrakt? Denna atgard kan inte angras.",
@@ -307,6 +328,7 @@
   },
   "form": {
     "contractType": "Kontraktstyp",
+    "leaseRegime": "Hyresregim",
     "property": "Fastighet",
     "propertyAndParties": "Fastighet & Parter",
     "propertyPlaceholder": "Valj en fastighet...",
@@ -426,7 +448,8 @@
       "PENDING_SIGNATURE": "Vantar pa signering",
       "ACTIVE": "Aktiv",
       "EXPIRED": "Utgangen",
-      "TERMINATED": "Uppsagd"
+      "TERMINATED": "Uppsagd",
+      "NOTICE_GIVEN": "Uppsägning lämnad"
     }
   },
   "adjustRent": {
@@ -605,6 +628,80 @@
     "adjustmentPayments_one": "{{count}} justeringsbetalning skapad for retroaktiva andringar",
     "adjustmentPayments_other": "{{count}} justeringsbetalningar skapade for retroaktiva andringar",
     "status": "Status"
+  },
+  "termination": {
+    "title": "Säg Upp Kontrakt",
+    "subtitle": "Säg upp för att avsluta detta kontrakt",
+    "steps": {
+      "whoGivesNotice": "Vem Säger Upp",
+      "noticeDateGround": "Uppsägningsdatum & Grund",
+      "review": "Granska",
+      "letterPreview": "Förhandsgranskning av Brev",
+      "confirmation": "Bekräftelse"
+    },
+    "givenByValues": {
+      "LANDLORD": "Hyresvärd",
+      "TENANT": "Hyresgäst"
+    },
+    "whoGivesNotice": {
+      "question": "Vem säger upp detta kontrakt?",
+      "landlordDescription": "Du avslutar kontraktet som hyresvärd.",
+      "tenantDescription": "Hyresgästen har sagt upp kontraktet.",
+      "next": "Nästa: Uppsägningsdatum & Grund"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Uppsägningsdatum",
+      "noticeDateHelp": "Datumet då uppsägningen gjordes, eller kommer att göras.",
+      "groundCodeLabel": "Uppsägningsgrund eller -kod (valfritt)",
+      "groundCodeHelp": "Krävs endast för vissa uppsägningsgrunder. Du kan bekräfta detta i nästa steg.",
+      "next": "Nästa: Granska"
+    },
+    "review": {
+      "computedEndDateLabel": "Beräknat slutdatum",
+      "noticeDaysLabel": "Uppsägningstid",
+      "noticeDaysValue": "{{count}} dagar",
+      "sourceLabel": "Hur detta beräknades",
+      "source": {
+        "CATALOG_RULE": "Baserat på ditt lands regler för uppsägningstid.",
+        "CONTRACT_FALLBACK": "Baserat på kontraktets egen uppsägningsinställning.",
+        "HARDCODED_DEFAULT": "Använder ett standardvärde på 30 dagar."
+      },
+      "groundRequiredWarning": "Denna uppsägningsgrund kräver en grundkod.",
+      "groundCodeLabel": "Uppsägningsgrund eller -kod",
+      "selectGround": "Välj en grund",
+      "overrideToggle": "Använd ett tidigare slutdatum",
+      "overrideHelp": "Lämna tomt för att acceptera det beräknade slutdatumet ovan.",
+      "effectiveEndDateLabel": "Tidigare slutdatum",
+      "overrideReasonLabel": "Anledning till det tidigare slutdatumet",
+      "overrideReasonPlaceholder": "Förklara varför detta kontrakt avslutas tidigare än beräknat...",
+      "overrideReasonRequired": "En anledning krävs när slutdatumet är tidigare än det beräknade datumet.",
+      "loading": "Beräknar uppsägningstid...",
+      "error": "Kunde inte beräkna uppsägningstiden. Kontrollera uppsägningsdatumet och försök igen.",
+      "next": "Nästa: Förhandsgranskning av Brev"
+    },
+    "letterPreview": {
+      "title": "Förhandsgranskning av Uppsägningsbrev",
+      "description": "Ett formellt uppsägningsbrev kommer att skapas och sparas som ett dokument på detta kontrakt.",
+      "givenByLabel": "Uppsagt av",
+      "noticeDateLabel": "Uppsägningsdatum",
+      "groundCodeLabel": "Grund",
+      "computedEndDateLabel": "Beräknat slutdatum",
+      "effectiveEndDateLabel": "Faktiskt slutdatum",
+      "overrideReasonLabel": "Anledning till ändringen",
+      "inspectionDateLabel": "Datum för avflyttningsbesiktning (valfritt)",
+      "notProvided": "Ej angivet",
+      "confirm": "Bekräfta & Säg Upp",
+      "submitting": "Säger upp..."
+    },
+    "confirmation": {
+      "title": "Uppsägning Lämnad",
+      "description": "Detta kontrakt har övergått till status Uppsägning Lämnad.",
+      "effectiveEndDateLabel": "Faktiskt slutdatum",
+      "noticeLetterLabel": "Uppsägningsbrev",
+      "viewDocument": "Visa dokument",
+      "depositNote": "Deponeringens återbetalningsdatum har uppdaterats för att matcha det faktiska slutdatumet.",
+      "backToContract": "Tillbaka till kontraktet"
+    }
   },
   "card": {
     "start": "Start",
@@ -973,5 +1070,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Löper ut om {{days}} dagar",
+  "leaseAgreement": {
+    "title": "Hyresavtal",
+    "description": "Välj vilka klausuler som ska ingå och generera sedan hyresavtalets PDF för detta kontrakt.",
+    "empty": "Inga klausuler har konfigurerats för detta kontrakts land ännu.",
+    "required": "Obligatorisk",
+    "saveSelection": "Spara urval",
+    "generate": "Generera hyresavtal",
+    "saveAndGenerate": "Spara och generera hyresavtal",
+    "language": "Hyresavtalets språk",
+    "languagesLimited": "Hyresavtal för {{country}} finns bara på de språk som visas.",
+    "pinned": "Fast",
+    "moveUp": "Flytta upp {{title}}",
+    "moveDown": "Flytta ned {{title}}",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Inte tillgängligt än",
+      "description": "Vi har inget hyresavtal för det här landet än. Du kan fortfarande hantera kontraktet och ladda upp ett redan signerat hyresavtal.",
+      "action": "Gå till Dokument"
+    },
+    "noCountry": {
+      "title": "Välj land först",
+      "description": "Hyresavtalet beror på fastighetens land. Lägg först till ett land för fastigheten.",
+      "action": "Redigera fastighet"
+    },
+    "error": {
+      "title": "Klausulerna lästes inte in",
+      "description": "Något gick fel hos oss. Försök igen om en stund.",
+      "retry": "Försök igen"
+    },
+    "errors": {
+      "notAvailableForCountry": "Det finns inget hyresavtal för fastighetens land än. Ladda i stället upp ett signerat hyresavtal under Dokument.",
+      "noCountry": "Lägg till ett land för fastigheten innan du använder hyresavtalet."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Korttidshyra",
+    "STUDENT_OR_MOBILITY": "Student eller mobilitet"
   }
 }

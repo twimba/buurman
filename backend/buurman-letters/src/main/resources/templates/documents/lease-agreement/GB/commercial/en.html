@@ -1,0 +1,406 @@
+<!--
+  legal-basis: United Kingdom law of business tenancies, which differs between England and Wales, Scotland and
+               Northern Ireland; the jurisdiction is read from the contract region (catalog codes ENG and WLS:
+               England and Wales; SCT: Scotland; NIR: Northern Ireland) and a general text is printed when the
+               region is unknown.
+               England and Wales: Landlord and Tenant Act 1954 Part II (security of tenure): s.23 (tenancies
+               to which Part II applies), s.24, s.25 (landlord's notice given not less than 6 nor more than 12
+               months before the termination date), s.26 (tenant's request), s.30(1) (grounds of opposition),
+               s.37 (compensation), s.38A (contracting out), s.43(3) (fixed terms not exceeding 6 months);
+               Regulatory Reform (Business Tenancies) (England and Wales) Order 2003 Schedules 1 and 2 (warning
+               notice; simple declaration when served at least 14 days before, otherwise statutory
+               declaration). Landlord and Tenant Act 1927 s.18(1) (damages for disrepair), s.19(1) and (2)
+               (consent not to be unreasonably withheld), s.23 (service of notices); Landlord and Tenant Act
+               1988 s.1 (written decision within a reasonable time); Landlord and Tenant (Covenants) Act 1995
+               (release on assignment, authorised guarantee agreement); Law of Property Act 1925 s.146
+               (forfeiture notice and relief); Leasehold Property (Repairs) Act 1938; Tribunals, Courts and
+               Enforcement Act 2007 Part 3 (commercial rent arrears recovery); Land Registration Act 2002 s.27
+               (leases of more than 7 years); Energy Performance of Buildings (England and Wales) Regulations
+               2012; Energy Efficiency (Private Rented Property) (England and Wales) Regulations 2015 (non-
+               domestic minimum band E). English Devolution and Community Empowerment Act 2026 (2026 c. 23,
+               Royal Assent 29 April 2026) s.100 and Sch 37, inserting s.54A and Schedules 7A and 7B into the
+               Landlord and Tenant Act 1954 (Sch 7A paras 3 and 9; Sch 7B paras 1-4: tenancy renewal
+               arrangements entered into on or after 17 March 2026), read on legislation.gov.uk 2026-10-04;
+               NOT in force on 2026-10-04 (commencement by regulations under s.108 awaited).
+               Scotland: tacit relocation (common law); Tenancy of Shops (Scotland) Act 1949; Law Reform
+               (Miscellaneous Provisions) (Scotland) Act 1985 s.4 (monetary irritancy, 14 days' notice) and
+               s.5 (non-monetary irritancy, fair and reasonable landlord test); Energy Performance of Buildings
+               (Scotland) Regulations 2008; Assessment of Energy Performance of Non-domestic Buildings
+               (Scotland) Regulations 2016. Leases (Automatic Continuation etc.) (Scotland) Bill: not enacted.
+               Northern Ireland: Business Tenancies (Northern Ireland) Order 1996; Energy Performance of
+               Buildings (Certificates and Inspections) Regulations (Northern Ireland) 2008.
+               United Kingdom: Value Added Tax Act 1994 Schedule 10 (option to tax); Stamp Duty Land Tax
+               (England and Northern Ireland), Land Transaction Tax (Wales), Land and Buildings Transaction Tax
+               (Scotland); UK GDPR and Data Protection Act 2018 (ico.org.uk).
+               Sources consulted 2026-10-04: legislation.gov.uk, gov.uk and the Law Commission project
+               "Business tenancies: the right to renew" (lawcom.gov.uk); most commercial statutes above were
+               stated from established knowledge and are listed as unverified in the pack report.
+               Pending: Law Commission review of the 1954 Act Part II (second consultation paper 16 June 2026,
+               closed 16 September 2026; final report and any Bill awaited); commencement of the upwards-only
+               rent review ban; the Commercial Rent (Coronavirus) Act 2022 arbitration scheme is closed to new
+               references and is not reflected.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("6 months", never "six months"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (United Kingdom); there is no translation. Draft text, not
+  vetted by legal counsel. Reflects the law of business tenancies of England and Wales, Scotland and Northern
+  Ireland, not the law of any other country. Each clause-<key> fragment holds only the clause body; the shell
+  supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded; they sit outside the jurisdiction branches so that they render for every jurisdiction. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;,</p>
+  <p>company registration number: ______________________________</p>
+  <p>registered office: ______________________________</p>
+  <p>VAT registration number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>company registration number: ______________________________</p>
+  <p>registered office: ______________________________</p>
+  <p>VAT registration number: ______________________________</p>
+  <p>represented by: ______________________________.</p>
+  <p>Where the tenant consists of several persons, each of them is jointly and severally liable for all
+    obligations of the tenant under this lease.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>,
+    shown on the plan annexed to this lease and with a net internal area of approximately ________ m²,
+    hereinafter &ldquo;the premises&rdquo;, together with the right to use the common parts of the building for
+    access and the other rights listed here: ______________________________</p>
+  <p>The premises are let for business purposes and not as a dwelling.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The tenant uses the premises only for the following purpose: ______________________________, and for no
+    other purpose without the landlord&rsquo;s prior written consent.</p>
+  <p>The landlord gives no warranty that the permitted use is lawful under planning law. The tenant obtains, at
+    the tenant&rsquo;s own cost, any planning permission, licence or other consent needed for the tenant&rsquo;s
+    use and complies with all statutory requirements relating to that use.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is granted for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">The lease is granted as a periodic tenancy and continues from period to period until
+    it is ended in accordance with this lease and the law.</p>
+  <p class="clause-ref" data-ref="security-of-tenure" th:if="${refs['security-of-tenure']}">What happens at the
+    end of the term is governed by the provisions on security of tenure (see article
+    <span th:text="${refs['security-of-tenure']}"></span>).</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">A lease granted for a term
+    of more than 7 years must be registered at HM Land Registry (section 27 of the Land Registration Act
+    2002).</p>
+  <p>Stamp Duty Land Tax (England and Northern Ireland), Land Transaction Tax (Wales) or Land and Buildings
+    Transaction Tax (Scotland) may be payable on the grant of this lease; the tenant pays any such tax and makes
+    any required return.</p>
+</div>
+
+<div th:fragment="clause-security-of-tenure" data-clause="security-of-tenure">
+  <th:block th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">
+    <p>Where the tenant occupies the premises for the purposes of a business carried on by the tenant, Part II
+      of the Landlord and Tenant Act 1954 may give the tenant the right to remain in occupation when this lease
+      ends and to apply for a new tenancy, unless the tenancy is excluded from that Part (for example a fixed term
+      not exceeding 6 months, subject to the conditions of section 43 subsection 3 of that Act) or the parties
+      have agreed to exclude it under section 38A of that Act.</p>
+    <p>The parties agree that this lease is (tick 1 box):</p>
+    <p>[ ] a protected tenancy, to which sections 24 to 28 of the 1954 Act apply;</p>
+    <p>[ ] a contracted-out tenancy, to which sections 24 to 28 of the 1954 Act do not apply. The landlord
+      served on the tenant the warning notice in the form set out in Schedule 1 to the Regulatory Reform
+      (Business Tenancies) (England and Wales) Order 2003 on ______________ and the tenant made the
+      ______________ (simple declaration where the notice was served at least 14 days before the tenant entered
+      into this lease or became contractually bound to do so; statutory declaration otherwise) in the form set
+      out in Schedule 2 to that Order on ______________. The exclusion is valid only if those requirements were
+      met before the tenant entered into this lease or became contractually bound to do so.</p>
+    <p>Where the tenancy is protected, it does not end at the end of the term but continues until it is ended
+      in accordance with the 1954 Act, in particular by the landlord&rsquo;s notice under section 25 (given not
+      less than 6 nor more than 12 months before the termination date it specifies) or by the tenant&rsquo;s
+      request for a new tenancy under section 26. The landlord may oppose the grant of a new tenancy only on the
+      grounds set out in section 30 subsection 1, and compensation may be payable to the tenant under section 37
+      where a new tenancy is refused on certain of those grounds.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'SCT'}">
+    <p>Scots law gives no general statutory right to a new lease of business premises. At the end of the term
+      the lease continues by tacit relocation, for 1 year or, where the term was shorter than 1 year, for a
+      period equal to the term, and so on, unless either party gives notice to quit in time and in the form Scots
+      law requires.</p>
+    <p>Where the premises are a shop, the tenant may be entitled to apply to the sheriff for a renewal of the
+      tenancy under the Tenancy of Shops (Scotland) Act 1949.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'NIR'}">
+    <p>Where the tenant occupies the premises for the purposes of a business, the Business Tenancies (Northern
+      Ireland) Order 1996 may give the tenant the right to remain in occupation when this lease ends and to
+      apply for a new tenancy; the landlord may oppose a new tenancy only on the grounds set out in that Order,
+      and that protection may be excluded only in the cases and in the manner that Order permits.</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">Whether
+    the tenant has a right to remain in occupation and to a new tenancy when this lease ends depends on the
+    jurisdiction in which the premises are located: in England and Wales Part II of the Landlord and Tenant Act
+    1954 applies unless validly excluded under section 38A of that Act, in Northern Ireland the Business
+    Tenancies (Northern Ireland) Order 1996 applies, and in Scotland there is no general statutory right to a
+    new lease and the lease continues by tacit relocation unless notice to quit is given.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">quarterly</span>, exclusive of VAT, service charge and insurance
+    rent.<span class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> VAT is dealt with separately (see
+    article <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> The service charge is payable in addition (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by what this lease provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is reviewed on each of the following review dates: ______________________________. On each review
+    date the rent becomes the open market rent of the premises at that date, determined on the assumptions and
+    disregards set out here: ______________________________, or the rent adjusted by reference to the following
+    index: ______________________________. The reviewed rent may be higher or lower than the rent payable before
+    the review date.</p>
+  <p>If the parties do not agree the reviewed rent within 3 months after the review date, either party may refer
+    it to an independent surveyor acting as an expert, appointed by agreement or, failing agreement, by the
+    President of the Royal Institution of Chartered Surveyors. Until the reviewed rent is determined, the tenant
+    continues to pay the rent payable before the review date; any difference is paid within 14 days after the
+    determination.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">Schedules 7A and 7B to the
+    Landlord and Tenant Act 1954, inserted by section 100 of the English Devolution and Community Empowerment Act
+    2026, restrict upwards-only rent reviews in business tenancies in England and Wales but are not yet in force;
+    the parties check their commencement. Once Schedule 7A is in force, rent review terms of a business tenancy
+    granted, or varied to include rent review terms, after it came into force are of no effect to the extent
+    that they would make the new rent larger than the reference amount that Schedule defines, unless the grant
+    or variation was made under arrangements entered into before it came into force; such earlier arrangements
+    are not protected where they are a tenancy renewal arrangement within Schedule 7B entered into on or after
+    17 March 2026 (paragraphs 3 and 9 of Schedule 7A).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The tenant pays a fair proportion of the costs reasonably and properly incurred by the landlord in providing
+    the services to the building listed here: ______________________________, hereinafter &ldquo;the service
+    charge&rdquo;. The tenant&rsquo;s proportion is ________ percent or is calculated as follows:
+    ______________________________.</p>
+  <p>The landlord gives the tenant a budget before the start of each service charge year, the tenant pays on
+    account in equal instalments together with the rent, and the landlord gives the tenant a statement of the
+    actual costs within 6 months after the end of each service charge year; any balance is paid or credited
+    within 30 days after the statement. On request the landlord gives the tenant reasonable access to the
+    supporting invoices.</p>
+  <p>The statutory service charge controls that apply to dwellings do not apply to this lease; the parties have
+    regard to the professional statement of the Royal Institution of Chartered Surveyors on service charges in
+    commercial property.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>All sums payable under this lease are exclusive of VAT. Where the landlord has opted to tax the premises
+    under Schedule 10 to the Value Added Tax Act 1994, or VAT is otherwise chargeable, the tenant pays VAT at the
+    applicable rate in addition, against a valid VAT invoice.</p>
+  <p>Option to tax made by the landlord: [ ] yes, notified to HM Revenue and Customs on ______________
+    [ ] no.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays the landlord a rent deposit of
+    <strong th:text="${depositAmount}">amount</strong> as security for the performance of the tenant&rsquo;s
+    obligations.</p>
+  <p th:if="${depositAmount == null}">The tenant pays the landlord a rent deposit in the amount agreed in
+    writing between the parties as security for the performance of the tenant&rsquo;s obligations.</p>
+  <p>No statutory limit applies to a deposit under a business lease. The landlord holds the deposit in a
+    separate interest-bearing account; interest belongs to the tenant. The landlord may draw on the deposit to
+    meet any sum due and unpaid under this lease, and the tenant restores the deposit to its full amount within
+    14 days after being asked. The deposit, with any interest not used, is repaid to the tenant within 30 days
+    after the end of this lease or after a lawful assignment of it, less any sums due to the landlord. The
+    parties may record further terms in a separate rent deposit deed.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span> <span th:text="${paymentFrequency}">quarterly</span> in
+    advance, <span th:if="${paymentDueDay != null}">no later than day
+    <strong th:text="${paymentDueDay}">1</strong> of each payment period,</span><span
+    th:if="${paymentDueDay == null}">on the first day of each payment period,</span> by bank transfer to the
+    account designated in writing by the landlord, without any deduction or set-off except as required by
+    law.</p>
+  <p>Any sum not paid within 14 days after its due date bears interest from the due date until payment at
+    ________ percent per year above the Bank of England base rate.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales the
+    landlord may also recover arrears of rent of commercial premises by taking control of goods under the
+    commercial rent arrears recovery procedure in Part 3 of the Tribunals, Courts and Enforcement Act 2007,
+    subject to the conditions of that Act and the regulations made under it.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The repairing obligations are allocated as follows (tick 1 box):</p>
+  <p>[ ] full repairing: the tenant keeps the whole of the premises, including the structure and exterior, in
+    good and substantial repair and condition;</p>
+  <p>[ ] internal repairing: the tenant keeps the interior of the premises, including the internal surfaces,
+    doors, windows and the landlord&rsquo;s fixtures and service installations exclusively serving the premises,
+    in good repair and condition, and the landlord keeps the structure, exterior and common parts in repair,
+    the cost being recoverable through the service charge.</p>
+  <p>The tenant&rsquo;s obligation does not require the tenant to put the premises into a better state of repair
+    than that shown in the schedule of condition annexed to this lease, where there is one. The tenant notifies
+    the landlord promptly of any disrepair for which the landlord is responsible and gives the landlord access
+    to inspect and repair at reasonable times after reasonable notice, or immediately in an emergency.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant makes no structural alterations or additions to the premises and does not alter their exterior.
+    The tenant makes internal non-structural alterations only with the landlord&rsquo;s prior written consent,
+    which may not be unreasonably withheld or delayed.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales, where
+    a covenant against improvements without consent applies, consent to an improvement may not be unreasonably
+    withheld (section 19 subsection 2 of the Landlord and Tenant Act 1927).</p>
+  <p>At the end of this lease the tenant removes any alterations and reinstates the premises if the landlord
+    so requires by notice given at least 3 months before the end of the term, making good any damage
+    caused.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not assign, underlet, charge or part with possession of the whole or any part of the
+    premises without the landlord&rsquo;s prior written consent, which may not be unreasonably withheld; the
+    tenant may not share occupation of the premises except with a company in the same group.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales consent
+    to an assignment or underletting may not be unreasonably withheld (section 19 subsection 1 of the Landlord and
+    Tenant Act 1927), and the landlord gives a written decision within a reasonable time after receiving a
+    written application (section 1 of the Landlord and Tenant Act 1988). On a lawful assignment the tenant is
+    released from the tenant covenants of this lease under the Landlord and Tenant (Covenants) Act 1995; the
+    landlord may require the outgoing tenant to guarantee the assignee by an authorised guarantee agreement
+    where that is a lawful condition of the consent.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">In Scotland the assignation of this lease and any
+    sub-letting require the landlord&rsquo;s prior written consent, which may not be unreasonably withheld.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building of which the premises form part against the usual insured risks for its
+    full reinstatement cost, and the tenant pays the landlord, as insurance rent, the proportion of the premium
+    attributable to the premises. The tenant insures the tenant&rsquo;s contents, fixtures and fittings and
+    holds public liability insurance for the tenant&rsquo;s business.</p>
+  <p>If the premises are damaged by an insured risk so as to be unfit for use, the rent and the service charge
+    cease to be payable until the premises are fit for use again, unless the insurance is void because of an
+    act or omission of the tenant.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <th:block th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">
+    <p>The landlord has made available to the tenant a valid energy performance certificate for the premises
+      (Energy Performance of Buildings (England and Wales) Regulations 2012).</p>
+    <p>The landlord may not let, or continue to let, non-domestic premises whose energy performance rating is
+      below band E unless a valid exemption is registered (Energy Efficiency (Private Rented Property) (England
+      and Wales) Regulations 2015).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'GB' and regionCode == 'SCT'}">
+    <p>The landlord has made available to the tenant a valid energy performance certificate for the premises
+      (Energy Performance of Buildings (Scotland) Regulations 2008). Where the building has a floor area of more
+      than 1,000 m², the Assessment of Energy Performance of Non-domestic Buildings (Scotland) Regulations 2016
+      may require an action plan to improve its energy performance.</p>
+  </th:block>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">The landlord has made available to the tenant a valid
+    energy performance certificate for the premises (Energy Performance of Buildings (Certificates and
+    Inspections) Regulations (Northern Ireland) 2008).</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">The
+    landlord has made available to the tenant a valid energy performance certificate for the premises, as the
+    energy performance regulations of the jurisdiction in which they are located require; in England and Wales
+    non-domestic premises rated below band E may not be let unless an exemption is registered.</p>
+  <p>The tenant does not do anything that would lower the energy performance rating of the premises without the
+    landlord&rsquo;s prior written consent.</p>
+</div>
+
+<div th:fragment="clause-break-option" data-clause="break-option">
+  <p>The [ ] tenant [ ] landlord [ ] either party may end this lease on ______________ by giving the other party
+    at least ________ months&rsquo; written notice. A tenant&rsquo;s break notice takes effect only if, on the
+    break date, the tenant has paid the rent due under this lease and gives up occupation of the premises.</p>
+  <p>In England and Wales, where the tenancy is protected by Part II of the Landlord and Tenant Act 1954, a
+    landlord&rsquo;s break notice ends the contractual term only; to recover possession the landlord must also
+    end the statutory continuation of the tenancy in accordance with that Act.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At the start of this lease the parties may agree a schedule of condition of the premises, with photographs,
+    which both sign and annex to this lease.</p>
+  <p>At the end of this lease the tenant gives up the premises with vacant possession, in the condition required
+    by this lease, with all keys and with the tenant&rsquo;s own fixtures and goods removed.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The repayment of the deposit follows (see
+    article <span th:text="${refs['deposit']}"></span>).</span></p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales damages
+    for breach of the tenant&rsquo;s repairing obligations may not exceed the amount by which the value of the
+    landlord&rsquo;s reversion is diminished (section 18 subsection 1 of the Landlord and Tenant Act 1927).</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>If any rent remains unpaid for 21 days after its due date, whether or not formally demanded, or the tenant
+    breaches any other obligation under this lease, or the tenant becomes insolvent, the landlord may end this
+    lease by re-entry or by the procedure the law of the jurisdiction requires, without prejudice to any other
+    remedy.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales, before
+    forfeiting this lease for a breach other than non-payment of rent, the landlord must serve a notice under
+    section 146 of the Law of Property Act 1925 specifying the breach and, where it is capable of remedy,
+    requiring it to be remedied within a reasonable time; the tenant may apply to the court for relief from
+    forfeiture. For breaches of repairing obligations the Leasehold Property (Repairs) Act 1938 may impose
+    further requirements.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">In Scotland the landlord may enforce an irritancy for
+    non-payment of rent only after giving the tenant at least 14 days&rsquo; written notice requiring payment
+    (section 4 of the Law Reform (Miscellaneous Provisions) (Scotland) Act 1985), and an irritancy for any other
+    breach only if a fair and reasonable landlord would do so in the circumstances (section 5 of that Act).</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">In Northern Ireland forfeiture is subject to the
+    statutory notice and relief provisions that apply in Northern Ireland.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">Forfeiture
+    or irritancy is subject to the statutory notice and relief provisions of the jurisdiction in which the
+    premises are located.</p>
+  <p>The parties may end this lease at any time by agreement in writing.<span class="clause-ref"
+    data-ref="security-of-tenure" th:if="${refs['security-of-tenure']}"> At the end of the term, the provisions
+    on security of tenure apply (see article <span th:text="${refs['security-of-tenure']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this lease are given in writing and delivered by hand or sent by recorded delivery post to the
+    registered office or the address of the recipient stated in this lease or notified in writing later.
+    Notices given by email are valid only where the parties have agreed so in writing for the notice
+    concerned.</p>
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">In England and Wales section
+    23 of the Landlord and Tenant Act 1927 also applies to the service of notices under this lease.</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>The following guarantor guarantees to the landlord the payment of the rent and the performance of the
+    tenant&rsquo;s obligations under this lease, as primary obligor and not merely as surety, until the tenant is
+    released from those obligations: ______________________________ (name, company registration number and
+    address).</p>
+  <p>The guarantee is not affected by any time or indulgence granted to the tenant or by any variation of this
+    lease agreed with the tenant, except as the law provides.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party&rsquo;s representatives and contact persons only
+    insofar as this is necessary for entering into and performing this lease and for complying with legal
+    obligations, in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection
+    Act 2018, and keeps the data no longer than necessary for those purposes.</p>
+  <p>The persons concerned may exercise the rights under the UK GDPR and may complain to the Information
+    Commissioner&rsquo;s Office.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p th:if="${countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS')}">This lease is governed by
+    the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'SCT'}">This lease is governed by Scots law, and the Scottish
+    courts have exclusive jurisdiction.</p>
+  <p th:if="${countryCode == 'GB' and regionCode == 'NIR'}">This lease is governed by the law of Northern
+    Ireland, and the courts of Northern Ireland have exclusive jurisdiction.</p>
+  <p th:if="${!(countryCode == 'GB' and (regionCode == 'ENG' or regionCode == 'WLS' or regionCode == 'SCT' or regionCode == 'NIR'))}">This
+    lease is governed by the law of the jurisdiction of the United Kingdom in which the premises are located,
+    and the courts of that jurisdiction have exclusive jurisdiction.</p>
+  <p>If a provision of this lease is invalid or unenforceable, the remaining provisions remain in effect.<span
+    class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}"> Disputes about a rent
+    review are determined by the expert as this lease provides (see article
+    <span th:text="${refs['rent-adjustment']}"></span>).</span></p>
+</div>
+
+</body>
+</html>

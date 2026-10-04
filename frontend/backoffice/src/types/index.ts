@@ -143,6 +143,7 @@ export type {
   RentRegulationCountryResponse,
   RentRegulationRegionResponse,
   RentRegulationRuleResponse,
+  RentRegulationTenancyRuleResponse,
   RentRegulationCatalogInfo,
   RentRegulationReloadResult,
   RentRegulationCatalogDiff,

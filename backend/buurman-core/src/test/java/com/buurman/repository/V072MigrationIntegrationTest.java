@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -101,6 +102,9 @@ class V072MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
     UUID unitId = seedUnit(propertyId, "1");
     UUID olderContractId = seedContractAt(propertyId, unitId, NOW.minusDays(1));
     seedContractAt(propertyId, unitId, NOW);
+    // ContractRepository selects every current column; add the one introduced after V071.
+    dsl.execute(
+        "ALTER TABLE contracts ADD COLUMN lease_regime VARCHAR(32) NOT NULL DEFAULT 'STANDARD'");
 
     CountryMetadataSerializer countryMetadataSerializer =
         new CountryMetadataSerializer(new ObjectMapper());
@@ -261,6 +265,6 @@ class V072MigrationIntegrationTest extends AbstractMigrationIntegrationTest {
   }
 
   private static String randomSuffix() {
-    return UUID.randomUUID().toString().replace("-", "").substring(0, 26).toUpperCase();
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 26).toUpperCase(Locale.ROOT);
   }
 }

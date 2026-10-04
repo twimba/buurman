@@ -27,6 +27,9 @@ public interface DocumentRecordMapper {
   @Mapping(
       target = "identifier",
       expression = "java(java.util.Optional.of(record.getIdentifier()))")
+  @Mapping(
+      target = "sourceDocumentId",
+      expression = "java(java.util.Optional.ofNullable(record.getSourceDocumentId()))")
   Document toDomain(DocumentsRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(document.getUploadedAt()))")
@@ -38,6 +41,10 @@ public interface DocumentRecordMapper {
   @Mapping(target = "title", expression = "java(document.getTitle().orElse(null))")
   @Mapping(target = "notes", expression = "java(document.getNotes().orElse(null))")
   @Mapping(target = "identifier", expression = "java(document.getIdentifier().orElse(null))")
+  @Mapping(
+      target = "sourceDocumentId",
+      expression = "java(document.getSourceDocumentId().orElse(null))")
+  @Mapping(target = "unitId", ignore = true)
   DocumentsRecord toRecord(Document document);
 
   List<Document> toDomainList(List<DocumentsRecord> records);

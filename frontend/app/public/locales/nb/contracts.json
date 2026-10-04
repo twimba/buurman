@@ -4,7 +4,8 @@
     "pending": "Ventende",
     "active": "Aktiv",
     "expired": "Utløpt",
-    "terminated": "Avsluttet"
+    "terminated": "Avsluttet",
+    "noticeGiven": "Oppsigelse gitt"
   },
   "list": {
     "title": "Kontrakter",
@@ -18,6 +19,7 @@
     "pendingSignature": "Venter på signatur",
     "expired": "Utløpt",
     "terminated": "Avsluttet",
+    "noticeGiven": "Oppsigelse gitt",
     "count_one": "{{count}} kontrakt",
     "count_other": "{{count}} kontrakter",
     "empty": {
@@ -25,7 +27,23 @@
       "description": "Kom i gang ved å opprette din første leieavtale"
     },
     "error": "Kunne ikke laste kontrakter",
-    "exportDeposits": "Eksporter depositum"
+    "exportDeposits": "Eksporter depositum",
+    "searchPlaceholder": "Søk etter kontakt, eiendom eller kontraktnummer...",
+    "endingWithinDays": "Utløper innen (dager)",
+    "sortLabel": "Sorter kontrakter etter",
+    "sortAsc": "Sorter stigende",
+    "sortDesc": "Sorter synkende",
+    "sort": {
+      "endDate": "Sluttdato",
+      "startDate": "Startdato",
+      "rentAmount": "Leiebeløp"
+    },
+    "savedFilters": {
+      "button": "Lagrede filtre",
+      "namePlaceholder": "Filternavn",
+      "save": "Lagre",
+      "delete": "Slett {{name}}"
+    }
   },
   "create": {
     "title": "Legg til ny kontrakt",
@@ -45,6 +63,8 @@
     "reopenTitle": "Gjenåpne denne kontrakten til utkastsstatus",
     "duplicate": "Dupliser",
     "duplicateTitle": "Opprett en kopi av denne kontrakten som utkast",
+    "terminate": "Si opp kontrakt",
+    "terminateTitle": "Si opp denne aktive kontrakten",
     "edit": "Rediger",
     "delete": "Slett",
     "tabs": {
@@ -52,7 +72,8 @@
       "payments": "Betalinger",
       "extensions": "Forlengelser",
       "documents": "Dokumenter",
-      "history": "Historikk"
+      "leaseAgreement": "Leiekontrakt",
+      "history": "Tidslinje"
     },
     "deleteTitle": "Slett kontrakt",
     "deleteMessage": "Er du sikker på at du vil slette denne kontrakten? Denne handlingen kan ikke angres.",
@@ -307,6 +328,7 @@
   },
   "form": {
     "contractType": "Kontrakttype",
+    "leaseRegime": "Leieregime",
     "property": "Eiendom",
     "propertyAndParties": "Eiendom og parter",
     "propertyPlaceholder": "Velg en eiendom...",
@@ -426,7 +448,8 @@
       "PENDING_SIGNATURE": "Venter på signatur",
       "ACTIVE": "Aktiv",
       "EXPIRED": "Utløpt",
-      "TERMINATED": "Avsluttet"
+      "TERMINATED": "Avsluttet",
+      "NOTICE_GIVEN": "Oppsigelse gitt"
     }
   },
   "adjustRent": {
@@ -605,6 +628,80 @@
     "adjustmentPayments_other": "{{count}} justeringsbetalinger opprettet for tilbakevirkende endringer",
     "status": "Status",
     "leaseOfTotal": "Kontrakt {{index}} av {{total}} på denne eiendommen"
+  },
+  "termination": {
+    "title": "Si Opp Kontrakt",
+    "subtitle": "Gi oppsigelse for å avslutte denne kontrakten",
+    "steps": {
+      "whoGivesNotice": "Hvem Sier Opp",
+      "noticeDateGround": "Oppsigelsesdato & Grunn",
+      "review": "Gjennomgang",
+      "letterPreview": "Forhåndsvisning av Brev",
+      "confirmation": "Bekreftelse"
+    },
+    "givenByValues": {
+      "LANDLORD": "Utleier",
+      "TENANT": "Leietaker"
+    },
+    "whoGivesNotice": {
+      "question": "Hvem sier opp denne kontrakten?",
+      "landlordDescription": "Du avslutter kontrakten som utleier.",
+      "tenantDescription": "Leietakeren har sagt opp kontrakten.",
+      "next": "Neste: Oppsigelsesdato & Grunn"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Oppsigelsesdato",
+      "noticeDateHelp": "Datoen oppsigelsen ble, eller vil bli, gitt.",
+      "groundCodeLabel": "Oppsigelsesgrunn eller -kode (valgfritt)",
+      "groundCodeHelp": "Kun nødvendig for enkelte oppsigelsesgrunner. Du kan bekrefte dette i neste steg.",
+      "next": "Neste: Gjennomgang"
+    },
+    "review": {
+      "computedEndDateLabel": "Beregnet sluttdato",
+      "noticeDaysLabel": "Oppsigelsestid",
+      "noticeDaysValue": "{{count}} dager",
+      "sourceLabel": "Hvordan dette ble beregnet",
+      "source": {
+        "CATALOG_RULE": "Basert på landets regler for oppsigelsestid.",
+        "CONTRACT_FALLBACK": "Basert på kontraktens egen oppsigelsesinnstilling.",
+        "HARDCODED_DEFAULT": "Bruker en standard på 30 dager."
+      },
+      "groundRequiredWarning": "Denne oppsigelsesgrunnen krever en grunnkode.",
+      "groundCodeLabel": "Oppsigelsesgrunn eller -kode",
+      "selectGround": "Velg en grunn",
+      "overrideToggle": "Bruk en tidligere sluttdato",
+      "overrideHelp": "La stå tom for å akseptere den beregnede sluttdatoen ovenfor.",
+      "effectiveEndDateLabel": "Tidligere sluttdato",
+      "overrideReasonLabel": "Grunn for den tidligere sluttdatoen",
+      "overrideReasonPlaceholder": "Forklar hvorfor denne kontrakten avsluttes tidligere enn beregnet...",
+      "overrideReasonRequired": "En grunn er nødvendig når sluttdatoen er tidligere enn den beregnede datoen.",
+      "loading": "Beregner oppsigelsestid...",
+      "error": "Kunne ikke beregne oppsigelsestiden. Kontroller oppsigelsesdatoen og prøv igjen.",
+      "next": "Neste: Forhåndsvisning av Brev"
+    },
+    "letterPreview": {
+      "title": "Forhåndsvisning av Oppsigelsesbrev",
+      "description": "Et formelt oppsigelsesbrev vil bli generert og lagret som et dokument på denne kontrakten.",
+      "givenByLabel": "Sagt opp av",
+      "noticeDateLabel": "Oppsigelsesdato",
+      "groundCodeLabel": "Grunn",
+      "computedEndDateLabel": "Beregnet sluttdato",
+      "effectiveEndDateLabel": "Faktisk sluttdato",
+      "overrideReasonLabel": "Grunn for endringen",
+      "inspectionDateLabel": "Dato for utflyttingssyn (valgfritt)",
+      "notProvided": "Ikke angitt",
+      "confirm": "Bekreft & Si Opp",
+      "submitting": "Sier opp..."
+    },
+    "confirmation": {
+      "title": "Oppsigelse Gitt",
+      "description": "Denne kontrakten har gått over til status Oppsigelse Gitt.",
+      "effectiveEndDateLabel": "Faktisk sluttdato",
+      "noticeLetterLabel": "Oppsigelsesbrev",
+      "viewDocument": "Vis dokument",
+      "depositNote": "Fristen for tilbakebetaling av depositum er oppdatert til å samsvare med den faktiske sluttdatoen.",
+      "backToContract": "Tilbake til kontrakten"
+    }
   },
   "card": {
     "start": "Start",
@@ -973,5 +1070,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Utløper om {{days}} dager",
+  "leaseAgreement": {
+    "title": "Leiekontrakt",
+    "description": "Velg hvilke klausuler som skal inkluderes, og generer deretter leiekontrakt-PDF-en for denne kontrakten.",
+    "empty": "Det er ennå ikke konfigurert klausuler for landet til denne kontrakten.",
+    "required": "Obligatorisk",
+    "saveSelection": "Lagre valg",
+    "generate": "Generer leiekontrakt",
+    "saveAndGenerate": "Lagre og generer leiekontrakt",
+    "language": "Språk for leiekontrakten",
+    "languagesLimited": "Leiekontrakter for {{country}} finnes bare på språkene som vises.",
+    "pinned": "Festet",
+    "moveUp": "Flytt {{title}} opp",
+    "moveDown": "Flytt {{title}} ned",
+    "countryLabel": "Land",
+    "unavailable": {
+      "title": "Ikke tilgjengelig ennå",
+      "description": "Vi har ikke leiekontrakt for dette landet ennå. Du kan fortsatt administrere kontrakten og laste opp en allerede signert leiekontrakt.",
+      "action": "Gå til Dokumenter"
+    },
+    "noCountry": {
+      "title": "Velg land først",
+      "description": "Leiekontrakten avhenger av landet til eiendommen. Legg først til et land på eiendommen.",
+      "action": "Rediger eiendom"
+    },
+    "error": {
+      "title": "Klausuler ble ikke lastet",
+      "description": "Noe gikk galt hos oss. Prøv igjen om litt.",
+      "retry": "Prøv igjen"
+    },
+    "errors": {
+      "notAvailableForCountry": "Det finnes ennå ingen leiekontrakt for eiendommens land. Last i stedet opp en signert leiekontrakt under Dokumenter.",
+      "noCountry": "Legg til et land på eiendommen før du bruker leiekontrakten."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standard",
+    "SHORT_TERM": "Korttidsleie",
+    "STUDENT_OR_MOBILITY": "Student eller mobilitet"
   }
 }

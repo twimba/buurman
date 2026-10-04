@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Contract;
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
 import com.buurman.repository.UnitRepository;
 import com.buurman.repository.UnitScope;
@@ -76,8 +77,9 @@ public class BackofficeTeamStatsRepository {
   }
 
   /**
-   * Sums active rent grouped by currency. Returns the total for the most-used currency along with
-   * that currency code. Returns (ZERO, null) when no active contracts exist.
+   * Sums the rent of in-force contracts ({@code ACTIVE} or {@code NOTICE_GIVEN}) grouped by
+   * currency. Returns the total for the most-used currency along with that currency code. Returns
+   * (ZERO, null) when no in-force contracts exist.
    */
   public Map.Entry<BigDecimal, String> sumActiveRentForTeam(UUID teamId) {
     var rows =
@@ -87,7 +89,7 @@ public class BackofficeTeamStatsRepository {
                 CONTRACTS
                     .TEAM_ID
                     .eq(teamId)
-                    .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                    .and(CONTRACTS.STATUS.in(Contract.ContractStatus.IN_FORCE_NAMES))
                     .and(CONTRACTS.DELETED_AT.isNull())
                     .and(CONTRACTS.RENT_AMOUNT_CURRENCY.isNotNull()))
             .groupBy(CONTRACTS.RENT_AMOUNT_CURRENCY)
@@ -113,12 +115,11 @@ public class BackofficeTeamStatsRepository {
   }
 
   /**
-   * Kept the name for continuity with {@link
-   * com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse#propertyStatusDistribution},
-   * but this is now a unit-status breakdown — {@code properties.status} was dropped in V070 in
-   * favor of per-unit status. This was the one live regression left by that migration: nothing
-   * caught the {@code UnsupportedOperationException} it used to throw, so the backoffice
-   * team-detail screen 500'd.
+   * Kept the name for continuity with {@code
+   * BackofficeTeamDetailResponse#propertyStatusDistribution}, but this is now a unit-status
+   * breakdown — {@code properties.status} was dropped in V070 in favor of per-unit status. This was
+   * the one live regression left by that migration: nothing caught the {@code
+   * UnsupportedOperationException} it used to throw, so the backoffice team-detail screen 500'd.
    */
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {
     Map<String, Long> result = new LinkedHashMap<>();

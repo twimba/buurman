@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getContracts } from '@/generated/api/contracts/contracts';
 import type { GetContractsParams } from '@/generated/models';
+import { queryKeys } from '@/lib/queryKeys';
 import { bulkCreatePayments } from '@/generated/api/payments/payments';
 import { useCreatePayment } from '@/hooks/usePaymentHooks';
 import { PaymentForm } from '@/components/payments/PaymentForm';
@@ -53,9 +54,10 @@ export const PaymentCreatePage = () => {
   const prefilledContractId = searchParams.get('contractId') ?? '';
   const registerMode = searchParams.get('register') === 'true';
 
+  const activeContractsParams: GetContractsParams = { status: ['ACTIVE'] };
   const { data: activeContracts } = useQuery({
-    queryKey: ['contracts', 'ACTIVE'],
-    queryFn: () => getContracts({ status: 'ACTIVE' } as GetContractsParams),
+    queryKey: queryKeys.contracts.all(activeContractsParams),
+    queryFn: () => getContracts(activeContractsParams),
   });
 
   const isPrefillInvalid = useMemo(() => {

@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -152,7 +153,13 @@ public class DocumentService {
       String entityType, UUID entityId, UserPrincipal principal) {
     List<Document> documents =
         documentRepository.findByEntityAndTeamId(entityType, entityId, principal.requireTeamId());
-    return documents.stream().map(this::toResponseWithDownloadUrl).toList();
+    // sourceDocumentId is resolved against this same batch rather than a per-row lookup: every
+    // document a source could point to shares the same entity, so it is always already fetched.
+    Map<UUID, Sid> identifiersById =
+        documents.stream()
+            .filter(d -> d.getIdentifier().isPresent())
+            .collect(Collectors.toMap(Document::getId, d -> d.getIdentifier().orElseThrow()));
+    return documents.stream().map(d -> toResponseWithDownloadUrl(d, identifiersById)).toList();
   }
 
   public URL getDownloadUrl(DocumentIdentifier identifier, UserPrincipal principal) {
@@ -245,8 +252,40 @@ public class DocumentService {
   }
 
   private DocumentResponse toResponseWithDownloadUrl(Document document) {
+    return toResponseWithDownloadUrl(document, resolveSourceIdentifiers(List.of(document)));
+  }
+
+  private List<DocumentResponse> toResponsesWithDownloadUrl(List<Document> documents) {
+    Map<UUID, Sid> identifiersById = resolveSourceIdentifiers(documents);
+    return documents.stream().map(d -> toResponseWithDownloadUrl(d, identifiersById)).toList();
+  }
+
+  // Batches the UUID->Sid lookup for sourceDocumentId across every document in the result set,
+  // instead of each falling back to Optional.empty() because no per-entity batch (like
+  // getDocuments' identifiersById) happens to cover it — a search result's source document may
+  // not itself match the search term, so it can't be assumed to already be in the batch.
+  private Map<UUID, Sid> resolveSourceIdentifiers(List<Document> documents) {
+    List<UUID> sourceIds =
+        documents.stream()
+            .map(Document::getSourceDocumentId)
+            .flatMap(Optional::stream)
+            .distinct()
+            .toList();
+    if (sourceIds.isEmpty()) {
+      return Map.of();
+    }
+    UUID teamId = documents.get(0).getTeamId();
+    return documentRepository.findByIdsAndTeamId(sourceIds, teamId).stream()
+        .filter(d -> d.getIdentifier().isPresent())
+        .collect(Collectors.toMap(Document::getId, d -> d.getIdentifier().orElseThrow()));
+  }
+
+  private DocumentResponse toResponseWithDownloadUrl(
+      Document document, Map<UUID, Sid> sourceIdentifiersById) {
     DocumentResponse response = documentMapper.toResponse(document);
     String downloadUrl = s3StorageService.generatePresignedUrl(document.getFileKey()).toString();
+    Optional<Sid> sourceDocumentIdentifier =
+        document.getSourceDocumentId().map(sourceIdentifiersById::get);
 
     return new DocumentResponse(
         response.identifier(),
@@ -258,6 +297,7 @@ public class DocumentService {
         response.mimeType(),
         response.title(),
         response.notes(),
+        sourceDocumentIdentifier,
         response.uploadedAt(),
         Optional.of(downloadUrl));
   }
@@ -270,8 +310,7 @@ public class DocumentService {
     PaginatedResult<Document> result =
         documentRepository.findAllByTeamIdPaginated(
             principal.requireTeamId(), search, entityType, pageRequest);
-    List<DocumentResponse> responses =
-        result.items().stream().map(this::toResponseWithDownloadUrl).toList();
+    List<DocumentResponse> responses = toResponsesWithDownloadUrl(result.items());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
@@ -280,7 +319,7 @@ public class DocumentService {
       @Nullable String searchTerm, @Nullable String entityType, UserPrincipal principal) {
     List<Document> documents =
         documentRepository.searchDocuments(searchTerm, entityType, principal.requireTeamId());
-    return documents.stream().map(this::toResponseWithDownloadUrl).toList();
+    return toResponsesWithDownloadUrl(documents);
   }
 
   public DocumentResponse getDocument(DocumentIdentifier identifier, UserPrincipal principal) {

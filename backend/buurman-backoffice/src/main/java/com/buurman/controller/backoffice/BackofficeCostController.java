@@ -1,6 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -110,7 +111,7 @@ public class BackofficeCostController implements BackofficeCostApi {
 
   private static CostProviderId parseProvider(String provider) {
     try {
-      return CostProviderId.valueOf(provider.toUpperCase());
+      return CostProviderId.valueOf(provider.toUpperCase(Locale.ROOT));
     } catch (IllegalArgumentException e) {
       throw new NotFoundException("Unknown cost provider: " + provider);
     }

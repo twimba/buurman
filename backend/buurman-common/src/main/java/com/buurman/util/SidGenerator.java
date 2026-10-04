@@ -14,6 +14,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.ContractTerminationIdentifier;
 import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataImportIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
@@ -25,6 +26,7 @@ import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
 import com.buurman.domain.identifier.GeneratedReportIdentifier;
 import com.buurman.domain.identifier.ImpersonationSessionIdentifier;
+import com.buurman.domain.identifier.LeaseClauseTemplateIdentifier;
 import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -47,6 +49,8 @@ import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.RentRegulationTenancyRuleIdentifier;
+import com.buurman.domain.identifier.SavedContractFilterIdentifier;
+import com.buurman.domain.identifier.SignatureRequestIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UnitIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
@@ -270,5 +274,21 @@ public class SidGenerator {
 
   public static RentComponentIdentifier newRentComponentId() {
     return RentComponentIdentifier.of(generateRaw(EntityPrefix.RCO));
+  }
+
+  public static SignatureRequestIdentifier newSignatureRequestId() {
+    return SignatureRequestIdentifier.of(generateRaw(EntityPrefix.SGR));
+  }
+
+  public static SavedContractFilterIdentifier newSavedContractFilterId() {
+    return SavedContractFilterIdentifier.of(generateRaw(EntityPrefix.SCF));
+  }
+
+  public static ContractTerminationIdentifier newContractTerminationId() {
+    return ContractTerminationIdentifier.of(generateRaw(EntityPrefix.CTM));
+  }
+
+  public static LeaseClauseTemplateIdentifier newLeaseClauseTemplateId() {
+    return LeaseClauseTemplateIdentifier.of(generateRaw(EntityPrefix.LCT));
   }
 }

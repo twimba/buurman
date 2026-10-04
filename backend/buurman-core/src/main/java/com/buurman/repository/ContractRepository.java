@@ -4,7 +4,9 @@ import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.lower;
 import static org.jooq.impl.DSL.min;
 
 import java.time.Clock;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +49,9 @@ public class ContractRepository {
   private final ContractRecordMapper mapper;
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final Clock clock;
+
+  /** Status names of {@link Contract.ContractStatus#IN_FORCE}, for {@code STATUS.in(...)}. */
+  private static final List<String> IN_FORCE_STATUS_NAMES = Contract.ContractStatus.IN_FORCE_NAMES;
 
   // Fields for columns added in V012 (not yet in JOOQ generated code)
   private static final Field<String> COUNTRY_CODE =
@@ -218,7 +224,11 @@ public class ContractRepository {
   }
 
   /**
-   * At most one row is expected ({@code uq_contracts_one_active_per_unit}, added in V072), but a
+   * The contract currently in force on the unit — {@code ACTIVE} or {@code NOTICE_GIVEN} (a tenant
+   * under notice still occupies the unit until the effective end date). At most one row is expected
+   * ({@code uq_contracts_one_in_force_per_unit}, added in V072 as {@code
+   * uq_contracts_one_active_per_unit} and widened to cover {@code NOTICE_GIVEN} in V080, plus the
+   * in-force guard in {@code ContractService} that refuses to activate a second contract), but a
    * legacy duplicate predating that constraint is still possible. {@code limit(1)} with a
    * deterministic {@code orderBy} makes that degrade to "pick the oldest" instead of throwing
    * {@link org.jooq.exception.TooManyRowsException} (which {@code fetchOptional()} does on >1 row
@@ -231,7 +241,7 @@ public class ContractRepository {
                 .UNIT_ID
                 .eq(unitId)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
-                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .orderBy(CONTRACTS.CREATED_AT.asc(), CONTRACTS.ID.asc())
         .limit(1)
@@ -300,6 +310,7 @@ public class ContractRepository {
           .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
           .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
           .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]))
+          .set(CONTRACTS.LEASE_REGIME, contract.getLeaseRegime().name())
           .set(CONTRACTS.CREATED_AT, now)
           .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -357,7 +368,8 @@ public class ContractRepository {
               .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
               .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
               .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
-              .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]));
+              .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]))
+              .set(CONTRACTS.LEASE_REGIME, contract.getLeaseRegime().name());
 
       // Only update country_code and country_metadata while contract is DRAFT (locked after
       // activation)
@@ -387,13 +399,67 @@ public class ContractRepository {
 
   public PaginatedResult<Contract> findAllByTeamIdPaginated(
       UUID teamId,
-      @Nullable String status,
+      @Nullable List<String> status,
       @Nullable UUID propertyId,
       @Nullable UUID contactId,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays,
       PageRequest pageRequest) {
+    Condition condition =
+        buildListCondition(teamId, status, propertyId, contactId, search, endingWithinDays);
+    // PaginationHelper.paginate() builds the query via selectFrom(table)+orderBy(field) without
+    // also adding this field to the SELECT list, so the ORDER BY needs the raw, unaliased
+    // expression — effectiveEndDate()'s "effective_end_date" alias would only resolve if the
+    // query's SELECT list also projected it (see EffectiveEndDateHelper's javadoc).
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDateExpr();
+    Map<String, Field<?>> sortableFields =
+        Map.of(
+            "createdAt", CONTRACTS.CREATED_AT,
+            "startDate", CONTRACTS.START_DATE,
+            "endDate", effectiveEndDate,
+            "rentAmount", CONTRACTS.RENT_AMOUNT,
+            "status", CONTRACTS.STATUS);
+    return PaginationHelper.paginate(
+        dsl,
+        CONTRACTS,
+        condition,
+        sortableFields,
+        CONTRACTS.CREATED_AT,
+        pageRequest,
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
+  }
+
+  public List<Contract> findAllByTeamId(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
+    Condition condition = buildListCondition(teamId, status, null, null, search, endingWithinDays);
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(condition)
+        .orderBy(CONTRACTS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  private Condition buildListCondition(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable UUID propertyId,
+      @Nullable UUID contactId,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
-      condition = condition.and(CONTRACTS.STATUS.eq(status));
+      condition = condition.and(CONTRACTS.STATUS.in(status));
     }
     if (propertyId != null) {
       condition = condition.and(CONTRACTS.PROPERTY_ID.eq(propertyId));
@@ -416,26 +482,60 @@ public class ContractRepository {
                               .and(CP_TEAM_ID.eq(teamId))
                               .and(CP_DELETED_AT.isNull()))));
     }
-    Field<LocalDate> effectiveEndDate =
-        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
-    Map<String, Field<?>> sortableFields =
-        Map.of(
-            "createdAt", CONTRACTS.CREATED_AT,
-            "startDate", CONTRACTS.START_DATE,
-            "endDate", effectiveEndDate,
-            "rentAmount", CONTRACTS.RENT_AMOUNT,
-            "status", CONTRACTS.STATUS);
-    return PaginationHelper.paginate(
-        dsl,
-        CONTRACTS,
-        condition,
-        sortableFields,
-        CONTRACTS.CREATED_AT,
-        pageRequest,
-        r ->
-            mapper
-                .toDomain(r)
-                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
+    if (search != null && !search.trim().isEmpty()) {
+      // Escape the user's own literal % and _ so e.g. searching "100%" matches that literal
+      // string instead of "100" followed by a wildcard matching anything.
+      String pattern =
+          "%" + org.jooq.impl.DSL.escape(search.trim().toLowerCase(Locale.ROOT), '\\') + "%";
+      condition =
+          condition.and(
+              org.jooq
+                  .impl
+                  .DSL
+                  .exists(
+                      dsl.selectOne()
+                          .from(CONTRACT_PARTIES)
+                          .join(CONTACTS)
+                          .on(
+                              CONTACTS
+                                  .ID
+                                  .eq(CONTRACT_PARTIES.CONTACT_ID)
+                                  .and(CONTACTS.TEAM_ID.eq(teamId))
+                                  .and(CONTACTS.DELETED_AT.isNull()))
+                          .where(
+                              CONTRACT_PARTIES
+                                  .CONTRACT_ID
+                                  .eq(CONTRACTS.ID)
+                                  .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
+                                  .and(CONTRACT_PARTIES.DELETED_AT.isNull())
+                                  .and(lower(CONTACTS.DISPLAY_NAME).like(pattern, '\\'))))
+                  .or(
+                      org.jooq.impl.DSL.exists(
+                          dsl.selectOne()
+                              .from(PROPERTIES)
+                              .where(
+                                  PROPERTIES
+                                      .ID
+                                      .eq(CONTRACTS.PROPERTY_ID)
+                                      .and(PROPERTIES.TEAM_ID.eq(teamId))
+                                      .and(PROPERTIES.DELETED_AT.isNull())
+                                      .and(
+                                          lower(PROPERTIES.STREET)
+                                              .like(pattern, '\\')
+                                              .or(lower(PROPERTIES.CITY).like(pattern, '\\'))))))
+                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(pattern, '\\')));
+    }
+    if (endingWithinDays != null) {
+      LocalDate today = LocalDate.now(clock);
+      Field<LocalDate> effectiveEndDateExpr =
+          com.buurman.service.EffectiveEndDateHelper.effectiveEndDateExpr();
+      condition =
+          condition.and(
+              effectiveEndDateExpr
+                  .isNotNull()
+                  .and(effectiveEndDateExpr.between(today, today.plusDays(endingWithinDays))));
+    }
+    return condition;
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {
@@ -454,7 +554,33 @@ public class ContractRepository {
         .toList();
   }
 
-  public List<ContractIncomeEntry> findActiveContractIncomeByTeamId(UUID teamId) {
+  /**
+   * Contracts still in force ({@code ACTIVE} or {@code NOTICE_GIVEN}): the ones that must keep
+   * generating rent up to their effective end date. Unlike {@link #findActiveByTeamId}, a contract
+   * under notice is included.
+   */
+  public List<Contract> findInForceByTeamId(UUID teamId) {
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
+  /**
+   * Rent terms of every in-force contract ({@code ACTIVE} or {@code NOTICE_GIVEN}): a contract
+   * under notice still generates rent until its effective end date, so it counts toward income.
+   */
+  public List<ContractIncomeEntry> findInForceContractIncomeByTeamId(UUID teamId) {
     return dsl.select(
             CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
         .from(CONTRACTS)
@@ -462,7 +588,7 @@ public class ContractRepository {
             CONTRACTS
                 .TEAM_ID
                 .eq(teamId)
-                .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
         .map(
@@ -520,7 +646,10 @@ public class ContractRepository {
             .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull())));
   }
 
-  /** Active, as used throughout this codebase: {@code status = ACTIVE} and not soft-deleted. */
+  /**
+   * Contracts occupying the unit: in force ({@code ACTIVE} or {@code NOTICE_GIVEN}, see {@link
+   * Contract.ContractStatus#IN_FORCE}) and not soft-deleted.
+   */
   public int countActiveByUnitId(UUID unitId, UUID teamId) {
     return dsl.fetchCount(
         dsl.selectFrom(CONTRACTS)
@@ -529,14 +658,15 @@ public class ContractRepository {
                     .UNIT_ID
                     .eq(unitId)
                     .and(CONTRACTS.TEAM_ID.eq(teamId))
-                    .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                    .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                     .and(CONTRACTS.DELETED_AT.isNull())));
   }
 
   /**
-   * Active contracts for the given units, paired with the rent charged and the primary tenant's
-   * display name (via {@code contract_parties}/{@code contacts}), for assembling the units grid
-   * view. {@code tenantName} is {@code null} when no primary-tenant party is recorded.
+   * In-force ({@code ACTIVE} or {@code NOTICE_GIVEN}) contracts for the given units, paired with
+   * the rent charged and the primary tenant's display name (via {@code contract_parties}/{@code
+   * contacts}), for assembling the units grid view. {@code tenantName} is {@code null} when no
+   * primary-tenant party is recorded.
    */
   public List<UnitActiveTenancy> findActiveTenanciesByUnitIds(
       Collection<UUID> unitIds, UUID teamId) {
@@ -569,7 +699,7 @@ public class ContractRepository {
                 .UNIT_ID
                 .in(unitIds)
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
-                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.STATUS.in(IN_FORCE_STATUS_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         // Deterministic order so that, in the schema-permitted case of two active contracts (or
         // two PRIMARY_TENANT parties) on one unit, the caller's "keep the first" merge picks the

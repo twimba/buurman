@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DocumentResponse } from '@/types/property';
 import {
@@ -13,6 +13,8 @@ import {
   CheckSquare,
   Square,
   Check,
+  ChevronRight,
+  CornerDownRight,
   Loader2,
 } from 'lucide-react';
 import { ErrorMessage } from '../ErrorMessage';
@@ -40,6 +42,7 @@ interface DocumentListProps {
   isUploading: boolean;
   isDeleting: boolean;
   readOnly?: boolean;
+  renderRowAction?: (doc: DocumentResponse) => React.ReactNode;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -70,6 +73,7 @@ export const DocumentList = ({
   isUploading,
   isDeleting,
   readOnly = false,
+  renderRowAction,
 }: DocumentListProps) => {
   const { t } = useTranslation('properties');
   const { formatDate } = useFormatDate();
@@ -87,13 +91,46 @@ export const DocumentList = ({
   );
   const [editingDocument, setEditingDocument] =
     useState<DocumentResponse | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  // Documents generated from another one (a signed copy, a signing certificate) are grouped
+  // under that original instead of shown as unrelated flat rows — collapsed by default so a
+  // document suddenly having 2-3 extra rows after it's signed doesn't read as "where did these
+  // come from?". A sourceDocumentIdentifier that doesn't match anything in this list (e.g. the
+  // original was deleted) falls back to top-level so the document never silently disappears.
+  const { topLevelDocuments, childrenByParent } = useMemo(() => {
+    const topLevelIds = new Set(documents.map((d) => d.identifier));
+    const children: Record<string, DocumentResponse[]> = {};
+    const topLevel: DocumentResponse[] = [];
+    for (const doc of documents) {
+      const parentId = doc.sourceDocumentIdentifier;
+      if (parentId && topLevelIds.has(parentId)) {
+        (children[parentId] ??= []).push(doc);
+      } else {
+        topLevel.push(doc);
+      }
+    }
+    return { topLevelDocuments: topLevel, childrenByParent: children };
+  }, [documents]);
+
+  const toggleGroup = (id: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   const {
     selectedDocuments,
     handleSelectDocument,
     handleSelectAll,
     clearSelection,
-  } = useDocumentSelection(documents);
+  } = useDocumentSelection(topLevelDocuments);
   const bulkDownloadMutation = useBulkDownload();
   const updateDocumentMutation = useUpdateDocument();
 
@@ -187,6 +224,226 @@ export const DocumentList = ({
 
   const hasSelection = selectedDocuments.size > 0;
 
+  const renderTableRow = (doc: DocumentResponse, isChild = false) => {
+    const isSelected = selectedDocuments.has(doc.identifier);
+    return (
+      <tr
+        key={doc.identifier}
+        className={`hover:bg-surface-inset cursor-pointer ${
+          isSelected ? 'bg-info-bg' : isChild ? 'bg-surface-page' : ''
+        }`}
+        onClick={() => setPreviewIndex(documents.indexOf(doc))}
+      >
+        <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+          {isChild ? (
+            // Generated documents aren't individually bulk-selectable — this connector glyph
+            // replaces the checkbox so the row's very first cell already signals "this belongs
+            // to the row above", before a reader even gets to the indent or muted styling.
+            <CornerDownRight
+              className="h-4 w-4 text-text-muted"
+              aria-hidden="true"
+            />
+          ) : (
+            <button
+              onClick={(e) => handleSelectDocument(doc.identifier, e.shiftKey)}
+              className="text-text-secondary hover:text-text-secondary"
+            >
+              {isSelected ? (
+                <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
+                  <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                </div>
+              ) : (
+                <Square className="h-5 w-5" />
+              )}
+            </button>
+          )}
+        </td>
+        <td className="px-6 py-4">
+          <div className={`flex items-center gap-3 ${isChild ? 'ml-3' : ''}`}>
+            {isChild ? (
+              <FileText className="h-5 w-5 text-text-muted flex-shrink-0" />
+            ) : (
+              getFileIcon(doc.mimeType ?? '')
+            )}
+            <div>
+              <div
+                className={`text-sm font-medium ${isChild ? 'text-text-secondary' : 'text-text-primary'}`}
+              >
+                {doc.title ?? doc.fileName}
+              </div>
+              {doc.title && doc.title !== doc.fileName ? (
+                <div className="text-xs text-text-secondary">
+                  {doc.fileName}
+                </div>
+              ) : null}
+              {doc.notes ? (
+                <RichTextDisplay
+                  html={doc.notes}
+                  className="text-xs text-text-secondary mt-1"
+                />
+              ) : null}
+            </div>
+          </div>
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+          {formatFileSize(doc.fileSize ?? 0)}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
+          {formatDate(doc.uploadedAt)}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <div
+            className="flex justify-end gap-1.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setPreviewIndex(documents.indexOf(doc))}
+              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+              title={t('documents.preview')}
+            >
+              <Eye className="h-4 w-4" />
+            </button>
+            {!readOnly && (
+              <button
+                onClick={() => setEditingDocument(doc)}
+                className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
+                title={t('documents.editTitleNotes')}
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              onClick={() => handleDownload(doc.identifier)}
+              className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
+              title={t('buttons.download', { ns: 'common' })}
+            >
+              <Download className="h-4 w-4" />
+            </button>
+            {!readOnly && (
+              <button
+                onClick={() => handleDeleteSingle(doc.identifier)}
+                disabled={isDeleting}
+                className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors disabled:opacity-50"
+                title={t('buttons.delete', { ns: 'common' })}
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
+            {renderRowAction?.(doc)}
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
+  const renderGroupToggleRow = (doc: DocumentResponse, count: number) => {
+    const isExpanded = expandedGroups.has(doc.identifier);
+    return (
+      <tr
+        key={`toggle-${doc.identifier}`}
+        // Same background as the child rows below it (when expanded) so the disclosure reads as
+        // the header of that group rather than a row of its own.
+        className={`hover:bg-surface-inset ${isExpanded ? 'bg-surface-page' : ''}`}
+      >
+        <td className="px-6 py-2" />
+        <td colSpan={4} className="px-6 py-2">
+          <button
+            type="button"
+            onClick={() => toggleGroup(doc.identifier)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <ChevronRight
+              className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+            />
+            {t('documents.generated', { count })}
+          </button>
+        </td>
+      </tr>
+    );
+  };
+
+  const renderMobileCard = (doc: DocumentResponse, isChild = false) => {
+    const isSelected = selectedDocuments.has(doc.identifier);
+    const leftActions: SwipeActionItem[] = [];
+    if (!readOnly) {
+      leftActions.push({
+        label: t('buttons.delete', { ns: 'common' }),
+        icon: Trash2,
+        tone: 'danger',
+        onAction: () => handleDeleteSingle(doc.identifier),
+      });
+    }
+    leftActions.push({
+      label: t('buttons.download', { ns: 'common' }),
+      icon: Download,
+      tone: 'success',
+      onAction: () => handleDownload(doc.identifier),
+    });
+    return (
+      <SwipeAction
+        leftActions={leftActions}
+        onClick={() => setPreviewIndex(documents.indexOf(doc))}
+      >
+        <div
+          className={`border p-3 ${isChild ? 'ml-6' : ''} ${
+            isSelected
+              ? 'border-primary-500 bg-info-bg'
+              : isChild
+                ? 'border-border-default bg-surface-page'
+                : 'border-border-default bg-surface-card'
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            {isChild && (
+              <CornerDownRight
+                className="h-4 w-4 text-text-muted flex-shrink-0 mt-1"
+                aria-hidden="true"
+              />
+            )}
+            <div className="flex-shrink-0 mt-0.5">
+              {isChild ? (
+                <FileText className="h-6 w-6 text-text-muted" />
+              ) : (
+                getFileIcon(doc.mimeType ?? '')
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div
+                className={`text-sm font-medium truncate ${isChild ? 'text-text-secondary' : 'text-text-primary'}`}
+              >
+                {doc.title ?? doc.fileName}
+              </div>
+              <div className="mt-0.5 text-xs text-text-secondary flex items-center gap-2 flex-wrap">
+                <span>{formatFileSize(doc.fileSize ?? 0)}</span>
+                <span aria-hidden>·</span>
+                <span>{formatDate(doc.uploadedAt)}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload(doc.identifier);
+              }}
+              aria-label={t('buttons.download', { ns: 'common' })}
+              className="flex-shrink-0 min-h-touch min-w-touch inline-flex items-center justify-center p-2 rounded text-primary-500 hover:bg-primary-50 focus-ring"
+            >
+              <Download className="h-5 w-5" />
+            </button>
+            {renderRowAction && (
+              <div
+                className="flex-shrink-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {renderRowAction(doc)}
+              </div>
+            )}
+          </div>
+        </div>
+      </SwipeAction>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -237,8 +494,8 @@ export const DocumentList = ({
                 onClick={handleSelectAll}
                 className="text-text-secondary hover:text-text-secondary"
               >
-                {selectedDocuments.size === documents.length &&
-                documents.length > 0 ? (
+                {selectedDocuments.size === topLevelDocuments.length &&
+                topLevelDocuments.length > 0 ? (
                   <CheckSquare className="h-5 w-5" />
                 ) : (
                   <Square className="h-5 w-5" />
@@ -248,9 +505,11 @@ export const DocumentList = ({
                 {hasSelection
                   ? t('documents.selection.selected', {
                       selected: selectedDocuments.size,
-                      total: documents.length,
+                      total: topLevelDocuments.length,
                     })
-                  : t('documents.selection.count', { count: documents.length })}
+                  : t('documents.selection.count', {
+                      count: topLevelDocuments.length,
+                    })}
               </span>
             </div>
 
@@ -286,64 +545,35 @@ export const DocumentList = ({
 
           {/* Mobile card list (<md) */}
           <ul className="md:hidden space-y-3">
-            {documents.map((doc, i) => {
-              const isSelected = selectedDocuments.has(doc.identifier);
-              const leftActions: SwipeActionItem[] = [];
-              if (!readOnly) {
-                leftActions.push({
-                  label: t('buttons.delete', { ns: 'common' }),
-                  icon: Trash2,
-                  tone: 'danger',
-                  onAction: () => handleDeleteSingle(doc.identifier),
-                });
-              }
-              leftActions.push({
-                label: t('buttons.download', { ns: 'common' }),
-                icon: Download,
-                tone: 'success',
-                onAction: () => handleDownload(doc.identifier),
-              });
+            {topLevelDocuments.map((doc) => {
+              const children = childrenByParent[doc.identifier] ?? [];
+              const isExpanded = expandedGroups.has(doc.identifier);
               return (
-                <li key={`m-${doc.identifier}`}>
-                  <SwipeAction
-                    leftActions={leftActions}
-                    onClick={() => setPreviewIndex(i)}
-                  >
-                    <div
-                      className={`border p-3 ${
-                        isSelected
-                          ? 'border-primary-500 bg-info-bg'
-                          : 'border-border-default bg-surface-card'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                          {getFileIcon(doc.mimeType ?? '')}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-text-primary truncate">
-                            {doc.title ?? doc.fileName}
-                          </div>
-                          <div className="mt-0.5 text-xs text-text-secondary flex items-center gap-2 flex-wrap">
-                            <span>{formatFileSize(doc.fileSize ?? 0)}</span>
-                            <span aria-hidden>·</span>
-                            <span>{formatDate(doc.uploadedAt)}</span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDownload(doc.identifier);
-                          }}
-                          aria-label={t('buttons.download', { ns: 'common' })}
-                          className="flex-shrink-0 min-h-touch min-w-touch inline-flex items-center justify-center p-2 rounded text-primary-500 hover:bg-primary-50 focus-ring"
-                        >
-                          <Download className="h-5 w-5" />
-                        </button>
-                      </div>
+                <li key={`m-${doc.identifier}`} className="space-y-2">
+                  {renderMobileCard(doc)}
+                  {children.length > 0 && (
+                    <div className="pl-4">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(doc.identifier)}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text-primary py-1"
+                      >
+                        <ChevronRight
+                          className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                        />
+                        {t('documents.generated', { count: children.length })}
+                      </button>
+                      {isExpanded && (
+                        <ul className="space-y-2 mt-1">
+                          {children.map((child) => (
+                            <li key={`m-${child.identifier}`}>
+                              {renderMobileCard(child, true)}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                  </SwipeAction>
+                  )}
                 </li>
               );
             })}
@@ -369,108 +599,18 @@ export const DocumentList = ({
                 </tr>
               </thead>
               <tbody className="bg-surface-card divide-y divide-border-default">
-                {documents.map((doc) => {
-                  const isSelected = selectedDocuments.has(doc.identifier);
+                {topLevelDocuments.map((doc) => {
+                  const children = childrenByParent[doc.identifier] ?? [];
+                  const isExpanded = expandedGroups.has(doc.identifier);
                   return (
-                    <tr
-                      key={doc.identifier}
-                      className={`hover:bg-surface-inset cursor-pointer ${
-                        isSelected ? 'bg-info-bg' : ''
-                      }`}
-                      onClick={() => setPreviewIndex(documents.indexOf(doc))}
-                    >
-                      <td
-                        className="px-6 py-4"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <button
-                          onClick={(e) =>
-                            handleSelectDocument(doc.identifier, e.shiftKey)
-                          }
-                          className="text-text-secondary hover:text-text-secondary"
-                        >
-                          {isSelected ? (
-                            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
-                              <Check
-                                className="h-3.5 w-3.5 text-white"
-                                strokeWidth={3}
-                              />
-                            </div>
-                          ) : (
-                            <Square className="h-5 w-5" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {getFileIcon(doc.mimeType ?? '')}
-                          <div>
-                            <div className="text-sm font-medium text-text-primary">
-                              {doc.title ?? doc.fileName}
-                            </div>
-                            {doc.title && doc.title !== doc.fileName ? (
-                              <div className="text-xs text-text-secondary">
-                                {doc.fileName}
-                              </div>
-                            ) : null}
-                            {doc.notes ? (
-                              <RichTextDisplay
-                                html={doc.notes}
-                                className="text-xs text-text-secondary mt-1"
-                              />
-                            ) : null}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatFileSize(doc.fileSize ?? 0)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                        {formatDate(doc.uploadedAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div
-                          className="flex justify-end gap-1.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            onClick={() =>
-                              setPreviewIndex(documents.indexOf(doc))
-                            }
-                            className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                            title={t('documents.preview')}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {!readOnly && (
-                            <button
-                              onClick={() => setEditingDocument(doc)}
-                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                              title={t('documents.editTitleNotes')}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleDownload(doc.identifier)}
-                            className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
-                            title={t('buttons.download', { ns: 'common' })}
-                          >
-                            <Download className="h-4 w-4" />
-                          </button>
-                          {!readOnly && (
-                            <button
-                              onClick={() => handleDeleteSingle(doc.identifier)}
-                              disabled={isDeleting}
-                              className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors disabled:opacity-50"
-                              title={t('buttons.delete', { ns: 'common' })}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+                    <Fragment key={doc.identifier}>
+                      {renderTableRow(doc)}
+                      {children.length > 0 &&
+                        renderGroupToggleRow(doc, children.length)}
+                      {children.length > 0 &&
+                        isExpanded &&
+                        children.map((child) => renderTableRow(child, true))}
+                    </Fragment>
                   );
                 })}
               </tbody>

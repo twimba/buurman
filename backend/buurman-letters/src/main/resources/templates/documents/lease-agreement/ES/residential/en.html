@@ -1,0 +1,386 @@
+<!--
+  legal-basis: Ley 29/1994, de 24 de noviembre, de Arrendamientos Urbanos (LAU), consolidated text BOE-A-1994-26003
+               as published on www.boe.es (ultima actualizacion publicada el 02/10/2026): art. 2, 3, 4, 6, 7, 8, 9,
+               10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 36; disposiciones
+               adicionales tercera (deposito de fianzas) y undecima (indice de referencia).
+               State of the LAU on 2026-10-04: the amendments of Real Decreto-ley 26/2026 and Real Decreto-ley
+               27/2026, de 29 de septiembre (in force 01/10/2026 and 02/10/2026), were set aside by the Congreso
+               de los Diputados (derogation published 02/10/2026, BOE-A-2026-20526 and BOE-A-2026-20527); the text
+               in force is the version of Ley 12/2023 (and earlier) - art. 9 bis, 21 bis and 41-51 are without
+               effect.
+               Ley 12/2023, de 24 de mayo, por el derecho a la vivienda (BOE-A-2023-12203): art. 3 k) (gran
+               tenedor), art. 31 (informacion minima, 31.3 zona tensionada mentions in the contract).
+               IRAV: Resolucion de 18 de diciembre de 2024 de la Presidencia del INE (BOE-A-2024-26685).
+               Real Decreto 390/2021, de 1 de junio (BOE-A-2021-9176): art. 3 (scope and exclusions), art. 17.2
+               (copy of the energy label annexed to the lease, recommendations of use handed to the tenant).
+               Codigo Civil (BOE-A-1889-4763): art. 1124, 1555, 1561, 1562, 1563, 1564.
+               Ley de Enjuiciamiento Civil 1/2000 (BOE-A-2000-323): art. 22.4 (enervacion), art. 52.1.7.
+               Cataluna: Llei 13/1996, de 29 de juliol, del Registre i el diposit de fiances (INCASOL, deposit within
+               2 months, page incasol.gencat.cat read 2026-10-04); regionCode branch CAT/CT in the deposit clause,
+               general text (disposicion adicional tercera LAU) for any other or unknown region.
+               RGPD: Reglamento (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Ley Organica 3/2018, de 5 de
+               diciembre (LOPDGDD).
+               Verified 2026-10-04 against www.boe.es (consolidated texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in es.html, never spelled out (es "1 mensualidad de renta" is "1 month's rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of es.html; the Spanish text is authoritative. It states Spanish law (Ley de
+  Arrendamientos Urbanos) in English and is not the law of any other country. Draft text, not vetted by legal
+  counsel. Only prose differs from es.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>On the one part, <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (arrendador),</p>
+  <p>tax identification number (NIF, NIE or CIF) and domicile of the landlord: ______________________________</p>
+  <p>capacity of the landlord (natural person or legal person): ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">and on the other part, <strong th:text="${tenantNames}">tenant</strong>,
+    hereinafter (jointly) &ldquo;the tenant&rdquo; (arrendatario),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">and on the other part, the tenant(s) signing below, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (arrendatario),</p>
+  <p>tax identification number (NIF or NIE) of the tenant: ______________________________,</p>
+  <p>conclude this lease of a dwelling, governed by Law 29/1994 of 24 November on Urban Leases (Ley de
+    Arrendamientos Urbanos), hereinafter &ldquo;the LAU&rdquo;.</p>
+  <p>Where several persons are tenants, they are jointly and severally liable for all obligations arising from
+    this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the dwelling located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the dwelling&rdquo;, with the
+    following characteristics:</p>
+  <p>cadastral reference (referencia catastral): ______________________________</p>
+  <p>usable floor area and built floor area: ________ m²</p>
+  <p>ancillary rooms, spaces and services let with the dwelling (storage room, parking space, furniture or
+    other): ______________________________</p>
+  <p>The lease concerns a habitable building whose primary purpose is to meet the tenant&rsquo;s permanent need
+    for housing (article 2.1 of the LAU). The rules on the lease of dwellings also apply to the furniture, storage
+    rooms, parking spaces and any other rooms, spaces let or services provided as accessories of the dwelling by
+    the same landlord (article 2.2 of the LAU).</p>
+  <p>This agreement is subject on a mandatory basis to Titles I and IV of the LAU and is governed by the
+    covenants, clauses and conditions of this agreement within the framework of Title II of the LAU and,
+    subsidiarily, by the Civil Code (article 4.2 of the LAU). Excepted are leases of dwellings whose area exceeds
+    300 square metres or in which the initial annual rent exceeds 5.5 times the annual statutory minimum wage
+    (salario mínimo interprofesional), provided that the lease covers the whole dwelling: these are governed by
+    the will of the parties, failing that by Title II of the LAU and, subsidiarily, by the Civil Code. This model
+    is not suitable for a seasonal lease (arrendamiento de temporada) nor for a lease for a use other than housing
+    (article 3 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>This agreement takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The parties agree a fixed term<span th:if="${endDate != null}">, until
+    <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">The parties do not stipulate a term: the lease is deemed concluded for 1 year, without
+    prejudice to the tenant&rsquo;s right of annual extension (article 9.2 of the LAU).</p>
+  <p>If the agreed term is shorter than 5 years, or shorter than 7 years if the landlord is a legal person, the
+    agreement is, on its expiry date, compulsorily extended (prórroga obligatoria) by annual periods until the lease
+    reaches a minimum term of 5 years, or of 7 years if the landlord is a legal person, unless the tenant informs the
+    landlord, at least 30 days before the end date of the agreement or of any of the extensions, of his wish not to
+    renew it. The term runs from the date of the agreement or from the date on which the dwelling is placed at the
+    tenant&rsquo;s disposal if that is later (article 9.1 of the LAU).</p>
+  <p>If, on the expiry date of the agreement or of any of its extensions, once the lease has lasted at least
+    5 years, or 7 years if the landlord is a legal person, neither party has notified the other of its wish not to
+    renew it, at least 4 months before that date in the case of the landlord and at least 2 months before it in the
+    case of the tenant, the agreement is compulsorily extended by annual periods up to a maximum of 3 further years,
+    unless the tenant informs the landlord, 1 month before the end of any of the annual periods, of his wish not to
+    renew it (article 10.1 of the LAU). The tenant may in addition request the extraordinary extensions provided for
+    in article 10.2 and 10.3 of the LAU, in the cases and subject to the requirements laid down there.</p>
+  <p>Once the first year of the agreement has elapsed, and provided that the landlord is a natural person, the
+    compulsory extension does not apply where, at the time the agreement was concluded, it expressly stated the
+    landlord&rsquo;s need to occupy the dwelling before 5 years have elapsed as a permanent home for himself or for
+    his relatives in the first degree by blood or adoption or for his spouse in the case of a final judgment of
+    separation, divorce or annulment of marriage. The landlord must inform the tenant that he needs the dwelling,
+    specifying the ground or grounds, at least 2 months before the date on which the dwelling will be needed. If,
+    3 months after the end of the agreement or, where applicable, after the dwelling was actually vacated, the
+    dwelling has not been occupied by those persons, the tenant may choose, within 30 days, between being
+    reinstated in the use and enjoyment of the dwelling or being compensated, on the terms of article 9.3 of the
+    LAU, unless the occupation did not take place because of force majeure.</p>
+  <p>Need of the landlord stated for the purposes of article 9.3 of the LAU, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The initial rent, freely agreed by the parties (article 17.1 of the LAU), is set at
+    <strong th:text="${rentAmount}">amount</strong> (payable
+    <span th:text="${paymentFrequency}">monthly</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant pays the expenses he assumes under this agreement
+    (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>If the dwelling is located in a stressed residential market area (zona de mercado residencial tensionado),
+    within the period of validity of its declaration under Law 12/2023 of 24 May on the right to housing, the rent
+    agreed at the start of the agreement may not exceed the last rent of a lease of a permanent home that was in
+    force in the same dwelling in the last 5 years, after applying the annual rent update clause of the previous
+    agreement, and no new conditions may be set that pass on to the tenant fees or expenses not included in the
+    previous agreement. That rent may only be increased by a maximum of 10 % in the cases of refurbishment, energy
+    or accessibility improvement or long-term lease listed in article 17.6 of the LAU, subject to the requirements
+    laid down there.</p>
+  <p>In such an area, where the landlord is a large holder of housing (gran tenedor: the owner of more than 10 urban
+    residential properties or of more than 1,500 m² of built residential floor area, excluding garages and storage
+    rooms, a definition that the declaration of the area may extend to owners of 5 or more residential properties
+    located in it), the initial rent may not exceed the maximum price applicable under the system of reference
+    price indices. Whatever the status of the landlord, the same limit applies to a dwelling located in such an
+    area for which no lease of a dwelling was in force in the last 5 years, provided that the ministerial resolution
+    declaring the area so states (article 17.7 of the LAU). Rent
+    limits specific to the area in which the dwelling is located may therefore apply.</p>
+  <p>If the dwelling is located in a stressed residential market area, the following is stated (article 31.3 of
+    Law 12/2023): amount of the last rent of a lease of a permanent home in force in the same dwelling in the last
+    5 years: ______________________________; value corresponding to the applicable reference index of rental prices
+    for dwellings: ______________________________</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The update of the rent is governed by the terms of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>During the term of the agreement, the rent may only be updated by the landlord or the tenant on the date on
+    which each year of the agreement is completed, on the terms agreed by the parties (article 18.1 of the LAU).
+    Agreed update mechanism: ______________________________</p>
+  <p>In the absence of an express agreement, the rent is not updated. If an update mechanism is agreed that does not
+    specify the reference index or methodology, the rent is updated for each year by reference to the annual change
+    in the Competitiveness Guarantee Index (Índice de Garantía de Competitividad) on the date of each update.</p>
+  <p>In any event, the increase resulting from the annual update may not exceed the result of applying the
+    percentage change in the Consumer Price Index (Índice de Precios al Consumo) on the terms of article 18.1 of the
+    LAU. In addition, the eleventh additional provision of the LAU sets as the reference limit for the purposes of
+    that article the reference index for the annual update of leases of dwellings defined by the National Statistics
+    Institute (Instituto Nacional de Estadística) (IRAV, Resolution of 18 December 2024).</p>
+  <p>The updated rent is payable from the month following that in which the interested party notifies the other
+    party in writing, stating the percentage change applied and enclosing, if the tenant so requires, the relevant
+    certificate of the National Statistics Institute. Notification by a note on the receipt for the preceding
+    monthly payment is valid (article 18.2 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The parties agree that the general expenses for the proper upkeep of the building, its services, taxes,
+    charges and liabilities that cannot be individualised and that relate to the dwelling or its accessories are
+    borne by the tenant under the following items (article 20.1 of the LAU): ______________________________</p>
+  <p>Annual amount of those expenses on the date of the agreement: ________ euros. In buildings under horizontal
+    property (propiedad horizontal), those expenses are the ones attributable to the dwelling according to its
+    share of participation; in other buildings, those allocated to the dwelling according to its floor area. This
+    covenant is only valid in writing and with the annual amount determined on the date of the agreement; a
+    covenant concerning taxes does not affect the tax authorities.</p>
+  <p>During the first 5 years of the agreement, or the first 7 years if the landlord is a legal person, the amount
+    that the tenant must pay for these expenses, with the exception of taxes, may only be increased by agreement of
+    the parties, annually, and never by a percentage higher than 2 times the percentage by which the rent may be
+    increased under article 18.1 of the LAU (article 20.2 of the LAU).</p>
+  <p>The costs of services of the dwelling that are individualised by meters are in all cases borne by the tenant
+    (article 20.3 of the LAU). Estate agency management costs and the costs of concluding the agreement are borne
+    by the landlord (article 20.1 of the LAU). Payment of these expenses is evidenced in the same way as payment of
+    the rent (article 20.4 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On conclusion of the agreement, the tenant hands over to the landlord as a
+    cash deposit (fianza en metálico) the sum of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">On conclusion of the agreement, the tenant hands over to the landlord as a
+    cash deposit (fianza en metálico) a sum equal to 1 month&rsquo;s rent.</p>
+  <p>Requiring and providing a cash deposit equal to 1 month&rsquo;s rent is compulsory (article 36.1 of the LAU).
+    During the first 5 years of the agreement, or the first 7 years if the landlord is a legal person, the deposit
+    is not subject to updating; each time the lease is extended, the landlord may require the deposit to be
+    increased, or the tenant require it to be reduced, until it equals 1 month&rsquo;s rent in force at the time of
+    the extension (article 36.2 of the LAU). For the period in which the agreed term exceeds 5 years, or 7 years if
+    the landlord is a legal person, the updating of the deposit is governed by what has been agreed and, failing a
+    specific agreement, by what has been agreed on updating the rent (article 36.3 of the LAU).</p>
+  <p>The parties may agree a guarantee in addition to the cash deposit; in agreements with a term of up to
+    5 years, or up to 7 years if the landlord is a legal person, its value may not exceed 2 months&rsquo; rent
+    (article 36.5 of the LAU). Any sum handed over in excess of 1 month&rsquo;s rent is treated as an additional
+    guarantee and is subject to that limit. Additional guarantee agreed, where applicable: ______________________________</p>
+  <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">The dwelling is located in
+    Catalonia: the landlord lodges the deposit (fianza) with the Catalan Land Institute (Institut Català del Sòl,
+    INCASÒL) within 2 months from the conclusion of the agreement, in accordance with Catalan Law 13/1996 of
+    29 July on the register and deposit of deposits under leases of urban properties (Llei del Registre i el
+    dipòsit de fiances dels contractes de lloguer de finques urbanes).</p>
+  <p th:if="${!(countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT'))}">Where the autonomous
+    community in which the dwelling is located has so provided, the landlord lodges the amount of the deposit (fianza),
+    without interest, at the disposal of the regional administration or of the public body designated, until the
+    agreement ends (third additional provision of the LAU). Regional rules on lodging the deposit (fianza) may
+    therefore apply.</p>
+  <p>The balance of the deposit to be returned to the tenant at the end of the lease bears statutory interest once
+    1 month has elapsed from the handing over of the keys without the return having been made (article 36.4 of the
+    LAU).<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return
+    of the dwelling is governed by the terms of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the expenses borne by him</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the date agreed by the parties</span>.
+    Unless otherwise agreed, the rent is paid monthly within the first 7 days of the month; the landlord may in no
+    case require advance payment of more than 1 month&rsquo;s rent (article 17.2 of the LAU).</p>
+  <p>Payment is made by electronic means, by transfer to the account designated by the landlord; exceptionally,
+    where either party has no bank account or no access to electronic means of payment and at that party&rsquo;s
+    request, it may be made in cash at the let dwelling (article 17.3 of the LAU). Account designated by the
+    landlord: ______________________________</p>
+  <p>The landlord gives the tenant a receipt for the payment, unless it has been agreed that payment is made by
+    procedures that evidence the actual performance of the payment obligation. The receipt or the document
+    replacing it states separately the sums paid under the various items and, specifically, the rent in force; if
+    the landlord does not deliver the receipt, all costs incurred by the tenant to evidence payment are for the
+    landlord&rsquo;s account (article 17.4 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling primarily to meet his permanent need for housing (article 2.1 of the LAU) and
+    uses it with the diligence of a prudent head of household (diligente padre de familia), for the agreed use
+    (article 1555 of the Civil Code). The lease does not lose the status of a lease of a dwelling even if the tenant
+    does not have his permanent home there, provided that his spouse who is not legally or de facto separated, or
+    his dependent children, live there (article 7 of the LAU).</p>
+  <p>The tenant complies with the statutes and internal rules of the owners&rsquo; association (comunidad de
+    propietarios) that have been communicated to him and does not carry on in the dwelling activities that are a
+    nuisance, unhealthy, harmful, dangerous or unlawful.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not assign the agreement without the written consent of the landlord; in the event of an
+    assignment, the assignee is subrogated to the assignor&rsquo;s position towards the landlord. The dwelling may
+    only be sublet in part and with the prior written consent of the landlord (article 8 of the LAU).</p>
+  <p>The right of the subtenant ends, in all cases, when that of the tenant who sublet ends, and the price of the
+    sublease may in no case exceed that of the lease.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord carries out, without any right to raise the rent for that reason, all repairs needed to keep the
+    dwelling habitable for the agreed use, except where the deterioration is attributable to the tenant under
+    articles 1563 and 1564 of the Civil Code (article 21.1 of the LAU). Where conservation works cannot reasonably be
+    deferred until the end of the lease, the tenant must tolerate them; if the works last more than 20 days, the
+    rent is reduced in proportion to the part of the dwelling of which the tenant is deprived (article 21.2 of the
+    LAU).</p>
+  <p>The tenant informs the landlord as soon as possible of the need for such repairs and allows him to verify the
+    condition of the dwelling directly; he may at any time, after informing the landlord, carry out urgent repairs to
+    prevent imminent damage or serious inconvenience and immediately claim their cost from the landlord
+    (article 21.3 of the LAU). Small repairs required by wear and tear from ordinary use of the dwelling are borne by
+    the tenant (article 21.4 of the LAU).</p>
+  <p>The tenant tolerates improvement works whose execution cannot reasonably be deferred until the end of the
+    lease. A landlord who intends to carry them out notifies the tenant in writing at least 3 months in advance of
+    their nature, start, duration and expected cost; within 1 month of the notification, the tenant may withdraw
+    from the agreement, unless the works do not affect the dwelling or affect it only insignificantly, and the lease
+    ends 2 months after the withdrawal, during which the works may not begin. A tenant who tolerates the works is
+    entitled to a reduction of the rent in proportion to the part of the dwelling of which he is deprived and to
+    compensation for the expenses the works oblige him to incur (article 22 of the LAU). An increase of the rent
+    for improvement works is governed by article 19 of the LAU.</p>
+  <p>The tenant may not, without the written consent of the landlord, carry out works that alter the layout of the
+    dwelling or of its accessories, nor in any case works that reduce the stability or safety of the dwelling
+    (article 23 of the LAU). Works needed to adapt the dwelling to the disability or to the age above 70 years of
+    the tenant or of the persons living with him are governed by article 24 of the LAU.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>A copy of the energy efficiency label of the dwelling is annexed to this agreement, and the landlord gives the
+    tenant a copy of the document of recommendations of use for the user (article 17.2 of Royal Decree 390/2021 of
+    1 June), unless the dwelling is excluded from the scope of that royal decree.</p>
+  <p>Energy rating and registration number of the energy efficiency certificate: ______________________________</p>
+  <p>Before the agreement was concluded, the tenant was entitled to request the minimum information provided for
+    in article 31 of Law 12/2023, including the certificate of habitability (certificado o cédula de habitabilidad)
+    and the energy efficiency certificate of the dwelling. Documents handed over: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>If the dwelling is sold, the tenant has a right of first refusal (tanteo), which he may exercise within
+    30 calendar days from the day following that on which he is reliably notified (en forma fehaciente) of the
+    decision to sell, the price and the other essential conditions of the transfer, and a right of redemption
+    (retracto) in the cases and within the periods of article 25 of the LAU. These rights do not apply where the
+    dwelling is sold together with the other dwellings or commercial premises owned by the landlord that form part
+    of the same building, nor where different owners jointly sell all the flats and premises of the building to the
+    same buyer, unless the building contains only one dwelling (article 25.7 of the LAU).</p>
+  <p>The parties may agree that the tenant waives the right of preferential acquisition; in that case, the landlord
+    informs the tenant of his intention to sell the dwelling at least 30 days before the date on which the contract
+    of sale is executed (article 25.8 of the LAU). Waiver agreed (yes/no): ______________________________</p>
+  <p>The acquirer of the dwelling is subrogated to the rights and obligations of the landlord on the terms and
+    within the limits of article 14 of the LAU.</p>
+</div>
+
+<div th:fragment="clause-subrogation" data-clause="subrogation">
+  <p>If the tenant dies, the persons designated by article 16 of the LAU may be subrogated to the agreement, in the
+    order of priority it lays down. The lease ends if, within 3 months of the tenant&rsquo;s death, the landlord does
+    not receive written notification of the death, with a civil-registry death certificate, and of the identity of
+    the subrogated person, stating his relationship to the deceased and offering, where applicable, prima facie
+    evidence that he meets the legal requirements for subrogation (article 16.3 of the LAU).</p>
+  <p>The continuation of the lease for the benefit of the spouse or of the cohabiting partner in the cases of
+    withdrawal, non-renewal or abandonment by the tenant, and in those of annulment, separation or divorce, is
+    governed by articles 12 and 15 of the LAU.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>When the keys are handed over, the parties sign an inventory of the condition of the dwelling and, where
+    applicable, of its furniture, which is annexed to this agreement. Failing a statement of the condition of the
+    dwelling at the time it was let, the tenant is presumed to have received it in good condition, unless the
+    contrary is proved (article 1562 of the Civil Code). Furniture and fittings included: ______________________________</p>
+  <p>At the end of the lease, the tenant returns the dwelling as he received it, except for what has perished or
+    deteriorated through time or for an unavoidable cause (article 1561 of the Civil Code), and hands over all the
+    keys. He is liable for the deterioration or loss of the dwelling unless he proves that it occurred without his
+    fault, and for deterioration caused by the members of his household (articles 1563 and 1564 of the Civil
+    Code).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the deposit is
+    governed by the terms of this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The tenant may withdraw from the agreement (desistimiento) once at least 6 months have elapsed, provided that
+    he informs the landlord at least 30 days in advance. The parties may agree that, in the event of withdrawal, the
+    tenant compensates the landlord with a sum equal to 1 month&rsquo;s rent in force for each year of the agreement
+    remaining; periods of less than a year give rise to the proportionate part of the compensation (article 11 of
+    the LAU). Compensation for withdrawal agreed (yes/no): ______________________________</p>
+  <p>Non-performance by either party of the obligations arising from the agreement entitles the party that has
+    performed its own to demand performance of the obligation or to seek termination (resolución) of the agreement
+    in accordance with article 1124 of the Civil Code (article 27.1 of the LAU).</p>
+  <p>In addition, the landlord may terminate the agreement by operation of law (de pleno derecho) on the following
+    grounds: failure to pay the rent or, where applicable, any of the sums the payment of which the tenant has
+    assumed or which are owed by him; failure to pay the deposit or its update; subletting or assignment without
+    consent; intentional damage to the dwelling or works not consented to by the landlord where his consent is
+    required; activities in the dwelling that are a nuisance, unhealthy, harmful, dangerous or unlawful; and the
+    dwelling ceasing to be used primarily to meet the permanent need for housing of the tenant or of the person
+    actually occupying it in accordance with article 7 of the LAU (article 27.2 of the LAU).</p>
+  <p>The tenant may terminate the agreement if the landlord fails to carry out the repairs referred to in
+    article 21 of the LAU and if the landlord disturbs, in fact or in law, the use of the dwelling (article 27.3 of
+    the LAU). Where conservation works or works ordered by a competent authority make the dwelling uninhabitable,
+    the tenant may choose between suspending the agreement or withdrawing from it, without any compensation
+    (article 26 of the LAU). The agreement also ends on the loss of the dwelling for a cause not attributable to the
+    landlord and on a final declaration of ruin made by the competent authority (article 28 of the LAU).</p>
+  <p>In eviction proceedings for non-payment (desahucio), the tenant may stop the action by paying (enervación) on
+    the terms of article 22.4 of the Civil Procedure Act (Ley de Enjuiciamiento Civil). This is not possible where
+    the tenant has already done so on a previous occasion, unless payment was not collected for reasons attributable
+    to the landlord, nor where the landlord had demanded payment from him by any reliable means at least 30 days
+    before the claim was filed and payment had not been made when it was filed. The parties may end the agreement
+    by mutual consent.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the dwelling is governed by the terms of this
+    agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Communications between the parties are sent to the following addresses, unless a change is notified in
+    writing: landlord: ______________________________; tenant: the let dwelling.</p>
+  <p>For the notifications provided for in the LAU, the parties designate the following e-mail addresses, provided
+    that the authenticity of the communication and of its content is guaranteed and reliable evidence is kept of the
+    complete sending and receipt and of the time at which they took place (article 4.6 of the LAU):
+    landlord: ______________________________; tenant: ______________________________</p>
+  <p>Notifications that the law requires to be made reliably (en forma fehaciente), such as notification of the
+    decision to sell the dwelling (article 25.2 of the LAU), are made by a means that evidences their content and
+    receipt, such as a burofax with certification of the text and acknowledgement of receipt, or a notarial demand
+    (requerimiento notarial).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only to the extent necessary for the conclusion and
+    performance of this agreement and for compliance with his legal obligations, in accordance with the General
+    Data Protection Regulation (Regulation (EU) 2016/679) and Organic Law 3/2018 of 5 December on the Protection of
+    Personal Data and the guarantee of digital rights, and does not keep them longer than necessary for those
+    purposes.</p>
+  <p>The tenant may exercise against the landlord the rights granted to him by that legislation, in particular the
+    rights of access, rectification and erasure, and may lodge a complaint with the Spanish Data Protection Agency
+    (Agencia Española de Protección de Datos).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Spanish law, in particular by the LAU and, subsidiarily, by the Civil Code. Claims
+    concerning the lease and eviction proceedings fall within the jurisdiction of the court of the place where the
+    dwelling is located (article 52.1.7.º of the Civil Procedure Act).</p>
+  <p>The parties may agree to submit to mediation or arbitration the disputes that by their nature can be resolved
+    by those forms of dispute resolution, in accordance with the legislation on mediation in civil and commercial
+    matters and on arbitration (article 4.5 of the LAU). Terms that alter to the tenant&rsquo;s detriment the rules
+    of Title II of the LAU are void and deemed not written, except where the rule itself expressly permits it
+    (article 6 of the LAU).</p>
+</div>
+
+</body>
+</html>

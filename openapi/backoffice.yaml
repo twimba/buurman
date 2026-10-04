@@ -46,6 +46,8 @@ tags:
     description: Segment management for feature flag targeting
   - name: Backoffice - Rate Limits
     description: Rate limit bucket inspection and management
+  - name: Backoffice - Lease Clause Templates
+    description: Lease clause template library management
 paths:
   /backoffice/teams/{identifier}:
     get:
@@ -4756,6 +4758,57 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/tenancy-rules:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List tenancy rules for country
+      description: >-
+        List the display-only tenancy-law facts (notice periods, duration, deposit, registration,
+        ...) of a country, including their notes, as seeded from the bundled catalog
+      operationId: listRentRegulationTenancyRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRegulationTenancyRuleResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/rent-regulations/rules/{identifier}:
     put:
       tags:
@@ -4918,6 +4971,270 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
         "403":
           description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/lease-clause-templates:
+    get:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: List lease clause templates
+      description: List lease clause templates for a given country
+      operationId: listLeaseClauseTemplates
+      parameters:
+        - name: countryCode
+          in: query
+          description: Country code to filter templates by
+          required: true
+          schema:
+            type: string
+        - name: leaseKind
+          in: query
+          description: Lease kind to filter templates by (all kinds when omitted)
+          required: false
+          schema:
+            $ref: "#/components/schemas/LeaseKind"
+        - name: language
+          in: query
+          description: Language the title and body texts are resolved in (default en)
+          required: false
+          schema:
+            $ref: "#/components/schemas/DocumentLanguage"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Create lease clause template
+      description: Add a new lease clause template
+      operationId: createLeaseClauseTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertLeaseClauseTemplateRequest"
+        required: true
+      responses:
+        "200":
+          description: Created. The titleText/bodyText fields are resolved in English; the list endpoint resolves them in the requested language.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/lease-clause-templates/preview:
+    post:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Preview a lease agreement
+      description: >-
+        Renders a country lease agreement to HTML from synthetic sample values, applying the given
+        clause choices with the same rules as a real lease (required clauses stay included, pinned
+        clauses keep their position). Nothing is persisted and no real contract is read. A country
+        without a lease answers 200 with an UNAVAILABLE_* availability and no html. The html carries
+        a SAMPLE banner and a Content-Security-Policy and is meant for a sandboxed iframe.
+      operationId: previewLeaseAgreement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeaseAgreementPreviewRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseAgreementPreviewResponse"
+        "400":
+          description: Bad request - validation error, malformed input or unknown clause key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: No clause is included, or a clause has no fragment in the document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/lease-clause-templates/{identifier}:
+    put:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Update lease clause template
+      description: Update an existing lease clause template
+      operationId: updateLeaseClauseTemplate
+      parameters:
+        - name: identifier
+          in: path
+          description: Lease clause template identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/LeaseClauseTemplateIdentifier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertLeaseClauseTemplateRequest"
+        required: true
+      responses:
+        "200":
+          description: Updated. The titleText/bodyText fields are resolved in English; the list endpoint resolves them in the requested language.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaseClauseTemplateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Lease Clause Templates
+      summary: Delete lease clause template
+      description: Soft delete a lease clause template
+      operationId: deleteLeaseClauseTemplate
+      parameters:
+        - name: identifier
+          in: path
+          description: Lease clause template identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/LeaseClauseTemplateIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
           content:
             application/json:
               schema:
@@ -8084,6 +8401,321 @@ components:
     RentRegulationRuleIdentifier:
       type: string
       description: Rent regulation rule identifier
+    LeaseClauseTemplateIdentifier:
+      type: string
+      description: Lease clause template identifier
+    LeaseKind:
+      type: string
+      enum:
+        - LEGACY
+        - RESIDENTIAL
+        - RESIDENTIAL_FURNISHED
+        - COMMERCIAL
+        - MIXED_USE
+        - AGRICULTURAL
+        - SHORT_TERM
+        - STUDENT_MOBILITY
+    LeaseClauseTemplateResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        countryCode:
+          type: string
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
+        clauseKey:
+          type: string
+        titleI18nKey:
+          type: string
+        bodyI18nKey:
+          type: string
+        defaultIncluded:
+          type: boolean
+        optional:
+          type: boolean
+        pinned:
+          type: boolean
+        sortOrder:
+          type: integer
+        version:
+          type: integer
+        titleText:
+          type: string
+          description: Title resolved in the requested language (the key itself when undefined)
+        bodyText:
+          type: string
+          description: Body resolved in the requested language (the key itself when undefined)
+        missingLanguages:
+          type: array
+          description: Languages whose own bundle lacks the title or body key
+          items:
+            $ref: "#/components/schemas/DocumentLanguage"
+      required:
+        - identifier
+        - countryCode
+        - leaseKind
+        - clauseKey
+        - titleI18nKey
+        - bodyI18nKey
+        - defaultIncluded
+        - optional
+        - pinned
+        - sortOrder
+        - version
+        - titleText
+        - bodyText
+        - missingLanguages
+    # NOTE: DocumentLanguage and the Lease* enums below are hand-written copies of the Java enums
+    # (DocumentLanguage, LeaseAvailability, LeasePreviewContractType, ...). Keep them in sync.
+    DocumentLanguage:
+      type: string
+      enum: [en, nl, de, fr, pt, es, sv, it, fi, el, pl, da, nb]
+    LeaseAvailability:
+      type: string
+      description: Whether, and in what form, a lease agreement can be produced
+      enum:
+        - AVAILABLE_DOCUMENT
+        - AVAILABLE_EXAMPLE_TEXT
+        - UNAVAILABLE_COUNTRY
+        - UNAVAILABLE_NO_COUNTRY
+    LeasePreviewContractType:
+      type: string
+      enum:
+        - FIXED_TERM
+        - INDEFINITE
+    LeasePreviewPaymentFrequency:
+      type: string
+      enum:
+        - MONTHLY
+        - QUARTERLY
+        - ANNUALLY
+    LeasePreviewRentComponentType:
+      type: string
+      enum:
+        - BASE_RENT
+        - UTILITIES_ADVANCE
+        - SERVICE_COSTS
+        - HOA_FEES
+        - FURNITURE_RENTAL
+        - PARKING
+        - STORAGE
+        - GARBAGE_COLLECTION
+        - OTHER
+    LeasePreviewSource:
+      type: string
+      description: Whether the html is a reviewed per-language document or the placeholder example text
+      enum:
+        - DOCUMENT
+        - EXAMPLE_TEXT
+    LeasePreviewRentComponent:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/LeasePreviewRentComponentType"
+        amount:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1000000000
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+      required:
+        - type
+        - amount
+        - currency
+    LeasePreviewMoney:
+      type: object
+      properties:
+        amount:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1000000000
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+      required:
+        - amount
+        - currency
+    LeasePreviewSample:
+      type: object
+      description: The made-up contract values the preview is rendered from. All amounts share one currency.
+      properties:
+        contractType:
+          $ref: "#/components/schemas/LeasePreviewContractType"
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          description: Must be after startDate when given
+        rentComponents:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/LeasePreviewRentComponent"
+        deposit:
+          $ref: "#/components/schemas/LeasePreviewMoney"
+        paymentDueDay:
+          type: integer
+          minimum: 1
+          maximum: 31
+        paymentFrequency:
+          $ref: "#/components/schemas/LeasePreviewPaymentFrequency"
+        landlordName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        tenantNames:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        propertyAddress:
+          type: string
+          minLength: 1
+          maxLength: 200
+        regionCode:
+          type: string
+          pattern: "^[A-Za-z0-9-]{1,10}$"
+      required:
+        - contractType
+        - startDate
+        - rentComponents
+        - landlordName
+        - propertyAddress
+    LeasePreviewClauseChoice:
+      type: object
+      properties:
+        clauseKey:
+          type: string
+          pattern: "^[a-z0-9-]{1,64}$"
+        included:
+          type: boolean
+        sortOrder:
+          type: integer
+          format: int32
+      required:
+        - clauseKey
+        - included
+        - sortOrder
+    LeaseAgreementPreviewRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          pattern: "^[A-Z]{2}$"
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
+        language:
+          $ref: "#/components/schemas/DocumentLanguage"
+        sample:
+          $ref: "#/components/schemas/LeasePreviewSample"
+        clauses:
+          type: array
+          maxItems: 100
+          description: Clause choices; omitted keys keep the template default. Keys must be unique.
+          items:
+            $ref: "#/components/schemas/LeasePreviewClauseChoice"
+      required:
+        - countryCode
+        - leaseKind
+        - language
+        - sample
+    LeasePreviewClause:
+      type: object
+      description: What the resolver decided for one clause, in document order
+      properties:
+        clauseKey:
+          type: string
+        title:
+          type: string
+        included:
+          type: boolean
+        optional:
+          type: boolean
+        pinned:
+          type: boolean
+        articleNumber:
+          type: integer
+          format: int32
+          description: 0 when the clause is excluded
+        sortOrder:
+          type: integer
+          format: int32
+      required:
+        - clauseKey
+        - title
+        - included
+        - optional
+        - pinned
+        - articleNumber
+        - sortOrder
+    LeaseAgreementPreviewResponse:
+      type: object
+      description: >-
+        When availability is UNAVAILABLE_*, html, languageUsed, kindUsed and source are null and
+        clauses is empty.
+      properties:
+        availability:
+          $ref: "#/components/schemas/LeaseAvailability"
+        html:
+          type: string
+          nullable: true
+        languageUsed:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/DocumentLanguage"
+        kindUsed:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/LeaseKind"
+        source:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/LeasePreviewSource"
+        clauses:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeasePreviewClause"
+      required:
+        - availability
+        - clauses
+    UpsertLeaseClauseTemplateRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        leaseKind:
+          $ref: "#/components/schemas/LeaseKind"
+        clauseKey:
+          type: string
+        titleI18nKey:
+          type: string
+        bodyI18nKey:
+          type: string
+        defaultIncluded:
+          type: boolean
+        optional:
+          type: boolean
+        pinned:
+          type: boolean
+        sortOrder:
+          type: integer
+      required:
+        - countryCode
+        - leaseKind
+        - clauseKey
+        - titleI18nKey
+        - bodyI18nKey
+        - defaultIncluded
+        - optional
+        - pinned
+        - sortOrder
     RentRegulationCatalogInfo:
       type: object
       properties:
@@ -8202,6 +8834,44 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RentRegulationCountryDiff"
+    TenancyRuleTopic:
+      type: string
+      enum:
+        - NOTICE_PERIOD
+        - TENANCY_DURATION
+        - DEPOSIT
+        - LEASE_FORM
+        - REGISTRATION
+        - FEES_AND_PENALTIES
+        - OTHER
+    RentRegulationTenancyRuleResponse:
+      type: object
+      required: [identifier, topic, label, value]
+      properties:
+        identifier:
+          type: string
+        topic:
+          $ref: "#/components/schemas/TenancyRuleTopic"
+        regionCode:
+          type: string
+          nullable: true
+        label:
+          type: string
+        value:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+          nullable: true
+        legalBasis:
+          type: string
+          nullable: true
+        sourceUrl:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
     MaxIncreaseType:
       type: string
       enum:

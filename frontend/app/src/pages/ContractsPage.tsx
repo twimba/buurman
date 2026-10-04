@@ -1,11 +1,21 @@
-import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
+import { useDebounce } from '@/hooks/useDebounce';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, FileText, RefreshCw, CircleDot, X } from 'lucide-react';
+import {
+  Plus,
+  FileText,
+  RefreshCw,
+  CircleDot,
+  X,
+  Search,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import {
@@ -19,6 +29,7 @@ import {
 } from '@buurman/ui';
 import { MobileMenuButton } from '@/components/MobileMenuButton';
 import { EntityExportControls } from '@/components/common/EntityExportControls';
+import { SavedFiltersDropdown } from '@/components/contracts/SavedFiltersDropdown';
 import {
   exportContractsCsv,
   exportContractsXlsx,
@@ -29,10 +40,45 @@ import {
 } from '@/generated/api/booklets/booklets';
 import { GOOGLE_SHEET_EXPORT_TIMEOUT_MS } from '@/utils/googleSheetExport';
 
+const VALID_STATUSES: string[] = Object.values(ContractStatus);
+const VALID_SORT_FIELDS = ['endDate', 'startDate', 'rentAmount'] as const;
+type SortField = (typeof VALID_SORT_FIELDS)[number];
+
+const parseStatusFilter = (raw: unknown): ContractStatus[] => {
+  const list = Array.isArray(raw) ? raw : typeof raw === 'string' ? [raw] : [];
+  return list.filter(
+    (s): s is ContractStatus =>
+      typeof s === 'string' && VALID_STATUSES.includes(s)
+  );
+};
+
+const parseSortField = (raw: unknown): SortField =>
+  typeof raw === 'string' &&
+  (VALID_SORT_FIELDS as readonly string[]).includes(raw)
+    ? (raw as SortField)
+    : 'endDate';
+
+const parseSortDirection = (raw: unknown): 'ASC' | 'DESC' =>
+  raw === 'DESC' ? 'DESC' : 'ASC';
+
+const parseEndingWithinDays = (raw: unknown): number | undefined => {
+  if (typeof raw !== 'string' || raw === '') {
+    return undefined;
+  }
+  const parsed = Number(raw);
+  return Number.isNaN(parsed) ? undefined : Math.max(0, parsed);
+};
+
 export const ContractsPage = () => {
   const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+
+  // Read once on mount so a refresh, a bookmark, or a shared link reproduces the same filtered
+  // view instead of silently resetting to the defaults — synced back to the URL below as the
+  // user changes anything. Not reactive to further URL changes (e.g. browser back/forward)
+  // beyond this initial read; that would need a second effect watching searchParams.
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const statusOptions = useMemo(
     () => [
@@ -44,20 +90,57 @@ export const ContractsPage = () => {
       },
       { value: ContractStatus.EXPIRED, label: t('list.expired') },
       { value: ContractStatus.TERMINATED, label: t('list.terminated') },
+      { value: ContractStatus.NOTICE_GIVEN, label: t('list.noticeGiven') },
     ],
     [t]
   );
-  const [statusFilter, setStatusFilter] = useState<ContractStatus | undefined>(
-    undefined
+  const DEFAULT_STATUS_FILTER = useMemo(
+    () => [
+      ContractStatus.ACTIVE,
+      ContractStatus.DRAFT,
+      ContractStatus.PENDING_SIGNATURE,
+      ContractStatus.NOTICE_GIVEN,
+    ],
+    []
   );
-  const {
-    pageParams,
-    page,
-    size,
-    handlePageChange,
-    handleSizeChange,
-    resetPage,
-  } = usePagination({ defaultSize: 12 });
+  const [statusFilter, setStatusFilter] = useState<ContractStatus[]>(() => {
+    const fromUrl = parseStatusFilter(searchParams.getAll('status'));
+    return fromUrl.length > 0 ? fromUrl : DEFAULT_STATUS_FILTER;
+  });
+  const [searchInput, setSearchInput] = useState(
+    () => searchParams.get('search') ?? ''
+  );
+  const debouncedSearch = useDebounce(searchInput, 300);
+  const [endingWithinDays, setEndingWithinDays] = useState<number | undefined>(
+    () => parseEndingWithinDays(searchParams.get('endingWithinDays'))
+  );
+  const [sortField, setSortField] = useState<SortField>(() =>
+    parseSortField(searchParams.get('sort'))
+  );
+  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>(() =>
+    parseSortDirection(searchParams.get('direction'))
+  );
+
+  const sortOptions = useMemo(
+    () =>
+      [
+        { value: 'endDate' as const, label: t('list.sort.endDate') },
+        { value: 'startDate' as const, label: t('list.sort.startDate') },
+        { value: 'rentAmount' as const, label: t('list.sort.rentAmount') },
+      ] as const,
+    [t]
+  );
+  const { page, size, handlePageChange, handleSizeChange, resetPage } =
+    usePagination({
+      defaultPage: (() => {
+        const raw = Number(searchParams.get('page'));
+        return Number.isInteger(raw) && raw >= 0 ? raw : 0;
+      })(),
+      defaultSize: (() => {
+        const raw = Number(searchParams.get('size'));
+        return Number.isInteger(raw) && raw > 0 ? raw : 12;
+      })(),
+    });
 
   const {
     data: contractsData,
@@ -65,10 +148,68 @@ export const ContractsPage = () => {
     isFetching,
     refetch,
     error,
-  } = useContracts(
-    statusFilter ? { status: statusFilter, ...pageParams } : { ...pageParams }
-  );
+  } = useContracts({
+    ...(statusFilter.length > 0 ? { status: statusFilter } : {}),
+    // Only page/size come from usePagination — its own sort/direction tracking is unused here;
+    // this page's sort state is its own typed SortField/'ASC'|'DESC', tracked separately above
+    // and synced to the URL, so there's no second source of truth to shadow.
+    page,
+    size,
+    search: debouncedSearch || undefined,
+    endingWithinDays,
+    sort: sortField,
+    direction: sortDirection,
+  });
   const contracts = contractsData?.content;
+
+  // Keeps the URL reproducing exactly the view currently on screen, so a refresh, a bookmark, or
+  // a copy-pasted link lands back on the same filtered/sorted/paged list instead of the defaults.
+  // replace: true so filtering doesn't spam browser history with one entry per keystroke/toggle.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    statusFilter.forEach((s) => params.append('status', s));
+    if (debouncedSearch) {
+      params.set('search', debouncedSearch);
+    }
+    if (endingWithinDays !== undefined) {
+      params.set('endingWithinDays', String(endingWithinDays));
+    }
+    params.set('sort', sortField);
+    params.set('direction', sortDirection);
+    if (page > 0) {
+      params.set('page', String(page));
+    }
+    if (size !== 12) {
+      params.set('size', String(size));
+    }
+    setSearchParams(params, { replace: true });
+  }, [
+    statusFilter,
+    debouncedSearch,
+    endingWithinDays,
+    sortField,
+    sortDirection,
+    page,
+    size,
+    setSearchParams,
+  ]);
+
+  const handleApplySavedFilter = (criteria: Record<string, unknown>) => {
+    const {
+      status,
+      search,
+      endingWithinDays: days,
+      sort,
+      direction,
+    } = criteria;
+
+    setStatusFilter(parseStatusFilter(status));
+    setSearchInput(typeof search === 'string' ? search : '');
+    setEndingWithinDays(typeof days === 'number' ? days : undefined);
+    setSortField(parseSortField(sort));
+    setSortDirection(parseSortDirection(direction));
+    resetPage();
+  };
 
   if (isLoading) {
     return (
@@ -132,8 +273,20 @@ export const ContractsPage = () => {
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <EntityExportControls
             filenameStem="contracts"
-            csv={() => exportContractsCsv()}
-            xlsx={() => exportContractsXlsx()}
+            csv={() =>
+              exportContractsCsv({
+                status: statusFilter,
+                search: debouncedSearch || undefined,
+                endingWithinDays,
+              })
+            }
+            xlsx={() =>
+              exportContractsXlsx({
+                status: statusFilter,
+                search: debouncedSearch || undefined,
+                endingWithinDays,
+              })
+            }
             googleSheet={(accessToken) =>
               exportContractsGoogleSheet(
                 { accessToken },
@@ -175,37 +328,169 @@ export const ContractsPage = () => {
           }}
         />
 
-        {/* Toolbar — status filter dropdown */}
+        {/* Toolbar — search, status filter, ending-within-days, sort */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                resetPage();
+              }}
+              placeholder={t('list.searchPlaceholder')}
+              aria-label={t('list.searchPlaceholder')}
+              className="w-full h-10 pl-10 pr-9 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+            />
+            {searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput('');
+                  resetPage();
+                }}
+                aria-label={t('common:buttons.clear', 'Clear')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-text-muted hover:text-text-secondary focus-ring"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
           <FilterSelectPopover
             icon={CircleDot}
             label={t('list.status')}
             options={statusOptions}
-            value={statusFilter}
-            onChange={(value) => {
-              setStatusFilter(value);
+            values={statusFilter}
+            onToggle={(value) => {
+              setStatusFilter((prev) =>
+                prev.includes(value)
+                  ? prev.filter((s) => s !== value)
+                  : [...prev, value]
+              );
               resetPage();
             }}
-            allLabel={t('list.allStatuses')}
+          />
+
+          <input
+            type="number"
+            min={0}
+            value={endingWithinDays ?? ''}
+            onChange={(e) => {
+              setEndingWithinDays(parseEndingWithinDays(e.target.value));
+              resetPage();
+            }}
+            placeholder={t('list.endingWithinDays')}
+            aria-label={t('list.endingWithinDays')}
+            className="h-10 w-40 px-3 border border-border-strong rounded-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
+          />
+
+          {/* Sort — grouped control pinned to the same 40px baseline */}
+          <div className="inline-flex items-center h-10 rounded-lg border border-border-strong bg-surface-card">
+            <select
+              value={sortField}
+              onChange={(e) => {
+                setSortField(
+                  e.target.value as 'endDate' | 'startDate' | 'rentAmount'
+                );
+                resetPage();
+              }}
+              aria-label={t('list.sortLabel')}
+              className="h-full bg-transparent pl-3 pr-2 text-sm font-medium text-text-secondary rounded-l-lg focus-ring"
+            >
+              {sortOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <span aria-hidden className="w-px h-5 bg-border-default" />
+            <button
+              onClick={() => {
+                setSortDirection((d) => (d === 'ASC' ? 'DESC' : 'ASC'));
+                resetPage();
+              }}
+              className="h-10 w-10 inline-flex items-center justify-center rounded-r-lg text-text-secondary hover:text-primary-600 hover:bg-surface-inset transition-colors focus-ring"
+              title={
+                sortDirection === 'ASC' ? t('list.sortAsc') : t('list.sortDesc')
+              }
+              aria-label={
+                sortDirection === 'ASC' ? t('list.sortAsc') : t('list.sortDesc')
+              }
+            >
+              {sortDirection === 'ASC' ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+
+          <SavedFiltersDropdown
+            currentCriteria={{
+              status: statusFilter,
+              search: debouncedSearch,
+              endingWithinDays,
+              sort: sortField,
+              direction: sortDirection,
+            }}
+            onApply={handleApplySavedFilter}
           />
         </div>
 
-        {/* Active filter chip */}
-        {statusFilter && (
+        {/* Active filter chips */}
+        {(statusFilter.length > 0 ||
+          debouncedSearch ||
+          endingWithinDays !== undefined) && (
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-              {statusOptions.find((o) => o.value === statusFilter)?.label}
-              <button
-                onClick={() => {
-                  setStatusFilter(undefined);
-                  resetPage();
-                }}
-                aria-label={t('common:buttons.clear', 'Clear')}
-                className="rounded-full hover:text-primary-900 focus-ring"
+            {statusFilter.map((status) => (
+              <span
+                key={status}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300"
               >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
+                {statusOptions.find((o) => o.value === status)?.label}
+                <button
+                  onClick={() => {
+                    setStatusFilter((prev) => prev.filter((s) => s !== status));
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-primary-900 focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+            {debouncedSearch && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
+                {debouncedSearch}
+                <button
+                  onClick={() => {
+                    setSearchInput('');
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-text-primary focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+            {endingWithinDays !== undefined && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
+                {t('list.endingWithinDays')}: {endingWithinDays}
+                <button
+                  onClick={() => {
+                    setEndingWithinDays(undefined);
+                    resetPage();
+                  }}
+                  aria-label={t('common:buttons.clear', 'Clear')}
+                  className="rounded-full hover:text-text-primary focus-ring"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
           </div>
         )}
 

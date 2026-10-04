@@ -3,6 +3,7 @@ package com.buurman.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.PaymentReceival;
@@ -41,7 +44,9 @@ import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -67,6 +72,8 @@ class PaymentServiceTest {
   @Mock private ContactCreditRepository creditRepository;
   @Mock private PaymentPlanRepository paymentPlanRepository;
   @Mock private ContractRepository contractRepository;
+  @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private ContactRepository contactRepository;
   @Mock private ContractPartyService contractPartyService;
@@ -107,6 +114,8 @@ class PaymentServiceTest {
             creditRepository,
             paymentPlanRepository,
             contractRepository,
+            contractExtensionRepository,
+            contractTerminationRepository,
             propertyRepository,
             contactRepository,
             contractPartyService,
@@ -710,6 +719,46 @@ class PaymentServiceTest {
                       principal))
           .isInstanceOf(com.buurman.exception.BusinessRuleException.class)
           .hasMessageContaining("delete it and register");
+    }
+  }
+
+  @Nested
+  @DisplayName("bulkGeneratePayments")
+  class BulkGeneratePayments {
+
+    @Test
+    @DisplayName(
+        "draws on in-force (ACTIVE + NOTICE_GIVEN) contracts and skips a month past the contract's"
+            + " billing end date")
+    void usesInForceContractsAndStopsAtBillingEndDate() {
+      Contract underNotice =
+          Contract.builder()
+              .id(UUID.randomUUID())
+              .identifier(Optional.of(Sid.of("con_01JTEST000000000000000001")))
+              .teamId(TEAM_ID)
+              .status(Contract.ContractStatus.NOTICE_GIVEN)
+              .rentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .paymentDueDay(Optional.of(1))
+              .build();
+      when(contractRepository.findInForceByTeamId(TEAM_ID)).thenReturn(List.of(underNotice));
+      // Notice ends the tenancy on 2026-04-15, so May's rent must not be generated.
+      when(contractTerminationRepository.findByContractIdsAndTeamId(
+              List.of(underNotice.getId()), TEAM_ID))
+          .thenReturn(
+              Map.of(
+                  underNotice.getId(),
+                  com.buurman.domain.ContractTermination.builder()
+                      .contractId(underNotice.getId())
+                      .effectiveEndDate(LocalDate.of(2026, 4, 15))
+                      .build()));
+
+      List<com.buurman.dto.response.PaymentResponse> result =
+          service.bulkGeneratePayments(
+              new com.buurman.dto.request.BulkGeneratePaymentsRequest("2026-05"), principal);
+
+      assertThat(result).isEmpty();
+      verify(paymentRepository, never()).save(any());
+      verify(contractRepository, never()).findByStatus(any(), any());
     }
   }
 }

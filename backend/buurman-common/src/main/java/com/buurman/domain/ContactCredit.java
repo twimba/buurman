@@ -35,7 +35,7 @@ public class ContactCredit {
   @Builder.Default private Optional<UUID> contractId = Optional.empty();
   private MoneyAmount amount;
 
-  /** Unapplied part of {@code amount}, in major units. */
+  /** Unapplied part of the amount, in major units. */
   private BigDecimal remainingAmount;
 
   private CreditSource source;

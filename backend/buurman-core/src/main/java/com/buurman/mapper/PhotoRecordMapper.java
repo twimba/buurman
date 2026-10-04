@@ -47,6 +47,7 @@ public interface PhotoRecordMapper {
   @Mapping(target = "title", expression = "java(photo.getTitle().orElse(null))")
   @Mapping(target = "notes", expression = "java(photo.getNotes().orElse(null))")
   @Mapping(target = "identifier", expression = "java(photo.getIdentifier().orElse(null))")
+  @Mapping(target = "unitId", ignore = true)
   PhotosRecord toRecord(Photo photo);
 
   List<Photo> toDomainList(List<PhotosRecord> records);

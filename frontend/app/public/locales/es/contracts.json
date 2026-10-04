@@ -4,7 +4,8 @@
     "pending": "Pendiente",
     "active": "Activo",
     "expired": "Vencido",
-    "terminated": "Terminado"
+    "terminated": "Terminado",
+    "noticeGiven": "Preaviso dado"
   },
   "list": {
     "title": "Contratos",
@@ -18,6 +19,7 @@
     "pendingSignature": "Pendiente de Firma",
     "expired": "Vencido",
     "terminated": "Terminado",
+    "noticeGiven": "Preaviso dado",
     "count_one": "{{count}} contrato",
     "count_other": "{{count}} contratos",
     "empty": {
@@ -26,7 +28,23 @@
     },
     "error": "Error al cargar contratos",
     "exportDeposits": "Exportar fianzas",
-    "count_many": "{{count}} contratos"
+    "count_many": "{{count}} contratos",
+    "searchPlaceholder": "Buscar por contacto, propiedad o número de contrato...",
+    "endingWithinDays": "Finaliza dentro de (días)",
+    "sortLabel": "Ordenar contratos por",
+    "sortAsc": "Orden ascendente",
+    "sortDesc": "Orden descendente",
+    "sort": {
+      "endDate": "Fecha de fin",
+      "startDate": "Fecha de inicio",
+      "rentAmount": "Importe del alquiler"
+    },
+    "savedFilters": {
+      "button": "Filtros guardados",
+      "namePlaceholder": "Nombre del filtro",
+      "save": "Guardar",
+      "delete": "Eliminar {{name}}"
+    }
   },
   "create": {
     "title": "Añadir Nuevo Contrato",
@@ -46,6 +64,8 @@
     "reopenTitle": "Reabrir este contrato a estado de borrador",
     "duplicate": "Duplicar",
     "duplicateTitle": "Crear una copia de este contrato en estado borrador",
+    "terminate": "Rescindir Contrato",
+    "terminateTitle": "Dar preaviso para finalizar este contrato activo",
     "edit": "Editar",
     "delete": "Eliminar",
     "tabs": {
@@ -53,7 +73,8 @@
       "payments": "Pagos",
       "extensions": "Extensiones",
       "documents": "Documentos",
-      "history": "Historial"
+      "leaseAgreement": "Contrato de Arrendamiento",
+      "history": "Cronología"
     },
     "deleteTitle": "Eliminar Contrato",
     "deleteMessage": "¿Está seguro de que desea eliminar este contrato? Esta acción no se puede deshacer.",
@@ -309,6 +330,7 @@
   },
   "form": {
     "contractType": "Tipo de Contrato",
+    "leaseRegime": "Régimen de alquiler",
     "property": "Propiedad",
     "propertyAndParties": "Propiedad y Partes",
     "propertyPlaceholder": "Seleccionar una propiedad...",
@@ -428,7 +450,8 @@
       "PENDING_SIGNATURE": "Pendiente de Firma",
       "ACTIVE": "Activo",
       "EXPIRED": "Vencido",
-      "TERMINATED": "Terminado"
+      "TERMINATED": "Terminado",
+      "NOTICE_GIVEN": "Preaviso Dado"
     }
   },
   "adjustRent": {
@@ -612,6 +635,80 @@
     "applyAdjustments_many": "Aplicar {{count}} Ajustes",
     "increasesFailed_many": "{{count}} aumentos fallaron",
     "adjustmentPayments_many": "{{count}} pagos de ajuste creados para cambios retroactivos"
+  },
+  "termination": {
+    "title": "Rescindir Contrato",
+    "subtitle": "Dar preaviso para finalizar este contrato",
+    "steps": {
+      "whoGivesNotice": "Quién Notifica",
+      "noticeDateGround": "Fecha y Motivo del Preaviso",
+      "review": "Revisión",
+      "letterPreview": "Vista Previa de la Carta",
+      "confirmation": "Confirmación"
+    },
+    "givenByValues": {
+      "LANDLORD": "Arrendador",
+      "TENANT": "Inquilino"
+    },
+    "whoGivesNotice": {
+      "question": "¿Quién da el preaviso para finalizar este contrato?",
+      "landlordDescription": "Está finalizando el contrato como arrendador.",
+      "tenantDescription": "El inquilino ha dado el preaviso para finalizar el contrato.",
+      "next": "Siguiente: Fecha y Motivo del Preaviso"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Fecha de preaviso",
+      "noticeDateHelp": "La fecha en que se dio, o se dará, el preaviso.",
+      "groundCodeLabel": "Motivo o código de causa (opcional)",
+      "groundCodeHelp": "Solo es obligatorio para algunos motivos de rescisión. Puede confirmarlo en el siguiente paso.",
+      "next": "Siguiente: Revisión"
+    },
+    "review": {
+      "computedEndDateLabel": "Fecha de finalización calculada",
+      "noticeDaysLabel": "Plazo de preaviso",
+      "noticeDaysValue": "{{count}} días",
+      "sourceLabel": "Cómo se calculó esto",
+      "source": {
+        "CATALOG_RULE": "Basado en las normas de preaviso de su país.",
+        "CONTRACT_FALLBACK": "Basado en la configuración de preaviso propia de este contrato.",
+        "HARDCODED_DEFAULT": "Usando un valor predeterminado de 30 días."
+      },
+      "groundRequiredWarning": "Este motivo de rescisión requiere un código de causa.",
+      "groundCodeLabel": "Motivo o código de causa",
+      "selectGround": "Seleccione un motivo",
+      "overrideToggle": "Usar una fecha de finalización anterior",
+      "overrideHelp": "Déjelo vacío para aceptar la fecha de finalización calculada anterior.",
+      "effectiveEndDateLabel": "Fecha de finalización anterior",
+      "overrideReasonLabel": "Motivo de la fecha de finalización anterior",
+      "overrideReasonPlaceholder": "Explique por qué este contrato finaliza antes de lo calculado...",
+      "overrideReasonRequired": "Se requiere un motivo cuando la fecha de finalización es anterior a la fecha calculada.",
+      "loading": "Calculando el plazo de preaviso...",
+      "error": "No se pudo calcular el plazo de preaviso. Compruebe la fecha de preaviso e inténtelo de nuevo.",
+      "next": "Siguiente: Vista Previa de la Carta"
+    },
+    "letterPreview": {
+      "title": "Vista Previa de la Carta de Preaviso",
+      "description": "Se generará una carta de preaviso formal que se guardará como documento en este contrato.",
+      "givenByLabel": "Notificado por",
+      "noticeDateLabel": "Fecha de preaviso",
+      "groundCodeLabel": "Motivo",
+      "computedEndDateLabel": "Fecha de finalización calculada",
+      "effectiveEndDateLabel": "Fecha de finalización efectiva",
+      "overrideReasonLabel": "Motivo del cambio",
+      "inspectionDateLabel": "Fecha de inspección de salida (opcional)",
+      "notProvided": "No proporcionado",
+      "confirm": "Confirmar y Rescindir",
+      "submitting": "Rescindiendo..."
+    },
+    "confirmation": {
+      "title": "Preaviso Dado",
+      "description": "Este contrato ha pasado al estado Preaviso Dado.",
+      "effectiveEndDateLabel": "Fecha de finalización efectiva",
+      "noticeLetterLabel": "Carta de preaviso",
+      "viewDocument": "Ver documento",
+      "depositNote": "La fecha límite de devolución del depósito se ha actualizado para coincidir con la fecha de finalización efectiva.",
+      "backToContract": "Volver al contrato"
+    }
   },
   "card": {
     "start": "Inicio",
@@ -987,5 +1084,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Finaliza en {{days}} días",
+  "leaseAgreement": {
+    "title": "Contrato de Arrendamiento",
+    "description": "Elige qué cláusulas incluir y luego genera el PDF del contrato de arrendamiento para este contrato.",
+    "empty": "Todavía no hay cláusulas configuradas para el país de este contrato.",
+    "required": "Obligatoria",
+    "saveSelection": "Guardar selección",
+    "generate": "Generar contrato de arrendamiento",
+    "saveAndGenerate": "Guardar y generar contrato de arrendamiento",
+    "language": "Idioma del contrato",
+    "languagesLimited": "Los contratos de arrendamiento para {{country}} solo existen en los idiomas mostrados.",
+    "pinned": "Fijada",
+    "moveUp": "Subir {{title}}",
+    "moveDown": "Bajar {{title}}",
+    "countryLabel": "País",
+    "unavailable": {
+      "title": "Aún no disponible",
+      "description": "Todavía no tenemos contrato de arrendamiento para este país. Puedes seguir gestionando este contrato y subir uno ya firmado.",
+      "action": "Ir a Documentos"
+    },
+    "noCountry": {
+      "title": "Elige primero un país",
+      "description": "El contrato de arrendamiento depende del país de la propiedad. Añade primero un país a la propiedad.",
+      "action": "Editar propiedad"
+    },
+    "error": {
+      "title": "Cláusulas no cargadas",
+      "description": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
+      "retry": "Reintentar"
+    },
+    "errors": {
+      "notAvailableForCountry": "Todavía no hay contrato de arrendamiento disponible para el país de esta propiedad. Sube un contrato firmado en Documentos.",
+      "noCountry": "Añade un país a la propiedad antes de usar el contrato de arrendamiento."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Estándar",
+    "SHORT_TERM": "Corta duración",
+    "STUDENT_OR_MOBILITY": "Estudiantes o movilidad"
   }
 }

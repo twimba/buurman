@@ -42,6 +42,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
+import com.buurman.domain.Contract;
 import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.InteractionType;
 import com.buurman.domain.Sid;
@@ -325,7 +326,7 @@ public class ContactRepository {
                 CONTRACT_PARTIES
                     .CONTRACT_ID
                     .eq(CONTRACTS.ID)
-                    .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                    .and(CONTRACTS.STATUS.in(Contract.ContractStatus.IN_FORCE_NAMES))
                     .and(CONTRACTS.DELETED_AT.isNull()))
             .where(
                 CONTRACT_PARTIES
@@ -704,7 +705,7 @@ public class ContactRepository {
             CONTRACT_PARTIES
                 .CONTRACT_ID
                 .eq(CONTRACTS.ID)
-                .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                .and(CONTRACTS.STATUS.in(Contract.ContractStatus.IN_FORCE_NAMES))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .where(
             CONTRACT_PARTIES

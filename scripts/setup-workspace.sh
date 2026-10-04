@@ -123,6 +123,7 @@ VITE_BACKOFFICE_KEYCLOAK_URL=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX
 CORS_ALLOWED_ORIGINS=http://localhost:${LOCAL_APP_PORT},https://${HP}app.local.buurman.io${PORT_SUFFIX}
 CORS_BACKOFFICE_ALLOWED_ORIGINS=http://localhost:${LOCAL_BACKOFFICE_PORT},https://${HP}backoffice.local.buurman.io${PORT_SUFFIX}
 BACKEND_METRICS_TARGET=host.docker.internal:${BACKEND_MGMT_HOST_PORT}
+DOCUMENSO_WEBAPP_URL=https://${HP}documenso.local.buurman.io${PORT_SUFFIX}
 EOF
 
 echo "  .env generated"
@@ -322,6 +323,8 @@ export APP_CORS_ALLOWEDORIGINS=http://localhost:${LOCAL_APP_PORT},https://${HP}a
 export APP_CORS_BACKOFFICEALLOWEDORIGINS=http://localhost:${LOCAL_BACKOFFICE_PORT},https://${HP}backoffice.local.buurman.io${PORT_SUFFIX}
 # Backend -> Prometheus query API (cluster-wide p95 / error-rate / latency heatmap dashboard panels).
 export PROMETHEUS_URL=https://${HP}prometheus.local.buurman.io${PORT_SUFFIX}
+# Backend -> Documenso API (e-signature sidecar, routed through Traefik like every other service).
+export DOCUMENSO_BASE_URL=https://${HP}documenso.local.buurman.io${PORT_SUFFIX}
 EOF
 
 echo "  .env.backend generated"

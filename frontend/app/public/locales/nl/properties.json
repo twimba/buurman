@@ -226,7 +226,9 @@
       "confirmLabel_other": "{{count}} documenten verwijderen"
     },
     "editModal": "Document bewerken",
-    "downloading": "Downloaden..."
+    "downloading": "Downloaden...",
+    "generated_one": "{{count}} gegenereerd bestand",
+    "generated_other": "{{count}} gegenereerde bestanden"
   },
   "photos": {
     "title": "Foto's",

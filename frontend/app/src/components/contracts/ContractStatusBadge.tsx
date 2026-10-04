@@ -16,6 +16,7 @@ const statusConfig: Record<
   ACTIVE: { label: 'Active', color: 'emerald' },
   EXPIRED: { label: 'Expired', color: 'orange' },
   TERMINATED: { label: 'Terminated', color: 'red' },
+  NOTICE_GIVEN: { label: 'Notice Given', color: 'amber' },
 };
 
 export const ContractStatusBadge = ({

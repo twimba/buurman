@@ -1,0 +1,399 @@
+<!--
+  legal-basis: Ley 29/1994, de 24 de noviembre, de Arrendamientos Urbanos (LAU), consolidated text BOE-A-1994-26003
+               as published on www.boe.es (ultima actualizacion publicada el 02/10/2026): art. 2, 3, 4, 6, 7, 8, 9,
+               10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 36; disposiciones
+               adicionales tercera (deposito de fianzas) y undecima (indice de referencia).
+               State of the LAU on 2026-10-04: the amendments of Real Decreto-ley 26/2026 and Real Decreto-ley
+               27/2026, de 29 de septiembre (in force 01/10/2026 and 02/10/2026), were set aside by the Congreso
+               de los Diputados (derogation published 02/10/2026, BOE-A-2026-20526 and BOE-A-2026-20527); the text
+               in force is the version of Ley 12/2023 (and earlier) - art. 9 bis, 21 bis and 41-51 are without
+               effect.
+               Ley 12/2023, de 24 de mayo, por el derecho a la vivienda (BOE-A-2023-12203): art. 3 k) (gran
+               tenedor), art. 31 (informacion minima, 31.3 zona tensionada mentions in the contract).
+               IRAV: Resolucion de 18 de diciembre de 2024 de la Presidencia del INE (BOE-A-2024-26685).
+               Real Decreto 390/2021, de 1 de junio (BOE-A-2021-9176): art. 3 (scope and exclusions), art. 17.2
+               (copy of the energy label annexed to the lease, recommendations of use handed to the tenant).
+               Codigo Civil (BOE-A-1889-4763): art. 1124, 1555, 1561, 1562, 1563, 1564.
+               Ley de Enjuiciamiento Civil 1/2000 (BOE-A-2000-323): art. 22.4 (enervacion), art. 52.1.7.
+               Cataluna: Llei 13/1996, de 29 de juliol, del Registre i el diposit de fiances (INCASOL, deposit within
+               2 months, page incasol.gencat.cat read 2026-10-04); regionCode branch CAT/CT in the deposit clause,
+               general text (disposicion adicional tercera LAU) for any other or unknown region.
+               RGPD: Reglamento (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Ley Organica 3/2018, de 5 de
+               diciembre (LOPDGDD).
+               Verified 2026-10-04 against www.boe.es (consolidated texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in es.html, never spelled out (es "1 mensualidad de renta" is "1 month's rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Spanish law (Ley de Arrendamientos Urbanos, titulo II) for the
+  lease of a dwelling as the tenant's permanent home. Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>De una parte, <strong th:text="${landlordName}">Arrendador</strong>, en adelante &laquo;el arrendador&raquo;,</p>
+  <p>NIF, NIE o CIF y domicilio del arrendador: ______________________________</p>
+  <p>condición del arrendador (persona física o persona jurídica): ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">y de otra, <strong th:text="${tenantNames}">Arrendatario</strong>,
+    en adelante (conjuntamente) &laquo;el arrendatario&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">y de otra, el arrendatario o los arrendatarios que firman al pie, en
+    adelante (conjuntamente) &laquo;el arrendatario&raquo;,</p>
+  <p>NIF o NIE del arrendatario: ______________________________,</p>
+  <p>celebran el presente contrato de arrendamiento de vivienda, sujeto a la Ley 29/1994, de 24 de noviembre, de
+    Arrendamientos Urbanos, en adelante &laquo;la LAU&raquo;.</p>
+  <p>Cuando varias personas sean arrendatarias, responden solidariamente de todas las obligaciones derivadas del
+    presente contrato.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>El arrendador da en arrendamiento al arrendatario, que lo acepta, la vivienda situada en
+    <strong th:text="${propertyAddress}">Dirección</strong>, en adelante &laquo;la vivienda&raquo;, con las
+    siguientes características:</p>
+  <p>referencia catastral: ______________________________</p>
+  <p>superficie útil y superficie construida: ________ m²</p>
+  <p>dependencias, espacios y servicios accesorios arrendados con la vivienda (trastero, plaza de garaje,
+    mobiliario u otros): ______________________________</p>
+  <p>El arrendamiento recae sobre una edificación habitable cuyo destino primordial es satisfacer la necesidad
+    permanente de vivienda del arrendatario (artículo 2.1 de la LAU). Las normas del arrendamiento de vivienda se
+    aplican también al mobiliario, los trasteros, las plazas de garaje y cualesquiera otras dependencias, espacios
+    arrendados o servicios cedidos como accesorios de la vivienda por el mismo arrendador (artículo 2.2 de la
+    LAU).</p>
+  <p>El contrato se somete de forma imperativa a los títulos I y IV de la LAU y se rige por los pactos, cláusulas y
+    condiciones del presente contrato en el marco del título II de la LAU y, supletoriamente, por el Código Civil
+    (artículo 4.2 de la LAU). Se exceptúan los arrendamientos de viviendas cuya superficie sea superior a 300 metros
+    cuadrados o en los que la renta inicial en cómputo anual exceda de 5,5 veces el salario mínimo
+    interprofesional en cómputo anual, siempre que el arrendamiento corresponda a la totalidad de la vivienda: estos
+    se rigen por la voluntad de las partes, en su defecto por el título II de la LAU y, supletoriamente, por el
+    Código Civil. El presente modelo no es adecuado para un arrendamiento de temporada ni para un arrendamiento
+    para uso distinto del de vivienda (artículo 3 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>El contrato entra en vigor el <strong th:text="${startDate}">fecha de inicio</strong>.</p>
+  <p th:if="${fixedTerm}">Las partes pactan una duración determinada<span th:if="${endDate != null}">, hasta el
+    <strong th:text="${endDate}">fecha de fin</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Las partes no estipulan plazo de duración: el arrendamiento se entiende celebrado por
+    1 año, sin perjuicio del derecho de prórroga anual del arrendatario (artículo 9.2 de la LAU).</p>
+  <p>Si la duración pactada fuera inferior a 5 años, o inferior a 7 años si el arrendador fuese persona jurídica,
+    llegado el día del vencimiento del contrato este se prorroga obligatoriamente por plazos anuales hasta que el
+    arrendamiento alcance una duración mínima de 5 años, o de 7 años si el arrendador fuese persona jurídica, salvo
+    que el arrendatario manifieste al arrendador, con 30 días de antelación como mínimo a la fecha de terminación
+    del contrato o de cualquiera de las prórrogas, su voluntad de no renovarlo. El plazo se cuenta desde la fecha del
+    contrato o desde la puesta de la vivienda a disposición del arrendatario si esta fuere posterior (artículo 9.1
+    de la LAU).</p>
+  <p>Si llegada la fecha de vencimiento del contrato, o de cualquiera de sus prórrogas, una vez transcurridos como
+    mínimo 5 años de duración, o 7 años si el arrendador fuese persona jurídica, ninguna de las partes hubiese
+    notificado a la otra su voluntad de no renovarlo, al menos con 4 meses de antelación a aquella fecha en el caso
+    del arrendador y al menos con 2 meses de antelación en el caso del arrendatario, el contrato se prorroga
+    obligatoriamente por plazos anuales hasta un máximo de 3 años más, salvo que el arrendatario manifieste al
+    arrendador, con 1 mes de antelación a la fecha de terminación de cualquiera de las anualidades, su voluntad de
+    no renovarlo (artículo 10.1 de la LAU). El arrendatario puede además solicitar las prórrogas extraordinarias
+    previstas en el artículo 10.2 y 10.3 de la LAU, en los supuestos y con los requisitos que allí se
+    establecen.</p>
+  <p>Una vez transcurrido el primer año de duración del contrato, y siempre que el arrendador sea persona física,
+    no procede la prórroga obligatoria cuando, al tiempo de la celebración del contrato, se haya hecho constar en él
+    de forma expresa la necesidad para el arrendador de ocupar la vivienda antes del transcurso de 5 años para
+    destinarla a vivienda permanente para sí o sus familiares en primer grado de consanguinidad o por adopción o
+    para su cónyuge en los supuestos de sentencia firme de separación, divorcio o nulidad matrimonial. El arrendador
+    debe comunicar al arrendatario que tiene necesidad de la vivienda, especificando la causa o causas, al menos
+    con 2 meses de antelación a la fecha en que la vivienda se vaya a necesitar. Si transcurridos 3 meses desde la
+    extinción del contrato o, en su caso, desde el efectivo desalojo, la vivienda no hubiera sido ocupada por
+    dichas personas, el arrendatario puede optar, en el plazo de 30 días, entre ser repuesto en el uso y disfrute
+    de la vivienda o ser indemnizado, en los términos del artículo 9.3 de la LAU, salvo que la ocupación no hubiera
+    tenido lugar por causa de fuerza mayor.</p>
+  <p>Necesidad del arrendador que se hace constar a efectos del artículo 9.3 de la LAU, en su caso: ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>La renta inicial, libremente estipulada por las partes (artículo 17.1 de la LAU), se fija en
+    <strong th:text="${rentAmount}">Importe</strong> (periodicidad
+    <span th:text="${paymentFrequency}">mensual</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> El arrendatario abona además los gastos que asume en el presente contrato
+    (véase el artículo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Si la vivienda se ubica en una zona de mercado residencial tensionado, dentro del periodo de vigencia de su
+    declaración conforme a la Ley 12/2023, de 24 de mayo, por el derecho a la vivienda, la renta pactada al inicio
+    del contrato no puede exceder de la última renta de contrato de arrendamiento de vivienda habitual que hubiese
+    estado vigente en los últimos 5 años en la misma vivienda, una vez aplicada la cláusula de actualización anual
+    de la renta del contrato anterior, sin que puedan fijarse nuevas condiciones que repercutan al arrendatario
+    cuotas o gastos que no estuviesen recogidos en el contrato anterior. Esa renta solo puede incrementarse en un
+    máximo del 10 % en los supuestos de rehabilitación, mejora energética o de accesibilidad o contrato de larga
+    duración que enumera el artículo 17.6 de la LAU, con los requisitos que este establece.</p>
+  <p>En dicha zona, cuando el arrendador sea un gran tenedor de vivienda (titular de más de 10 inmuebles urbanos de
+    uso residencial o de una superficie construida de más de 1.500 m² de uso residencial, excluidos garajes y
+    trasteros, definición que la declaración de la zona puede extender a los titulares de 5 o más inmuebles de uso
+    residencial ubicados en ella), la renta inicial no puede exceder del límite máximo del precio aplicable conforme
+    al sistema de índices de precios de referencia. Con independencia de la condición del arrendador, la misma
+    limitación se aplica a la vivienda situada en dicha zona sobre la que no hubiese estado vigente ningún contrato
+    de arrendamiento de vivienda en los últimos 5 años, siempre que así se recoja en la resolución ministerial que
+    declare la zona (artículo 17.7 de la LAU). Pueden aplicarse, por tanto,
+    limitaciones de la renta propias de la zona en que se ubique la vivienda.</p>
+  <p>Si la vivienda se encuentra en una zona de mercado residencial tensionado, se hace constar (artículo 31.3 de
+    la Ley 12/2023): cuantía de la última renta del contrato de arrendamiento de vivienda habitual vigente en los
+    últimos 5 años en la misma vivienda: ______________________________; valor que corresponda según el índice de
+    referencia de precios de alquiler de viviendas aplicable: ______________________________</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">La actualización de la renta se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Durante la vigencia del contrato, la renta solo puede ser actualizada por el arrendador o el arrendatario en la
+    fecha en que se cumpla cada año de vigencia del contrato, en los términos pactados por las partes (artículo 18.1
+    de la LAU). Mecanismo de actualización pactado: ______________________________</p>
+  <p>En defecto de pacto expreso no se aplica actualización de la renta. Si se pacta un mecanismo de actualización
+    que no detalle el índice o la metodología de referencia, la renta se actualiza para cada anualidad por
+    referencia a la variación anual del Índice de Garantía de Competitividad a fecha de cada actualización.</p>
+  <p>En todo caso, el incremento producido como consecuencia de la actualización anual no puede exceder del
+    resultado de aplicar la variación porcentual del Índice de Precios al Consumo en los términos del artículo 18.1
+    de la LAU. Además, la disposición adicional undécima de la LAU fija como límite de referencia a los efectos de
+    dicho artículo el índice de referencia para la actualización anual de los contratos de arrendamiento de vivienda
+    definido por el Instituto Nacional de Estadística (IRAV, Resolución de 18 de diciembre de 2024).</p>
+  <p>La renta actualizada es exigible a partir del mes siguiente a aquel en que la parte interesada lo notifique a
+    la otra parte por escrito, expresando el porcentaje de alteración aplicado y acompañando, si el arrendatario lo
+    exigiera, la oportuna certificación del Instituto Nacional de Estadística. Es válida la notificación efectuada
+    por nota en el recibo de la mensualidad del pago precedente (artículo 18.2 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Las partes pactan que los gastos generales para el adecuado sostenimiento del inmueble, sus servicios,
+    tributos, cargas y responsabilidades que no sean susceptibles de individualización y que correspondan a la
+    vivienda o a sus accesorios sean a cargo del arrendatario en los conceptos siguientes (artículo 20.1 de la
+    LAU): ______________________________</p>
+  <p>Importe anual de dichos gastos a la fecha del contrato: ________ euros. En edificios en régimen de propiedad
+    horizontal, tales gastos son los que correspondan a la vivienda en función de su cuota de participación; en los
+    demás edificios, los que se hayan asignado a la vivienda en función de su superficie. Este pacto solo es válido
+    por escrito y con la determinación del importe anual a la fecha del contrato; el pacto que se refiera a tributos
+    no afecta a la Administración.</p>
+  <p>Durante los 5 primeros años de vigencia del contrato, o los 7 primeros años si el arrendador fuese persona
+    jurídica, la suma que el arrendatario haya de abonar por estos gastos, con excepción de los tributos, solo
+    puede incrementarse, por acuerdo de las partes, anualmente, y nunca en un porcentaje superior a 2 veces aquel en
+    que pueda incrementarse la renta conforme al artículo 18.1 de la LAU (artículo 20.2 de la LAU).</p>
+  <p>Los gastos por servicios con que cuente la vivienda que se individualicen mediante aparatos contadores son en
+    todo caso de cuenta del arrendatario (artículo 20.3 de la LAU). Los gastos de gestión inmobiliaria y los de
+    formalización del contrato son a cargo del arrendador (artículo 20.1 de la LAU). El pago de estos gastos se
+    acredita en la misma forma que el de la renta (artículo 20.4 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">A la celebración del contrato, el arrendatario entrega al arrendador en
+    concepto de fianza en metálico la cantidad de <strong th:text="${depositAmount}">Importe</strong>.</p>
+  <p th:if="${depositAmount == null}">A la celebración del contrato, el arrendatario entrega al arrendador en
+    concepto de fianza en metálico una cantidad equivalente a 1 mensualidad de renta.</p>
+  <p>La exigencia y prestación de fianza en metálico, en cantidad equivalente a 1 mensualidad de renta, es
+    obligatoria (artículo 36.1 de la LAU). Durante los 5 primeros años de duración del contrato, o los 7 primeros
+    años si el arrendador fuese persona jurídica, la fianza no está sujeta a actualización; cada vez que el
+    arrendamiento se prorrogue, el arrendador puede exigir que la fianza sea incrementada, o el arrendatario que
+    disminuya, hasta hacerse igual a 1 mensualidad de la renta vigente al tiempo de la prórroga (artículo 36.2 de
+    la LAU). Durante el periodo en que el plazo pactado exceda de 5 años, o de 7 años si el arrendador fuese persona
+    jurídica, la actualización de la fianza se rige por lo pactado y, a falta de pacto específico, por lo acordado
+    sobre actualización de la renta (artículo 36.3 de la LAU).</p>
+  <p>Las partes pueden pactar una garantía adicional a la fianza en metálico; en contratos de hasta 5 años de
+    duración, o de hasta 7 años si el arrendador fuese persona jurídica, su valor no puede exceder de 2
+    mensualidades de renta (artículo 36.5 de la LAU). La cantidad entregada que exceda de 1 mensualidad de renta tiene
+    la consideración de garantía adicional y queda sujeta a este límite. Garantía adicional pactada, en su caso: ______________________________</p>
+  <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">La vivienda está situada en
+    Cataluña: el arrendador deposita la fianza en el Institut Català del Sòl (INCASÒL) en el plazo de 2 meses a
+    contar desde la formalización del contrato, conforme a la Llei 13/1996, de 29 de juliol, del Registre i el
+    dipòsit de fiances dels contractes de lloguer de finques urbanes.</p>
+  <p th:if="${!(countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT'))}">Cuando la comunidad
+    autónoma en que se ubique la vivienda lo haya establecido, el arrendador deposita el importe de la fianza, sin
+    devengo de interés, a disposición de la Administración autonómica o del ente público que se designe hasta la
+    extinción del contrato (disposición adicional tercera de la LAU). Pueden aplicarse, por tanto, normas
+    autonómicas sobre el depósito de la fianza.</p>
+  <p>El saldo de la fianza que deba ser restituido al arrendatario al final del arriendo devenga el interés legal
+    transcurrido 1 mes desde la entrega de las llaves sin que se haya hecho efectiva la restitución (artículo 36.4
+    de la LAU).<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La
+    devolución de la vivienda se rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>El arrendatario paga la renta<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (véase el artículo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> y los gastos a su cargo</span> con periodicidad
+    <span th:text="${paymentFrequency}">mensual</span>,
+    <span th:if="${paymentDueDay != null}">a más tardar el día <strong th:text="${paymentDueDay}">1</strong> de
+      cada periodo de pago</span><span th:if="${paymentDueDay == null}">en la fecha convenida por las partes</span>.
+    Salvo pacto en contrario, el pago de la renta es mensual y se efectúa en los 7 primeros días del mes; en ningún
+    caso puede el arrendador exigir el pago anticipado de más de 1 mensualidad de renta (artículo 17.2 de la
+    LAU).</p>
+  <p>El pago se efectúa a través de medios electrónicos, mediante transferencia a la cuenta que designe el
+    arrendador; excepcionalmente, cuando alguna de las partes carezca de cuenta bancaria o de acceso a medios
+    electrónicos de pago y a solicitud de esta, puede efectuarse en metálico y en la vivienda arrendada
+    (artículo 17.3 de la LAU). Cuenta designada por el arrendador: ______________________________</p>
+  <p>El arrendador entrega al arrendatario recibo del pago, salvo que se haya pactado que este se realice mediante
+    procedimientos que acrediten el efectivo cumplimiento de la obligación de pago. El recibo o el documento que lo
+    sustituya expresa separadamente las cantidades abonadas por los distintos conceptos y, específicamente, la renta
+    en vigor; si el arrendador no entrega el recibo, son de su cuenta todos los gastos que se originen al
+    arrendatario para dejar constancia del pago (artículo 17.4 de la LAU).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>El arrendatario destina la vivienda de forma primordial a satisfacer su necesidad permanente de vivienda
+    (artículo 2.1 de la LAU) y la usa como un diligente padre de familia, destinándola al uso pactado (artículo 1555
+    del Código Civil). El arrendamiento no pierde la condición de arrendamiento de vivienda aunque el arrendatario no
+    tenga en ella su vivienda permanente, siempre que en ella habiten su cónyuge no separado legalmente o de hecho,
+    o sus hijos dependientes (artículo 7 de la LAU).</p>
+  <p>El arrendatario respeta los estatutos y las normas de régimen interior de la comunidad de propietarios que le
+    hayan sido comunicados y no desarrolla en la vivienda actividades molestas, insalubres, nocivas, peligrosas o
+    ilícitas.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>El arrendatario no puede ceder el contrato sin el consentimiento escrito del arrendador; en caso de cesión, el
+    cesionario se subroga en la posición del cedente frente al arrendador. La vivienda solo puede subarrendarse de
+    forma parcial y previo consentimiento escrito del arrendador (artículo 8 de la LAU).</p>
+  <p>El derecho del subarrendatario se extingue, en todo caso, cuando lo haga el del arrendatario que subarrendó, y
+    el precio del subarriendo no puede exceder, en ningún caso, del que corresponda al arrendamiento.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>El arrendador realiza, sin derecho a elevar por ello la renta, todas las reparaciones que sean necesarias para
+    conservar la vivienda en las condiciones de habitabilidad para servir al uso convenido, salvo cuando el
+    deterioro sea imputable al arrendatario conforme a los artículos 1563 y 1564 del Código Civil (artículo 21.1 de
+    la LAU). Cuando la ejecución de una obra de conservación no pueda razonablemente diferirse hasta la conclusión
+    del arrendamiento, el arrendatario está obligado a soportarla; si la obra dura más de 20 días, la renta se
+    disminuye en proporción a la parte de la vivienda de la que el arrendatario se vea privado (artículo 21.2 de la
+    LAU).</p>
+  <p>El arrendatario pone en conocimiento del arrendador, en el plazo más breve posible, la necesidad de dichas
+    reparaciones y le facilita la verificación directa del estado de la vivienda; puede realizar en todo momento,
+    previa comunicación al arrendador, las reparaciones urgentes para evitar un daño inminente o una incomodidad
+    grave, y exigir de inmediato su importe al arrendador (artículo 21.3 de la LAU). Las pequeñas reparaciones que
+    exija el desgaste por el uso ordinario de la vivienda son de cargo del arrendatario (artículo 21.4 de la
+    LAU).</p>
+  <p>El arrendatario soporta las obras de mejora cuya ejecución no pueda razonablemente diferirse hasta la
+    conclusión del arrendamiento. El arrendador que se proponga realizarlas las notifica por escrito al arrendatario
+    al menos con 3 meses de antelación, con su naturaleza, comienzo, duración y coste previsible; durante el plazo
+    de 1 mes desde la notificación, el arrendatario puede desistir del contrato, salvo que las obras no afecten o
+    afecten de modo irrelevante a la vivienda, y el arrendamiento se extingue en el plazo de 2 meses desde el
+    desistimiento, durante los cuales no pueden comenzar las obras. El arrendatario que soporte las obras tiene
+    derecho a una reducción de la renta en proporción a la parte de la vivienda de la que se vea privado y a la
+    indemnización de los gastos que las obras le obliguen a efectuar (artículo 22 de la LAU). La elevación de la
+    renta por obras de mejora se rige por el artículo 19 de la LAU.</p>
+  <p>El arrendatario no puede realizar sin el consentimiento escrito del arrendador obras que modifiquen la
+    configuración de la vivienda o de sus accesorios, ni en ningún caso obras que provoquen una disminución en la
+    estabilidad o seguridad de la vivienda (artículo 23 de la LAU). Las obras necesarias para adaptar la vivienda a
+    la discapacidad o a la edad superior a 70 años del arrendatario o de las personas que convivan con él se rigen
+    por el artículo 24 de la LAU.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Se anexa al presente contrato una copia de la etiqueta de eficiencia energética de la vivienda, y el
+    arrendador entrega al arrendatario una copia del documento de recomendaciones de uso para el usuario
+    (artículo 17.2 del Real Decreto 390/2021, de 1 de junio), salvo que la vivienda esté excluida del ámbito de
+    aplicación de dicho real decreto.</p>
+  <p>Calificación energética y número de registro del certificado de eficiencia energética: ______________________________</p>
+  <p>Antes de la formalización del contrato, el arrendatario pudo requerir la información mínima prevista en el
+    artículo 31 de la Ley 12/2023, entre ella el certificado o cédula de habitabilidad y el certificado de
+    eficiencia energética de la vivienda. Documentos entregados: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>En caso de venta de la vivienda, el arrendatario tiene un derecho de tanteo, que puede ejercitar en un plazo
+    de 30 días naturales a contar desde el siguiente a aquel en que se le notifique en forma fehaciente la decisión
+    de vender, el precio y las demás condiciones esenciales de la transmisión, y un derecho de retracto en los
+    casos y plazos del artículo 25 de la LAU. No hay lugar a estos derechos cuando la vivienda se venda
+    conjuntamente con las restantes viviendas o locales propiedad del arrendador que formen parte de un mismo
+    inmueble, ni cuando distintos propietarios vendan conjuntamente a un mismo comprador la totalidad de los pisos y
+    locales del inmueble, salvo que en el inmueble solo exista una vivienda (artículo 25.7 de la LAU).</p>
+  <p>Las partes pueden pactar la renuncia del arrendatario al derecho de adquisición preferente; en tal caso, el
+    arrendador comunica al arrendatario su intención de vender la vivienda con una antelación mínima de 30 días a la
+    fecha de formalización del contrato de compraventa (artículo 25.8 de la LAU). Renuncia pactada (sí/no): ______________________________</p>
+  <p>El adquirente de la vivienda queda subrogado en los derechos y obligaciones del arrendador en los términos y
+    con los límites del artículo 14 de la LAU.</p>
+</div>
+
+<div th:fragment="clause-subrogation" data-clause="subrogation">
+  <p>En caso de muerte del arrendatario, pueden subrogarse en el contrato las personas que determina el artículo 16
+    de la LAU, en el orden de prelación que este establece. El arrendamiento se extingue si en el plazo de 3 meses
+    desde la muerte del arrendatario el arrendador no recibe notificación por escrito del hecho del fallecimiento,
+    con certificado registral de defunción, y de la identidad del subrogado, indicando su parentesco con el
+    fallecido y ofreciendo, en su caso, un principio de prueba de que cumple los requisitos legales para subrogarse
+    (artículo 16.3 de la LAU).</p>
+  <p>La continuación del arrendamiento en beneficio del cónyuge o de la persona conviviente en los casos de
+    desistimiento, no renovación o abandono por el arrendatario, y en los de nulidad, separación o divorcio, se rige
+    por los artículos 12 y 15 de la LAU.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Las partes firman en la entrega de las llaves un inventario del estado de la vivienda y, en su caso, de su
+    mobiliario, que se anexa al presente contrato. A falta de expresión del estado de la vivienda al tiempo de
+    arrendarla, se presume que el arrendatario la recibió en buen estado, salvo prueba en contrario (artículo 1562
+    del Código Civil). Mobiliario y enseres incluidos: ______________________________</p>
+  <p>Al concluir el arrendamiento, el arrendatario devuelve la vivienda tal como la recibió, salvo lo que hubiese
+    perecido o se hubiera menoscabado por el tiempo o por causa inevitable (artículo 1561 del Código Civil), y
+    entrega todas las llaves. Responde del deterioro o pérdida de la vivienda, a no ser que pruebe haberse
+    ocasionado sin culpa suya, y del deterioro causado por las personas de su casa (artículos 1563 y 1564 del Código
+    Civil).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> La restitución de la fianza se
+    rige por lo pactado en el presente contrato (véase el artículo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>El arrendatario puede desistir del contrato una vez transcurridos al menos 6 meses, siempre que lo comunique
+    al arrendador con una antelación mínima de 30 días. Las partes pueden pactar que, en caso de desistimiento, el
+    arrendatario indemnice al arrendador con una cantidad equivalente a 1 mensualidad de la renta en vigor por cada
+    año del contrato que reste por cumplir; los periodos de tiempo inferiores al año dan lugar a la parte
+    proporcional de la indemnización (artículo 11 de la LAU). Indemnización por desistimiento pactada (sí/no): ______________________________</p>
+  <p>El incumplimiento por cualquiera de las partes de las obligaciones resultantes del contrato da derecho a la
+    parte que hubiere cumplido las suyas a exigir el cumplimiento de la obligación o a promover la resolución del
+    contrato de acuerdo con el artículo 1124 del Código Civil (artículo 27.1 de la LAU).</p>
+  <p>Además, el arrendador puede resolver de pleno derecho el contrato por las causas siguientes: la falta de pago
+    de la renta o, en su caso, de cualquiera de las cantidades cuyo pago haya asumido o corresponda al arrendatario;
+    la falta de pago del importe de la fianza o de su actualización; el subarriendo o la cesión inconsentidos; la
+    realización de daños causados dolosamente en la vivienda o de obras no consentidas por el arrendador cuando el
+    consentimiento de este sea necesario; que en la vivienda tengan lugar actividades molestas, insalubres, nocivas,
+    peligrosas o ilícitas; y que la vivienda deje de estar destinada de forma primordial a satisfacer la necesidad
+    permanente de vivienda del arrendatario o de quien efectivamente la viniera ocupando de acuerdo con el
+    artículo 7 de la LAU (artículo 27.2 de la LAU).</p>
+  <p>El arrendatario puede resolver el contrato por la no realización por el arrendador de las reparaciones a que
+    se refiere el artículo 21 de la LAU y por la perturbación de hecho o de derecho que realice el arrendador en la
+    utilización de la vivienda (artículo 27.3 de la LAU). Cuando la ejecución de obras de conservación o de obras
+    acordadas por una autoridad competente haga inhabitable la vivienda, el arrendatario puede optar entre suspender
+    el contrato o desistir de él, sin indemnización alguna (artículo 26 de la LAU). El contrato se extingue también
+    por la pérdida de la vivienda por causa no imputable al arrendador y por la declaración firme de ruina acordada
+    por la autoridad competente (artículo 28 de la LAU).</p>
+  <p>En el proceso de desahucio por falta de pago, el arrendatario puede enervar la acción en los términos del
+    artículo 22.4 de la Ley de Enjuiciamiento Civil. No cabe la enervación cuando el arrendatario la hubiera ejercido
+    en una ocasión anterior, salvo que el cobro no hubiera tenido lugar por causas imputables al arrendador, ni
+    cuando el arrendador le hubiese requerido de pago por cualquier medio fehaciente con, al menos, 30 días de
+    antelación a la presentación de la demanda y el pago no se hubiese efectuado al tiempo de dicha presentación.
+    Las partes pueden poner fin al contrato de mutuo acuerdo.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> La devolución de la vivienda se rige por lo pactado en el presente
+    contrato (véase el artículo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Las comunicaciones entre las partes se dirigen a los domicilios siguientes, salvo cambio comunicado por
+    escrito: arrendador: ______________________________; arrendatario: la vivienda arrendada.</p>
+  <p>A efectos de las notificaciones previstas en la LAU, las partes señalan las direcciones electrónicas
+    siguientes, siempre que se garantice la autenticidad de la comunicación y de su contenido y quede constancia
+    fehaciente de la remisión y recepción íntegras y del momento en que se hicieron (artículo 4.6 de la LAU):
+    arrendador: ______________________________; arrendatario: ______________________________</p>
+  <p>Las notificaciones que la ley exige practicar en forma fehaciente, como la de la decisión de vender la
+    vivienda (artículo 25.2 de la LAU), se realizan por un medio que deje constancia de su contenido y de su
+    recepción, como el burofax con certificación de texto y acuse de recibo o el requerimiento notarial.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>El arrendador trata los datos personales del arrendatario únicamente en la medida necesaria para la
+    celebración y ejecución del presente contrato y para el cumplimiento de sus obligaciones legales, conforme al
+    Reglamento General de Protección de Datos (Reglamento (UE) 2016/679) y a la Ley Orgánica 3/2018, de 5 de
+    diciembre, de Protección de Datos Personales y garantía de los derechos digitales, y no los conserva más allá
+    del tiempo necesario para dichos fines.</p>
+  <p>El arrendatario puede ejercer ante el arrendador los derechos que le reconoce dicha normativa, en particular
+    los de acceso, rectificación y supresión, y presentar una reclamación ante la Agencia Española de Protección de
+    Datos.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>El presente contrato se rige por la legislación española, en particular por la LAU y, supletoriamente, por el
+    Código Civil. Para los juicios sobre el arrendamiento y los de desahucio es competente el tribunal del lugar en
+    que esté sita la vivienda (artículo 52.1.7.º de la Ley de Enjuiciamiento Civil).</p>
+  <p>Las partes pueden pactar la sumisión a mediación o arbitraje de las controversias que por su naturaleza
+    puedan resolverse a través de estas formas de resolución de conflictos, de conformidad con la legislación
+    reguladora de la mediación en asuntos civiles y mercantiles y del arbitraje (artículo 4.5 de la LAU). Son nulas,
+    y se tienen por no puestas, las estipulaciones que modifiquen en perjuicio del arrendatario las normas del
+    título II de la LAU, salvo los casos en que la propia norma expresamente lo autorice (artículo 6 de la LAU).</p>
+</div>
+
+</body>
+</html>

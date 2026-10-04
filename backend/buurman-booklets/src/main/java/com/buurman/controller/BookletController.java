@@ -3,6 +3,7 @@ package com.buurman.controller;
 import static com.buurman.util.FeatureFlags.GOOGLE_SHEETS_EXPORT;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import com.buurman.dto.request.GoogleSheetExportRequest;
 import com.buurman.dto.response.GoogleSheetExportResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.BookletsApi;
+import com.buurman.generated.model.ContractStatus;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
@@ -211,21 +213,37 @@ public class BookletController implements BookletsApi {
 
   // ── Contracts ───────────────────────────────────────────────────────────
   @Override
-  public Resource exportContractsCsv() {
+  public Resource exportContractsCsv(
+      Optional<List<ContractStatus>> status,
+      Optional<String> search,
+      Optional<Integer> endingWithinDays) {
     return downloadCsv(
         "contracts.csv",
         () ->
             exportService.generateContractsCSV(
-                SecurityUtils.getCurrentPrincipal().requireTeamId()));
+                SecurityUtils.getCurrentPrincipal().requireTeamId(),
+                status
+                    .map(list -> list.stream().map(ContractStatus::getValue).toList())
+                    .orElse(null),
+                search.orElse(null),
+                endingWithinDays.orElse(null)));
   }
 
   @Override
-  public Resource exportContractsXlsx() {
+  public Resource exportContractsXlsx(
+      Optional<List<ContractStatus>> status,
+      Optional<String> search,
+      Optional<Integer> endingWithinDays) {
     return downloadXlsx(
         "contracts.xlsx",
         () ->
             exportService.generateContractsExcel(
-                SecurityUtils.getCurrentPrincipal().requireTeamId()));
+                SecurityUtils.getCurrentPrincipal().requireTeamId(),
+                status
+                    .map(list -> list.stream().map(ContractStatus::getValue).toList())
+                    .orElse(null),
+                search.orElse(null),
+                endingWithinDays.orElse(null)));
   }
 
   @Override

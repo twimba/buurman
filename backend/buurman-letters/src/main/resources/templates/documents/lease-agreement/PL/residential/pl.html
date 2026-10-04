@@ -1,0 +1,340 @@
+<!--
+  legal-basis: Kodeks cywilny (ustawa z dnia 23 kwietnia 1964 r.), consolidated text Dz.U. z 2026 r. poz. 795
+               (obwieszczenie Marszalka Sejmu z 27 maja 2026 r.; the later amendments Dz.U. 2026 poz. 184 and poz. 507
+               do not touch the lease articles), read on api.sejm.gov.pl (ELI DU/2026/795, PDF): art. 58 § 1 and
+               § 3, 77 § 2, 481 § 1 and § 2, 659, 660, 661 § 1, 662, 663, 664 § 2 and § 3, 666, 667 § 1, 668,
+               669 § 2, 673, 674, 675, 677, 678 § 1, 680^1 § 1, 681, 682, 683, 684, 688, 688^1, 688^2, 691, 692.
+               Ustawa z dnia 21 czerwca 2001 r. o ochronie praw lokatorow, mieszkaniowym zasobie gminy i o zmianie
+               Kodeksu cywilnego (u.o.p.l.), consolidated text Dz.U. z 2023 r. poz. 725 (ELI DU/2001/733: no amending
+               act published after the 2022 amendments it consolidates; checked 2026-10-04): art. 2 ust. 1 pkt 4 and
+               pkt 8, 5 ust. 1, 6 ust. 1, 3, 4, 6a, 6b, 6c, 6d, 6e, 6f, 6g, 8a ust. 1-8, 9 ust. 1b, 2, 5, 6, 8,
+               10 ust. 1 and 3, 11 ust. 1-7 and 12, 19a, 19f.
+               Ustawa z dnia 29 sierpnia 2014 r. o charakterystyce energetycznej budynkow, consolidated text Dz.U.
+               z 2024 r. poz. 101 (ELI DU/2014/1200; last amendment in force 2023-10-01): art. 3 ust. 1 pkt 3 and
+               ust. 4, 11 ust. 1 pkt 2, ust. 4 and ust. 5, 14 ust. 1 and 2.
+               Kodeks postepowania cywilnego, consolidated text Dz.U. z 2026 r. poz. 468: art. 31 § 2, 37.
+               RODO: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); ustawa z dnia 10 maja 2018 r.
+               o ochronie danych osobowych (ELI DU/2018/1000).
+               Scope: the ordinary residential lease of a dwelling (lokal mieszkalny) under the Civil Code and the
+               u.o.p.l.; NOT the najem okazjonalny (art. 19a-19e u.o.p.l.) nor the najem instytucjonalny (art.
+               19f-19j u.o.p.l.), which need a notarial submission to enforcement and have their own rules.
+               Pending (not law on 2026-10-04): Sejm print 2447 (poselski projekt o zmianie u.o.p.l., filed
+               2026-02-27, first reading 2026-04-30, government position 2026-09-02: easier termination for rent
+               arrears); Sejm print 1318 (u.o.p.l. and gospodarka nieruchomosciami, second reading 2025-12-17, not
+               published); Sejm print 2353 (najem krotkoterminowy, first reading 2026-04-17). Re-verify art. 11
+               u.o.p.l. and the termination clause when print 2447 is enacted.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against api.sejm.gov.pl (ISAP/ELI consolidated texts and process data).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in pl.html, never spelled out (pl "12-krotnosc miesiecznego czynszu" is "12 times the monthly rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Polish law (Kodeks cywilny, ustawa o ochronie praw lokatorow) for
+  the ordinary lease of a dwelling. Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Wynajmujący: <strong th:text="${landlordName}">Wynajmujący</strong>, dalej: &bdquo;Wynajmujący&rdquo;,</p>
+  <p>numer PESEL albo numer dokumentu tożsamości oraz adres zamieszkania lub siedziby Wynajmującego: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Najemca: <strong th:text="${tenantNames}">Najemca</strong>, dalej
+    (łącznie): &bdquo;Najemca&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">Najemca lub najemcy podpisani na końcu umowy, dalej (łącznie):
+    &bdquo;Najemca&rdquo;,</p>
+  <p>numer PESEL albo numer dokumentu tożsamości oraz dotychczasowy adres zamieszkania Najemcy: ______________________________,</p>
+  <p>zawierają umowę najmu lokalu mieszkalnego, do której stosuje się przepisy ustawy z dnia 23 kwietnia 1964 r. &ndash;
+    Kodeks cywilny (tekst jednolity: Dz.U. z 2026 r. poz. 795; dalej: &bdquo;k.c.&rdquo;), w szczególności art. 659&ndash;692
+    k.c., oraz przepisy ustawy z dnia 21 czerwca 2001 r. o ochronie praw lokatorów, mieszkaniowym zasobie gminy i o
+    zmianie Kodeksu cywilnego (tekst jednolity: Dz.U. z 2023 r. poz. 725; dalej: &bdquo;u.o.p.l.&rdquo;). Umowę
+    zawiera się na piśmie; umowę najmu lokalu na czas dłuższy niż rok, zawartą bez zachowania formy pisemnej,
+    poczytuje się za zawartą na czas nieoznaczony (art. 660 k.c.).</p>
+  <p>Jeżeli nawiązanie stosunku najmu lokalu mającego służyć zaspokojeniu potrzeb mieszkaniowych założonej przez
+    małżonków rodziny następuje w czasie trwania małżeństwa, małżonkowie są najemcami lokalu bez względu na
+    istniejące między nimi stosunki majątkowe (art. 680¹ § 1 k.c.). Jeżeli Najemcą jest kilka osób, strony
+    postanawiają, że odpowiadają one solidarnie za wszystkie zobowiązania wynikające z umowy.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Wynajmujący oddaje Najemcy do używania lokal mieszkalny położony pod adresem
+    <strong th:text="${propertyAddress}">adres</strong>, zwany dalej &bdquo;Lokalem&rdquo;.</p>
+  <p>powierzchnia użytkowa Lokalu i liczba pokoi: ______________________________</p>
+  <p>pomieszczenia przynależne i części budynku, z których Najemca może korzystać (piwnica, komórka lokatorska,
+    miejsce postojowe lub inne): ______________________________</p>
+  <p>tytuł prawny Wynajmującego do Lokalu oraz numer księgi wieczystej, jeżeli została założona: ______________________________</p>
+  <p>Lokal służy do zaspokajania potrzeb mieszkaniowych Najemcy i osób z nim zamieszkujących (art. 2 ust. 1 pkt 4
+    u.o.p.l.). Niniejszy wzór nie jest przeznaczony do najmu okazjonalnego lokalu (art. 19a u.o.p.l.) ani do najmu
+    instytucjonalnego lokalu (art. 19f u.o.p.l.); umowy te wymagają w szczególności oświadczenia najemcy w formie
+    aktu notarialnego o poddaniu się egzekucji (art. 19a ust. 2 pkt 1 i art. 19f ust. 3 u.o.p.l.).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Stan techniczny i
+    wyposażenie Lokalu określa protokół, o którym mowa w niniejszej umowie (zob. artykuł <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Najem rozpoczyna się w dniu <strong th:text="${startDate}">data rozpoczęcia</strong>.</p>
+  <p th:if="${fixedTerm}">Umowa zostaje zawarta na czas oznaczony<span th:if="${endDate != null}">, do dnia
+    <strong th:text="${endDate}">data zakończenia</strong></span>. Czas trwania najmu, jeżeli nie wynika z daty
+    zakończenia: ______________________________. Najem zawarty na czas dłuższy niż 10 lat poczytuje się po upływie
+    tego terminu za zawarty na czas nieoznaczony (art. 661 § 1 k.c.).</p>
+  <p th:if="${fixedTerm}">Jeżeli po upływie czasu oznaczonego w umowie Najemca używa nadal Lokalu za zgodą
+    Wynajmującego, poczytuje się w razie wątpliwości, że najem został przedłużony na czas nieoznaczony (art. 674
+    k.c.).</p>
+  <p th:if="${!fixedTerm}">Umowa zostaje zawarta na czas nieoznaczony (art. 659 § 1 k.c. i art. 5 ust. 1
+    u.o.p.l.).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Wypowiedzenie umowy określa niniejsza
+    umowa (zob. artykuł <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Czynsz uzgodniony przez strony wynosi <strong th:text="${rentAmount}">kwota</strong> i jest płatny
+    <span th:text="${paymentFrequency}">miesięcznie</span> (art. 659 § 1 k.c.).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> Opłaty niezależne od właściciela, które Najemca
+    uiszcza oprócz czynszu, określa niniejsza umowa (zob. artykuł <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Podwyższenie czynszu określa
+    niniejsza umowa (zob. artykuł <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Wynajmujący może podwyższyć czynsz albo inne opłaty za używanie Lokalu, wypowiadając ich dotychczasową
+    wysokość, najpóźniej na koniec miesiąca kalendarzowego, z zachowaniem terminu wypowiedzenia, który wynosi 3
+    miesiące, chyba że strony w umowie ustalą termin dłuższy; wypowiedzenie wysokości czynszu albo innych opłat
+    powinno być pod rygorem nieważności dokonane na piśmie (art. 8a ust. 1&ndash;3 u.o.p.l.). Dłuższy termin
+    wypowiedzenia uzgodniony przez strony, jeżeli jest: ______________________________</p>
+  <p>Podwyżka, w wyniku której wysokość czynszu albo innych opłat za używanie Lokalu w skali roku przekroczy albo
+    następuje z poziomu wyższego niż 3 % wartości odtworzeniowej Lokalu, może nastąpić w uzasadnionych przypadkach,
+    o których mowa w art. 8a ust. 4a albo ust. 4e u.o.p.l.; na pisemne żądanie Najemcy Wynajmujący, w terminie 14
+    dni od dnia otrzymania tego żądania, pod rygorem nieważności podwyżki, przedstawia na piśmie przyczynę podwyżki
+    i jej kalkulację (art. 8a ust. 4 u.o.p.l.). Wartość odtworzeniową Lokalu stanowi iloczyn jego powierzchni
+    użytkowej i wskaźnika przeliczeniowego kosztu odtworzenia 1 m² powierzchni użytkowej budynku mieszkalnego (art.
+    9 ust. 8 u.o.p.l.).</p>
+  <p>W ciągu 2 miesięcy od dnia wypowiedzenia Najemca może odmówić na piśmie przyjęcia podwyżki ze skutkiem
+    rozwiązania umowy z upływem okresu wypowiedzenia albo zakwestionować podwyżkę, o której mowa w art. 8a ust. 4
+    u.o.p.l., wnosząc do sądu pozew o ustalenie, na podstawie przepisów ust. 4a&ndash;4e, że podwyżka jest niezasadna albo jest zasadna, lecz w innej
+    wysokości; udowodnienie zasadności podwyżki ciąży na Wynajmującym (art. 8a ust. 5 u.o.p.l.). W pierwszym
+    przypadku Najemca uiszcza czynsz w dotychczasowej wysokości do dnia rozwiązania umowy, a w drugim &ndash; do dnia
+    uprawomocnienia się orzeczenia sądu, z obowiązkiem zapłaty różnicy za okres od upływu terminu wypowiedzenia,
+    jeżeli sąd uzna podwyżkę za zasadną, choćby w innej wysokości (art. 8a ust. 6a i 6b u.o.p.l.).</p>
+  <p>Podwyższanie czynszu albo innych opłat za używanie Lokalu, z wyjątkiem opłat niezależnych od właściciela, nie
+    może być dokonywane częściej niż co 6 miesięcy, licząc od dnia, w którym podwyżka zaczęła obowiązywać (art. 9
+    ust. 1b u.o.p.l.). Przepisów art. 8a ust. 1&ndash;6b u.o.p.l. nie stosuje się do podwyżek opłat niezależnych od
+    właściciela (art. 8a ust. 8 u.o.p.l.).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Oprócz czynszu Wynajmujący może pobierać od Najemcy jedynie opłaty niezależne od właściciela, tj. opłaty za
+    dostawy do Lokalu energii, gazu, wody oraz odbiór ścieków, odpadów i nieczystości ciekłych, i tylko w wypadkach,
+    gdy Najemca nie ma zawartej umowy bezpośrednio z dostawcą mediów lub dostawcą usług (art. 2 ust. 1 pkt 8 oraz
+    art. 9 ust. 5 i 6 u.o.p.l.).</p>
+  <p>Opłaty niezależne od właściciela pobierane przez Wynajmującego i sposób ich rozliczania:
+    ______________________________. Dostawy, na które Najemca zawiera umowy bezpośrednio z dostawcami:
+    ______________________________</p>
+  <p>W razie podwyższenia opłat niezależnych od właściciela Wynajmujący przedstawia Najemcy na piśmie zestawienie
+    opłat wraz z przyczyną ich podwyższenia; Najemca jest obowiązany opłacać podwyższone opłaty tylko w takiej
+    wysokości, jaka jest niezbędna do pokrycia przez Wynajmującego kosztów dostarczenia tych dostaw do Lokalu (art.
+    9 ust. 2 u.o.p.l.).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Najemca wpłaca Wynajmującemu przy zawarciu umowy kaucję zabezpieczającą
+    pokrycie należności z tytułu najmu Lokalu, przysługujących Wynajmującemu w dniu opróżnienia Lokalu, w kwocie
+    <strong th:text="${depositAmount}">kwota</strong>.</p>
+  <p th:if="${depositAmount == null}">Strony nie przewidują kaucji. Kaucja uzgodniona przez strony, jeżeli jest:
+    ______________________________</p>
+  <p>Kaucja nie może przekraczać 12-krotności miesięcznego czynszu za Lokal, obliczonego według stawki czynszu
+    obowiązującej w dniu zawarcia umowy (art. 6 ust. 1 u.o.p.l.); strony postanawiają, że kwota kaucji nie przekracza
+    tego limitu. Krotność miesięcznego czynszu, której odpowiada kaucja: ______________________________</p>
+  <p>Kaucja podlega zwrotowi w ciągu 1 miesiąca od dnia opróżnienia Lokalu lub nabycia jego własności przez
+    Najemcę, po potrąceniu należności Wynajmującego z tytułu najmu Lokalu (art. 6 ust. 4 u.o.p.l.). Zwrot
+    zwaloryzowanej kaucji następuje w kwocie równej iloczynowi kwoty miesięcznego czynszu obowiązującego w dniu
+    zwrotu kaucji i krotności czynszu przyjętej przy pobieraniu kaucji, jednak w kwocie nie niższej niż kaucja
+    pobrana (art. 6 ust. 3 u.o.p.l.).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Zwrot Lokalu określa niniejsza umowa (zob. artykuł <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Najemca płaci czynsz<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zob. artykuł <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> oraz opłaty niezależne od właściciela pobierane przez Wynajmującego</span>
+    <span th:text="${paymentFrequency}">miesięcznie</span>, z góry,
+    <span th:if="${paymentDueDay != null}">w terminie do dnia <strong th:text="${paymentDueDay}">1</strong> każdego
+      miesiąca</span><span th:if="${paymentDueDay == null}">w terminie uzgodnionym przez strony</span>. Jeżeli termin
+    płatności czynszu nie jest w umowie określony, czynsz powinien być płacony z góry, a mianowicie: gdy najem ma
+    trwać nie dłużej niż miesiąc &ndash; za cały czas najmu, a gdy najem ma trwać dłużej niż miesiąc albo gdy umowa
+    była zawarta na czas nieoznaczony &ndash; miesięcznie, do 10. dnia miesiąca (art. 669 § 2 k.c.).</p>
+  <p>Płatności dokonuje się przelewem na rachunek bankowy Wynajmującego nr: ______________________________. W razie
+    opóźnienia w zapłacie Wynajmujący może żądać odsetek ustawowych za opóźnienie (art. 481 § 1 i § 2 k.c.).</p>
+  <p>Za zapłatę czynszu i innych należnych opłat odpowiadają solidarnie z Najemcą stale zamieszkujące z nim osoby
+    pełnoletnie, z wyjątkiem pełnoletnich zstępnych pozostających na jego utrzymaniu, którzy nie są w stanie utrzymać
+    się samodzielnie; odpowiedzialność tych osób ogranicza się do wysokości czynszu i innych opłat należnych za okres
+    ich stałego zamieszkiwania (art. 688¹ k.c.).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Najemca używa Lokalu na cele mieszkaniowe, w sposób określony w umowie, a gdy umowa nie określa sposobu
+    używania &ndash; w sposób odpowiadający właściwościom i przeznaczeniu Lokalu (art. 666 § 1 k.c.). Osoby, które
+    będą stale zamieszkiwać z Najemcą: ______________________________</p>
+  <p>Najemca stosuje się do porządku domowego, o ile nie jest on sprzeczny z uprawnieniami wynikającymi z umowy, i
+    liczy się z potrzebami innych mieszkańców i sąsiadów (art. 683 k.c. i art. 6b ust. 1 u.o.p.l.). Bez zgody
+    Wynajmującego Najemca nie może czynić w Lokalu zmian sprzecznych z umową lub z przeznaczeniem Lokalu (art. 667
+    § 1 k.c.).</p>
+  <p>Najemca może założyć w Lokalu oświetlenie elektryczne, gaz, telefon, radio i inne podobne urządzenia, chyba
+    że sposób ich założenia sprzeciwia się obowiązującym przepisom albo zagraża bezpieczeństwu nieruchomości (art.
+    684 k.c.).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Bez zgody Wynajmującego Najemca nie może oddać Lokalu lub jego części do bezpłatnego używania ani go podnająć;
+    zgoda Wynajmującego nie jest wymagana co do osoby, względem której Najemca jest obciążony obowiązkiem
+    alimentacyjnym (art. 688² k.c.). Strony postanawiają, że zgoda Wynajmującego wymaga formy pisemnej.</p>
+  <p>W razie oddania Lokalu osobie trzeciej zarówno Najemca, jak i ta osoba są odpowiedzialni względem
+    Wynajmującego za to, że Lokal będzie używany zgodnie z obowiązkami wynikającymi z umowy; stosunek podnajmu lub
+    bezpłatnego używania rozwiązuje się najpóźniej z chwilą zakończenia najmu (art. 668 § 1 i § 2 k.c.).
+    Wynajmujący może wypowiedzieć umowę nie później niż na 1 miesiąc naprzód, na koniec miesiąca kalendarzowego,
+    jeżeli Najemca wynajął, podnajął albo oddał do bezpłatnego używania Lokal lub jego część bez wymaganej pisemnej
+    zgody Wynajmującego (art. 11 ust. 2 pkt 3 u.o.p.l.).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Wynajmujący wydaje Lokal w stanie przydatnym do umówionego użytku i utrzymuje go w takim stanie przez czas
+    trwania najmu (art. 662 § 1 k.c.). Do obowiązków Wynajmującego należy w szczególności zapewnienie sprawnego
+    działania istniejących instalacji i urządzeń związanych z budynkiem, utrzymanie w należytym stanie, porządku i
+    czystości pomieszczeń i urządzeń budynku służących do wspólnego użytku mieszkańców oraz dokonywanie napraw
+    Lokalu, napraw lub wymiany instalacji i elementów wyposażenia technicznego w zakresie nieobciążającym Najemcy
+    (art. 6a ust. 1 i 3 u.o.p.l.).</p>
+  <p>Drobne nakłady połączone ze zwykłym używaniem Lokalu obciążają Najemcę (art. 662 § 2 i art. 681 k.c.). Najemca
+    jest obowiązany utrzymywać Lokal we właściwym stanie technicznym i higieniczno-sanitarnym oraz dokonywać napraw i
+    konserwacji wymienionych w art. 6b ust. 2 u.o.p.l., w szczególności podłóg, okien i drzwi, wbudowanych mebli i
+    urządzeń sanitarnych, a także malowania lub tapetowania (art. 6b ust. 1 i 2 u.o.p.l.).</p>
+  <p>Najemca może wprowadzić w Lokalu ulepszenia tylko za zgodą Wynajmującego i na podstawie pisemnej umowy
+    określającej sposób rozliczeń z tego tytułu (art. 6d u.o.p.l.). W umowie najmu lokalu niewchodzącego w skład
+    publicznego zasobu mieszkaniowego strony mogą ustalić odmiennie prawa i obowiązki wymienione w art. 6a&ndash;6e
+    u.o.p.l. (art. 6f u.o.p.l.). Odmienne ustalenia stron, jeżeli są: ______________________________</p>
+  <p>Jeżeli w czasie trwania najmu okaże się potrzeba napraw obciążających Wynajmującego, Najemca zawiadamia go o
+    tym niezwłocznie (art. 666 § 2 k.c.); jeżeli Wynajmujący nie wykona w odpowiednim terminie wyznaczonym przez
+    Najemcę napraw, bez których Lokal nie jest przydatny do umówionego użytku, Najemca może po bezskutecznym upływie
+    tego terminu dokonać koniecznych napraw na koszt Wynajmującego (art. 663 k.c.).</p>
+  <p>Po wcześniejszym ustaleniu terminu Najemca udostępnia Wynajmującemu Lokal w celu dokonania okresowego, a w
+    szczególnie uzasadnionych wypadkach również doraźnego, przeglądu stanu i wyposażenia technicznego Lokalu oraz
+    ustalenia zakresu niezbędnych prac i ich wykonania; w razie awarii wywołującej szkodę lub zagrażającej
+    bezpośrednio powstaniem szkody Najemca udostępnia Lokal niezwłocznie w celu jej usunięcia (art. 10 ust. 1 i 3
+    u.o.p.l.).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Właściciel wynajmowanego budynku lub części budynku zapewnia sporządzenie świadectwa charakterystyki
+    energetycznej, z wyjątkiem budynków wymienionych w art. 3 ust. 4 ustawy z dnia 29 sierpnia 2014 r. o
+    charakterystyce energetycznej budynków (art. 3 ust. 1 pkt 3 tej ustawy).</p>
+  <p>Wynajmujący przekazuje Najemcy przy zawarciu umowy kopię świadectwa charakterystyki energetycznej dotyczącego
+    Lokalu, które przekazano w postaci papierowej, albo wydruk świadectwa, które przekazano w postaci elektronicznej;
+    Najemca nie może zrzec się prawa do jego otrzymania (art. 11 ust. 1 pkt 2, ust. 4 i ust. 5 ustawy o
+    charakterystyce energetycznej budynków).</p>
+  <p>Numer świadectwa i data jego sporządzenia: ______________________________. Świadectwo jest ważne przez 10 lat
+    od dnia jego sporządzenia, chyba że wcześniej utraciło ważność, ponieważ w wyniku przeprowadzonych robót
+    budowlano-instalacyjnych uległa zmianie charakterystyka energetyczna budynku lub części budynku (art. 14 ust. 1 i
+    2 ustawy o charakterystyce energetycznej budynków).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Przed wydaniem Lokalu Najemcy strony sporządzają protokół, w którym określają stan techniczny i stopień zużycia
+    znajdujących się w nim instalacji i urządzeń; protokół stanowi podstawę rozliczeń przy zwrocie Lokalu (art. 6c
+    u.o.p.l.). Strony postanawiają, że protokół obejmuje także wyposażenie Lokalu, stany liczników i liczbę wydanych
+    kluczy oraz stanowi załącznik do umowy. Domniemywa się, że Lokal był wydany Najemcy w stanie dobrym i przydatnym
+    do umówionego użytku (art. 675 § 3 k.c.).</p>
+  <p>Po zakończeniu najmu Najemca zwraca Lokal w stanie niepogorszonym; nie ponosi jednak odpowiedzialności za
+    zużycie Lokalu będące następstwem prawidłowego używania (art. 675 § 1 k.c.). Po zakończeniu najmu i opróżnieniu
+    Lokalu Najemca jest obowiązany odnowić Lokal i dokonać w nim obciążających go napraw, a także zwrócić
+    Wynajmującemu równowartość zużytych elementów wyposażenia technicznego wymienionych w art. 6b ust. 2 pkt 4
+    u.o.p.l., które znajdowały się w Lokalu w chwili wydania go Najemcy (art. 6e ust. 1 u.o.p.l.), o ile strony nie
+    ustaliły tego odmiennie (art. 6f u.o.p.l.).</p>
+  <p>Roszczenia Wynajmującego o naprawienie szkody z powodu uszkodzenia lub pogorszenia Lokalu, jak również
+    roszczenia Najemcy o zwrot nakładów na Lokal albo o zwrot nadpłaconego czynszu przedawniają się z upływem roku
+    od dnia zwrotu Lokalu (art. 677 k.c.).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> Zwrot kaucji określa niniejsza umowa (zob. artykuł <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>W razie śmierci Najemcy w stosunek najmu Lokalu wstępują: małżonek niebędący współnajemcą Lokalu, dzieci
+    Najemcy i jego współmałżonka, inne osoby, wobec których Najemca był obowiązany do świadczeń alimentacyjnych, oraz
+    osoba, która pozostawała faktycznie we wspólnym pożyciu z Najemcą, jeżeli stale zamieszkiwały z Najemcą w
+    Lokalu do chwili jego śmierci; w razie braku takich osób stosunek najmu wygasa (art. 691 § 1&ndash;3 k.c.).</p>
+  <p>Osoby, które wstąpiły w stosunek najmu, mogą go wypowiedzieć z zachowaniem terminów ustawowych, chociażby umowa
+    była zawarta na czas oznaczony; w razie wypowiedzenia przez niektóre z tych osób stosunek najmu wygasa względem
+    osób, które go wypowiedziały. Przepisów tych nie stosuje się w razie śmierci jednego ze współnajemców Lokalu (art.
+    691 § 4 i § 5 k.c.).</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Wynajmujący może wypowiedzieć umowę tylko z przyczyn określonych w ustawie; wypowiedzenie powinno być pod
+    rygorem nieważności dokonane na piśmie oraz określać przyczynę wypowiedzenia (art. 11 ust. 1 u.o.p.l.).</p>
+  <p>Nie później niż na 1 miesiąc naprzód, na koniec miesiąca kalendarzowego, Wynajmujący może wypowiedzieć umowę,
+    jeżeli Najemca: a) pomimo pisemnego upomnienia nadal używa Lokalu w sposób sprzeczny z umową lub niezgodnie z jego
+    przeznaczeniem lub zaniedbuje obowiązki, dopuszczając do powstania szkód, lub niszczy urządzenia przeznaczone do
+    wspólnego korzystania przez mieszkańców albo wykracza w sposób rażący lub uporczywy przeciwko porządkowi
+    domowemu, czyniąc uciążliwym korzystanie z innych lokali, b) jest w zwłoce z zapłatą czynszu, innych opłat za
+    używanie Lokalu lub opłat niezależnych od właściciela pobieranych przez Wynajmującego tylko w przypadkach, gdy
+    Najemca nie ma zawartej umowy bezpośrednio z dostawcą mediów lub dostawcą usług, co najmniej za 3 pełne okresy
+    płatności pomimo uprzedzenia go na piśmie o zamiarze wypowiedzenia i wyznaczenia dodatkowego, 1-miesięcznego
+    terminu do zapłaty zaległych i bieżących należności, lub c) wynajął, podnajął albo oddał do bezpłatnego używania
+    Lokal lub jego część bez wymaganej pisemnej zgody Wynajmującego (art. 11 ust. 2 pkt 1&ndash;3 u.o.p.l.).</p>
+  <p th:if="${!fixedTerm}">Umowę zawartą na czas nieoznaczony Wynajmujący może ponadto wypowiedzieć wyłącznie z
+    przyczyn, na warunkach i z zachowaniem terminów określonych w art. 11 ust. 2 pkt 4 oraz ust. 3&ndash;7 i 12
+    u.o.p.l.</p>
+  <p th:if="${fixedTerm}">Umowę zawartą na czas oznaczony strony mogą wypowiedzieć w wypadkach określonych w umowie
+    (art. 673 § 3 k.c.). Strony postanawiają, że Wynajmujący może ją wypowiedzieć wyłącznie w wypadkach określonych
+    w art. 11 ust. 2 i 3 u.o.p.l., na warunkach i z zachowaniem terminów tam przewidzianych, a Najemca &ndash; w następujących
+    wypadkach i z zachowaniem następującego terminu wypowiedzenia: ______________________________</p>
+  <p th:if="${!fixedTerm}">Najemca może wypowiedzieć umowę zawartą na czas nieoznaczony z zachowaniem terminu
+    umownego, a w jego braku &ndash; jeżeli czynsz jest płatny miesięcznie &ndash; najpóźniej na 3 miesiące naprzód na
+    koniec miesiąca kalendarzowego, a jeżeli czynsz jest płatny w odstępach czasu dłuższych niż miesiąc &ndash;
+    najpóźniej na 3 miesiące naprzód na koniec kwartału kalendarzowego (art. 673 § 1 i § 2 oraz art. 688 k.c.).
+    Termin wypowiedzenia uzgodniony przez strony, jeżeli jest: ______________________________</p>
+  <p>Najemca może wypowiedzieć najem bez zachowania terminów wypowiedzenia, jeżeli w chwili wydania Lokal miał wady,
+    które uniemożliwiają przewidziane w umowie używanie, albo jeżeli wady takie powstały później, a Wynajmujący mimo
+    otrzymanego zawiadomienia nie usunął ich w czasie odpowiednim, albo jeżeli wady usunąć się nie dadzą; uprawnienie
+    to nie przysługuje Najemcy, jeżeli w chwili zawarcia umowy wiedział o wadach (art. 664 § 2 i § 3 k.c.). Jeżeli
+    wady Lokalu są tego rodzaju, że zagrażają zdrowiu Najemcy lub jego domowników albo osób u niego zatrudnionych,
+    Najemca może wypowiedzieć najem bez zachowania terminów wypowiedzenia, chociażby w chwili zawarcia umowy wiedział
+    o wadach (art. 682 k.c.).</p>
+  <p>W razie zbycia Lokalu w czasie trwania najmu nabywca wstępuje w stosunek najmu na miejsce zbywcy; przepisów o
+    wypowiedzeniu najmu przez nabywcę nie stosuje się do najmu lokali mieszkalnych, chyba że Najemca nie objął
+    jeszcze Lokalu (art. 678 § 1 i art. 692 k.c.).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Zwrot Lokalu określa niniejsza umowa (zob. artykuł <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Strony zastrzegają formę pisemną dla wypowiedzenia umowy przez każdą ze stron (art. 77 § 2 k.c.). Wypowiedzenie
+    umowy przez Wynajmującego oraz wypowiedzenie wysokości czynszu wymagają formy pisemnej pod rygorem nieważności
+    (art. 8a ust. 3 i art. 11 ust. 1 u.o.p.l.).</p>
+  <p>Adres Wynajmującego do doręczeń: ______________________________. Adres Najemcy do doręczeń, jeżeli jest inny
+    niż adres Lokalu: ______________________________. Adresy poczty elektronicznej stron do bieżącej korespondencji:
+    ______________________________</p>
+  <p>W okresie trwania najmu strony są obowiązane informować się nawzajem na piśmie o każdej zmianie adresu swojego
+    zamieszkania lub siedziby; w razie zaniedbania tego obowiązku korespondencję wysłaną na ostatni adres listem
+    poleconym, za potwierdzeniem odbioru i nieodebraną, uważa się za doręczoną (art. 6g u.o.p.l.).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Wynajmujący przetwarza dane osobowe Najemcy i osób z nim zamieszkujących wyłącznie w zakresie niezbędnym do
+    zawarcia i wykonania umowy oraz do wypełnienia obowiązków prawnych Wynajmującego, zgodnie z rozporządzeniem
+    Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO) oraz ustawą z dnia 10 maja 2018 r. o ochronie danych
+    osobowych, i nie przechowuje ich dłużej, niż jest to niezbędne do tych celów.</p>
+  <p>Najemca może wykonywać wobec Wynajmującego prawa przysługujące mu na podstawie RODO, w szczególności prawo
+    dostępu do danych, ich sprostowania i usunięcia, oraz wnieść skargę do Prezesa Urzędu Ochrony Danych
+    Osobowych.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Do umowy stosuje się prawo polskie, w szczególności przepisy k.c. o najmie i przepisy u.o.p.l. Spory wynikające
+    z umowy rozstrzyga sąd powszechny właściwy według przepisów ustawy z dnia 17 listopada 1964 r. &ndash; Kodeks
+    postępowania cywilnego (dalej: &bdquo;k.p.c.&rdquo;). Powództwo o roszczenie ze stosunku najmu nieruchomości można
+    wytoczyć także przed sąd miejsca położenia nieruchomości (art. 37 k.p.c.); przepisu tego nie stosuje się w
+    sprawach przeciwko konsumentom (art. 31 § 2 k.p.c.).</p>
+  <p>Postanowienia umowy sprzeczne z ustawą są nieważne, chyba że właściwy przepis przewiduje inny skutek, w
+    szczególności ten, iż na ich miejsce wchodzą odpowiednie przepisy ustawy; nieważność części umowy nie narusza
+    pozostałych postanowień, chyba że z okoliczności wynika, iż bez postanowień dotkniętych nieważnością umowa nie
+    zostałaby zawarta (art. 58 § 1 i § 3 k.c.).</p>
+</div>
+
+</body>
+</html>

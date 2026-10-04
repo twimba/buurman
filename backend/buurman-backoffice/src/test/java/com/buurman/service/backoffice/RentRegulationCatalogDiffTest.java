@@ -33,6 +33,7 @@ import com.buurman.dto.response.RentRegulationCatalogDiff;
 import com.buurman.dto.response.RentRegulationCountryDiff;
 import com.buurman.dto.response.RentRegulationDiffEntry;
 import com.buurman.repository.RentRegulationRepository;
+import com.buurman.repository.TerminationNoticeRuleRepository;
 
 @DisplayName("RentRegulationCatalogService.diff")
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +41,7 @@ import com.buurman.repository.RentRegulationRepository;
 class RentRegulationCatalogDiffTest {
 
   @Mock private RentRegulationRepository repository;
+  @Mock private TerminationNoticeRuleRepository terminationRuleRepository;
   @Mock private RentRegulationCatalogLoader loader;
 
   private RentRegulationCatalogService service;
@@ -51,7 +53,10 @@ class RentRegulationCatalogDiffTest {
   void setUp() {
     service =
         new RentRegulationCatalogService(
-            repository, loader, Clock.fixed(Instant.parse("2026-06-20T00:00:00Z"), ZoneOffset.UTC));
+            repository,
+            terminationRuleRepository,
+            loader,
+            Clock.fixed(Instant.parse("2026-06-20T00:00:00Z"), ZoneOffset.UTC));
   }
 
   @Test
@@ -290,6 +295,57 @@ class RentRegulationCatalogDiffTest {
             e ->
                 assertThat(e.fields())
                     .noneSatisfy(f -> assertThat(f.field()).startsWith("tenancyRule[")));
+  }
+
+  @Test
+  @DisplayName("an added country's entry counts its tenancy rules alongside rules and regions")
+  void diff_addedCountry_countsTenancyRules() {
+    CatalogTenancyRule minimumTerm =
+        new CatalogTenancyRule(
+            TenancyRuleTopic.TENANCY_DURATION,
+            null,
+            "Minimum term",
+            "3 years",
+            null,
+            "basis",
+            "https://example.org",
+            null);
+    CatalogTenancyRule deposit =
+        new CatalogTenancyRule(
+            TenancyRuleTopic.DEPOSIT,
+            null,
+            "Deposit",
+            "2 months' rent",
+            null,
+            "basis",
+            "https://example.org",
+            null);
+    CatalogCountry gr =
+        new CatalogCountry(
+            "GR",
+            "Greece",
+            false,
+            null,
+            null,
+            null,
+            List.of(catalogRule(2026, "ALL", null, null)),
+            null,
+            15,
+            List.of(minimumTerm, deposit));
+    when(loader.load())
+        .thenReturn(new RentRegulationCatalog("2026.7", "2026-10-04", "desc", List.of(gr)));
+    when(repository.findAllCountries()).thenReturn(List.of());
+    when(repository.findAllRegions()).thenReturn(List.of());
+    when(repository.findAllRules()).thenReturn(List.of());
+    when(repository.findAllTenancyRules()).thenReturn(List.of());
+
+    RentRegulationCountryDiff added = service.diff().byCountry().getFirst();
+
+    assertThat(added.status()).isEqualTo("ADDED");
+    assertThat(added.changes())
+        .singleElement()
+        .satisfies(
+            e -> assertThat(e.label()).isEqualTo("Greece — 1 rules, 2 tenancy rules, 0 regions"));
   }
 
   // ---- builders ----

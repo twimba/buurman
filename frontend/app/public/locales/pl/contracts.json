@@ -4,7 +4,8 @@
     "pending": "Oczekujący",
     "active": "Aktywny",
     "expired": "Wygasły",
-    "terminated": "Rozwiązany"
+    "terminated": "Rozwiązany",
+    "noticeGiven": "Wypowiedzenie złożone"
   },
   "list": {
     "title": "Umowy",
@@ -18,6 +19,7 @@
     "pendingSignature": "Oczekujące na podpis",
     "expired": "Wygasłe",
     "terminated": "Rozwiązane",
+    "noticeGiven": "Wypowiedzenie złożone",
     "count_one": "{{count}} umowa",
     "count_few": "{{count}} umowy",
     "count_many": "{{count}} umów",
@@ -27,7 +29,23 @@
       "description": "Zacznij od utworzenia pierwszej umowy najmu"
     },
     "error": "Nie udało się załadować umów",
-    "exportDeposits": "Eksportuj kaucje"
+    "exportDeposits": "Eksportuj kaucje",
+    "searchPlaceholder": "Szukaj według kontaktu, nieruchomości lub numeru umowy...",
+    "endingWithinDays": "Kończy się w ciągu (dni)",
+    "sortLabel": "Sortuj umowy według",
+    "sortAsc": "Sortuj rosnąco",
+    "sortDesc": "Sortuj malejąco",
+    "sort": {
+      "endDate": "Data zakończenia",
+      "startDate": "Data rozpoczęcia",
+      "rentAmount": "Kwota czynszu"
+    },
+    "savedFilters": {
+      "button": "Zapisane filtry",
+      "namePlaceholder": "Nazwa filtra",
+      "save": "Zapisz",
+      "delete": "Usuń {{name}}"
+    }
   },
   "create": {
     "title": "Dodaj nową umowę",
@@ -47,6 +65,8 @@
     "reopenTitle": "Otwórz ponownie tę umowę ze statusem szkicu",
     "duplicate": "Duplikuj",
     "duplicateTitle": "Utwórz kopię tej umowy ze statusem szkicu",
+    "terminate": "Rozwiąż umowę",
+    "terminateTitle": "Wypowiedz tę aktywną umowę",
     "edit": "Edytuj",
     "delete": "Usuń",
     "tabs": {
@@ -54,7 +74,8 @@
       "payments": "Płatności",
       "extensions": "Przedłużenia",
       "documents": "Dokumenty",
-      "history": "Historia"
+      "leaseAgreement": "Umowa Najmu",
+      "history": "Oś czasu"
     },
     "deleteTitle": "Usuń umowę",
     "deleteMessage": "Czy na pewno chcesz usunąć tę umowę? Tej akcji nie można cofnąć.",
@@ -311,6 +332,7 @@
   },
   "form": {
     "contractType": "Typ umowy",
+    "leaseRegime": "Reżim najmu",
     "property": "Nieruchomość",
     "propertyAndParties": "Nieruchomość i strony",
     "propertyPlaceholder": "Wybierz nieruchomość...",
@@ -430,7 +452,8 @@
       "PENDING_SIGNATURE": "Oczekuje na podpis",
       "ACTIVE": "Aktywna",
       "EXPIRED": "Wygasła",
-      "TERMINATED": "Rozwiązana"
+      "TERMINATED": "Rozwiązana",
+      "NOTICE_GIVEN": "Wypowiedzenie złożone"
     }
   },
   "adjustRent": {
@@ -620,6 +643,80 @@
     "status": "Status",
     "leaseOfTotal": "Umowa {{index}} z {{total}} dla tej nieruchomości"
   },
+  "termination": {
+    "title": "Rozwiąż Umowę",
+    "subtitle": "Złóż wypowiedzenie, aby zakończyć tę umowę",
+    "steps": {
+      "whoGivesNotice": "Kto Wypowiada",
+      "noticeDateGround": "Data & Przyczyna Wypowiedzenia",
+      "review": "Przegląd",
+      "letterPreview": "Podgląd Listu",
+      "confirmation": "Potwierdzenie"
+    },
+    "givenByValues": {
+      "LANDLORD": "Wynajmujący",
+      "TENANT": "Najemca"
+    },
+    "whoGivesNotice": {
+      "question": "Kto wypowiada tę umowę?",
+      "landlordDescription": "Kończysz umowę jako wynajmujący.",
+      "tenantDescription": "Najemca złożył wypowiedzenie umowy.",
+      "next": "Dalej: Data & Przyczyna Wypowiedzenia"
+    },
+    "noticeDateGround": {
+      "noticeDateLabel": "Data wypowiedzenia",
+      "noticeDateHelp": "Data, w której wypowiedzenie zostało, lub zostanie, złożone.",
+      "groundCodeLabel": "Przyczyna lub kod przyczyny (opcjonalnie)",
+      "groundCodeHelp": "Wymagane tylko dla niektórych przyczyn wypowiedzenia. Możesz to potwierdzić w następnym kroku.",
+      "next": "Dalej: Przegląd"
+    },
+    "review": {
+      "computedEndDateLabel": "Obliczona data zakończenia",
+      "noticeDaysLabel": "Okres wypowiedzenia",
+      "noticeDaysValue": "{{count}} dni",
+      "sourceLabel": "Jak to zostało obliczone",
+      "source": {
+        "CATALOG_RULE": "Na podstawie przepisów o okresie wypowiedzenia w Twoim kraju.",
+        "CONTRACT_FALLBACK": "Na podstawie własnego ustawienia okresu wypowiedzenia tej umowy.",
+        "HARDCODED_DEFAULT": "Używana jest domyślna wartość 30 dni."
+      },
+      "groundRequiredWarning": "Ta przyczyna wypowiedzenia wymaga kodu przyczyny.",
+      "groundCodeLabel": "Przyczyna lub kod przyczyny",
+      "selectGround": "Wybierz przyczynę",
+      "overrideToggle": "Użyj wcześniejszej daty zakończenia",
+      "overrideHelp": "Pozostaw puste, aby zaakceptować obliczoną powyżej datę zakończenia.",
+      "effectiveEndDateLabel": "Wcześniejsza data zakończenia",
+      "overrideReasonLabel": "Przyczyna wcześniejszej daty zakończenia",
+      "overrideReasonPlaceholder": "Wyjaśnij, dlaczego ta umowa kończy się wcześniej niż obliczono...",
+      "overrideReasonRequired": "Przyczyna jest wymagana, gdy data zakończenia jest wcześniejsza niż obliczona data.",
+      "loading": "Obliczanie okresu wypowiedzenia...",
+      "error": "Nie można obliczyć okresu wypowiedzenia. Sprawdź datę wypowiedzenia i spróbuj ponownie.",
+      "next": "Dalej: Podgląd Listu"
+    },
+    "letterPreview": {
+      "title": "Podgląd Listu Wypowiadającego",
+      "description": "Zostanie wygenerowany formalny list wypowiadający, zapisany jako dokument w tej umowie.",
+      "givenByLabel": "Wypowiedziane przez",
+      "noticeDateLabel": "Data wypowiedzenia",
+      "groundCodeLabel": "Przyczyna",
+      "computedEndDateLabel": "Obliczona data zakończenia",
+      "effectiveEndDateLabel": "Faktyczna data zakończenia",
+      "overrideReasonLabel": "Przyczyna zmiany",
+      "inspectionDateLabel": "Data przeglądu przy wyprowadzce (opcjonalnie)",
+      "notProvided": "Nie podano",
+      "confirm": "Potwierdź & Rozwiąż",
+      "submitting": "Rozwiązywanie..."
+    },
+    "confirmation": {
+      "title": "Wypowiedzenie Złożone",
+      "description": "Ta umowa przeszła w status Wypowiedzenie Złożone.",
+      "effectiveEndDateLabel": "Faktyczna data zakończenia",
+      "noticeLetterLabel": "List wypowiadający",
+      "viewDocument": "Zobacz dokument",
+      "depositNote": "Termin zwrotu kaucji został zaktualizowany, aby odpowiadał faktycznej dacie zakończenia.",
+      "backToContract": "Powrót do umowy"
+    }
+  },
   "card": {
     "start": "Początek",
     "end": "Koniec",
@@ -658,7 +755,7 @@
     "types": {
       "EXTENSION_ADDENDUM": {
         "label": "Aneks przedłużenia",
-        "description": "Formalna umowa przedłużenia kontraktu"
+        "description": "Formalna umowa przedłużenia umowy"
       },
       "RENT_INCREASE_LETTER": {
         "label": "Pismo o podwyżce czynszu",
@@ -1001,5 +1098,45 @@
     "toasts": {
       "cancelled": "Payment plan cancelled"
     }
+  },
+  "expiringSoon": "Kończy się za {{days}} dni",
+  "leaseAgreement": {
+    "title": "Umowa Najmu",
+    "description": "Wybierz, które klauzule mają zostać uwzględnione, a następnie wygeneruj plik PDF umowy najmu dla tej umowy.",
+    "empty": "Dla kraju tej umowy nie skonfigurowano jeszcze żadnych klauzul.",
+    "required": "Wymagana",
+    "saveSelection": "Zapisz wybór",
+    "generate": "Wygeneruj umowę najmu",
+    "saveAndGenerate": "Zapisz i wygeneruj umowę najmu",
+    "language": "Język umowy",
+    "languagesLimited": "Umowy najmu dla kraju {{country}} są dostępne tylko w wyświetlonych językach.",
+    "pinned": "Przypięta",
+    "moveUp": "Przesuń w górę: {{title}}",
+    "moveDown": "Przesuń w dół: {{title}}",
+    "countryLabel": "Kraj",
+    "unavailable": {
+      "title": "Jeszcze niedostępne",
+      "description": "Nie mamy jeszcze umowy najmu dla tego kraju. Nadal możesz zarządzać tą umową i przesłać już podpisaną umowę najmu.",
+      "action": "Do Dokumentów"
+    },
+    "noCountry": {
+      "title": "Najpierw wybierz kraj",
+      "description": "Umowa najmu zależy od kraju nieruchomości. Najpierw dodaj kraj do nieruchomości.",
+      "action": "Edytuj nieruchomość"
+    },
+    "error": {
+      "title": "Nie wczytano klauzul",
+      "description": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
+      "retry": "Spróbuj ponownie"
+    },
+    "errors": {
+      "notAvailableForCountry": "Umowa najmu nie jest jeszcze dostępna dla kraju tej nieruchomości. Prześlij zamiast tego podpisaną umowę w Dokumentach.",
+      "noCountry": "Dodaj kraj do nieruchomości, zanim skorzystasz z umowy najmu."
+    }
+  },
+  "leaseRegime": {
+    "STANDARD": "Standardowy",
+    "SHORT_TERM": "Krótkoterminowy",
+    "STUDENT_OR_MOBILITY": "Studencki lub mobilnościowy"
   }
 }

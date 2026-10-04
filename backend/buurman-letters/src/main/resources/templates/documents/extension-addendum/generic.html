@@ -76,6 +76,7 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
   font-style: italic; }
 .generated-date { text-align: center; margin-top: 20px; font-size: 11px; color: #a8a29e; }
 </style>
+<style th:replace="~{_letter-styles :: sig-placeholder-css}">/* replaced by shared fragment */</style>
 </head>
 <body>
 
@@ -218,9 +219,12 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
   <div class="page-header" th:text="#{addendum.section.signatures}">Signatures</div>
 
   <!-- Country-specific legal clause -->
-  <div th:if="${legalClause != null}" class="legal-clause">
+  <div th:if="${not #lists.isEmpty(legalClauses)}" class="legal-clause">
     <strong th:text="#{addendum.section.legalClauses}">Legal References</strong><br/>
-    <span th:text="${legalClause}"></span>
+    <div th:each="clause : ${legalClauses}">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <span th:text="${clause.body}"></span>
+    </div>
   </div>
 
   <!-- Acknowledgment -->
@@ -230,7 +234,10 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
   <table class="signature-table">
     <tr>
       <td class="signature-cell">
-        <div class="signature-role" th:text="#{addendum.signature.landlord}">Landlord</div>
+        <div class="signature-role">
+          <span th:text="#{addendum.signature.landlord}">Landlord</span>
+          <span class="sig-placeholder" th:text="${landlordSignaturePlaceholder}"></span>
+        </div>
         <div class="signature-line"></div>
         <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
         <div class="sig-field-row">
@@ -244,7 +251,13 @@ body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; m
       </td>
       <td class="signature-spacer"></td>
       <td class="signature-cell">
-        <div class="signature-role" th:text="#{addendum.signature.tenant}">Tenant</div>
+        <div class="signature-role">
+          <span th:text="#{addendum.signature.tenant}">Tenant</span>
+          <span
+              th:if="${tenantSignaturePlaceholder != null}"
+              class="sig-placeholder"
+              th:text="${tenantSignaturePlaceholder}"></span>
+        </div>
         <div class="signature-line"></div>
         <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
         <div class="sig-field-row">

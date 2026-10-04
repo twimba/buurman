@@ -50,7 +50,13 @@ class TakeoutMetaModelCoverageTest {
           "CONTACT_RELATIONSHIPS",
           "CONTACT_TAGS",
           "CONTRACT_EXTENSIONS",
+          // contract_lease_clauses (BUUR-105 lease agreement generation) — per-contract clause
+          // include/exclude overrides, not exported.
+          "CONTRACT_LEASE_CLAUSES",
           "CONTRACT_RENT_COMPONENTS",
+          // contract_terminations (contract-termination-workflow) — takeout export for
+          // termination records is out of scope for that plan.
+          "CONTRACT_TERMINATIONS",
           "CURRENCY_CHANGE_LOG",
           "DATA_IMPORTS",
           "DATA_TAKEOUTS",
@@ -70,6 +76,16 @@ class TakeoutMetaModelCoverageTest {
           "PROPERTY_CONTACT_HISTORY",
           "PROPERTY_INDUSTRIAL_DETAILS",
           "RENT_REGULATION_COUNTRY_REQUESTS",
+          // saved_contract_filters (BUUR-105 contract list UX) — personal per-user filter
+          // presets, not exported.
+          "SAVED_CONTRACT_FILTERS",
+          // signature_requests (BUUR-105 e-signature integration) — takeout export for signature
+          // data is out of scope for that plan.
+          "SIGNATURE_REQUESTS",
+          // signature_signers gained team_id for defense-in-depth (it was already reachable only
+          // via signature_requests, which this same gap list already excludes) — not a new
+          // export surface.
+          "SIGNATURE_SIGNERS",
           "TEAM_INVITATIONS",
           "TEAM_PREFERENCES",
           "USERS",

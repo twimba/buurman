@@ -84,7 +84,10 @@
     <p th:if="${!isClosed and returnDueDate != null}" th:text="#{deposit.body.returnBy(${refundable}, ${returnDueDate})}"></p>
     <p th:if="${isClosed}" th:text="#{deposit.body.closed}"></p>
 
-    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+    <div th:each="clause : ${legalClauses}" class="legal-clause">
+      <div th:if="${clause.get('title') != null}" class="legal-clause-title" th:text="${clause.get('title')}"></div>
+      <div th:text="${clause.body}"></div>
+    </div>
 
     <p th:if="${notes != null}" th:text="${notes}"></p>
 
@@ -92,9 +95,13 @@
     <p th:text="#{letter.regards}"></p>
   </div>
 
-  <div class="letter-signature">
+  <!-- Signatures: one block per signer (landlord, then each tenant) — see signatureBlocks. -->
+  <div th:each="block : ${signatureBlocks}" class="letter-signature">
     <div class="sig-line"></div>
-    <div class="sig-label" th:text="#{letter.signature}"></div>
+    <div class="sig-label">
+      <span th:text="${block.label}"></span>
+      <span class="sig-placeholder" th:text="${block.placeholder}"></span>
+    </div>
     <div class="sig-date"><span th:text="#{letter.signature.date}"></span> <span class="sig-date-line"></span></div>
   </div>
 

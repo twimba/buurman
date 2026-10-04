@@ -19,6 +19,7 @@ import {
   Flag,
   Layers,
   BookOpen,
+  FileSignature,
   Ticket,
   Timer,
   Database,
@@ -45,6 +46,7 @@ import {
   PostHogIcon,
   HetznerIcon,
   BetterStackIcon,
+  DocumensoIcon,
 } from './ToolIcons';
 import { useGrafanaDashboards } from '../hooks/useGrafanaDashboards';
 
@@ -82,6 +84,11 @@ const navigation: NavItem[] = [
   },
   { name: 'Broadcasts', href: '/broadcasts', icon: Radio },
   { name: 'Rent Regulations', href: '/rent-regulations', icon: BookOpen },
+  {
+    name: 'Lease Clause Templates',
+    href: '/lease-clause-templates',
+    icon: FileSignature,
+  },
   { name: 'Feature Flags', href: '/feature-flags', icon: Flag },
   { name: 'Segments', href: '/segments', icon: Layers, indent: true },
 ];
@@ -120,7 +127,10 @@ const getTools = (): ToolItem[] => {
       ? [{ name: 'Traefik', href: '/tools/traefik', icon: TraefikIcon }]
       : []),
     ...(local
-      ? [{ name: 'Mailpit', href: '/tools/mailpit', icon: MailpitIcon }]
+      ? [
+          { name: 'Mailpit', href: '/tools/mailpit', icon: MailpitIcon },
+          { name: 'Documenso', href: '/tools/documenso', icon: DocumensoIcon },
+        ]
       : [
           { name: 'Twilio', href: '/tools/twilio', icon: TwilioIcon },
           {

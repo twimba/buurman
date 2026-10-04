@@ -39,6 +39,7 @@ import com.buurman.domain.UnitType;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PhotoRepository;
@@ -76,6 +77,7 @@ class PropertyBookletExporterTest {
   @Mock private PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
+  @Mock private ContractTerminationRepository contractTerminationRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private ExpenseRepository expenseRepository;
   @Mock private PropertyOutdoorAreaRepository propertyOutdoorAreaRepository;
@@ -111,6 +113,7 @@ class PropertyBookletExporterTest {
             agriculturalDetailsRepository,
             contractRepository,
             contractExtensionRepository,
+            contractTerminationRepository,
             paymentRepository,
             expenseRepository,
             propertyOutdoorAreaRepository,

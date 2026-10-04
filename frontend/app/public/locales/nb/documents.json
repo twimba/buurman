@@ -99,5 +99,47 @@
     "editTitleNotes": "Rediger tittel og notater",
     "delete": "Slett",
     "download": "Last ned"
+  },
+  "signatureLinks": {
+    "trigger": "Hent signeringslenker",
+    "retract": "Trekk tilbake signeringsforespørselen",
+    "title": "Signeringslenker",
+    "description": "Send hver person sin egen lenke. Alle som har lenken, kan signere som den personen.",
+    "warning": "Del hver lenke bare med den som skal signere. Lenkene slutter å virke når dokumentet er signert eller forespørselen er trukket tilbake.",
+    "signers": "Signatarer",
+    "role": {
+      "LANDLORD": "Utleier",
+      "TENANT": "Leietaker"
+    },
+    "status": {
+      "PENDING": "Venter",
+      "VIEWED": "Vist",
+      "SIGNED": "Signert",
+      "DECLINED": "Avslått"
+    },
+    "alreadySigned": "Allerede signert",
+    "notReady": "Lenken er ikke klar ennå. Vi sjekker automatisk på nytt.",
+    "unavailable": "Lenken er ikke lenger tilgjengelig. Trekk tilbake forespørselen og send den på nytt for å få nye lenker.",
+    "empty": "Det finnes ingen lenker å dele for denne forespørselen.",
+    "copyLink": "Kopier lenke",
+    "copyLinkFor": "Kopier signeringslenke for {{name}}",
+    "copied": "Kopiert",
+    "copiedAnnouncement": "Lenke for {{name}} kopiert",
+    "copiedAllAnnouncement": "Melding til alle ventende signatarer kopiert",
+    "copyAll": "Kopier alle som melding",
+    "share": "Del",
+    "shareFor": "Del signeringslenke for {{name}}",
+    "shareTitle": "Dokument til signering",
+    "shareText": "Hei {{name}}, signer her:",
+    "message": "Hei {{name}}, signer her: {{url}}",
+    "copyFailed": "Kopieringen mislyktes. Marker lenken nedenfor og kopier den manuelt.",
+    "retry": "Prøv igjen",
+    "done": "Ferdig",
+    "error": {
+      "inactive": "Denne forespørselen er ikke lenger aktiv, så det finnes ingen signeringslenker.",
+      "forbidden": "Du har ikke tilgang til å se signeringslenker.",
+      "provider": "Signeringstjenesten er ikke tilgjengelig akkurat nå. Prøv igjen om litt.",
+      "generic": "Kunne ikke laste signeringslenkene."
+    }
   }
 }

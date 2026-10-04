@@ -1,9 +1,12 @@
 package com.buurman.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -81,7 +84,15 @@ public interface ExportService {
   byte[] generateExpensesExcel(UUID teamId);
 
   // Contracts
-  byte[] generateContractsCSV(UUID teamId);
+  byte[] generateContractsCSV(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays);
 
-  byte[] generateContractsExcel(UUID teamId);
+  byte[] generateContractsExcel(
+      UUID teamId,
+      @Nullable List<String> status,
+      @Nullable String search,
+      @Nullable Integer endingWithinDays);
 }

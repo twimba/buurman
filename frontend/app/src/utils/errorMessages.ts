@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import type { TFunction } from 'i18next';
 
 interface ApiError {
+  code?: string;
   detail?: string;
   message?: string;
   error?: string;
@@ -72,6 +73,15 @@ function formatFieldName(field: string, t?: TFunction): string {
     clean.charAt(0).toUpperCase() + clean.slice(1).replace(/([A-Z])/g, ' $1')
   );
 }
+
+/** The machine-readable `code` of an RFC 7807 ProblemDetail error response, if any. */
+export const getProblemCode = (error: unknown): string | undefined => {
+  if (!(error instanceof AxiosError)) {
+    return undefined;
+  }
+  const code = (error.response?.data as ApiError | undefined)?.code;
+  return typeof code === 'string' ? code : undefined;
+};
 
 export const getErrorMessage = (error: unknown, t?: TFunction): string => {
   if (error instanceof AxiosError) {

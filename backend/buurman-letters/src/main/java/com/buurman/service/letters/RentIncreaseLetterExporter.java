@@ -75,7 +75,7 @@ public class RentIncreaseLetterExporter {
 
     Locale locale = LetterTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
-        buildTemplateVariables(extension, contract, property, addressee, locale);
+        buildTemplateVariables(extension, contract, property, addressee, teamId, locale);
 
     return documentTemplateService.renderToPdf("rent-increase-letter", locale, variables);
   }
@@ -85,6 +85,7 @@ public class RentIncreaseLetterExporter {
       Contract contract,
       Property property,
       LetterExporterHelper.Addressee addressee,
+      UUID teamId,
       Locale locale) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     String ccy = extension.getNewRentAmount().currency();
@@ -139,7 +140,13 @@ public class RentIncreaseLetterExporter {
         "newEndDate",
         extension.getNewEndDate().map(d -> DocumentFormatting.formatDate(d, dateFmt)).orElse(null));
 
-    vars.putAll(helper.legalVariables(messageSource, "legal.", contract, locale));
+    vars.putAll(
+        helper.legalVariables(messageSource, "legal.", "rent-increase-letter", contract, locale));
+
+    vars.put(
+        "signatureBlocks",
+        helper.signatureBlocks(
+            contract.getId(), teamId, messageSource, "letter.signature", locale));
 
     return vars;
   }

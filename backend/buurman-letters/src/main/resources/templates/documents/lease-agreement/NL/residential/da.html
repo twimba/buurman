@@ -1,0 +1,234 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Danish courtesy translation of nl.html (a translation of Dutch law, Boek 7 BW, into Danish, not Danish law); the
+  Dutch text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Undertegnede:</p>
+  <p><strong th:text="${landlordName}">udlejer</strong>, i det følgende kaldet &raquo;udlejer&laquo; (verhuurder), og</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">lejer</strong>, i det følgende
+    (samlet) kaldet &raquo;lejer&laquo; (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de lejere, der underskriver nedenfor, i det følgende
+    (samlet) kaldet &raquo;lejer&laquo; (huurder),</p>
+  <p>erklærer at have aftalt, hvad der er bestemt i denne lejeaftale. Nævner denne aftale
+    flere end 1 lejer, hæfter hver af dem solidarisk (hoofdelijk aansprakelijk) for opfyldelsen af
+    alle lejers forpligtelser efter denne aftale.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Udlejer udlejer til lejer, som lejer den, boligen beliggende
+    <strong th:text="${propertyAddress}">adresse</strong>, med tilhørende fast tilbehør,
+    i det følgende kaldet &raquo;det lejede&laquo; (het gehuurde).</p>
+  <p>For denne aftale gælder de hollandske lovbestemmelser om leje af beboelse (bog 7,
+    titel 4, afdeling 5 i den hollandske borgerlige lovbog, Burgerlijk Wetboek). I det omfang loven bestemmer, at der ikke
+    kan aftales noget, som stiller lejer ringere, går disse bestemmelser forud for afvigende
+    aftaler i denne aftale.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Denne aftale træder i kraft <strong th:text="${startDate}">startdato</strong>.</p>
+  <p th:if="${!fixedTerm}">Aftalen er indgået for ubestemt tid.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Aftalen er indgået for bestemt tid<span th:if="${endDate != null}">, til og med
+      <strong th:text="${endDate}">slutdato</strong></span>. Leje af beboelse, der er indgået for bestemt tid,
+      ophører ikke blot ved udløbet af lejeperioden. Hver af parterne kan opsige lejen
+      til en dag, der er aftalt for betaling af lejen, men ikke til en dag før udløbet af den
+      bestemte tid (art. 7:271, stk. 1 BW).</p>
+    <p>Dette er kun anderledes ved leje i højst 2 år til en lejer, der tilhører en kategori, som er
+      udpeget ved en bekendtgørelse udstedt af den nederlandske regering (algemene maatregel van bestuur) (art. 7:271, stk. 2 BW). I
+      så fald informerer udlejer skriftligt lejer om den dag, hvor lejen ophører, tidligst 3 måneder og senest 1 måned før udløbet
+      af lejeperioden; gør udlejer ikke det, forlænges
+      lejen efter lejeperiodens udløb for ubestemt tid. Lejer kan også opsige en sådan leje
+      før lejeperiodens udløb til en dag, der er aftalt for betaling af lejen.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Lejen for alene brugen af det lejede (grundleje, kale huurprijs, art. 7:237, stk. 2 BW) udgør
+    <strong th:text="${rentAmount}">beløb</strong> <span th:text="${paymentFrequency}">pr. måned</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Derudover skylder lejer
+    betaling for forbrug og serviceudgifter (servicekosten) (se artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>I det omfang der for det lejede gælder en lovbestemt maksimal leje, herunder de regler, som
+    er indført ved den hollandske lov Wet betaalbare huur (lov om overkommelig husleje) den 1. juli 2024, skylder lejer ikke mere end denne
+    maksimale leje. Lejer kan senest 6 måneder efter, at en lejeaftale, som lejer for første
+    gang har indgået vedrørende denne bolig, er trådt i kraft, anmode lejenævnet (huurcommissie) om at træffe afgørelse
+    om, hvorvidt den aftalte leje er rimelig (art. 7:249 BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">For regulering af lejen gælder, hvad der i denne aftale er bestemt herom (se artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Udlejer kan regulere lejen 1 gang om året, første gang 12 måneder efter
+    aftalens ikrafttræden. Udlejer meddeler lejer reguleringen i god tid og skriftligt, med angivelse af den gældende og den
+    nye leje samt ikrafttrædelsesdatoen.</p>
+  <p>Reguleringen er aldrig højere end den lovligt tilladte maksimale lejeforhøjelse, som på reguleringens
+    ikrafttrædelsesdato gælder for det lejede. Fører denne bestemmelse til en højere forhøjelse, end loven
+    tillader, er bestemmelsen ugyldig i det omfang, og lejen anses for forhøjet med den tilladte
+    forhøjelse (art. 7:248 BW). I det omfang loven tillader det, kan lejer anmode lejenævnet (huurcommissie)
+    om at træffe afgørelse om en forhøjelse.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Ud over lejen betaler lejer for hver betalingsperiode et aconto-beløb til dækning af udgifter til
+    forbrug med individuel måler og af serviceudgifterne (servicekosten) (art. 7:237, stk. 3 BW), som angivet i denne
+    aftale.</p>
+  <p>Udlejer giver hvert år lejer, senest 6 måneder efter udløbet af et
+    kalenderår, en efter art opdelt oversigt over de udgifter, der er opkrævet i det kalenderår,
+    med angivelse af beregningsmåden (art. 7:259, stk. 2 BW). Hvad der er betalt for meget eller for lidt i
+    aconto, opgøres mellem parterne, efter at oversigten er givet.</p>
+  <p>Opnår parterne ikke enighed om de skyldige udgifter, kan hver af dem anmode
+    lejenævnet (huurcommissie) om at træffe afgørelse herom (art. 7:260 BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Lejer betaler ved lejeforholdets begyndelse et depositum (waarborgsom) på
+    <strong th:text="${depositAmount}">beløb</strong>.</p>
+  <p th:if="${depositAmount == null}">Lejer betaler ved lejeforholdets begyndelse et depositum (waarborgsom) svarende til det
+    beløb, som parterne skriftligt har aftalt.</p>
+  <p>Depositummet stilles som sikkerhed for opfyldelsen af det, der er aftalt i denne aftale, og
+    udgør højst 2 gange grundlejen (kale huurprijs) (art. 7:261b, stk. 1 og 2 BW).</p>
+  <p>Udlejer tilbagebetaler depositummet inden for 14 dage efter lejeaftalens ophør.
+    Er der skade på det lejede, som lejer er ansvarlig for, eller skylder lejer endnu leje,
+    serviceudgifter eller et energipræstationsvederlag (energieprestatievergoeding), tilbagebetaler udlejer det
+    resterende beløb inden for 30 dage efter ophøret, efter modregning af de dokumenterede
+    udbedringsudgifter henholdsvis de beløb, som lejer endnu skylder. Udlejer underretter lejer
+    skriftligt om en modregning, med en fuldstændig udgiftsspecifikation (art. 7:261b, stk. 3 og 4 BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Ved opgørelsen
+    af skade er afleveringen afgørende (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Lejer betaler lejen<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> og aconto-beløbene til serviceudgifterne</span>
+    <span th:text="${paymentFrequency}">pr. måned</span><span th:if="${paymentDueDay == 1}"> forud</span>,
+    <span th:if="${paymentDueDay != null}">senest den <strong th:text="${paymentDueDay}">1</strong>. i den måned, hvor
+      betalingsperioden begynder</span><span th:if="${paymentDueDay == null}">senest på den betalingsdag, som parterne
+      har aftalt</span>, ved overførsel til den konto, som udlejer skriftligt
+    har oplyst hertil.</p>
+  <p>Betaler lejer ikke rettidigt, skylder lejer lovbestemt rente af det forfaldne beløb
+    og erstatter udenretlige inddrivelsesomkostninger kun i det omfang, loven
+    tillader det.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Lejer anvender det lejede udelukkende som bolig og opfører sig ved brugen
+    som en god lejer (goed huurder) (art. 7:213 BW). Lejer og de personer, der opholder sig i
+    det lejede med lejers tilladelse, forvolder ikke gene for naboer.</p>
+  <p>Ændringer af det lejedes indretning eller udformning, som ved lejeforholdets ophør ikke kan føres tilbage uden
+    væsentlige omkostninger, foretager lejer kun efter udlejers skriftlige
+    samtykke. Udlejer giver inden for 8 uger sit samtykke i hvert fald, hvis
+    ændringen ikke skader udlejeligheden og ikke medfører, at det lejedes værdi falder
+    (art. 7:215 BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Lejer overlader ikke det lejede helt eller delvis til en anden til brug, medmindre udlejer
+    forud skriftligt har givet samtykke hertil.</p>
+  <p>Har lejer sin hovedbolig i det lejede, hvis dette er en selvstændig bolig, er lejer
+    efter loven berettiget til at overlade en del af det til en anden til brug (art. 7:244 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Udlejer udbedrer på lejers forlangende mangler (gebreken) ved det lejede, medmindre dette er umuligt
+    eller kræver udgifter, som under de givne omstændigheder rimeligvis ikke kan kræves af udlejer
+    (art. 7:206 BW). Lejer melder en mangel til udlejer så hurtigt som muligt.</p>
+  <p>Lejer udfører for egen regning mindre reparationer (kleine herstellingen), medmindre de er blevet nødvendige, fordi
+    udlejer har tilsidesat sin pligt til at udbedre mangler (art. 7:217 BW). Hvilke
+    reparationer der anses for mindre, følger af den lovbestemte regulering heraf.</p>
+  <p>Er udlejer i misligholdelse med udbedringen af en mangel, kan lejer selv udbedre
+    manglen og kræve de rimelige omkostninger erstattet af udlejer, om ønsket ved fradrag i
+    lejen (art. 7:206, stk. 3 BW). Der kan ikke afviges fra disse regler til skade for lejer
+    (art. 7:242 BW).</p>
+  <p>Lejer giver udlejer lejlighed til at udføre presserende arbejder på
+    det lejede, uden at det berører lejers lovbestemte krav på lejenedsættelse, ophævelse af aftalen og erstatning
+    (art. 7:220, stk. 1 BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Ved ny udlejning af en eksisterende bolig er et gyldigt energimærke (energielabel) obligatorisk efter
+    den hollandske forordning Besluit bouwwerken leefomgeving (forordning om bygværker og leveomgivelser). Udlejer udleverer til lejer senest ved indgåelsen af denne
+    aftale en kopi af det lejedes gyldige energimærke. Et energimærke er gyldigt til den
+    dato, der er angivet på mærket.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Ved lejeforholdets begyndelse udarbejder parterne i fællesskab en beskrivelse af det lejedes stand
+    (indflytningsrapport, opnamerapport). Begge parter underskriver beskrivelsen, og hver modtager et eksemplar.</p>
+  <p>Ved lejeforholdets ophør stiller lejer det lejede igen til udlejers rådighed, i den
+    stand, hvori lejer efter denne beskrivelse har modtaget det, bortset fra tilladte ændringer
+    og tilføjelser og fra det, der er gået til grunde eller beskadiget på grund af alder. Er der ikke udarbejdet en beskrivelse, så
+    anses lejer, medmindre det modsatte bevises, for at have modtaget det lejede i den stand, hvori
+    det befinder sig ved lejeforholdets ophør (art. 7:224 BW).</p>
+  <p>Parterne gennemfører før lejeforholdets ophør et fælles forsyn, så
+    lejer selv kan udbedre eventuelle mangler (gebreken), og ved afleveringen et fraflytningssyn.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Opgørelsen af depositummet sker
+    herefter (se artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Opsigelse af denne aftale sker ved forkyndelse ved en nederlandsk stævningsmand (gerechtsdeurwaarder; deurwaardersexploot) eller ved anbefalet brev, til en
+    dag, der er aftalt for betaling af lejen (art. 7:271, stk. 3 og 4 BW).</p>
+  <p>Lejer overholder et opsigelsesvarsel, der svarer til tiden mellem 2 på hinanden følgende
+    betalingsdage, dog ikke kortere end 1 måned og ikke længere end 3 måneder (art. 7:271, stk. 6, litra a
+    BW).</p>
+  <p th:if="${fixedTerm}">Er lejen indgået for bestemt tid, kan ingen af parterne i afvigelse herfra
+    opsige til en dag, der ligger før udløbet af den bestemte tid<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (se artikel <span th:text="${refs['term']}"></span>)</span>;
+    opsigelsesvarslerne i denne artikel gælder da for opsigelse til dette udløb eller til en senere
+    betalingsdag (art. 7:271, stk. 1 BW). Kun ved en tidsbegrænset leje som omhandlet i art. 7:271, stk. 2 BW kan
+    lejer også opsige tidligere.</p>
+  <p>Udlejer kan kun opsige på en af de grunde, som loven nævner herfor (art. 7:274, stk. 1
+    BW), og angiver disse grunde i opsigelsen; en opsigelse på andre grunde er ugyldig. Opsigelsesvarslet
+    for udlejer er mindst 3 måneder, forlænget med 1 måned for hvert år, som lejer har haft det lejede
+    i uafbrudt brug i henhold til aftale, dog højst 6 måneder. I opsigelsen
+    anmoder udlejer lejer om inden for 6 uger at meddele, om lejer samtykker i ophøret (art.
+    7:271, stk. 5 og 6, litra b BW). Samtykker lejer ikke skriftligt, forbliver aftalen i kraft,
+    indtil retten ved endelig afgørelse har truffet afgørelse om et krav fra udlejer (art. 7:272 BW).</p>
+  <p>Parterne kan, efter at lejen er trådt i kraft, også bringe lejen til ophør i gensidig forståelse
+    (art. 7:271, stk. 10 BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> For afleveringen gælder, hvad der i denne aftale er bestemt herom (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Depositummet tilbagebetales, som
+    bestemt i denne aftale (se artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Udlejer behandler lejers personoplysninger kun i det omfang, det er nødvendigt for at indgå og
+    opfylde denne aftale og for at overholde retlige forpligtelser, i overensstemmelse med
+    databeskyttelsesforordningen (GDPR; på hollandsk: Algemene verordening gegevensbescherming, AVG, forordning (EU) 2016/679). Udlejer opbevarer disse
+    oplysninger ikke længere, end hvad der er nødvendigt hertil.</p>
+  <p>Lejer kan over for udlejer udøve sine rettigheder efter GDPR, herunder retten til
+    indsigt, berigtigelse og sletning af sine personoplysninger, og kan indgive en klage til
+    tilsynsmyndigheden, i Holland Autoriteit Persoonsgegevens (den hollandske datatilsynsmyndighed).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>For denne aftale gælder hollandsk ret.</p>
+  <p>Tvister, som lejenævnet (huurcommissie) efter loven kan træffe afgørelse i, såsom om lejens rimelighed
+    og om serviceudgifter, kan parterne forelægge for lejenævnet. Parterne anses for at have
+    aftalt, hvad lejenævnet har fastslået i sin afgørelse, medmindre en af dem inden for
+    8 uger, efter at en kopi af afgørelsen er sendt, kræver, at retten træffer afgørelse
+    (art. 7:262 BW). Andre tvister forelægges for den kompetente ret.</p>
+</div>
+
+</body>
+</html>

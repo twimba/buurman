@@ -1,0 +1,330 @@
+<!--
+  legal-basis: Ley 29/1994, de 24 de noviembre, de Arrendamientos Urbanos (LAU), consolidated text BOE-A-1994-26003
+               as published on www.boe.es (ultima actualizacion publicada el 02/10/2026): art. 3, 4 (4.1, 4.3, 4.4,
+               4.5, 4.6), titulo III art. 29, 30, 31, 32, 33, 34, 35; by reference art. 19, 21, 22, 23, 25, 26,
+               27; titulo IV art. 36; disposicion adicional tercera (deposito de fianzas).
+               State of the LAU on 2026-10-04: the amendments of Real Decreto-ley 26/2026, de 29 de septiembre (in
+               force 01/10/2026, incl. a new art. 3.2 wording), were set aside by the Congreso de los Diputados
+               (derogation published 02/10/2026, BOE-A-2026-20526); the text in force is the earlier version.
+               Codigo Civil (BOE-A-1889-4763): art. 1108, 1124, 1555, 1561, 1562, 1563, 1564, 1565, 1566.
+               Ley 37/1992, de 28 de diciembre, del IVA (BOE-A-1992-28740): art. 20.Uno.23 (exemption limited to
+               dwellings), art. 90 (general rate 21 per cent).
+               Reglamento del IRPF, Real Decreto 439/2007 (BOE-A-2007-6820): art. 100 (withholding 19 per cent on
+               rents of urban properties, reduced by 60 per cent in Ceuta and Melilla).
+               Texto refundido de la Ley Reguladora de las Haciendas Locales, Real Decreto Legislativo 2/2004
+               (BOE-A-2004-4214): art. 63.2 (IBI may be passed on under the rules of private law).
+               Real Decreto 390/2021, de 1 de junio (BOE-A-2021-9176): art. 3 (scope and exclusions), art. 17.2.
+               Ley de Enjuiciamiento Civil 1/2000 (BOE-A-2000-323): art. 52.1.7.
+               Ley Hipotecaria art. 34 (referred to in LAU art. 29, not re-read).
+               Cataluna: Llei 13/1996, de 29 de juliol, del Registre i el diposit de fiances (INCASOL, deposit within
+               2 months, also for leases for other uses; page incasol.gencat.cat read 2026-10-04); regionCode branch
+               CAT/CT in the deposit clause, general text for any other or unknown region.
+               RGPD: Reglamento (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Ley Organica 3/2018, de 5 de
+               diciembre (LOPDGDD).
+               Verified 2026-10-04 against www.boe.es (consolidated texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in es.html, never spelled out (es "2 mensualidades de renta" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of es.html; the Spanish text is authoritative. It states Spanish law (Ley de
+  Arrendamientos Urbanos, Title III: lease for a use other than housing) in English and is not the law of any
+  other country. Draft text, not vetted by legal counsel. Only prose differs from es.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment
+  holds only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>On the one part, <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (arrendador),</p>
+  <p>tax identification number (NIF) and domicile or registered office: ______________________________</p>
+  <p>registration details in the Commercial Register (Registro Mercantil), where applicable: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">and on the other part, <strong th:text="${tenantNames}">tenant</strong>,
+    hereinafter (jointly) &ldquo;the tenant&rdquo; (arrendatario),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">and on the other part, the tenant(s) signing below, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (arrendatario),</p>
+  <p>tax identification number (NIF) and domicile or registered office: ______________________________</p>
+  <p>registration details in the Commercial Register, where applicable: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>conclude this lease for a use other than housing (arrendamiento para uso distinto del de vivienda), governed by
+    Law 29/1994 of 24 November on Urban Leases (Ley de Arrendamientos Urbanos), hereinafter &ldquo;the LAU&rdquo;.
+    Where several persons are tenants, they are jointly and severally liable for all obligations arising from this
+    agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the premises located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the premises&rdquo;, with an area of
+    ________ m², cadastral reference (referencia catastral) ______________________________ and the following rooms
+    and installations: ______________________________</p>
+  <p>The lease concerns a building whose primary purpose is other than housing (article 3 of the LAU). Without
+    prejudice to the mandatory provisions of Titles I and IV of the LAU, this agreement is governed by the will of
+    the parties, failing that by Title III of the LAU and, subsidiarily, by the Civil Code (article 4.3 of the LAU).
+    The exclusion of provisions of the LAU, where permitted, must be made expressly for each of them (article 4.4 of
+    the LAU).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The premises are used exclusively for the following activity: ______________________________. A change of
+    activity requires the prior written consent of the landlord.</p>
+  <p>The tenant obtains at its own expense the licences, authorisations and administrative notifications required
+    for carrying on its activity, and uses the premises with the diligence of a prudent head of household (diligente
+    padre de familia), for the agreed use (article 1555 of the Civil Code). It does not carry on in the premises
+    activities that are a nuisance, unhealthy, harmful, dangerous or unlawful.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>This agreement takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The term of the agreement, freely agreed by the parties, is fixed<span
+    th:if="${endDate != null}">, until <strong th:text="${endDate}">end date</strong></span>; when it expires, the
+    agreement ends on the set day without any demand being required (article 1565 of the Civil
+    Code).</p>
+  <p th:if="${!fixedTerm}">The parties do not agree a fixed term. Agreed duration and, where applicable, notice
+    period for termination: ______________________________</p>
+  <p>The LAU imposes on this lease neither a minimum term nor a compulsory extension. If, at the end of the
+    agreement, the tenant remains in enjoyment of the premises for 15 days with the landlord&rsquo;s acquiescence,
+    the lease is deemed tacitly renewed (tácita reconducción) for the period laid down by the Civil Code, unless a
+    demand has been made beforehand (article 1566 of the Civil Code).</p>
+  <p>Right of the tenant to withdraw from the agreement, notice period and compensation agreed, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent, freely agreed by the parties, is set at <strong th:text="${rentAmount}">amount</strong>
+    (payable <span th:text="${paymentFrequency}">monthly</span>), excluding taxes.<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> The applicable taxes are added to the rent
+    (see article <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays the expenses it assumes
+    under this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The landlord is entitled to raise the rent for improvement works it carries out from the start of the lease
+    on the terms of article 19 of the LAU, unless otherwise agreed (articles 4.3 and 30 of the LAU).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The update of the rent is governed by the terms of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is updated each year, on the date on which each year of the agreement is completed, in line with the
+    change in the following index, published by the National Statistics Institute (Instituto Nacional de
+    Estadística) or another official body, taking as reference the last index published on the update date: ______________________________</p>
+  <p>The interested party notifies the other in writing of the updated rent, stating the percentage change applied;
+    the updated rent is payable from the month following the notification. The parties agree that the update
+    applies both upwards and downwards, unless they agree otherwise here: ______________________________</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The tenant bears the general expenses of the building attributable to the premises according to their share of
+    participation or, failing that, according to their floor area, and the costs of services of the premises that
+    are individualised by meters. Items and estimated annual amount on the date of the agreement: ______________________________</p>
+  <p>The parties agree, where applicable, that the landlord passes on to the tenant the amount of the Real Estate
+    Tax (Impuesto sobre Bienes Inmuebles, IBI) relating to the premises, under the rules of private law (article 63.2
+    of the consolidated text of the Local Finance Act, Ley Reguladora de las Haciendas Locales). Passing on of the
+    IBI agreed (yes/no): ______________________________</p>
+  <p>The landlord accounts annually for the expenses passed on, and the tenant pays them together with the
+    rent.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The lease of the premises is subject to Value Added Tax (Impuesto sobre el Valor Añadido) and not exempt: the
+    exemption in article 20.Uno.23.º of Law 37/1992, as regards buildings, only covers leases of buildings or parts of buildings used
+    exclusively as dwellings. The landlord charges the tax on the rent and on the other sums forming the
+    consideration, at the rate in force when the tax becomes chargeable (on the verification date, the general rate
+    of 21 %, article 90 of Law 37/1992). In the territories where this tax does not apply, the corresponding
+    indirect tax is charged.</p>
+  <p>Where the tenant is required by tax law to withhold tax on account of the landlord&rsquo;s income tax, it
+    withholds and pays it over and gives the landlord the corresponding certificate; on the verification date, the
+    withholding on income from the lease of urban property is 19 % of all sums paid to the landlord, excluding Value
+    Added Tax, and is reduced by 60 % where the property is located in Ceuta or Melilla (article 100 of the
+    Regulation on Personal Income Tax, Reglamento del Impuesto sobre la Renta de las Personas Físicas).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On conclusion of the agreement, the tenant hands over to the landlord as a
+    cash deposit (fianza en metálico) the sum of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">On conclusion of the agreement, the tenant hands over to the landlord as a
+    cash deposit (fianza en metálico) a sum equal to 2 months&rsquo; rent.</p>
+  <p>Requiring and providing a cash deposit equal to 2 months&rsquo; rent is compulsory in a lease for a use other
+    than housing (article 36.1 of the LAU). During the first 5 years of the agreement, or the first 7 years if the
+    landlord is a legal person, the deposit is not subject to updating; each time the lease is extended, the
+    landlord may require the deposit to be increased, or the tenant require it to be reduced, until it equals
+    2 months&rsquo; rent in force at the time of the extension (article 36.2 of the LAU). For the period in which the
+    agreed term exceeds 5 years, or 7 years if the landlord is a legal person, the updating of the deposit is
+    governed by what has been agreed and, failing a specific agreement, by what has been agreed on updating the rent
+    (article 36.3 of the LAU).</p>
+  <p>The parties may agree any type of guarantee of the tenant&rsquo;s performance of its obligations in addition to
+    the cash deposit (article 36.5 of the LAU). Any sum handed over in excess of 2 months&rsquo; rent is treated as an
+    additional guarantee. Additional guarantee agreed (bank guarantee, deposit or other), where
+    applicable: ______________________________</p>
+  <p th:if="${countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT')}">The premises are located in
+    Catalonia: the landlord lodges the deposit (fianza) with the Catalan Land Institute (Institut Català del Sòl,
+    INCASÒL) within 2 months from the conclusion of the agreement, in accordance with Catalan Law 13/1996 of
+    29 July on the register and deposit of deposits under leases of urban properties (Llei del Registre i el
+    dipòsit de fiances dels contractes de lloguer de finques urbanes).</p>
+  <p th:if="${!(countryCode == 'ES' and (regionCode == 'CAT' or regionCode == 'CT'))}">Where the autonomous
+    community in which the premises are located has so provided, the landlord lodges the amount of the deposit (fianza),
+    without interest, at the disposal of the regional administration or of the public body designated, until the
+    agreement ends (third additional provision of the LAU). Regional rules on lodging the deposit (fianza) may
+    therefore apply.</p>
+  <p>The balance of the deposit to be returned to the tenant at the end of the lease bears statutory interest once
+    1 month has elapsed from the handing over of the keys without the return having been made (article 36.4 of the
+    LAU).<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return
+    of the premises is governed by the terms of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the expenses borne by it</span> in advance,
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the date agreed by the parties</span>,
+    by transfer to the account designated by the landlord: ______________________________</p>
+  <p>The landlord issues the corresponding invoice for each payment, stating separately the rent, the expenses passed
+    on and the taxes. Sums not paid when due bear the agreed default interest or, failing agreement, statutory
+    interest (article 1108 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Save as the parties agree in this agreement, articles 21, 22, 23 and 26 of the LAU apply to this lease
+    (articles 4.3 and 30 of the LAU): the landlord carries out, without any right to raise the rent for that reason, the
+    repairs needed to keep the premises fit for the agreed use, except where the deterioration is attributable to the
+    tenant under articles 1563 and 1564 of the Civil Code; the tenant tolerates conservation works and improvement
+    works that cannot reasonably be deferred until the end of the lease, with the rent reductions and compensation
+    provided for in those articles; and small repairs required by wear and tear from ordinary use of the premises are
+    borne by the tenant.</p>
+  <p>The tenant informs the landlord as soon as possible of the need for the repairs for which the landlord is
+    responsible, and may, after informing the landlord, carry out urgent repairs to prevent imminent damage or serious
+    inconvenience and immediately claim their cost from the landlord. Agreed allocation of the maintenance
+    obligations, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant may not, without the landlord&rsquo;s consent expressed in writing, carry out works that alter the
+    layout of the premises or of their accessories, nor in any case works that reduce the stability or safety of the
+    building (articles 23 and 30 of the LAU). Authorised fit-out works are carried out at the tenant&rsquo;s expense,
+    with the necessary licences and in accordance with the applicable technical rules.</p>
+  <p>At the end of the agreement, a landlord who has not authorised works may require the tenant to restore the
+    previous state or keep the alteration made, without the tenant being able to claim any compensation. Treatment
+    of the authorised works at the end of the agreement: ______________________________</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Failing a different agreement, where a business or professional activity is carried on in the premises, the
+    tenant may sublet the premises or assign the agreement without the landlord&rsquo;s consent; the landlord is
+    entitled to a rent increase of 10 % of the rent in force in the case of a partial sublease, and of 20 % in the
+    case of an assignment of the agreement or a sublease of the whole premises. A change in the person of the tenant
+    resulting from a merger, transformation or division of the tenant company is not deemed an assignment, but the
+    landlord is entitled to the same rent increase. The assignment and the sublease are notified reliably (de forma
+    fehaciente) to the landlord within 1 month of being agreed (article 32 of the LAU).</p>
+  <p>Agreement of the parties on assignment and subletting, where applicable: ______________________________</p>
+  <p>If the tenant dies, the heir or legatee who continues the activity may be subrogated to its rights and
+    obligations until the agreement ends, by notifying the landlord in writing within the 2 months following the
+    date of death (article 33 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>If the premises are sold, the tenant has the rights of first refusal and redemption (tanteo y retracto)
+    provided for in article 25 of the LAU (article 31 of the LAU): the right of first refusal may be exercised within
+    30 calendar days from the day following that on which the tenant is reliably notified of the decision to sell,
+    the price and the other essential conditions of the transfer; the right of redemption, in the cases and within
+    the periods of that article. The parties may agree that the tenant waives these rights. Waiver agreed (yes/no): ______________________________</p>
+  <p>The acquirer of the premises is subrogated to the rights and obligations of the landlord, unless the acquirer
+    meets the requirements of article 34 of the Mortgage Act (Ley Hipotecaria) (article 29 of the LAU).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant takes out and maintains throughout the term of the agreement civil liability insurance covering the
+    damage its activity may cause to the premises, to the building and to third parties, and insurance of its
+    contents; at the landlord&rsquo;s request, it proves that the policies are in force and the premiums paid.</p>
+  <p>The landlord insures the building or, where applicable, the premises against the usual risks of material
+    damage. Minimum sums insured agreed, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>A copy of the energy efficiency label of the premises is annexed to this agreement, and the landlord gives the
+    tenant a copy of the document of recommendations of use for the user (article 17.2 of Royal Decree 390/2021 of
+    1 June), unless the premises are excluded from the scope of that royal decree.</p>
+  <p>Energy rating and registration number of the energy efficiency certificate: ______________________________</p>
+</div>
+
+<div th:fragment="clause-goodwill-compensation" data-clause="goodwill-compensation">
+  <p>The ending, by expiry of the agreed term, of the lease of premises in which a commercial activity of sale to
+    the public has been carried on during the last 5 years entitles the tenant to compensation payable by the
+    landlord, provided that the tenant has stated, 4 months before the expiry of the term, its wish to renew the
+    agreement for a minimum of 5 further years and at a market rent; the market rent is the one agreed by the
+    parties and, failing agreement, the one determined by the arbitrator they appoint (article 34 of the LAU).</p>
+  <p>If the tenant starts the same activity in the same municipality within the 6 months following the expiry of
+    the lease, the compensation covers the costs of relocation and the losses resulting from the loss of clientele,
+    calculated by reference to the clientele during the first 6 months of the new activity. If within the 6 months
+    following the end of the lease the tenant starts a different activity or none at all, and the landlord or a third
+    party carries on in the premises within the same period the same activity or a related one, the compensation is
+    1 month&rsquo;s rent per year of the agreement, up to a maximum of 18 months&rsquo; rent. Failing agreement on
+    the amount, it is set by the arbitrator appointed by the parties.</p>
+  <p>The parties may expressly exclude the application of article 34 of the LAU (articles 4.3 and 4.4 of the LAU).
+    Agreement on this compensation (retained / expressly excluded): ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>When the keys are handed over, the parties sign a record of the condition of the premises and their
+    installations, which is annexed to this agreement. Failing a statement of the condition of the premises at the
+    time they were let, the tenant is presumed to have received them in good condition, unless the contrary is
+    proved (article 1562 of the Civil Code).</p>
+  <p>At the end of the lease, the tenant returns the premises as it received them, except for what has perished or
+    deteriorated through time or for an unavoidable cause (article 1561 of the Civil Code), cleared of its own
+    belongings and with all the keys. It is liable for deterioration or loss unless it proves that it occurred
+    without its fault, and for deterioration caused by the members of its household (articles 1563 and 1564 of the
+    Civil Code).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the deposit
+    is governed by the terms of this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Non-performance by either party of the obligations arising from the agreement entitles the party that has
+    performed its own to demand performance of the obligation or to seek termination (resolución) of the agreement
+    in accordance with article 1124 of the Civil Code.</p>
+  <p>The landlord may terminate the agreement by operation of law (de pleno derecho) for failure to pay the rent or,
+    where applicable, any of the sums the payment of which the tenant has assumed or which are owed by it; for
+    failure to pay the deposit or its update; for intentional damage to the premises or works not consented to by
+    the landlord where its consent is required; where activities that are a nuisance, unhealthy, harmful, dangerous
+    or unlawful take place in the premises; and for an assignment or sublease of the premises in breach of
+    article 32 of the LAU (article 35 of the LAU).</p>
+  <p>Where conservation works or works ordered by a competent authority make the premises uninhabitable, the tenant
+    may choose between suspending the agreement or withdrawing from it, without any compensation, unless otherwise
+    agreed (articles 4.3, 26 and 30 of the LAU). The parties may end the agreement by mutual consent.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    premises is governed by the terms of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Communications between the parties are sent to the following addresses, unless a change is notified in
+    writing: landlord: ______________________________; tenant: ______________________________</p>
+  <p>For the notifications provided for in the LAU, the parties designate the following e-mail addresses, provided
+    that the authenticity of the communication and of its content is guaranteed and reliable evidence is kept of the
+    complete sending and receipt and of the time at which they took place (article 4.6 of the LAU):
+    landlord: ______________________________; tenant: ______________________________</p>
+  <p>Notifications that the law requires to be made reliably (en forma fehaciente), such as notification of the
+    assignment or sublease (article 32.4 of the LAU) or of the decision to sell the premises, are made by a means
+    that evidences their content and receipt, such as a burofax with certification of the text and acknowledgement
+    of receipt, or a notarial demand (requerimiento notarial).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the natural persons acting in this agreement on behalf of the other
+    only to the extent necessary for its conclusion and performance and for compliance with its legal obligations,
+    in accordance with the General Data Protection Regulation (Regulation (EU) 2016/679) and Organic Law 3/2018 of
+    5 December on the Protection of Personal Data and the guarantee of digital rights, and does not keep them longer
+    than necessary for those purposes.</p>
+  <p>The data subjects may exercise the rights of access, rectification and erasure and the other rights granted to
+    them by that legislation, and may lodge a complaint with the Spanish Data Protection Agency (Agencia Española de
+    Protección de Datos).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Spanish law, in particular by the terms agreed, by Title III of the LAU and,
+    subsidiarily, by the Civil Code. Claims concerning the lease and eviction proceedings fall within the
+    jurisdiction of the court of the place where the property is located (article 52.1.7.º of the Civil Procedure
+    Act, Ley de Enjuiciamiento Civil).</p>
+  <p>The parties may agree to submit to mediation or arbitration the disputes that by their nature can be resolved
+    by those forms of dispute resolution, in accordance with the legislation on mediation in civil and commercial
+    matters and on arbitration (article 4.5 of the LAU).</p>
+</div>
+
+</body>
+</html>

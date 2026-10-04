@@ -1,0 +1,234 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdeling 5 (huur van woonruimte), as in force
+               from 01-07-2026 (wetten.overheid.nl BWBR0005290, version "geldend van 01-07-2026 t/m heden"):
+               art. 7:206, 7:213, 7:215, 7:217, 7:218, 7:220, 7:224, 7:237, 7:242, 7:244, 7:248, 7:249,
+               7:250, 7:259, 7:260, 7:261b, 7:262, 7:271, 7:272, 7:274.
+               Wet vaste huurcontracten (in force 01-07-2024; rijksoverheid.nl news 2024-06-07) via art. 7:271 lid 2.
+               Wet betaalbare huur (in force 01-07-2024; rijksoverheid.nl news 2024-06-25).
+               Energy label on new letting: Besluit bouwwerken leefomgeving (rvo.nl "Energielabel woning verplicht").
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-03; art. 7:271 leden 1, 2 and 6 re-read verbatim 2026-10-03 for the fixed-term
+               wording (lid 1: opzegging only "tegen een ... dag, niet vallend voor het verstrijken van de bepaalde
+               tijd"; lid 2: tenant of a temporary lease of max. two years may terminate early). Pending future amendments flagged on wetten.overheid.nl: art. 7:237, 7:259,
+               7:260, 7:261 from 01-01-2027; art. 7:248, 7:274 from 01-05-2029 - re-verify after those dates.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "2 maal de kale huurprijs" is "2 times the base rent" in English, "2 Kaltmieten" in German, "2 fois le loyer de base" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Norwegian (Bokmål) courtesy translation of nl.html (a translation of Dutch law, Boek 7 BW, into Norwegian (Bokmål), not Norwegian law); the
+  Dutch text is authoritative. Draft text, not vetted by legal counsel. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Undertegnede:</p>
+  <p><strong th:text="${landlordName}">utleier</strong>, heretter kalt &laquo;utleier&raquo; (verhuurder), og</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">leietaker</strong>, heretter
+    (samlet) kalt &laquo;leietaker&raquo; (huurder),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de leietakere som undertegner nedenfor, heretter
+    (samlet) kalt &laquo;leietaker&raquo; (huurder),</p>
+  <p>erklærer at de har avtalt det som er bestemt i denne leieavtalen. Nevner denne avtalen
+    flere enn 1 leietaker, hefter hver av dem solidarisk (hoofdelijk aansprakelijk) for oppfyllelsen av
+    alle leietakerens forpliktelser etter denne avtalen.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Utleier leier ut til leietaker, som leier boligen, boligen som ligger i
+    <strong th:text="${propertyAddress}">adresse</strong>, med tilhørende fast tilbehør,
+    heretter kalt &laquo;leieobjektet&raquo; (het gehuurde).</p>
+  <p>For denne avtalen gjelder de nederlandske lovbestemmelsene om leie av bolig (bok 7,
+    tittel 4, avdeling 5 i den nederlandske borgerlige lovboken, Burgerlijk Wetboek). I den grad loven bestemmer at det ikke
+    kan avtales noe som stiller leietaker dårligere, går disse bestemmelsene foran avvikende
+    avtaler i denne avtalen.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Denne avtalen trer i kraft <strong th:text="${startDate}">startdato</strong>.</p>
+  <p th:if="${!fixedTerm}">Avtalen er inngått for ubestemt tid.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Avtalen er inngått for bestemt tid<span th:if="${endDate != null}">, til og med
+      <strong th:text="${endDate}">sluttdato</strong></span>. Leie av bolig som er inngått for bestemt tid,
+      opphører ikke bare ved utløpet av leietiden. Hver av partene kan si opp leien
+      til en dag som er avtalt for betaling av leien, men ikke for en dag før utløpet av den
+      bestemte tiden (art. 7:271 1. ledd BW).</p>
+    <p>Dette er bare annerledes ved leie i høyst 2 år til en leietaker som tilhører en kategori som er
+      utpekt ved en forskrift fra den nederlandske regjeringen (algemene maatregel van bestuur) (art. 7:271 2. ledd BW). I
+      så fall informerer utleier leietaker skriftlig om dagen da leien opphører, tidligst 3 måneder og senest 1 måned før utløpet
+      av leietiden; gjør ikke utleier dette, forlenges
+      leien etter utløpet av leietiden for ubestemt tid. Leietaker kan også si opp en slik leie
+      før utløpet av leietiden til en dag som er avtalt for betaling av leien.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Leien for selve bruken av leieobjektet (grunnleie, kale huurprijs, art. 7:237 2. ledd BW) utgjør
+    <strong th:text="${rentAmount}">beløp</strong> <span th:text="${paymentFrequency}">per måned</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> I tillegg skylder leietaker
+    betaling for forbruk og felleskostnader (servicekosten) (se artikkel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>I den grad det for leieobjektet gjelder en lovbestemt maksimal leie, herunder reglene som
+    er innført ved den nederlandske loven Wet betaalbare huur (lov om overkommelig husleie) den 1. juli 2024, skylder leietaker ikke mer enn denne
+    maksimale leien. Leietaker kan senest 6 måneder etter at en leieavtale som leietaker for første
+    gang har inngått om denne boligen, har trådt i kraft, be husleienemnda (huurcommissie) om å treffe avgjørelse
+    om hvorvidt den avtalte leien er rimelig (art. 7:249 BW).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">For regulering av leien gjelder det som er bestemt om dette i denne avtalen (se artikkel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Utleier kan regulere leien 1 gang per år, første gang 12 måneder etter
+    at avtalen trådte i kraft. Utleier meddeler leietaker reguleringen i god tid og skriftlig, med angivelse av gjeldende og
+    ny leie samt ikrafttredelsesdato.</p>
+  <p>Reguleringen er aldri høyere enn den lovlig tillatte maksimale leieøkningen som på reguleringens
+    ikrafttredelsesdato gjelder for leieobjektet. Fører denne bestemmelsen til en høyere økning enn loven
+    tillater, er bestemmelsen i så fall ugyldig i den utstrekning, og leien anses som økt med den tillatte
+    økningen (art. 7:248 BW). I den grad loven tillater det, kan leietaker be husleienemnda (huurcommissie)
+    om å treffe avgjørelse om en økning.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>I tillegg til leien betaler leietaker for hver betalingsperiode et forskudd på kostnadene til
+    forbruk med individuell måler og på felleskostnadene (servicekosten) (art. 7:237 3. ledd BW), slik det er angitt i denne
+    avtalen.</p>
+  <p>Utleier gir hvert år leietaker, senest 6 måneder etter utløpet av et
+    kalenderår, en oversikt fordelt etter art over kostnadene som er belastet i det kalenderåret,
+    med angivelse av beregningsmåten (art. 7:259 2. ledd BW). Det som er betalt for mye eller for lite i
+    forskudd, gjøres opp mellom partene etter at oversikten er gitt.</p>
+  <p>Oppnår ikke partene enighet om de skyldige kostnadene, kan hver av dem be
+    husleienemnda (huurcommissie) om å treffe avgjørelse om dette (art. 7:260 BW).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Leietaker betaler ved leieforholdets begynnelse et depositum (waarborgsom) på
+    <strong th:text="${depositAmount}">beløp</strong>.</p>
+  <p th:if="${depositAmount == null}">Leietaker betaler ved leieforholdets begynnelse et depositum (waarborgsom) som tilsvarer
+    beløpet partene skriftlig har avtalt.</p>
+  <p>Depositumet stilles som sikkerhet for oppfyllelsen av det som er avtalt i denne avtalen, og
+    utgjør høyst 2 ganger grunnleien (kale huurprijs) (art. 7:261b 1. og 2. ledd BW).</p>
+  <p>Utleier betaler tilbake depositumet innen 14 dager etter at leieavtalen er opphørt.
+    Er det skade på leieobjektet som leietaker er ansvarlig for, eller skylder leietaker fortsatt leie,
+    felleskostnader eller et energiprestasjonsvederlag (energieprestatievergoeding), betaler utleier tilbake
+    resterende beløp innen 30 dager etter opphøret, etter motregning av de dokumenterte
+    utbedringskostnadene henholdsvis de beløpene leietaker fortsatt skylder. Utleier underretter leietaker
+    skriftlig om en motregning, med en fullstendig kostnadsspesifikasjon (art. 7:261b 3. og 4. ledd BW).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Ved fastsettelsen
+    av skade er tilbakeleveringen avgjørende (se artikkel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Leietaker betaler leien<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikkel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> og forskuddene på felleskostnadene</span>
+    <span th:text="${paymentFrequency}">per måned</span><span th:if="${paymentDueDay == 1}"> forskuddsvis</span>,
+    <span th:if="${paymentDueDay != null}">senest den <strong th:text="${paymentDueDay}">1</strong>. i den måneden
+      betalingsperioden begynner</span><span th:if="${paymentDueDay == null}">senest på den betalingsdagen partene
+      har avtalt</span>, ved overføring til den kontoen utleier skriftlig
+    har oppgitt for dette formålet.</p>
+  <p>Betaler ikke leietaker i rett tid, skylder leietaker lovbestemt rente av det forfalte beløpet
+    og erstatter utenrettslige inndrivelseskostnader bare i den grad loven
+    tillater det.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Leietaker bruker leieobjektet utelukkende som bolig og oppfører seg ved bruken
+    som en god leietaker (goed huurder) (art. 7:213 BW). Leietaker og de som oppholder seg i
+    leieobjektet med leietakers tillatelse, forårsaker ikke ulempe for naboer.</p>
+  <p>Endringer i leieobjektets innredning eller utforming som ved leieforholdets opphør ikke kan tilbakeføres uten
+    betydelige kostnader, foretar leietaker bare etter utleiers skriftlige
+    samtykke. Utleier gir innen 8 uker sitt samtykke i alle fall dersom
+    endringen ikke skader utleiligheten og ikke fører til at leieobjektets verdi synker
+    (art. 7:215 BW).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Leietaker overlater ikke leieobjektet helt eller delvis til en annen til bruk, med mindre utleier
+    på forhånd skriftlig har gitt samtykke til dette.</p>
+  <p>Har leietaker sin hovedbolig i leieobjektet, dersom dette er en selvstendig bolig, har leietaker
+    etter loven rett til å overlate en del av det til en annen til bruk (art. 7:244 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Utleier utbedrer på leietakers forlangende mangler (gebreken) ved leieobjektet, med mindre dette er umulig
+    eller krever utgifter som under de gitte omstendighetene rimeligvis ikke kan kreves av utleier
+    (art. 7:206 BW). Leietaker melder fra om en mangel til utleier så raskt som mulig.</p>
+  <p>Leietaker utfører for egen regning mindre reparasjoner (kleine herstellingen), med mindre de har blitt nødvendige fordi
+    utleier ikke har oppfylt sin plikt til å utbedre mangler (art. 7:217 BW). Hvilke
+    reparasjoner som regnes som mindre, følger av den lovbestemte reguleringen av dette.</p>
+  <p>Er utleier i mislighold med utbedringen av en mangel, kan leietaker selv utbedre
+    mangelen og kreve de rimelige kostnadene erstattet av utleier, om ønskelig ved fradrag i
+    leien (art. 7:206 3. ledd BW). Det kan ikke avvikes fra disse reglene til skade for leietaker
+    (art. 7:242 BW).</p>
+  <p>Leietaker gir utleier anledning til å utføre presserende arbeider på
+    leieobjektet, uten at dette berører leietakers lovbestemte krav på leienedsettelse, heving av avtalen og erstatning
+    (art. 7:220 1. ledd BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Ved ny utleie av en eksisterende bolig er et gyldig energimerke (energielabel) obligatorisk etter
+    den nederlandske forskriften Besluit bouwwerken leefomgeving (forskrift om bygg og leveomgivelser). Utleier gir leietaker senest ved inngåelsen av denne
+    avtalen en kopi av leieobjektets gyldige energimerke. Et energimerke er gyldig til den
+    datoen som er angitt på merket.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Ved leieforholdets begynnelse utarbeider partene sammen en beskrivelse av leieobjektets tilstand
+    (tilstandsrapport, opnamerapport). Begge parter undertegner beskrivelsen, og hver får et eksemplar.</p>
+  <p>Ved leieforholdets opphør stiller leietaker leieobjektet på nytt til utleiers disposisjon, i den
+    tilstanden leietaker etter denne beskrivelsen har mottatt det i, med unntak av tillatte endringer
+    og tilføyelser og av det som er gått tapt eller skadet på grunn av alder. Er det ikke utarbeidet en beskrivelse, så
+    antas leietaker, med mindre det motsatte bevises, å ha mottatt leieobjektet i den tilstanden
+    det er i ved leieforholdets opphør (art. 7:224 BW).</p>
+  <p>Partene gjennomfører før leieforholdets opphør en felles forhåndsbefaring, slik at
+    leietaker selv kan utbedre eventuelle mangler (gebreken), og ved tilbakeleveringen en sluttbefaring.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Oppgjøret av depositumet skjer
+    deretter (se artikkel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Oppsigelse av denne avtalen skjer ved forkynnelse ved et nederlandsk stevnevitne (gerechtsdeurwaarder; deurwaardersexploot) eller ved rekommandert brev, til en
+    dag som er avtalt for betaling av leien (art. 7:271 3. og 4. ledd BW).</p>
+  <p>Leietaker overholder en oppsigelsesfrist som tilsvarer tiden mellom 2 påfølgende
+    betalingsdager, men ikke kortere enn 1 måned og ikke lengre enn 3 måneder (art. 7:271 6. ledd bokstav a
+    BW).</p>
+  <p th:if="${fixedTerm}">Er leien inngått for bestemt tid, kan ingen av partene i avvik fra dette
+    si opp til en dag som ligger før utløpet av den bestemte tiden<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (se artikkel <span th:text="${refs['term']}"></span>)</span>;
+    oppsigelsesfristene i denne artikkelen gjelder da for oppsigelse til dette utløpet eller til en senere
+    betalingsdag (art. 7:271 1. ledd BW). Bare ved en tidsbegrenset leie som omtalt i art. 7:271 2. ledd BW kan
+    leietaker også si opp tidligere.</p>
+  <p>Utleier kan bare si opp på en av grunnene som loven nevner for dette (art. 7:274 1. ledd
+    BW), og angir disse grunnene i oppsigelsen; en oppsigelse på andre grunner er ugyldig. Oppsigelsesfristen
+    for utleier er minst 3 måneder, forlenget med 1 måned for hvert år leietaker har hatt leieobjektet
+    i uavbrutt bruk i henhold til avtale, til høyst 6 måneder. I oppsigelsen
+    ber utleier leietaker om å meddele innen 6 uker om leietaker samtykker i opphøret (art.
+    7:271 5. og 6. ledd bokstav b BW). Samtykker ikke leietaker skriftlig, forblir avtalen i kraft
+    inntil retten ved endelig avgjørelse har tatt stilling til et krav fra utleier (art. 7:272 BW).</p>
+  <p>Partene kan, etter at leien er trådt i kraft, også bringe leien til opphør i gjensidig forståelse
+    (art. 7:271 10. ledd BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> For tilbakeleveringen gjelder det som er bestemt om dette i denne avtalen (se artikkel <span th:text="${refs['handover-inspection']}"></span>).</span><span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Depositumet betales tilbake slik det
+    er bestemt i denne avtalen (se artikkel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Utleier behandler leietakers personopplysninger bare i den grad det er nødvendig for å inngå og
+    oppfylle denne avtalen og for å overholde rettslige forpliktelser, i samsvar med
+    personvernforordningen (GDPR; på nederlandsk: Algemene verordening gegevensbescherming, AVG, forordning (EU) 2016/679). Utleier oppbevarer disse
+    opplysningene ikke lenger enn det som er nødvendig for dette.</p>
+  <p>Leietaker kan overfor utleier utøve sine rettigheter etter GDPR, herunder retten til
+    innsyn, retting og sletting av sine personopplysninger, og kan inngi en klage til
+    tilsynsmyndigheten, i Nederland Autoriteit Persoonsgegevens (den nederlandske datatilsynsmyndigheten).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>For denne avtalen gjelder nederlandsk rett.</p>
+  <p>Tvister som husleienemnda (huurcommissie) etter loven kan treffe avgjørelse i, slik som om leiens rimelighet
+    og om felleskostnader, kan partene legge frem for husleienemnda. Partene anses å ha
+    avtalt det som husleienemnda har fastslått i sin avgjørelse, med mindre en av dem innen
+    8 uker etter at en kopi av avgjørelsen er sendt, krever at retten treffer avgjørelse
+    (art. 7:262 BW). Andre tvister legges frem for kompetent domstol.</p>
+</div>
+
+</body>
+</html>

@@ -52,6 +52,7 @@ public interface PaymentMapper {
   @Mapping(target = "paymentPlanIdentifier", ignore = true)
   @Mapping(target = "amount", expression = "java(payment.getAmount().value())")
   @Mapping(target = "currency", expression = "java(payment.getAmount().currency())")
+  @Mapping(target = "lateFees", ignore = true)
   PaymentResponse toResponse(Payment payment);
 
   @Mapping(target = "amount", expression = "java(payment.getAmount().value())")

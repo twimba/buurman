@@ -99,5 +99,47 @@
     "editTitleNotes": "Titel & Notizen bearbeiten",
     "delete": "Löschen",
     "download": "Herunterladen"
+  },
+  "signatureLinks": {
+    "trigger": "Signierlinks abrufen",
+    "retract": "Signaturanfrage zurückziehen",
+    "title": "Signierlinks",
+    "description": "Senden Sie jeder Person ihren eigenen Link. Wer den Link hat, kann als diese Person unterzeichnen.",
+    "warning": "Teilen Sie jeden Link nur mit der jeweiligen unterzeichnenden Person. Links funktionieren nach der Unterzeichnung oder dem Zurückziehen nicht mehr.",
+    "signers": "Unterzeichnende",
+    "role": {
+      "LANDLORD": "Vermieter",
+      "TENANT": "Mieter"
+    },
+    "status": {
+      "PENDING": "Ausstehend",
+      "VIEWED": "Angesehen",
+      "SIGNED": "Unterzeichnet",
+      "DECLINED": "Abgelehnt"
+    },
+    "alreadySigned": "Bereits unterzeichnet",
+    "notReady": "Link noch nicht verfügbar. Wir prüfen automatisch erneut.",
+    "unavailable": "Link nicht mehr verfügbar. Ziehen Sie die Anfrage zurück und senden Sie sie erneut, um neue Links zu erhalten.",
+    "empty": "Für diese Anfrage gibt es keine Links zum Teilen.",
+    "copyLink": "Link kopieren",
+    "copyLinkFor": "Signierlink für {{name}} kopieren",
+    "copied": "Kopiert",
+    "copiedAnnouncement": "Link für {{name}} kopiert",
+    "copiedAllAnnouncement": "Nachricht für alle ausstehenden Unterzeichnenden kopiert",
+    "copyAll": "Alle als Nachricht kopieren",
+    "share": "Teilen",
+    "shareFor": "Signierlink für {{name}} teilen",
+    "shareTitle": "Zu unterzeichnendes Dokument",
+    "shareText": "Guten Tag {{name}}, bitte unterzeichnen Sie hier:",
+    "message": "Guten Tag {{name}}, bitte unterzeichnen Sie hier: {{url}}",
+    "copyFailed": "Kopieren fehlgeschlagen. Markieren Sie den Link unten und kopieren Sie ihn manuell.",
+    "retry": "Erneut versuchen",
+    "done": "Fertig",
+    "error": {
+      "inactive": "Diese Anfrage ist nicht mehr aktiv, daher gibt es keine Signierlinks.",
+      "forbidden": "Sie haben keine Berechtigung, Signierlinks anzuzeigen.",
+      "provider": "Der Signaturdienst ist derzeit nicht erreichbar. Versuchen Sie es gleich noch einmal.",
+      "generic": "Signierlinks konnten nicht geladen werden."
+    }
   }
 }

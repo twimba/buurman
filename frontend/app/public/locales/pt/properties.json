@@ -682,7 +682,10 @@
       "message_many": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida."
     },
     "editModal": "Editar Documento",
-    "downloading": "A transferir..."
+    "downloading": "A transferir...",
+    "generated_one": "{{count}} arquivo gerado",
+    "generated_other": "{{count}} arquivos gerados",
+    "generated_many": "{{count}} arquivos gerados"
   },
   "photos": {
     "title": "Fotos",

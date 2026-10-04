@@ -1,0 +1,319 @@
+<!--
+  legal-basis: Lov 26. mars 1999 nr. 17 om husleieavtaler (husleieloven), consolidated text on lovdata.no
+               (LOV-1999-03-26-17, "Sist endret LOV-2026-06-12-22 fra 01.07.2026", read 2026-10-04); for premises
+               (lokale) the Act may be derogated from by agreement except §§ 1-1 to 1-4, 4-1, 4-4, 4-6, 9-7, 9-8,
+               9-10, 12-3, 12-4 and chapter 13 (§ 1-2 second paragraph): § 1-1, § 1-2, § 2-1, § 2-2, § 2-8, § 3-1,
+               § 3-2, § 3-3, § 3-4, § 3-5, § 3-6, § 4-1, § 4-2, § 4-3, § 4-5, § 5-1, § 5-3, § 5-4, § 5-5, § 5-6,
+               § 7-2, § 7-5, § 7-6, § 8-1, § 8-4, § 9-1, § 9-2, § 9-4, § 9-5, § 9-6, § 9-7, § 9-8, § 9-9, § 10-2,
+               § 10-3, § 10-5, § 10-6, § 12-1, § 12-2.
+               Latest amending acts read on lovdata.no: LOV-2025-12-22-127 (§ 12-5, in force 2026-01-01) and
+               LOV-2026-06-12-22 (§ 9-3 a, dwellings only); neither changes the rules for premises.
+               Merverdiavgiftsloven (lov 19. juni 2009 nr. 58, last amended LOV-2025-12-22-121 from 2026-07-01) § 2-3
+               (voluntary registration) and § 3-11 (exemption for letting of real property), lovdata.no.
+               Tvangsfullbyrdelsesloven (lov 26. juni 1992 nr. 86) § 4-18 and § 13-2, lovdata.no (read 2026-10-04).
+               Energimerkeforskriften for bygninger (FOR-2009-12-18-1665, last amended FOR-2025-04-02-591 in force
+               2026-01-01) § 6 and § 9, lovdata.no.
+               Forsinkelsesrenteloven (lov 17. desember 1976 nr. 100), cited by name. Personopplysningsloven (lov
+               15. juni 2018 nr. 38, LOV-2018-06-15-38) and GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); Datatilsynet.
+               Forskrift om Husleietvistutvalget (FOR-2016-06-21-765) § 2: HTU handles disputes on the lease of
+               dwellings only, so not commercial leases; husleietvistutvalget.no (read 2026-10-04).
+               Pending: no government bill amending husleieloven before Stortinget in sessions 2025-2026 and 2026-2027
+               (data.stortinget.no, read 2026-10-04).
+               Pending reform: NOU 2024:19 Ny boligleielov (Husleielovutvalget, delivered 2024-10-18; no bill tabled
+               as of 2026-10-04, per huseierforbundet.no, read 2026-10-04) proposes a new act for dwellings with
+               market-rent adjustment instead of gjengs leie (§ 4-3); whether and how the rules for premises (lokale)
+               change is not verified - if enacted, re-check clause-rent-adjustment. The SV private member's motion
+               (Dokument 8:221 S, Innst. 275 S (2025-2026)) was not adopted (vote 2026-06-01, data.stortinget.no).
+               Verified 2026-10-04 against lovdata.no (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nb.html, never spelled out (nb "3 måneder" is "3 months" in English), and the paragraph (ledd) of a section is written as a digit ordinal after the section ("§ 9-2 2. ledd", en "§ 9-2, paragraph 2"), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Norwegian law (husleieloven) for the lease of business premises
+  (lokale). Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles.
+  Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of
+  this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Mellom</p>
+  <p><strong th:text="${landlordName}">Utleier</strong>, heretter kalt &laquo;utleieren&raquo;,</p>
+  <p>Organisasjonsnummer: ______________________________</p>
+  <p>representert ved: ______________________________, og</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Leier</strong>, heretter
+    (samlet) kalt &laquo;leieren&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de leierne som undertegner nedenfor, heretter (samlet)
+    kalt &laquo;leieren&raquo;,</p>
+  <p>Organisasjonsnummer: ______________________________</p>
+  <p>representert ved: ______________________________,</p>
+  <p>inngås følgende avtale om leie av lokale. Er det flere leiere, hefter de solidarisk for alle forpliktelser
+    etter denne avtalen.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Utleieren leier ut til leieren lokalet beliggende <strong th:text="${propertyAddress}">Adresse</strong>,
+    med et areal på ca. ________ m² og med den andel i fellesarealer, de parkeringsplasser og det tilbehør som
+    er angitt i denne avtalen, heretter kalt &laquo;husrommet&raquo;.</p>
+  <p>Leieforholdet reguleres av lov 26. mars 1999 nr. 17 om husleieavtaler (husleieloven). Husrommet er et
+    lokale, det vil si annet husrom enn bolig (§ 1-1 5. ledd). Ved leie av lokale kan loven fravikes i avtale,
+    med unntak av §§ 1-1 til 1-4, 4-1, 4-4, 4-6, 9-7, 9-8, 9-10, 12-3 og 12-4 og kapittel 13 (§ 1-2 2. ledd).
+    Der denne avtalen ikke regulerer et forhold, gjelder husleieloven.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Husrommet leies ut til følgende formål: ______________________________ (avtalt formål). Leieren kan ikke
+    bruke husrommet til annet formål enn avtalt, men kan likevel drive annen beslektet virksomhet, forutsatt at
+    dette ikke er til vesentlig ulempe for utleieren eller de øvrige brukerne av eiendommen (§ 5-1 3. ledd).</p>
+  <p>Leier av lokale for butikk eller serveringssted plikter å holde virksomheten åpen og i vanlig daglig drift
+    unntatt når midlertidig stenging er nødvendig (§ 5-1 4. ledd). Leieren innhenter for egen regning de
+    offentlige tillatelser som leierens virksomhet krever.</p>
+  <p>Leieren kan med utleierens godkjenning sette opp vanlige skilter, markiser og liknende; godkjenning kan ikke
+    nektes uten saklig grunn (§ 5-4 3. ledd).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Leieforholdet begynner den <strong th:text="${startDate}">Startdato</strong>. Utleieren skal stille
+    husrommet med tilbehør til leierens disposisjon fra denne dagen (§ 2-1 1. ledd).</p>
+  <th:block th:if="${!fixedTerm}">
+    <p>Leieavtalen er tidsubestemt og løper til den blir sagt opp etter reglene i denne avtalen og i husleieloven
+      (§ 9-1).</p>
+    <p>Ingen av partene kan si opp leieavtalen til opphør før: ______________ (uoppsigelighetsperiode).</p>
+  </th:block>
+  <th:block th:if="${fixedTerm}">
+    <p>Leieavtalen er tidsbestemt<span th:if="${endDate != null}"> og opphører uten oppsigelse den
+      <strong th:text="${endDate}">Sluttdato</strong></span>. En tidsbestemt leieavtale opphører uten oppsigelse
+      ved utløpet av den avtalte leietiden og kan bare sies opp i leietiden dersom det er avtalt
+      (§ 9-2 1. og 2. ledd). Avtalt adgang til oppsigelse i leietiden, med oppsigelsesfrist:
+      ______________________________</p>
+    <p>Fortsetter leieforholdet i mer enn 3 måneder etter utløpet av den avtalte leietiden uten at utleieren
+      skriftlig har oppfordret leieren til å flytte, er leieavtalen gått over til å være tidsubestemt
+      (§ 9-2 3. ledd). Husleieloven gir leieren ingen rett til fornyelse av leieavtalen. Avtalt rett til
+      forlengelse (opsjon): ______________________________</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Leien er <strong th:text="${rentAmount}">Beløp</strong>
+    <span th:text="${paymentFrequency}">per måned</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Merverdiavgift kommer i tillegg dersom utleieren er frivillig registrert for utleien
+    (se artikkel <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> I tillegg betaler leieren de kostnadene som er angitt i denne avtalen (se
+    artikkel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Leien er fastsatt til et bestemt beløp (§ 3-1 1. ledd). Det kan ikke avtales en leie som er urimelig i
+    forhold til det som vanligvis oppnås på avtaletidspunktet ved ny utleie av liknende husrom på liknende
+    avtalevilkår; denne regelen kan ikke fravikes ved leie av lokale (§ 4-1, § 1-2 2. ledd).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Om endring av leien gjelder det som er bestemt i denne avtalen (se artikkel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Hver av partene kan kreve leien endret uten oppsigelse av leieforholdet med inntil 100 % av endringen i
+    konsumprisindeksen fra Statistisk sentralbyrå i tiden etter siste leiefastsetting. Endringen kan tidligst
+    settes i verk 1 år etter at siste leiefastsetting ble satt i verk, og den andre parten må gis skriftlig
+    varsel med minst 1 måneds frist før endringen kan settes i verk (§ 4-2).</p>
+  <p>Tilpassing til gjengs leie etter § 4-3 (gjelder / gjelder ikke): ______________. Gjelder § 4-3, kan hver
+    av partene, når leieforholdet har vart i minst 2 år og 6 måneder uten annen endring av leien enn den som kan
+    kreves etter § 4-2, kreve at leien blir satt til gjengs leie; tilpassingen kan tidligst settes i verk
+    6 måneder etter at det er framsatt skriftlig krav om den, og tidligst 1 år etter at tidligere endring av
+    leien ble satt i verk (§ 4-3 1. og 2. ledd).</p>
+  <p>Er en del av leien avtalt i et bestemt forhold til omsetningen i eller resultatet av leierens virksomhet,
+    gjelder § 4-2 og § 4-3 ikke for denne delen (§ 4-5 2. ledd).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>I tillegg til leien betaler leieren en forholdsmessig andel av eiendommens felleskostnader og utleierens
+    utgifter ved forbruk av elektrisitet, brensel, vann og avløp i husrommet. Kostnader som omfattes, og
+    fordelingsnøkkel: ______________________________________________</p>
+  <p>Leieren betaler et akontobeløp sammen med leien. Utleieren legger hvert år fram et regnskap som viser
+    størrelsen på kostnadene og fordelingen av dem, slik leieren for forbruk av elektrisitet, brensel, vann og
+    avløp også kan kreve etter § 3-4 1. ledd, og differansen mellom akontobeløpene og de
+    faktiske kostnadene gjøres opp ved neste forfall etter at regnskapet er lagt fram. Betalingen for forbruk kan
+    reguleres slik at utleieren får dekket de nødvendige omkostningene med ytelsene (§ 4-5 1. ledd).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Utleie av fast eiendom er unntatt fra lov 19. juni 2009 nr. 58 om merverdiavgift (merverdiavgiftsloven)
+    (§ 3-11 1. ledd i merverdiavgiftsloven). Næringsdrivende og offentlig virksomhet som leier ut bygg eller anlegg, kan frivillig registreres i
+    Merverdiavgiftsregisteret dersom bygget eller anlegget brukes i virksomhet som er registrert etter
+    merverdiavgiftsloven, eller av visse offentlige virksomheter (§ 2-3 1. ledd i merverdiavgiftsloven).</p>
+  <p>Utleieren er frivillig registrert for utleie av husrommet (ja/nei): ________. Er utleieren registrert,
+    betaler leieren merverdiavgift med den til enhver tid gjeldende sats i tillegg til leien og de andre
+    beløpene etter denne avtalen. Leieren skal straks varsle utleieren om endringer i bruken av husrommet som kan
+    ha betydning for registreringen, og dekker utleierens tap dersom leieren uten utleierens samtykke endrer
+    bruken slik at utleierens fradragsrett faller bort eller må justeres.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Til sikkerhet for skyldig leie, skader på husrommet, utgifter ved
+    fraviking og andre krav som reiser seg av leieavtalen, stiller leieren et depositum på
+    <strong th:text="${depositAmount}">Beløp</strong>.</p>
+  <p th:if="${depositAmount == null}">Til sikkerhet for skyldig leie, skader på husrommet, utgifter ved
+    fraviking og andre krav som reiser seg av leieavtalen, stiller leieren et depositum med det beløpet partene
+    har avtalt skriftlig: ______________________________</p>
+  <p>Ved leie av lokale kan § 3-5 og § 3-6 fravikes i avtale (§ 1-2 2. ledd). Grensen på summen av 6 måneders
+    leie for depositum og garanti (§ 3-5 1. ledd, § 3-6) er derfor ikke ufravikelig; avtaler partene et høyere
+    beløp, er den overskytende delen en avtalt fravikelse av denne grensen.</p>
+  <p>Er ikke annet avtalt, settes depositumet på særskilt konto i leierens navn med vanlige rentevilkår i en
+    finansinstitusjon som har rett til å tilby slik tjeneste i Norge, og ingen av partene kan disponere over
+    beløpet på egen hånd så lenge leieforholdet varer (§ 3-5 2. og 3. ledd). Avtalt annen form for sikkerhet,
+    for eksempel bankgaranti eller morselskapsgaranti, og beløp: ______________________________</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Leieren betaler leien<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikkel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> og akontobeløpet for kostnadene</span>
+    <span th:text="${paymentFrequency}">per måned</span> forskuddsvis,
+    <span th:if="${paymentDueDay != null}">senest den <strong th:text="${paymentDueDay}">1</strong>. i den
+      måneden betalingen gjelder</span><span th:if="${paymentDueDay == null}">senest den 1. i den måneden
+      betalingen gjelder</span>, til den konto utleieren anviser (§ 3-2 1. ledd, § 3-3 1. ledd). Ved leie av lokale
+    kan det avtales forskuddsbetaling for lengre tid enn 1 måned (§ 3-2 1. ledd, § 1-2 2. ledd).</p>
+  <p>Forfaller leien på en lørdag eller søndag, en helligdag eller den 1. eller 17. mai, utskytes forfallsdagen
+    til den nærmest påfølgende virkedag (§ 3-2 2. ledd). Ved forsinket betaling skylder leieren forsinkelsesrente
+    etter lov 17. desember 1976 nr. 100 om renter ved forsinket betaling m.m.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Er ikke annet avtalt, plikter utleieren i leietiden å holde husrommet og eiendommen for øvrig i den stand
+    som leieren har krav på etter husleieloven kapittel 2, og leieren å vedlikeholde dørlåser, kraner,
+    vannklosetter, elektriske kontakter og brytere, varmtvannsbeholdere og inventar og utstyr som ikke er en del
+    av den faste eiendommen, og å foreta nødvendig funksjonskontroll, rengjøring, batteriskift, testing og
+    lignende av røykvarslere og brannslukkingsutstyr (§ 5-3 1. og 2. ledd).</p>
+  <p>Partene avtaler følgende fordeling av vedlikeholdet (for eksempel utvendig vedlikehold og bygningens
+    tekniske anlegg: utleieren; innvendig vedlikehold av husrommet: leieren):
+    ______________________________________________</p>
+  <p>Oppdager leieren skade på husrommet som må utbedres uten opphold, skal leieren straks sende melding om det
+    til utleieren; andre skader skal leieren melde innen rimelig tid (§ 5-5 1. ledd). Leieren skal gi
+    utleieren adgang til husrommet for tilsyn og for nødvendige arbeider som nevnt i § 5-6, med melding i rimelig
+    tid på forhånd, med mindre det er nødvendig med tiltak for å hindre skade og det ikke er mulig å varsle
+    leieren.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Leieren kan ikke uten utleierens samtykke foreta forandringer i husrommet eller på eiendommen for øvrig
+    (§ 5-4 2. ledd). Leieren må finne seg i forandringer av husrommet dersom arbeidet kan utføres uten
+    nevneverdig ulempe for leieren, og forandringen ikke reduserer husrommets verdi for leieren; andre
+    forandringer kan bare utføres med leierens samtykke (§ 5-4 1. ledd).</p>
+  <p>Utleieren kan ikke uten særlig avtale kreve at leieren setter husrommet tilbake til opprinnelig stand så
+    langt det gjelder endringer som leieren hadde rett til å utføre (§ 10-2 3. ledd). Avtalt tilbakeføring ved
+    leieforholdets opphør: ______________________________</p>
+  <p>Har leieren med utleierens samtykke gjort vesentlige forbedringer i husrommet, kan leieren kreve vederlag for
+    den fordel utleieren oppnår som følge av forbedringene, med mindre annet ble avtalt da samtykket ble gitt
+    (§ 10-5 1. ledd).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Leieren har ikke adgang til å overføre sine rettigheter eller plikter etter leieavtalen til andre uten
+    samtykke fra utleieren, med mindre annet følger av avtale eller lov (§ 8-1). Leieren kan med utleierens
+    godkjenning overføre leieretten i forbindelse med en overføring av den virksomhet som drives i husrommet;
+    godkjenning kan bare nektes dersom den nye leierens forhold gir saklig grunn til det, og svarer ikke
+    utleieren på en søknad om godkjenning innen 1 måned etter at søknaden er mottatt, regnes dette som
+    godkjenning (§ 8-4 1. og 3. ledd).</p>
+  <p>Ved leie av lokale kan partene avtale at denne retten ikke skal gjelde eller skal gjelde med andre vilkår
+    (§ 1-2 2. ledd). Avvikende avtale om overføring: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Leieren har ikke adgang til å framleie eller på annen måte overlate bruksretten til husrommet eller deler av
+    det til andre uten samtykke fra utleieren, med mindre annet følger av avtale eller lov (§ 7-2). Avtalt
+    adgang til framleie: ______________________________</p>
+  <p>Er leieavtalen tidsbestemt og ikke annet avtalt, kan leieren framleie for resten av leietiden med
+    godkjenning fra utleieren; blir godkjenning nektet uten at framleierens forhold gir saklig grunn til det
+    eller husrommet klart blir overbefolket, kan leieren si opp med varsel som nevnt i § 9-6 (§ 7-5). Svarer
+    ikke utleieren på en skriftlig søknad om godkjenning innen 1 måned etter at søknaden er mottatt, regnes
+    dette som godkjenning (§ 7-6).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Utleieren holder bygningen forsikret. Leieren holder sitt eget inventar, sine varer og sitt utstyr og de
+    innredningene som leieren selv har bekostet, forsikret, og har en ansvarsforsikring som er vanlig for
+    leierens virksomhet. Leieren skal på forespørsel dokumentere forsikringene.</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Utleieren har lagt fram energiattest for bygningen eller den delen av bygningen som leies ut, for leieren
+    før denne avtalen ble inngått, slik eieren plikter etter forskrift 18. desember 2009 nr. 1665 om
+    energimerking av bygninger og energivurdering av varme- og klimaanlegg (energimerkeforskriften for
+    bygninger) § 6 1. ledd, med mindre bygningen er unntatt fra plikten etter forskriften, for eksempel en
+    selvstendig enhet i et yrkesbygg der flere enheter har felles varmeanlegg. Energikarakter:
+    ____________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Er ikke annet avtalt, skal husrommet med tilbehør ved overleveringen være ryddet, rengjort og i vanlig god
+    stand (§ 2-2 1. ledd). Partene går sammen gjennom husrommet ved overtakelsen og ved tilbakeleveringen og
+    setter opp en protokoll over tilstanden, som begge parter undertegner.</p>
+  <p>Leieren taper sin rett til å gjøre en mangel gjeldende dersom det ikke er gitt melding til utleieren om at
+    mangelen påberopes, innen rimelig tid etter at leieren burde ha oppdaget den, med mindre utleieren har
+    opptrådt grovt uaktsomt eller i strid med redelighet og god tro (§ 2-8).</p>
+  <p>Den dagen leieforholdet opphører, skal leieren stille husrommet med tilbehør til utleierens disposisjon. Er
+    ikke annet avtalt, skal husrommet være ryddet, rengjort og i samme stand som ved overtakelsen, bortsett fra
+    den forringelse som skyldes alminnelig slit og elde, og de mangler som utleieren selv plikter å utbedre
+    (§ 10-2 1. og 2. ledd). Stilles ikke husrommet til utleierens disposisjon den dagen leieforholdet er
+    opphørt, kan utleieren kreve vederlag tilsvarende avtalt leie inntil leierens bruk opphører
+    (§ 10-3 1. ledd).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Sikkerheten
+    frigis deretter etter reglene i denne avtalen (se artikkel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Er ikke annet avtalt, kan hver av partene si opp en tidsubestemt leieavtale med en oppsigelsesfrist på
+    3 måneder til opphør ved utløpet av en kalendermåned (§ 9-4, § 9-5 1. ledd, § 9-6 1. ledd). Avtalt annen
+    oppsigelsesfrist: ______________</p>
+  <p>Oppsigelse fra utleieren skal være skriftlig og begrunnet. Den skal opplyse om at leieren kan protestere
+    skriftlig til utleieren innen 1 måned etter at oppsigelsen er mottatt, og om at leieren, dersom leieren ikke
+    protesterer innen fristen, taper sin rett til å påberope seg at oppsigelsen er i strid med loven, og at
+    utleieren i så fall kan begjære tvangsfravikelse etter tvangsfullbyrdelsesloven § 13-2 3. ledd bokstav c;
+    ellers er oppsigelsen ugyldig, med mindre leieren har flyttet i henhold til den (§ 9-7). Disse kravene kan ikke fravikes ved leie av lokale (§ 1-2 2. ledd).</p>
+  <p>Har leieren protestert i tide, faller oppsigelsen bort om ikke utleieren har reist søksmål mot leieren
+    innen 3 måneder etter at leierens frist løp ut. Retten skal sette oppsigelsen til side dersom den ut fra en
+    vurdering av begge parters forhold finner at den vil virke urimelig, men ikke dersom oppsigelsen skyldes
+    vesentlig mislighold fra leierens side (§ 9-8).</p>
+  <p>Er leieren oppsagt, og oppsigelsen ikke settes til side etter § 9-8, kan leieren kreve vederlag for den
+    fordel utleieren oppnår som følge av den kundekrets leieren har opparbeidet, med mindre leieren har gjort
+    seg skyldig i vesentlig mislighold (§ 10-6). Avvikende avtale om vederlag for kundekrets:
+    ______________________________</p>
+  <p th:if="${fixedTerm}">Er leieavtalen tidsbestemt<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (se artikkel <span th:text="${refs['term']}"></span>)</span>, kan den bare sies opp i
+    leietiden dersom det er avtalt (§ 9-2 2. ledd).</p>
+  <p>Utleieren kan heve leieavtalen på grunn av vesentlig mislighold fra leierens side i de tilfellene som er
+    nevnt i § 9-9 1. ledd, blant annet når leieren vesentlig misligholder sin plikt til å betale leie.
+    Hevingserklæringen skal være skriftlig og oppgi grunnen til hevingen (§ 9-9 2. ledd).</p>
+</div>
+
+<div th:fragment="clause-enforcement" data-clause="enforcement">
+  <p>Leieren vedtar at tvangsfravikelse kan kreves når leien ikke blir betalt (tvangsfullbyrdelsesloven
+    § 13-2 3. ledd bokstav a).<span th:if="${fixedTerm}"> Leieren vedtar også at tvangsfravikelse kan kreves når
+    leietiden er løpt ut (tvangsfullbyrdelsesloven § 13-2 3. ledd bokstav b).</span></p>
+  <p>Fullbyrdelse kan begjæres når 2 uker er gått etter at utleieren har sendt skriftlig varsel til leieren;
+    varselet kan tidligst sendes på forfallsdagen og skal gjøre oppmerksom på at fullbyrdelse vil bli begjært
+    dersom kravet ikke blir oppfylt (tvangsfullbyrdelsesloven § 4-18 1. ledd). Varsel kan bare unnlates i de
+    tilfellene som er nevnt i tvangsfullbyrdelsesloven § 4-18 2. ledd. Ved manglende betaling skal det gå fram av varselet at
+    tvangsfullbyrdelse kan unngås dersom leien, utenrettslige inndrivingskostnader, sakskostnader og forfalt
+    leie fram til betalingstidspunktet, med renter, blir betalt før fullbyrdelsen gjennomføres
+    (tvangsfullbyrdelsesloven § 13-2 3. ledd bokstav a).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Partene behandler personopplysninger om de personene som opptrer på vegne av den andre parten, bare i den
+    utstrekning det er nødvendig for å inngå og oppfylle denne avtalen og for å oppfylle rettslige forpliktelser,
+    i samsvar med personvernforordningen (forordning (EU) 2016/679) og lov 15. juni 2018 nr. 38 om behandling
+    av personopplysninger (personopplysningsloven). Opplysningene lagres ikke lenger enn det som er nødvendig for
+    disse formålene.</p>
+  <p>De registrerte kan gjøre gjeldende sine rettigheter etter personvernforordningen, herunder retten til
+    innsyn, retting og sletting, og kan klage til Datatilsynet.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Denne avtalen er underlagt norsk rett.</p>
+  <p>Husleietvistutvalget behandler bare tvister om leie av bolig (forskrift 21. juni 2016 nr. 765 om
+    Husleietvistutvalget § 2) og kan ikke behandle tvister etter denne avtalen. Tvister avgjøres av de
+    alminnelige domstolene, med mindre partene har avtalt voldgift; begrensningen for voldgiftsavtaler i § 12-1
+    gjelder bare leie av bolig. Avtalt verneting eller voldgift: ______________________________</p>
+  <p>Kommer partene ikke til enighet om gjengs leie eller vederlag for forbedringer, kan hver av dem kreve
+    tvisten avgjort av en takstnemnd, med mindre annet er avtalt (§ 12-2 1. ledd). Er en bestemmelse i denne
+    avtalen ugyldig, berører det ikke gyldigheten av avtalens øvrige bestemmelser.</p>
+</div>
+
+</body>
+</html>

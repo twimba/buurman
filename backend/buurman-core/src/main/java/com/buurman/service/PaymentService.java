@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.NotificationType.PAYMENT_PAID;
 import static com.buurman.domain.NotificationType.PAYMENT_RECEIVAL;
 import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,6 +44,8 @@ import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactCredit;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Payment.PaymentType;
@@ -91,7 +93,9 @@ import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.ContactCreditRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentPlanRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -119,6 +123,8 @@ public class PaymentService {
   private final ContactCreditRepository creditRepository;
   private final PaymentPlanRepository paymentPlanRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PropertyRepository propertyRepository;
   private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
@@ -186,9 +192,9 @@ public class PaymentService {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
 
-    if (contract.getStatus() != ACTIVE) {
+    if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
-          "Payments can only be created for active contracts. Current status: "
+          "Payments can only be created for in-force contracts. Current status: "
               + contract.getStatus());
     }
 
@@ -383,11 +389,11 @@ public class PaymentService {
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    // Validate contract is still active
+    // Validate contract is still in force
     Contract contract = contractRepository.getByIdAndTeamId(payment.getContractId(), teamId);
-    if (contract.getStatus() != ACTIVE) {
+    if (!contract.getStatus().isInForce()) {
       throw new BusinessRuleException(
-          "Payments can only be edited for active contracts. Current status: "
+          "Payments can only be edited for in-force contracts. Current status: "
               + contract.getStatus());
     }
 
@@ -460,7 +466,7 @@ public class PaymentService {
     }
     metricsService.incrementCounterBy(
         "payment.bulk.marked.paid.total",
-        results.stream().filter(BulkActionResult::isSuccess).count());
+        (double) results.stream().filter(BulkActionResult::isSuccess).count());
     return results;
   }
 
@@ -1170,7 +1176,9 @@ public class PaymentService {
     UUID teamId = principal.requireTeamId();
     YearMonth month = YearMonth.parse(request.forMonth());
 
-    List<Contract> activeContracts = contractRepository.findByStatus(ACTIVE, teamId);
+    // In force = ACTIVE or NOTICE_GIVEN: a tenant under notice still owes rent until the
+    // effective end date, past which no payment is generated (see the billingEndDate check below).
+    List<Contract> activeContracts = contractRepository.findInForceByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
       log.warn("No active contracts found for team {} to generate payments", teamId);
@@ -1179,10 +1187,34 @@ public class PaymentService {
 
     List<Payment> generatedPayments = new ArrayList<>();
 
+    List<UUID> contractIds = activeContracts.stream().map(Contract::getId).toList();
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<Payment>> paymentsByContract =
+        paymentRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(Payment::getContractId));
+
     for (Contract contract : activeContracts) {
       LocalDate dueDate = calculateDueDate(month, contract);
 
-      List<Payment> existingPayments = paymentRepository.findByContractId(contract.getId(), teamId);
+      Optional<LocalDate> billingEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              contract.getEndDate(),
+              extensionsByContract.getOrDefault(contract.getId(), List.of()),
+              Optional.ofNullable(terminationsByContract.get(contract.getId())));
+      if (billingEndDate.isPresent() && dueDate.isAfter(billingEndDate.get())) {
+        log.debug(
+            "Due date {} is after contract {}'s end date {}, skipping",
+            dueDate,
+            contract.getIdentifier().orElseThrow(),
+            billingEndDate.get());
+        continue;
+      }
+
+      List<Payment> existingPayments = paymentsByContract.getOrDefault(contract.getId(), List.of());
       boolean paymentExists =
           existingPayments.stream().anyMatch(p -> p.getDueDate().equals(dueDate));
 

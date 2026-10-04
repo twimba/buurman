@@ -94,6 +94,10 @@ export const useUpdateProperty = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.properties.auditLog(id),
       });
+      // Lease availability falls back to the property's country for its contracts.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.leaseClausesAll(),
+      });
       queryClient.invalidateQueries({
         queryKey: queryKeys.dashboard.stats(),
       });

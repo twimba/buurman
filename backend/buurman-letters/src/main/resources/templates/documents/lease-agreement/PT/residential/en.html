@@ -1,0 +1,403 @@
+<!--
+  legal-basis: Codigo Civil (Decreto-Lei n.o 47344, de 25 de novembro de 1966), version in force on 2026-10-04 (latest
+               amendment Lei n.o 29/2026, de 23/06; no lease article changed after Lei n.o 82/2023, de 29/12), read on
+               www.pgdlisboa.pt (versao actualizada): art. 1022-1059 (locacao: 1036, 1038, 1039, 1041, 1043, 1045,
+               1057) and art. 1064-1107 (arrendamento urbano e arrendamento para habitacao, as rewritten by the NRAU,
+               Lei n.o 31/2012, Lei n.o 43/2017, Lei n.o 13/2019 and Lei n.o 82/2023): 1067, 1069, 1070, 1071, 1072,
+               1073, 1074, 1075, 1076 (caucao and antecipacao limited to 2 rendas / 2 meses by Lei n.o 24-D/2022,
+               de 30/12, in force 01/01/2023), 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1087, 1088,
+               1089, 1091, 1092, 1093, 1094, 1095, 1096, 1097, 1098, 1099, 1100, 1101, 1102, 1103, 1104, 1105,
+               1106, 1107.
+               NRAU, Lei n.o 6/2006, de 27 de fevereiro (latest amendment Lei n.o 56/2023, de 06/10): art. 8 (Codigo
+               do Registo Predial art. 5, n.o 5), 9, 11, 12, 15 (n.o 5), 15-A, 24, 25.
+               Lei n.o 56/2023, de 6 de outubro (Mais Habitacao), art. 34 (initial rent of new residential leases,
+               effective until 31/12/2029 under art. 54, n.o 2) - text read on www.pgdlisboa.pt (versao actualizada,
+               last amended by DL n.o 76/2024, de 23/10).
+               Decreto-Lei n.o 160/2006, de 8 de agosto (elementos do contrato; republished by Decreto-Lei n.o
+               266-C/2012, de 31/12): art. 2, 3, 5 - files.dre.pt.
+               Codigo do Imposto do Selo: art. 2, n.o 5, art. 3, art. 60; Tabela Geral, verba 2 (10 %); Codigo do
+               IRS art. 115, n.o 5 - read on info.portaldasfinancas.gov.pt.
+               Decreto-Lei n.o 101-D/2020, de 7 de dezembro (SCE, latest amendment DL n.o 11/2025, de 19/02):
+               art. 18, n.o 1, e) and n.o 2, art. 22, n.o 3, art. 29, n.o 1, c).
+               Codigo de Processo Civil art. 70, n.o 1. RGPD: Regulamento (UE) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); Lei n.o 58/2019, de 8 de agosto.
+               Pending: Government bill amending the NRAU (approved na generalidade on 30/09/2026; would remove the
+               caucao cap, allow 3 months' advance rent and revoke art. 34 of Lei n.o 56/2023) - not law on
+               2026-10-04; re-verify art. 1076 and the rent clause when it is published.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against www.pgdlisboa.pt, files.dre.pt, diariodarepublica.pt and
+               info.portaldasfinancas.gov.pt (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in pt.html, never spelled out (pt "2 rendas" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of pt.html; the Portuguese text is authoritative. It states Portuguese law (Codigo
+  Civil, NRAU) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from pt.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (senhorio),</p>
+  <p>tax identification number, place of birth, date of birth, marital status and domicile of the landlord: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">and <strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (arrendatário),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">and the tenant(s) signing at the end, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (arrendatário),</p>
+  <p>tax identification number, place of birth, date of birth and marital status of the tenant: ______________________________,</p>
+  <p>this urban lease for housing (contrato de arrendamento urbano para habitação) is concluded, governed by the
+    Portuguese Civil Code (Código Civil), in particular articles 1064 et seq., and by the New Urban Lease Regime
+    (Novo Regime do Arrendamento Urbano, NRAU), approved by Law 6/2006 of 27 February. The agreement is concluded
+    in writing (article 1069, paragraph 1, of the Civil Code) and contains the particulars required by article 2 of
+    Decree-Law 160/2006 of 8 August.</p>
+  <p>Where there are several tenants, the parties stipulate that they are jointly and severally liable for all
+    obligations arising from this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the premises located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the leased premises&rdquo; (locado),
+    with the following characteristics:</p>
+  <p>tax register entry (artigo matricial) and, where applicable, autonomous unit (fração autónoma): ______________________________</p>
+  <p>type and area: ______________________________</p>
+  <p>areas for the tenant&rsquo;s exclusive use, common areas to which the tenant has access and annexes let with
+    the leased premises (storage room, parking space or other): ______________________________</p>
+  <p>licence or authorisation of use (licença ou autorização de utilização): number ________, date ________,
+    issuing authority ______________________________, or a statement that none is required because the building
+    predates 7 August 1951, with an authentic document proving the date of construction annexed (article 5,
+    paragraph 2, of Decree-Law 160/2006).</p>
+  <p>Only buildings or units whose suitability for the purpose of the agreement is certified by the licence of use,
+    where required, may be let under an urban lease (article 1070, paragraph 1, of the Civil Code and article 5,
+    paragraph 1, of Decree-Law 160/2006).</p>
+  <p>The lease is for housing and serves as the tenant&rsquo;s permanent home. This model is not suitable for a
+    lease for non-permanent housing or for special transitional purposes, in particular for professional,
+    educational and training or tourist reasons (article 1095, paragraph 3, of the Civil Code), nor for a lease for
+    non-housing purposes. Where house rules of the condominium or of the horizontal property exist, they are annexed
+    to this agreement and signed by the parties (article 3 of Decree-Law 160/2006).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>This agreement takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">This agreement is concluded for a fixed term (prazo certo)<span th:if="${endDate != null}">,
+    until <strong th:text="${endDate}">end date</strong></span>. The term is stated in this clause and may not be less
+    than 1 nor more than 30 years; it is automatically extended or reduced to those limits where it falls short of the
+    former or exceeds the latter (article 1095, paragraphs 1 and 2, of the Civil Code). Term, if it does not follow from
+    the end date: ______________________________</p>
+  <p th:if="${fixedTerm}">Unless otherwise stipulated, the agreement renews automatically at its expiry for
+    successive periods of equal duration, or of 3 years if that duration is shorter (article 1096, paragraph 1, of the
+    Civil Code). Stipulation of the parties on renewal, if any: ______________________________</p>
+  <p th:if="${fixedTerm}">The landlord may prevent automatic renewal by notice to the tenant given at least 240 days
+    in advance if the initial term of the agreement or of its renewal is 6 years or more; 120 days if it is 1 year or
+    more and less than 6 years; 60 days if it is 6 months or more and less than 1 year; and 1/3 of the term in the case
+    of a term of less than 6 months; the notice period is counted back from the expiry of the initial term of the
+    agreement or of its renewal (article 1097, paragraphs 1 and 2, of the Civil Code). The landlord&rsquo;s opposition
+    to the first renewal takes effect only once 3 years have elapsed since the agreement was concluded, the agreement
+    remaining in force until then, save for the exception of housing need of the landlord or of the landlord&rsquo;s
+    descendants in the 1st degree provided for in article 1097, paragraph 4, of the Civil Code, on the terms and subject to
+    the requirements laid down there.</p>
+  <p th:if="${fixedTerm}">The tenant may prevent automatic renewal by notice to the landlord given at least 120 days
+    in advance if the initial term of the agreement or of its renewal is 6 years or more; 90 days if it is 1 year or
+    more and less than 6 years; 60 days if it is 6 months or more and less than 1 year; and 1/3 of the term in the case
+    of a term of less than 6 months (article 1098, paragraphs 1 and 2, of the Civil Code).</p>
+  <p th:if="${!fixedTerm}">This agreement is concluded for an indefinite term (duração indeterminada) (article 1094,
+    paragraph 1, of the Civil Code) and ends by notice of termination (denúncia) given by either party under articles
+    1099 et seq. of the Civil Code.</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Notice of termination and termination
+    for breach are governed by the provisions of this agreement (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (renda) is <strong th:text="${rentAmount}">amount</strong> (payable
+    <span th:text="${paymentFrequency}">monthly</span>) and is a periodic payment in money (article 1075, paragraph 1,
+    of the Civil Code).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> The tenant also bears the charges and expenses assumed in this agreement (see
+    article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Until 31 December 2029, the initial rent of new leases for housing of properties for which leases concluded in
+    the 5 years before 7 October 2023 have been in force may not exceed the last rent charged for the same property
+    under the previous lease, multiplied by the coefficient of 1.02, without prejudice to the increases and rules laid down in article 34, paragraphs 3 to 6, of Law 56/2023. This limit applies to leases that exceed the general rent
+    limits by dwelling type set out in tables 1 and 2 of annex I to Portaria 176/2019 of 6 June (article 34 of Law
+    56/2023 of 6 October).</p>
+  <p>Last rent charged for the leased premises under a previous lease, where applicable: ______________________________</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The rent update is governed by
+    the provisions of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The parties stipulate in writing whether the rent may be updated and the applicable regime (article 1077,
+    paragraph 1, of the Civil Code). Update regime stipulated, if any: ______________________________</p>
+  <p>Failing such a stipulation, the rent may be updated annually in line with the update coefficients in force; the
+    first update may be claimed 1 year after the agreement took effect and each following update 1 year after the
+    previous one; the landlord gives written notice, at least 30 days in advance, of the update coefficient and of the
+    resulting new rent; an update not made cannot be recovered, but the coefficients may still be applied in later
+    years provided that no more than 3 years have passed since the date on which they could first have been applied
+    (article 1077, paragraph 2, of the Civil Code).</p>
+  <p>The annual update coefficient is the full change in the consumer price index excluding housing over the last 12
+    months for which figures are available on 31 August, as determined by the National Statistics Institute
+    (Instituto Nacional de Estatística), and is published by notice in the Diário da República by 30 October of each
+    year (article 24 of the NRAU). The updated rent is rounded up to the next whole cent (article 25 of the NRAU).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The parties stipulate in writing the regime of charges and expenses (encargos e despesas) (article 1078,
+    paragraph 1, of the Civil Code). Charges and expenses borne by the tenant in addition to those provided for by
+    law: ______________________________</p>
+  <p>Unless otherwise stipulated, current charges and expenses for the supply of goods or services to the leased
+    premises are borne by the tenant and, in the lease of an autonomous unit, the charges and expenses for the
+    administration, upkeep and use of the common parts of the building and for services of common interest are borne
+    by the landlord (article 1078, paragraphs 2 and 3, of the Civil Code).</p>
+  <p>Charges and expenses are contracted in the name of the party responsible for paying them. Where the tenant is
+    responsible for a charge or expense contracted in the landlord&rsquo;s name, the landlord produces proof of the
+    payment made within 1 month, and the tenant&rsquo;s obligation falls due at the end of the month following the
+    landlord&rsquo;s notice and is to be paid together with the next rent. If the parties agree a fixed monthly sum on
+    account of charges and expenses, the balance is settled half-yearly (article 1078, paragraphs 4 to 7, of the
+    Civil Code).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">As security for the performance of the tenant&rsquo;s obligations, the tenant
+    provides the landlord, on the date this agreement is concluded, with a cash security deposit (caução) of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The parties do not stipulate a security deposit (caução). Security deposit
+    agreed, if any: ______________________________</p>
+  <p>The parties may secure the performance of their respective obligations by any of the legally provided forms, up
+    to the value of 2 months&rsquo; rent (article 1076, paragraph 2, of the Civil Code). The parties stipulate that the amount of the security deposit does not exceed the value of 2 months&rsquo; rent.</p>
+  <p>When the agreement has ended and the leased premises have been returned, the landlord returns the security
+    deposit to the tenant, less the sums owed to the landlord under the agreement, in particular unpaid rent, charges
+    and expenses and the repair of damage for which the tenant is responsible.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the leased premises is
+    governed by the provisions of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the charges and expenses borne by the tenant</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of the
+      month preceding the month to which it relates</span><span th:if="${paymentDueDay == null}">on the date agreed
+      by the parties</span>. Unless otherwise agreed, where the rents correspond to the months of the Gregorian
+    calendar, the first rent falls due when the agreement is concluded and each of the others on the 1st working day
+    of the month immediately preceding the month to which it relates (article 1075, paragraph 2, of the Civil
+    Code).</p>
+  <p>Payment is made by bank transfer to the account designated by the landlord: ______________________________.
+    The rent may be paid in advance, by written agreement, for a period not exceeding 2 months (article 1076,
+    paragraph 1, of the Civil Code).</p>
+  <p>The landlord issues a receipt, in the official form, for all sums received, including sums received as a
+    security deposit, advance or reimbursement of expenses, or files with the Tax and Customs Authority (Autoridade
+    Tributária e Aduaneira) the annual official-form return itemising that income (article 115, paragraph 5, of the
+    Personal Income Tax Code, Código do IRS).</p>
+  <p>If the tenant is in default, the landlord is entitled to claim, in addition to the rent in arrears, compensation
+    equal to 20 % of the amount owed, unless the agreement is terminated on the ground of non-payment; the right to
+    compensation or to termination lapses if the tenant ends the default within 8 days of its start (article 1041,
+    paragraphs 1 and 2, of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the leased premises as the tenant&rsquo;s permanent home and must actually use them for that
+    purpose, not leaving them unused for more than 1 year, save in the cases of lawful non-use listed in article 1072,
+    paragraph 2, of the Civil Code. The tenant does not use the leased premises for a purpose other than the one for
+    which they are intended nor uses them imprudently (article 1038, subparagraphs (c) and (d), of the Civil
+    Code).</p>
+  <p>Residential use of the leased premises includes, unless a clause provides otherwise, the carrying on of any
+    domestic industry, even if taxed, a domestic industry being one carried on in the tenant&rsquo;s residence that
+    employs no more than 3 paid assistants (article 1092 of the Civil Code). In addition to the tenant, all persons
+    living with the tenant in a common household (economia comum) and a maximum of 3 lodgers (hóspedes) may live in
+    the leased premises, unless a clause provides otherwise (article 1093 of the Civil Code).</p>
+  <p>The tenant is subject to the limits imposed on owners of immovable property in relations between neighbours and
+    complies with the condominium rules made known to the tenant (article 1071 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not give another person the use of all or part of the leased premises by assigning the
+    tenant&rsquo;s legal position for value or free of charge, by subletting or by loan for use (comodato), unless
+    the law permits it or the landlord authorises it, and notifies the landlord within 15 days of any such transfer of
+    use, where permitted or authorised (article 1038, subparagraphs (f) and (g), of the Civil Code).</p>
+  <p>Authorisation to sublet must be given in writing; an unauthorised sublease is nevertheless deemed ratified by the
+    landlord if the landlord recognises the subtenant as such (article 1088 of the Civil Code). The sublease expires
+    when the lease ends for any reason (article 1089 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord carries out all upkeep works (obras de conservação), ordinary or extraordinary, required by the laws
+    in force or by the purpose of the agreement, unless otherwise stipulated (article 1074, paragraph 1, of the Civil
+    Code). Stipulation of the parties on works, if any: ______________________________</p>
+  <p>The tenant may carry out works only where the agreement allows it or where the landlord authorises it in
+    writing, except in the situations provided for in article 1036 of the Civil Code (urgent repairs or other urgent
+    expenses) and in article 22-A of the legal regime for works in leased buildings approved by Decree-Law 157/2006 of
+    8 August; unless otherwise stipulated, the tenant is entitled at the end of the agreement to compensation for works
+    lawfully carried out, on the terms applicable to improvements made by a possessor in good faith (article 1074,
+    paragraphs 2, 3 and 5, of the Civil Code).</p>
+  <p>The tenant may make minor alterations to the leased premises where they become necessary for the tenant&rsquo;s
+    comfort or convenience, and must repair them before returning the leased premises, unless otherwise stipulated
+    (article 1073 of the Civil Code).</p>
+  <p>The tenant allows the landlord to inspect the leased premises, tolerates urgent repairs and any works ordered by
+    a public authority, and informs the landlord immediately on becoming aware of defects in the leased premises, of
+    any danger threatening them or of third parties claiming rights over them, provided that the landlord is unaware
+    of the fact (article 1038, subparagraphs (b), (e) and (h), of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The leased premises are subject to the energy certification obligation at the time of their lease, save in the
+    cases excepted by article 18, paragraph 2, of Decree-Law 101-D/2020 of 7 December (article 18, paragraph 1,
+    subparagraph (e), of that decree-law).</p>
+  <p>The landlord gave the tenant a copy of the energy certificate (certificado energético), or made the information on its content available digitally, before the preliminary agreement, if any, or this agreement was concluded, and hands over the original before the final agreement is concluded (article 29, paragraph 1, subparagraph
+    (c), of Decree-Law 101-D/2020).</p>
+  <p>Energy certificate number and energy class: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The landlord notifies this agreement to the Tax and Customs Authority by the end of the month following the
+    month in which the lease begins, by official-form return, and likewise its amendments and its termination; if the
+    landlord fails to do so, the tenant may make that notification (article 60, paragraphs 1, 2 and 4, of the Stamp
+    Duty Code, Código do Imposto do Selo).</p>
+  <p>The stamp duty due on the lease, 10 % of the rent for 1 month, is payable by the landlord as the taxable person,
+    who also bears it (item 2 of the General Stamp Duty Table and articles 2 and 3 of the Stamp Duty Code).</p>
+  <p>The special eviction procedure (procedimento especial de despejo) may be used only for leases whose stamp duty
+    has been assessed or whose rents have been declared for personal or corporate income tax purposes (article 15,
+    paragraph 5, of the NRAU). A duration of more than 6 years of an unregistered lease cannot be relied on against
+    third parties (article 5, paragraph 5, of the Land Registry Code, Código do Registo Predial).</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>The tenant has a right of pre-emption (direito de preferência) on the sale or transfer in lieu of performance
+    (dação em cumprimento) of the leased premises if they have been let for more than 2 years, on the terms and with
+    the special rules of article 1091 of the Civil Code. Notice of the planned sale and of the terms of the sale
+    agreement is sent by registered letter with acknowledgement of receipt, and the tenant has 30 days from receipt to
+    reply (article 1091, paragraph 4, of the Civil Code).</p>
+  <p>The acquirer of the right on the basis of which the agreement was concluded succeeds to the landlord&rsquo;s
+    rights and obligations, without prejudice to the land registry rules (article 1057 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>A lease for housing does not expire on the tenant&rsquo;s death where the tenant is survived by a spouse living
+    in the leased premises, by a person who had lived with the tenant in a de facto union (união de facto) for more
+    than 1 year or by a person who had lived with the tenant in a common household for more than 1 year, in the order
+    and with the exceptions laid down in article 1106 of the Civil Code.</p>
+  <p>The transfer of the lease on the tenant&rsquo;s death, or its concentration in the surviving spouse, must be
+    notified to the landlord, with copies of the supporting documents, within 3 months of the death; failure to do so
+    makes the defaulting transferee liable for all damage resulting from the omission (article 1107 of the Civil
+    Code). What happens to the lease of the family home in the event of divorce or judicial separation is governed by
+    article 1105 of the Civil Code.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The parties annex to this agreement, signed by both, a document describing the state of repair of the leased
+    premises and their outbuildings and of the building, and the furniture and equipment included, if any (article 3,
+    paragraph 2, of Decree-Law 160/2006). In the absence of that document, the leased premises are presumed to have
+    been handed over to the tenant in a good state of repair (article 1043, paragraph 2, of the Civil Code).
+    Furniture and equipment included: ______________________________</p>
+  <p>When the agreement ends, the tenant returns the leased premises in the condition in which they were received,
+    except for deterioration inherent in prudent use in accordance with the purposes of the agreement, with the
+    repairs for which the tenant is responsible, and hands over all keys (articles 1043, paragraph 1, and 1081,
+    paragraph 1, of the Civil Code).</p>
+  <p>During the 3 months before vacating, the tenant shows the leased premises to prospective tenants at times agreed
+    with the landlord; failing agreement, the times are, on working days, from 17:30 to 19:30 and, on Saturdays and
+    Sundays, from 15 to 19 hours (article 1081, paragraphs 3 and 4, of the Civil Code).</p>
+  <p>If the leased premises are not returned as soon as the agreement ends, the tenant must pay, as compensation, the
+    agreed rent until the premises are returned, and that compensation is raised to 2 times that amount as soon as the
+    tenant is in default (article 1045 of the Civil Code).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> The return of the security deposit is governed by the provisions of this agreement
+    (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The lease ends by agreement of the parties, termination for breach (resolução), expiry (caducidade), notice of
+    termination (denúncia) or other causes provided for by law, and the rules on termination for breach, expiry and
+    notice of termination are mandatory unless the law provides otherwise (articles 1079 and 1080 of the Civil Code).
+    An agreement to end the lease (revogação) is made in writing where it is not carried out immediately or where it
+    contains compensation clauses or other ancillary clauses (article 1082, paragraph 2, of the Civil Code).</p>
+  <p th:if="${fixedTerm}">Once 1/3 of the initial term of the agreement or of its renewal has elapsed, the tenant may
+    give notice of termination at any time, by notice to the landlord given at least 120 days before the intended end
+    of the agreement if its term is 1 year or more, or 60 days if it is less than 1 year; where the landlord prevents
+    automatic renewal of the agreement, the tenant may give notice of termination at any time at least 30 days before
+    the intended end. The notice takes effect at the end of 1 calendar month of the Gregorian calendar counted from
+    the communication (article 1098, paragraphs 3 to 5, of the Civil Code).</p>
+  <p th:if="${!fixedTerm}">After 6 months of actual duration of the agreement, the tenant may give notice of
+    termination, without having to give any reason, by notice to the landlord given at least 120 days before the
+    intended end if, on the date of the notice, the agreement has lasted 1 year or more, or 60 days if it has lasted
+    up to 1 year. The notice takes effect at the end of 1 calendar month of the Gregorian calendar counted from the
+    communication (article 1100, paragraphs 1 and 3, of the Civil Code).</p>
+  <p>Failure by the tenant to give the required notice does not prevent the agreement from ending but obliges the
+    tenant to pay the rent for the missing notice period, unless it results from involuntary unemployment, permanent
+    incapacity for work or the death of the tenant or of a person who had lived with the tenant in a common household
+    for more than 1 year (article 1098, paragraph 6, of the Civil Code).</p>
+  <p th:if="${!fixedTerm}">The landlord may give notice of termination of an agreement of indefinite term only on the
+    ground of housing need of the landlord or of the landlord&rsquo;s descendants in the 1st degree, or for demolition or
+    deep refurbishment or restoration works requiring the leased premises to be vacated, on the terms and subject to
+    the requirements of articles 1101, 1102 and 1103 of the Civil Code, or by notice to the tenant given at least 5
+    years before the date on which the landlord wishes the lease to end, confirmed, on pain of ineffectiveness, by a
+    further notice given no more than 15 months and no less than 1 year before the date on which it takes effect
+    (articles 1101, subparagraph (c), and 1104 of the Civil Code). Notice of termination by the landlord may not result
+    in a total duration of the agreement of less than 2 years (article 1103, paragraph 10, of the Civil Code).</p>
+  <p>Either party may terminate the agreement for breach (resolução), under the general law, where the other
+    party&rsquo;s breach, by its seriousness or consequences, makes it unreasonable to require the continuation of
+    the lease, in particular in the cases listed in article 1083, paragraph 2, of the Civil Code; termination by the
+    landlord on those grounds is ordered under the rules of civil procedure (article 1084, paragraph 1, of the Civil
+    Code). A ground for termination by the tenant is, in particular, the landlord&rsquo;s failure to carry out works
+    incumbent on the landlord where that failure compromises the habitability of the leased premises (article 1083,
+    paragraph 5, of the Civil Code).</p>
+  <p>The landlord cannot reasonably be required to continue the lease in the event of a default of 3 months or more in
+    paying the rent, charges or expenses borne by the tenant or of the tenant&rsquo;s opposition to works ordered by a
+    public authority, nor where the tenant is in default for more than 8 days in paying the rent more than 4 times,
+    consecutively or not, within a period of 12 months, in relation to each agreement, provided that, in the latter
+    case, the landlord has informed the tenant by registered letter with acknowledgement of receipt, after the third
+    late payment, of the landlord&rsquo;s intention to end the lease on that ground (article 1083, paragraphs 3, 4 and
+    6, of the Civil Code). In these cases, termination takes effect by notice to the other party stating the reasons
+    and the obligation breached (article 1084, paragraph 2, of the Civil Code).</p>
+  <p>Termination by the landlord on the ground of a default of 3 months or more is of no effect if the tenant ends the
+    default within 1 month, an option the tenant may use only 1 time in relation to each agreement (article 1084,
+    paragraphs 3 and 4, of the Civil Code). Termination must be effected within 1 year of becoming aware of the fact
+    on which it is based, a period reduced to 3 months where the ground for termination is one of those set out in the previous paragraph; in the case of a continuing or lasting fact, the period does not end before 1 year has elapsed since the fact ceased (article 1085, paragraphs 1 to 3, of the Civil Code). Vacating the leased premises may be
+    required 1 month after the termination, unless another period is set by a court or agreed by the parties (article
+    1087 of the Civil Code).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the leased premises is governed by the provisions of this
+    agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices required by law between the parties concerning the ending of the agreement, rent updates and works are
+    given in a document signed by the sender and sent by registered letter with acknowledgement of receipt, or
+    delivered by hand, in which case the recipient signs a copy with a note of receipt (article 9, paragraphs 1 and 6,
+    of the NRAU). Every notice states the full address of the party signing it, and the parties notify each other of
+    any change of address (article 9, paragraph 5, of the NRAU).</p>
+  <p>Address of the landlord for notices: ______________________________. Agreed domicile (domicílio convencionado)
+    of the tenant, if different from the leased premises: ______________________________. The tenant&rsquo;s agreed
+    domicile, even if it does not coincide with the address of the leased premises, is the place to which notices concerning the agreement must be sent (article 3, paragraph 3, of Decree-Law 160/2006). The landlord&rsquo;s notice of termination for breach that takes effect by notice to the other party is given by extrajudicial notification (notificação avulsa), by personal service through a lawyer, solicitor or enforcement agent (agente de execução) shown to be instructed for that purpose, made on the person to be notified, or by a signed document sent by registered letter with acknowledgement of receipt, the latter only in agreements concluded in writing in which the domicile was agreed (article 9, paragraph 7, of the NRAU).</p>
+  <p>Where there are several landlords or several tenants, or where the leased premises are the family home, notices
+    follow articles 11 and 12 of the NRAU.</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>The following person is party to this agreement as guarantor (fiador) and principal debtor for the
+    tenant&rsquo;s obligations, waiving the benefit of prior enforcement against the tenant (benefício da excussão
+    prévia): ______________________________ (name, tax identification number and domicile).</p>
+  <p>Where there is a guarantee and the tenant does not end the default within 8 days of its start, the landlord must,
+    within the following 90 days, notify the guarantor of the default and of the sums owed, and may claim payment from
+    the guarantor only after giving that notice (article 1041, paragraphs 5 and 6, of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only to the extent necessary to conclude and perform this
+    agreement and to comply with the landlord&rsquo;s legal obligations, in particular tax obligations, in accordance
+    with the General Data Protection Regulation (Regulation (EU) 2016/679) and Law 58/2019 of 8 August, and does not
+    keep them longer than necessary for those purposes.</p>
+  <p>The tenant may exercise against the landlord the rights conferred by that legislation, in particular the rights
+    of access, rectification and erasure, and lodge a complaint with the Portuguese data protection authority
+    (Comissão Nacional de Proteção de Dados).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Portuguese law, in particular by the Civil Code and the NRAU. Actions concerning
+    the lease, including eviction and pre-emption actions, must be brought before the court of the place where the
+    leased premises are situated (article 70, paragraph 1, of the Code of Civil Procedure, Código de Processo
+    Civil).</p>
+  <p>The special eviction procedure is handled by the Tenant and Landlord Office (Balcão do Arrendatário e do
+    Senhorio) (article 15-A of the NRAU). Clauses of this agreement that conflict with mandatory provisions of the
+    Civil Code on urban leases have no effect to the extent of that conflict.</p>
+</div>
+
+</body>
+</html>

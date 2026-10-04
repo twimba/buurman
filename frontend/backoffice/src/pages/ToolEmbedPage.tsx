@@ -3,10 +3,20 @@ import { ExternalLink } from 'lucide-react';
 
 const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');
 
-const getToolUrl = (subdomain: string) => {
+export const getToolUrl = (subdomain: string) => {
   const hostname = window.location.hostname;
-  const base = hostname.replace(/^backoffice\./, '');
-  return `${window.location.protocol}//${subdomain}.${base}`;
+  // "backoffice." or a workspace-prefixed "w1-backoffice." needs its prefix (if any) moved onto
+  // the subdomain, e.g. w2-backoffice.local.buurman.io -> w2-mailpit.local.buurman.io, matching
+  // every other service's workspace-prefixed route.
+  const match = hostname.match(/^(w\d+-)?backoffice\.(.+)$/);
+  const prefix = match?.[1] ?? '';
+  const domain = match?.[2] ?? hostname;
+  // window.location.hostname never includes the port — a per-workspace HTTPS port (e.g. :2443)
+  // must be carried over explicitly, or the URL silently falls back to the default port 443,
+  // which isn't where this workspace's Traefik is listening.
+  const port = window.location.port;
+  const portSuffix = port ? `:${port}` : '';
+  return `${window.location.protocol}//${prefix}${subdomain}.${domain}${portSuffix}`;
 };
 
 type ToolConfig = { name: string } & (
@@ -23,6 +33,7 @@ const getToolsConfig = (): Record<string, ToolConfig> => {
     ...(local
       ? {
           mailpit: { name: 'Mailpit', subdomain: 'mailpit' },
+          documenso: { name: 'Documenso', subdomain: 'documenso' },
         }
       : {
           twilio: { name: 'Twilio', url: 'https://console.twilio.com' },

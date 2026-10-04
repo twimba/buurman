@@ -54,7 +54,12 @@ public enum EntityPrefix {
   CRQ("CRQ", "Country Regulation Requests"),
   IMS("IMS", "Impersonation Sessions"),
   CEX("CEX", "Contract Extensions"),
-  RCO("RCO", "Rent Components");
+  RCO("RCO", "Rent Components"),
+  SGR("SGR", "Signature Requests"),
+  SGS("SGS", "Signature Signers"),
+  SCF("SCF", "Saved Contract Filters"),
+  CTM("CTM", "Contract Terminations"),
+  LCT("LCT", "Lease Clause Templates");
 
   private final String code;
   private final String entityName;

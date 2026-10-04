@@ -1,0 +1,321 @@
+<!--
+  legal-basis: Code civil, livre III, titre VIII, chapitre II, section III (Des regles particulieres aux baux
+               commerciaux), art. 1762-3 to 1762-13 as enacted by the loi du 3 fevrier 2018 portant sur le bail
+               commercial et modifiant certaines dispositions du Code civil (Memorial A n° 110 du 6 fevrier 2018,
+               legilux.public.lu filestore, in force 01/03/2018; art. 3: applicable to running contracts; art. 1762-6,
+               paragraphe 4, effective 12 months after entry into force); art. 2 of that law repealed art. 1736,
+               alinea 3, Code civil. Code civil art. 1714, 1736.
+               Loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation, art. 1er, paragraphe 3 (texte
+               coordonne du 01/08/2024, logement.public.lu): the law does not apply to buildings used for commercial,
+               administrative, industrial or craft purposes or for a liberal profession, but its chapter V (art. 19:
+               juge de paix of the place of the building) applies to them.
+               VAT: loi modifiee du 12 fevrier 1979 concernant la taxe sur la valeur ajoutee (exemption of the letting
+               of immovable property and option for taxation) - cited generally, articles not re-read.
+               Energy performance of non-residential buildings: reglement grand-ducal modifie du 31 aout 2010
+               (batiments fonctionnels), as listed on guichet.public.lu - cited generally.
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi du 1er aout 2018 portant
+               organisation de la Commission nationale pour la protection des donnees (Memorial A n° 686).
+               Indexation: indice des prix a la consommation national (IPCN) published by STATEC
+               (statistiques.public.lu) - contractual stipulation, no statutory index rule for commercial leases.
+               Verified 2026-10-04 against the Memorial A texts (legilux.public.lu filestore); no later amendment of
+               art. 1762-3 to 1762-13 was found, but the consolidated legilux view (JavaScript only) could not be read.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "6 mois de loyer" is "6 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of fr.html; the French text is authoritative. It states Luxembourg law (Code civil,
+  commercial leases, loi du 3 fevrier 2018) in English and is not the law of any other country. Draft text, not
+  vetted by legal counsel. Only prose differs from fr.html: fragments, th: expressions and attributes are identical
+  (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies
+  article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">Landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (bailleur),</p>
+  <p>legal form, registered office and number in the trade and companies register (registre de commerce et des sociétés, RCS): ______________________________</p>
+  <p>value added tax identification number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Tenant</strong>, hereinafter
+    (together) &ldquo;the tenant&rdquo; (preneur),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the undersigned tenant or tenants, hereinafter (together)
+    &ldquo;the tenant&rdquo; (preneur),</p>
+  <p>legal form, registered office and number in the trade and companies register (RCS): ______________________________</p>
+  <p>value added tax identification number: ______________________________</p>
+  <p>business permit (autorisation d'établissement) of the tenant (number), where applicable: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>the present commercial lease (bail commercial) is concluded, governed by the articles of the Civil Code (Code
+    civil) on the letting of things and by the special rules for commercial leases in articles 1762-3 to 1762-13 of the
+    Civil Code. Where several tenants are parties to this contract, the parties stipulate that they are jointly and
+    severally liable for all the obligations arising from it.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the premises located at
+    <strong th:text="${propertyAddress}">Address</strong>, hereinafter &ldquo;the premises&rdquo;, described
+    as follows:</p>
+  <p>description of the premises, area and appurtenances (sales area, offices, storerooms, parking
+    spaces): ______________________________</p>
+  <p>cadastral reference: ______________________________</p>
+  <p>Every lease of a building intended for the exercise of a commercial, industrial or craft activity is a
+    commercial lease (article 1762-3 of the Civil Code). The special rules for commercial leases do not apply
+    to leases with a term of 1 year or less (article 1762-4 of the Civil Code). Where the premises are intended
+    for another activity, in particular administrative offices or the exercise of a liberal profession, the
+    statements of this model on those special rules do not apply. The amended Law of
+    21 September 2006 on residential leases does not apply to premises used for commercial, administrative,
+    industrial or craft purposes or for the exercise of a liberal profession, save for its
+    provisions on the settlement of disputes (article 1, paragraph 3, of that Law).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The premises are intended exclusively for the exercise of the following activity: ______________________________</p>
+  <p>The tenant carries on no other activity in the premises without the landlord's prior written consent. The tenant
+    obtains at its own expense and keeps in force the administrative authorisations required for its activity, in
+    particular the business permit, and complies with the regulations applicable to its business.</p>
+  <p>The parties stipulate that the landlord does not warrant that the premises allow the activity to be carried on
+    under the planning regulations or the rules specific to that activity, save the following
+    indication to the contrary: ______________________________</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p>A commercial lease may be concluded for a fixed or an indefinite term; if no end date is indicated,
+    it is concluded for an indefinite term. The contract binds a new buyer or any
+    new holder of a right in rem over the building (article 1762-4 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">This contract is concluded for a fixed term<span th:if="${endDate != null}">
+    and ends on <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p th:if="${!fixedTerm}">This contract is concluded for an indefinite term.</p>
+  <p>Without prejudice to article 1739 of the Civil Code, every lease that comes to an end for whatever
+    reason is tacitly renewed for an indefinite term; the tenant must renew or adapt
+    the agreed rental guarantee in line with that renewal, so that the landlord holds the guarantee
+    until the end of the letting (article 1762-7, paragraph 2, of the Civil Code).<span class="clause-ref"
+    data-ref="renewal" th:if="${refs['renewal']}"> The right to renewal is governed by this contract (see
+    article <span th:text="${refs['renewal']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is set at <strong th:text="${rentAmount}">Amount</strong> excluding value added tax and excluding
+    charges (payable <span th:text="${paymentFrequency}">monthly</span>).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> The charges are paid separately (see article
+    <span th:text="${refs['service-costs']}"></span>).</span><span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Value added tax is dealt with in this contract (see article
+    <span th:text="${refs['vat']}"></span>).</span></p>
+  <p>The amount of the rent is freely agreed between the parties; the amended Law of 21 September 2006 on
+    residential leases and its rules on the rent ceiling and the rent commission do not apply to this
+    lease.</p>
+  <p>Any rent supplement paid to the landlord or to the intermediary because the contract is concluded is void by
+    operation of law. Any undertaking by the tenant towards the landlord to use a specific intermediary for
+    subletting or assigning the lease is void by operation of law (article 1762-5, paragraphs 1 and 2, of the Civil
+    Code).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The indexation of the rent follows the terms of this contract (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The parties agree that the rent is adapted every year, on the anniversary of the date on which the lease took effect,
+    in line with the change in the national consumer price index (indice des prix à la consommation national, IPCN)
+    published by the National Institute of Statistics and Economic Studies (STATEC), using the formula: adapted rent = base rent
+    &times; new index / base index.</p>
+  <p>Base index (month and value) and month of the reference index for each adaptation: ______________________________</p>
+  <p>If the index ceases to be published or is rebased, the index replacing it or the rebased index is applied
+    with the published linking coefficient. The absence of an adaptation for a period does not constitute a waiver of
+    adaptation for the future.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant bears the following charges, taxes and duties linked to the occupation and
+    operation of the premises: ______________________________</p>
+  <p>The charges are paid by advance payments of ________ euros per rent period, settled annually on the basis of a
+    statement that the landlord sends the tenant with the supporting documents or copies of them. Charges common to
+    several premises are allocated by the following method: ______________________________</p>
+  <p>The parties stipulate that the land tax (impôt foncier) and the landlord's management costs remain payable by the landlord,
+    save the following stipulation to the contrary: ______________________________</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of immovable property is in principle exempt from value added tax. The landlord may, under
+    the conditions and following the procedure laid down by the amended Law of 12 February 1979 on value added tax
+    and its implementing regulations, opt to apply that tax where the tenant is a
+    taxable person using the premises for the purposes of its economic activity.</p>
+  <p>Option for value added tax: yes / no. If the option is exercised, the rent and the charges are increased
+    by the tax at the applicable rate, and the tenant informs the landlord without delay of any change in the use of the
+    premises that may affect the option.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with a rental guarantee (garantie locative) of
+    <strong th:text="${depositAmount}">Amount</strong>, to secure the payment of the rent or of all the
+    other obligations arising from the lease.</p>
+  <p th:if="${depositAmount == null}">The tenant provides the landlord with a rental guarantee (garantie locative) of
+    the following amount, to secure the payment of the rent or of all the other obligations arising from the lease: ________ euros.</p>
+  <p>The rental guarantee may not exceed 6 months' rent; the landlord may not refuse a rental guarantee
+    in the form of a first-demand bank guarantee or of the taking out of any insurance or any other
+    guarantee covering at least 6 months' rent (article 1762-5, paragraph 3, of the Civil Code). The
+    parties stipulate that the amount of the rental guarantee does not exceed 6 months' rent.</p>
+  <p>Agreed form of the guarantee: ______________________________. If the lease is renewed, the tenant
+    renews or adapts the guarantee so that the landlord holds it until the end of the letting
+    (article 1762-7, paragraph 2, of the Civil Code).</p>
+  <p>The parties stipulate that the guarantee, or its balance after deduction of the duly justified sums still owed to the
+    landlord, is returned to the tenant within ________ months after the return of the premises and
+    the drawing up of the exit inventory.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the advance payments on charges</span>
+    <span th:text="${paymentFrequency}">monthly</span>, in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the date agreed between the parties</span>,
+    by transfer to the account designated by the landlord.</p>
+  <p>Landlord's bank account (IBAN): ______________________________</p>
+  <p>Sums unpaid when due bear interest at the statutory rate under the conditions laid down by law,
+    in particular after a formal notice (mise en demeure). The parties stipulate that the landlord issues an invoice or a receipt
+    complying with the applicable tax requirements.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord delivers the premises in a good state of repair of every kind and carries out, during the lease,
+    the repairs that may become necessary other than the tenant's repairs (réparations locatives), in accordance with the Civil Code
+    and subject to the following stipulations: ______________________________</p>
+  <p>The tenant bears the routine maintenance of the premises and of its installations, minor repairs and
+    the tenant's repairs, as well as the compliance works required by the regulations specific to its
+    activity. The tenant reports to the landlord without delay any damage or any repair for which the landlord is responsible and allows
+    access to the premises for them to be carried out.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant carries out no works affecting the structure, the façades, the roof or the common technical installations
+    without the landlord's prior written consent. Authorised fit-out works are carried out at
+    its own expense and under its own responsibility, by qualified contractors and in compliance with the required administrative
+    authorisations.</p>
+  <p>The parties stipulate that at the end of the lease the fit-out carried out by the tenant passes to the landlord without
+    compensation, unless the landlord requires the premises to be restored to their original condition at the tenant's expense, save
+    the following agreement to the contrary: ______________________________</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Any clause prohibiting the assignment of the lease or the subletting of the premises or of part of the
+    premises is void by operation of law if the assignment or subletting is made together with the transfer of the business (fonds), provided
+    that an identical activity remains established (article 1762-6, paragraph 1, of the Civil Code). However, where the
+    landlord has reserved part of the building to live in itself or to have its family live in,
+    the prohibition on assigning the lease or subletting remains valid.</p>
+  <p>Any assignment or subletting, in whole or in part, is notified to the landlord with a full copy of the contract
+    of assignment or sublease. Within 30 days of notification of the planned assignment or sublease, the
+    landlord may refuse its approval if it has just grounds, and within 8 days of that refusal the tenant may
+    apply to the justice of the peace (juge de paix). The assignor remains liable, as joint and several guarantor of the assignee or subtenant,
+    for all the obligations arising from the lease (article 1762-6, paragraphs 2 and 3, of the Civil Code).</p>
+  <p>Except in the case of a sublease where the tenant has made investments specific to the subtenant's activity,
+    the rents paid to the tenant by the subtenant may not exceed the rents paid by
+    the tenant to the landlord (article 1762-6, paragraph 4, of the Civil Code). Outside the cases referred to in paragraph 1 of
+    that article, the parties stipulate that assignment and subletting require the landlord's prior written
+    consent.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant insures, with a company of recognised solvency, its liability as tenant (fire, water
+    damage, explosion), its installations, equipment and goods, as well as its public liability
+    for its business, and provides proof to the landlord when the keys are handed over and thereafter every year on request.</p>
+  <p>The landlord insures the building as owner. The parties may agree on a mutual waiver of
+    recourse between themselves and their insurers: yes / no.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Where the Grand-Ducal regulations on the energy performance of non-residential buildings (bâtiments fonctionnels) so require, the
+    landlord makes available to the tenant a copy of the valid energy performance certificate of the building.</p>
+  <p>Energy performance class and date on which the certificate was drawn up, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>An entry inventory (état des lieux) is drawn up jointly by the parties, or by an expert chosen by them, when
+    the keys are handed over and annexed to this contract; an exit inventory is drawn up in the same way
+    when the premises are returned. The parties stipulate that the fees of an expert chosen by mutual agreement are
+    shared equally between them.</p>
+  <p>At the end of the lease, the tenant returns the premises in the condition in which it received them according to the entry inventory,
+    save normal wear and tear and subject to the stipulations on fit-out.<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> The return of the guarantee follows the exit inventory (see
+    article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>The tenant, and the subtenant if the lease does not prohibit subletting, may at the end of the lease
+    request its renewal; any contrary clause in the written lease refusing the
+    tenant or the subtenant that right is void by operation of law (article 1762-10 of the Civil Code).</p>
+  <p>The request is made by registered letter with acknowledgement of receipt sent to the landlord at the address indicated
+    in this contract, otherwise at its domicile or registered office, on pain of forfeiture at least 6 months before
+    the expiry of the lease; the landlord makes its position known within 3 months of receipt. If there are
+    several landlords, the request is sent to each of them, save a clause to the contrary in this contract.</p>
+  <p>Landlord's address for the renewal request: ______________________________</p>
+  <p>The landlord may always, after a period of at least 9 years of occupation of the let premises, terminate the
+    lease or refuse its renewal without having to give reasons, if the landlord or a third party pays the
+    tenant an eviction indemnity (indemnité d'éviction) before the end of the lease; failing a clause allowing its
+    amount to be determined, the parties may apply to the justice of the peace, who sets the indemnity on the basis of the market value of the
+    business (fonds de commerce) for the activity in question (article 1762-12 of the Civil Code).</p>
+  <p>Agreed method of determining the eviction indemnity, where applicable: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>A tenant whose lease has been running for at least 18 years has a right of pre-emption over the let premises,
+    unless they are sold by public auction, transferred to a member of
+    the landlord's family related by blood or marriage up to and including the third degree, or transferred
+    free of charge. That right may be exercised only if the tenant has rented the whole building or if the let premises are
+    under the co-ownership regime (article 1762-13 of the Civil Code).</p>
+  <p>The landlord sends the tenant the offer to sell by registered letter, informing the tenant of its right to
+    make a counter-proposal. The tenant has 1 month to exercise its right and, where appropriate, make a
+    counter-proposal; its silence counts as refusal of the offer. That period is extended by 1 month if the tenant has
+    applied for a loan from a financial institution established in the European Union. The premises may
+    be sold to a third party only at a price higher than the one offered by the tenant. If they are sold to a third party
+    despite that right, the aggrieved tenant may claim from the seller damages that may not be less than
+    the amount of the rent for 1 year.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The termination period of this contract may not be less than 6 months; termination is notified
+    by registered post with acknowledgement of receipt (article 1762-7, paragraph 1, of the Civil Code). Agreed
+    termination period, if longer: ________ months.</p>
+  <p th:if="${fixedTerm}">This fixed-term contract may be terminated before its end date only in the cases
+    provided for by law or by this contract. Agreed early termination option, where applicable: ______________________________</p>
+  <p>The landlord may terminate the lease with immediate effect if the tenant fails to perform its contractual
+    obligations. The landlord may terminate the lease with the notice provided for in article 1762-7 of the Civil Code, or refuse its
+    renewal: 1° for personal occupation by the landlord or by its descendants in the first
+    degree; 2° if any letting for an identical activity is abandoned; 3° in the event of
+    reconstruction or transformation of the let building (article 1762-11 of the Civil Code).<span class="clause-ref"
+    data-ref="renewal" th:if="${refs['renewal']}"> Termination against payment of an eviction indemnity is governed by this
+    contract (see article <span th:text="${refs['renewal']}"></span>).</span></p>
+  <p>The landlord may ask the justice of the peace for a decision authorising the forced eviction of the tenant after
+    the termination period has expired. The justice of the peace may, at the request of the tenant or of the trading or farming subtenant (sous-locataire commerçant ou fermier),
+    ordered to vacate, grant a single stay, which may not exceed 9 months, on the cumulative conditions that all the
+    rent and advance payments on charges due have been paid on the day the application is lodged and that the stay is
+    granted to enable the applicant to find another building in order to continue its activity and to meet
+    its obligations under the employment contracts with its employees (article 1762-9 of the Civil Code).</p>
+  <p>If the tenant dies, the lease is maintained for the person taking over the business provided that that person
+    maintains the commercial, industrial or craft operation and is related to the deceased tenant up to and including the
+    fifth degree, or otherwise is the spouse or cohabiting partner (concubin) of the deceased
+    tenant (article 1762-8 of the Civil Code). The parties may end the contract by mutual agreement.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    premises gives rise to an exit inventory (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party and of the persons acting on its
+    behalf only to the extent necessary for the conclusion and performance of this contract and for compliance with
+    its legal obligations, in accordance with the General Data Protection Regulation (GDPR, Regulation
+    (EU) 2016/679) and the Law of 1 August 2018 on the organisation of the National Commission for Data
+    Protection.</p>
+  <p>The data subjects may exercise the rights conferred on them by the GDPR, in particular the rights of access,
+    rectification and erasure, and may lodge a complaint with the National Commission for Data
+    Protection (Commission nationale pour la protection des données, CNPD).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This contract is governed by Luxembourg law.</p>
+  <p>The justice of the peace (juge de paix) of the place where the premises are located has jurisdiction, even if the title is disputed, over
+    disputes between landlords and tenants relating to the existence and performance of the lease (article 19 of the
+    amended Law of 21 September 2006 on residential leases, applicable to commercial premises under
+    its article 1, paragraph 3). The parties endeavour to settle their disputes amicably before bringing any action
+    in court.</p>
+</div>
+
+</body>
+</html>

@@ -42,6 +42,7 @@ import com.buurman.domain.Amenity;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractTermination;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Photo;
@@ -62,6 +63,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PhotoRepository;
@@ -105,6 +107,7 @@ public class PropertyBookletExporter {
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final PropertyOutdoorAreaRepository propertyOutdoorAreaRepository;
@@ -133,6 +136,7 @@ public class PropertyBookletExporter {
       PropertyAgriculturalDetailsRepository agriculturalDetailsRepository,
       ContractRepository contractRepository,
       ContractExtensionRepository contractExtensionRepository,
+      ContractTerminationRepository contractTerminationRepository,
       PaymentRepository paymentRepository,
       ExpenseRepository expenseRepository,
       PropertyOutdoorAreaRepository propertyOutdoorAreaRepository,
@@ -159,6 +163,7 @@ public class PropertyBookletExporter {
     this.agriculturalDetailsRepository = agriculturalDetailsRepository;
     this.contractRepository = contractRepository;
     this.contractExtensionRepository = contractExtensionRepository;
+    this.contractTerminationRepository = contractTerminationRepository;
     this.paymentRepository = paymentRepository;
     this.expenseRepository = expenseRepository;
     this.propertyOutdoorAreaRepository = propertyOutdoorAreaRepository;
@@ -1190,6 +1195,8 @@ public class PropertyBookletExporter {
         contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, ContractTermination> terminationsByContract =
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId);
 
     List<Map<String, Object>> out = new ArrayList<>();
     for (Contract contract : contracts) {
@@ -1197,7 +1204,10 @@ public class PropertyBookletExporter {
       List<ContractExtension> extensions =
           extensionsByContract.getOrDefault(contract.getId(), List.of());
       Optional<LocalDate> effectiveEndDate =
-          EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+          EffectiveEndDateHelper.computeEffectiveEndDate(
+              contract.getEndDate(),
+              extensions,
+              Optional.ofNullable(terminationsByContract.get(contract.getId())));
       Map<String, Object> m = new HashMap<>();
       m.put("id", contract.getIdentifier().map(Sid::value).orElse("—"));
       m.put("contact", contact != null ? contact.getDisplayName() : msg("value.unknown", locale));

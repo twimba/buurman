@@ -14,6 +14,7 @@ import {
   updateRentRegulationRegion,
   deleteRentRegulationRegion,
   listRentRegulationRules,
+  listRentRegulationTenancyRules,
   createRentRegulationRule,
   bulkImportRentRegulationRules,
   updateRentRegulationRule,
@@ -69,6 +70,9 @@ export const useReloadRentRegulationCatalog = () => {
       });
       queryClient.invalidateQueries({ queryKey: ['rent-regulation-regions'] });
       queryClient.invalidateQueries({ queryKey: ['rent-regulation-rules'] });
+      queryClient.invalidateQueries({
+        queryKey: ['rent-regulation-tenancy-rules'],
+      });
       queryClient.invalidateQueries({
         queryKey: ['rent-regulation-catalog-diff'],
       });
@@ -223,6 +227,16 @@ export const useDeleteRegion = () => {
         queryKey: ['rent-regulation-regions', variables.countryCode],
       });
     },
+  });
+};
+
+// ── Tenancy rules (display-only, seeded from the catalog) ────────────
+
+export const useRentRegulationTenancyRules = (countryCode: string) => {
+  return useQuery({
+    queryKey: ['rent-regulation-tenancy-rules', countryCode],
+    queryFn: () => listRentRegulationTenancyRules(countryCode),
+    enabled: !!countryCode,
   });
 };
 

@@ -28,7 +28,7 @@ f. **Report a summary** of everything added / updated / deleted / flagged.
 
 `$ARGUMENTS` sets scope:
 - Country code(s) (`NL`, `FR DE ES`) → only those.
-- `all` → all 20 countries (use the **Workflow** option below — 20 countries of web research is large).
+- `all` → all 21 countries (use the **Workflow** option below — 21 countries of web research is large).
 - A year (`2026`) → focus on that year's rows across all countries.
 - **Empty → ask** the user what to scope. Suggest a sensible default: the current year's rows plus any country whose `lastReviewedAt` is oldest.
 
@@ -68,6 +68,7 @@ Adversarially double-check any change that loosens or tightens a cap by a large 
 | FI | stat.fi, ara.fi |
 | PL | isap.sejm.gov.pl, GUS (wskaźnik przeliczeniowy) |
 | CZ | zakonyprolidi.cz, ČSÚ |
+| GR | et.gr / api.et.gr (ΦΕΚ), mitos.gov.gr + aade.gr (lease declaration), lawspot.gr (consolidated Civil Code / ΚΠολΔ text) |
 | US | per-jurisdiction official sites (rhc.dc.gov, stpaul.gov, portlandmaine.gov, county sites) + local CPI-U |
 | CA | provincial sites (alberta.ca, gov.mb.ca, gnb.ca, gov.nl.ca …) — provincial annual guidelines |
 
@@ -174,4 +175,4 @@ For every Added/Updated/Deleted entry, cite the authoritative source. Be honest 
 
 ## Scaling to many countries — Workflow (opt-in)
 
-`all` (or many countries) means ~20 independent research tasks. That's a good fit for a multi-agent **Workflow**: one researcher per country (each verifies against its official body and returns proposed changes with sources), then a synthesis step that applies the vetted changes to the JSON and produces the summary. Only run the Workflow if the user opts into multi-agent orchestration; otherwise process countries sequentially with `WebSearch`/`WebFetch`, or research a few in parallel with `Agent`. Either way, the rules above (authoritative-only, no guessing, cite sources, validate, summarize) are unchanged.
+`all` (or many countries) means ~21 independent research tasks. That's a good fit for a multi-agent **Workflow**: one researcher per country (each verifies against its official body and returns proposed changes with sources), then a synthesis step that applies the vetted changes to the JSON and produces the summary. Only run the Workflow if the user opts into multi-agent orchestration; otherwise process countries sequentially with `WebSearch`/`WebFetch`, or research a few in parallel with `Agent`. Either way, the rules above (authoritative-only, no guessing, cite sources, validate, summarize) are unchanged.

@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
-import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Payment;
@@ -48,6 +47,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.ContractTerminationRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.FinancingPaymentRepository;
 import com.buurman.repository.PaymentRepository;
@@ -72,6 +72,7 @@ public class PropertyDashboardService {
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractTerminationRepository contractTerminationRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final FinancingPaymentRepository financingPaymentRepository;
@@ -613,16 +614,10 @@ public class PropertyDashboardService {
       int months,
       Map<UUID, Optional<LocalDate>> effectiveEndDates,
       int unitCount) {
-    // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
-    // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
+    // Include in-force (ACTIVE, NOTICE_GIVEN), EXPIRED, and TERMINATED — all represent periods of
+    // actual occupancy. DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in.
     List<Contract> occupiedContracts =
-        contracts.stream()
-            .filter(
-                c ->
-                    c.getStatus() == ContractStatus.ACTIVE
-                        || c.getStatus() == ContractStatus.EXPIRED
-                        || c.getStatus() == ContractStatus.TERMINATED)
-            .toList();
+        contracts.stream().filter(PropertyDashboardService::hasOccupied).toList();
 
     // Occupancy is now a per-unit dwelling attribute (BUUR-106): a building's occupancy is the
     // AVERAGE across its units, not whether any single unit was let. Grouping by unit and capping
@@ -722,7 +717,7 @@ public class PropertyDashboardService {
                   c -> {
                     Optional<LocalDate> effEnd =
                         effectiveEndDates.getOrDefault(c.getId(), c.getEndDate());
-                    return c.getStatus() == ContractStatus.ACTIVE
+                    return c.getStatus().isInForce()
                         && !c.getStartDate().isAfter(monthEnd)
                         && (effEnd.isEmpty() || !effEnd.get().isBefore(monthStart));
                   })
@@ -788,6 +783,14 @@ public class PropertyDashboardService {
         percent);
   }
 
+  /** Whether the contract's tenant has actually occupied the unit (now or in the past). */
+  private static boolean hasOccupied(Contract c) {
+    ContractStatus status = c.getStatus();
+    return status.isInForce()
+        || status == ContractStatus.EXPIRED
+        || status == ContractStatus.TERMINATED;
+  }
+
   private Optional<BigDecimal> calculateOccupancyRate(
       List<Contract> contracts,
       LocalDate now,
@@ -804,9 +807,7 @@ public class PropertyDashboardService {
       if (c.getStartDate() == null) {
         continue;
       }
-      if (c.getStatus() != ContractStatus.ACTIVE
-          && c.getStatus() != ContractStatus.EXPIRED
-          && c.getStatus() != ContractStatus.TERMINATED) {
+      if (!hasOccupied(c)) {
         continue;
       }
 
@@ -849,22 +850,16 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Batch-loads contract extensions and computes effective end dates for all given contracts.
-   * Returns a map of contract ID to effective end date (which may be empty for indefinite
-   * contracts).
+   * Batch-loads extensions and terminations and computes each contract's effective end date, capped
+   * by its termination's effective end date when notice has been given (the contract's own end_date
+   * is never rewritten by a termination). Empty means open-ended.
    */
   private Map<UUID, Optional<LocalDate>> buildEffectiveEndDateMap(
       List<Contract> contracts, UUID teamId) {
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
-    List<ContractExtension> allExtensions =
-        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
-    Map<UUID, List<ContractExtension>> extensionsByContract =
-        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
-    Map<UUID, Optional<LocalDate>> result = new java.util.HashMap<>();
-    for (Contract c : contracts) {
-      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
-      result.put(c.getId(), EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts));
-    }
-    return result;
+    return EffectiveEndDateHelper.computeEffectiveEndDates(
+        contracts,
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId),
+        contractTerminationRepository.findByContractIdsAndTeamId(contractIds, teamId));
   }
 }

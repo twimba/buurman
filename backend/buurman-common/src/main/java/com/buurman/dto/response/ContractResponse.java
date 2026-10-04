@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.LeaseRegime;
 import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 import com.buurman.util.SkipTestCoverage;
@@ -51,6 +52,7 @@ public record ContractResponse(
     Optional<Contract.LandlordType> landlordType,
     Optional<String> regionCode,
     List<String> documentLanguages,
+    LeaseRegime leaseRegime,
     // Effective end date (computed from extensions)
     Optional<LocalDate> effectiveEndDate,
     // Extension statistics

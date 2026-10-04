@@ -158,6 +158,7 @@
                                         <javaTimeTypes>true</javaTimeTypes>
                                         <relations>true</relations>
                                         <routines>false</routines>
+                                        <implicitJoinPathsToMany>false</implicitJoinPathsToMany>
                                     </generate>
                                 </generator>
                             </jooq>

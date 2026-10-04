@@ -1,14 +1,22 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { useToast } from '@buurman/ui';
 
-import { getErrorMessage } from '../utils/errorMessages';
+import { getErrorMessage, getProblemCode } from '../utils/errorMessages';
 
 type ToastMutationOptions<TData, TVars> = Omit<
   UseMutationOptions<TData, unknown, TVars>,
   'onError'
 > & {
-  /** Toast shown on success (omit to show none). */
-  successMessage?: string;
+  /**
+   * Toast shown on success (omit to show none). A function receives the mutation variables, so
+   * a single call can opt out by returning undefined.
+   */
+  successMessage?: string | ((variables: TVars) => string | undefined);
+  /**
+   * Translated toast text per ProblemDetail `code`; a response whose code is listed shows that
+   * text instead of the server's detail. Other errors keep the default handling.
+   */
+  errorCodeMessages?: Record<string, string>;
 };
 
 /**
@@ -20,15 +28,26 @@ export function useMutationWithToast<TData, TVars>(
   options: ToastMutationOptions<TData, TVars>
 ) {
   const { showToast } = useToast();
-  const { successMessage, onSuccess, ...rest } = options;
+  const { successMessage, errorCodeMessages, onSuccess, ...rest } = options;
   return useMutation<TData, unknown, TVars>({
     ...rest,
     onSuccess: (...args) => {
-      if (successMessage) {
-        showToast(successMessage, 'success');
+      const message =
+        typeof successMessage === 'function'
+          ? successMessage(args[1])
+          : successMessage;
+      if (message) {
+        showToast(message, 'success');
       }
       onSuccess?.(...args);
     },
-    onError: (error) => showToast(getErrorMessage(error), 'error'),
+    onError: (error) => {
+      const code = getProblemCode(error);
+      const mapped =
+        code && errorCodeMessages && Object.hasOwn(errorCodeMessages, code)
+          ? errorCodeMessages[code]
+          : undefined;
+      showToast(mapped ?? getErrorMessage(error), 'error');
+    },
   });
 }
