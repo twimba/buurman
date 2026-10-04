@@ -1102,6 +1102,91 @@ public final class LeaseDocumentRegistry {
   // ===== IE entries (country pack) =====
   // Constants, citation pattern and foreign markers for IE go here, only inside these markers.
 
+  /**
+   * The Irish statute citation format: the number after "section(s)" / "s." / "ss." /
+   * "regulation(s)" / "reg." / "paragraph(s)" / "para." / "Part", with an optional capital-letter
+   * suffix: {@code section 34}, {@code section 35B}, {@code s.19B}, {@code Part 4}. The subsection
+   * in brackets ("section 34(1)(a)") belongs to the reference. Known limit: in a chained reference
+   * ("sections 20(1) and 20B(2)") only the first number follows the keyword, so the later numbers
+   * are not paired. IE is English only (no translation is compared), so the pattern only documents
+   * the format for the fidelity gate should a translation ever be added.
+   */
+  public static final Pattern IRISH_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:sections?|s\\.|ss\\.|regulations?|reg\\.|paragraphs?|para\\.|part)\\s{0,20})"
+              + "\\d+[A-Z]*",
+          Pattern.CASE_INSENSITIVE);
+
+  /**
+   * Mirror of V103__seed_ie_lease_clauses.sql (RESIDENTIAL rows). English only: no translation, so
+   * no fidelity comparison and no foreign markers; no region branches (national rent limits since 1
+   * March 2026).
+   */
+  private static final Entry IE_RESIDENTIAL =
+      new Entry(
+          "IE",
+          LeaseKind.RESIDENTIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-information", false, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("deposit", false, false, 8),
+              new ClauseSpec("payment", true, false, 9),
+              new ClauseSpec("use", false, false, 10),
+              new ClauseSpec("subletting", false, false, 11),
+              new ClauseSpec("maintenance", false, false, 12),
+              new ClauseSpec("energy-certificate", false, false, 13),
+              new ClauseSpec("registration", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("notices", false, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          List.of(),
+          Optional.of(IRISH_CITATION));
+
+  /** Mirror of V103__seed_ie_lease_clauses.sql (COMMERCIAL rows). English only. */
+  private static final Entry IE_COMMERCIAL =
+      new Entry(
+          "IE",
+          LeaseKind.COMMERCIAL,
+          "en",
+          List.of("en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("renewal", true, false, 5),
+              new ClauseSpec("rent", true, false, 6),
+              new ClauseSpec("rent-adjustment", false, false, 7),
+              new ClauseSpec("service-costs", false, false, 8),
+              new ClauseSpec("vat", false, false, 9),
+              new ClauseSpec("deposit", false, false, 10),
+              new ClauseSpec("payment", true, false, 11),
+              new ClauseSpec("maintenance", false, false, 12),
+              new ClauseSpec("alterations", false, false, 13),
+              new ClauseSpec("assignment", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("registration", false, false, 17),
+              new ClauseSpec("break-option", false, false, 18),
+              new ClauseSpec("handover-inspection", false, false, 19),
+              new ClauseSpec("termination", true, false, 20),
+              new ClauseSpec("notices", false, false, 21),
+              new ClauseSpec("guarantor", false, false, 22),
+              new ClauseSpec("data-protection", false, false, 23),
+              new ClauseSpec("disputes", false, false, 24)),
+          List.of(),
+          Optional.of(IRISH_CITATION));
+
   // ===== end IE =====
 
   // ===== IT entries (country pack) =====
@@ -1204,6 +1289,8 @@ public final class LeaseDocumentRegistry {
     // ===== end GR ENTRIES =====
 
     // ===== IE ENTRIES (country pack) =====
+    entries.add(IE_RESIDENTIAL);
+    entries.add(IE_COMMERCIAL);
 
     // ===== end IE ENTRIES =====
 
