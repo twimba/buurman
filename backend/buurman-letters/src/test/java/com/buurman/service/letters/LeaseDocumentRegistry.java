@@ -623,9 +623,10 @@ public final class LeaseDocumentRegistry {
    * The Irish statute citation format: the number after "section(s)" / "s." / "ss." /
    * "regulation(s)" / "reg." / "paragraph(s)" / "para." / "Part", with an optional capital-letter
    * suffix: {@code section 34}, {@code section 35B}, {@code s.19B}, {@code Part 4}. The subsection
-   * in brackets ("section 34(1)(a)") belongs to the reference. IE is English only (no translation
-   * is compared), so the pattern only documents the format for the fidelity gate should a
-   * translation ever be added.
+   * in brackets ("section 34(1)(a)") belongs to the reference. Known limit: in a chained reference
+   * ("sections 20(1) and 20B(2)") only the first number follows the keyword, so the later numbers
+   * are not paired. IE is English only (no translation is compared), so the pattern only documents
+   * the format for the fidelity gate should a translation ever be added.
    */
   public static final Pattern IRISH_CITATION =
       Pattern.compile(

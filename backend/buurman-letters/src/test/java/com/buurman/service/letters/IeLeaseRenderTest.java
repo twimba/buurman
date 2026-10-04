@@ -47,6 +47,15 @@ class IeLeaseRenderTest {
   }
 
   private String render(String kind, List<String> keys, boolean fixedTerm, boolean withDeposit) {
+    return render(kind, keys, fixedTerm, withDeposit, Map.of());
+  }
+
+  private String render(
+      String kind,
+      List<String> keys,
+      boolean fixedTerm,
+      boolean withDeposit,
+      Map<String, Object> overrides) {
     List<Map<String, Object>> clauses = new ArrayList<>();
     Map<String, Integer> refs = new HashMap<>();
     for (int i = 0; i < keys.size(); i++) {
@@ -80,6 +89,7 @@ class IeLeaseRenderTest {
     vars.put("regionCode", null);
     vars.put("clauses", clauses);
     vars.put("refs", refs);
+    vars.putAll(overrides);
     Context ctx = new Context(Locale.ENGLISH);
     ctx.setVariables(vars);
     return engine.process("lease-agreement/_shell", ctx).replaceAll("\\s+", " ");
@@ -152,6 +162,32 @@ class IeLeaseRenderTest {
     assertThat(render("commercial", List.of("deposit"), true, true))
         .contains("rent deposit of <strong>" + DEPOSIT + "</strong>")
         .contains("do not apply to this lease");
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"residential", "commercial"})
+  @DisplayName("parties without tenant names print the signing-tenant wording")
+  void partiesWithoutTenantNames(String kind) {
+    String html = render(kind, List.of("parties"), true, true, Map.of("tenantNames", ""));
+    assertThat(html)
+        .contains("the tenant or tenants signing below")
+        .doesNotContain("A. Murphy")
+        .doesNotContainPattern("(?<!\\p{L})null(?!\\p{L})");
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"residential", "commercial"})
+  @DisplayName("a fixed term without an end date renders without a date and without residue")
+  void fixedTermWithoutEndDate(String kind) {
+    Map<String, Object> overrides = new HashMap<>();
+    overrides.put("endDate", null);
+    String html = render(kind, List.of("term"), true, true, overrides);
+    assertThat(html)
+        .contains("granted for a fixed term")
+        .doesNotContain("ending on")
+        .doesNotContain(END_DATE)
+        .doesNotContain("${")
+        .doesNotContainPattern("(?<!\\p{L})null(?!\\p{L})");
   }
 
   @Test
