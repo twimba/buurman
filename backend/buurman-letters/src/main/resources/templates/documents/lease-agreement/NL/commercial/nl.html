@@ -1,0 +1,441 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdelingen 1 to 4 (algemene bepalingen) and afdeling 6
+               (huur van bedrijfsruimte), as in force from 01-07-2026 (wetten.overheid.nl BWBR0005290, version
+               "geldend van 01-07-2026 t/m heden", consulted 03-10-2026 and 04-10-2026): art. 7:204, 7:206, 7:207,
+               7:208, 7:209, 7:213, 7:214, 7:215, 7:216, 7:217, 7:218, 7:220, 7:221, 7:222, 7:224, 7:225, 7:226,
+               7:228, 7:230, 7:230a, 7:231, 7:290, 7:291, 7:292, 7:293, 7:294, 7:295, 7:296, 7:297, 7:299, 7:300,
+               7:301, 7:303, 7:304, 7:305, 7:307, 7:308. No scheduled amendment of afdeling 6 or of 7:228, 7:230a;
+               the only open change on 7:290 is the dormant huurkoop bill (kst 24212, wijzigingenoverzicht read
+               04-10-2026). Residential-only rules (afdeling 5: Wet vaste huurcontracten, Wet betaalbare huur,
+               7:261b) do not apply to bedrijfsruimte.
+               Burgerlijk Wetboek Boek 6 (BWBR0005289, geldend van 16-07-2026): art. 6:96, 6:119, 6:119a.
+               Wet op de omzetbelasting 1968 (BWBR0002629, geldend van 01-01-2026) art. 11 lid 1 onder b, onder 5;
+               Uitvoeringsbeschikking omzetbelasting 1968 (BWBR0002634, geldend van 01-04-2026) art. 6a.
+               Wetboek van Burgerlijke Rechtsvordering (BWBR0001827, geldend van 14-07-2026) art. 93 and 103.
+               Faillissementswet (BWBR0001860, geldend van 01-09-2026) art. 39.
+               Energy label: Besluit bouwwerken leefomgeving (rvo.nl "Verplicht energielabel voor utiliteitsgebouwen"
+               and "Energielabel C kantoren", read 04-10-2026; monument exemption for the label duty lapsed 29-05-2026).
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "ten minste 1 jaar" is "at least 1 year" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Dutch law (Burgerlijk Wetboek). The system does not know whether
+  the premises are bedrijfsruimte in the sense of art. 7:290 BW or other business premises (art. 7:230a BW): the
+  parties tick the regime in clause-premises and every regime-specific rule is stated conditionally. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Ondergetekenden:</p>
+  <p><strong th:text="${landlordName}">verhuurder</strong>, hierna te noemen &ldquo;de verhuurder&rdquo;,</p>
+  <p>ingeschreven in het handelsregister van de Kamer van Koophandel onder nummer: ______________________________</p>
+  <p>btw-identificatienummer: ______________________________</p>
+  <p>vertegenwoordigd door: ______________________________, en</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">huurder</strong>, hierna
+    (gezamenlijk) te noemen &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">de hieronder ondertekende huurder(s), hierna (gezamenlijk) te
+    noemen &ldquo;de huurder&rdquo;,</p>
+  <p>ingeschreven in het handelsregister van de Kamer van Koophandel onder nummer: ______________________________</p>
+  <p>btw-identificatienummer: ______________________________</p>
+  <p>vertegenwoordigd door: ______________________________,</p>
+  <p>verklaren te zijn overeengekomen zoals in deze huurovereenkomst van bedrijfsruimte is bepaald. Noemt deze
+    overeenkomst meer dan 1 huurder, dan is ieder van hen hoofdelijk aansprakelijk voor de nakoming van alle
+    verplichtingen van de huurder uit deze overeenkomst.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>De verhuurder verhuurt aan de huurder, die in huur aanneemt, de bedrijfsruimte gelegen aan
+    <strong th:text="${propertyAddress}">adres</strong>, met een verhuurbaar vloeroppervlak van ongeveer
+    ________ m², met de daarbij behorende onroerende aanhorigheden en de in deze overeenkomst of een bijlage
+    daarbij omschreven parkeerplaatsen en voorzieningen, hierna te noemen &ldquo;het gehuurde&rdquo;.</p>
+  <p>Welke wettelijke regeling op het gehuurde van toepassing is, volgt uit de wet en hangt af van de bestemming
+    die partijen in deze overeenkomst zijn overeengekomen. Partijen leggen hieronder vast welke regeling zij
+    bedoelen; deze keuze kan niet afwijken van de wettelijke kwalificatie. Aankruisen wat van toepassing is:</p>
+  <p>&#9744; bedrijfsruimte in de zin van artikel 7:290 lid 2 BW: een gebouwde onroerende zaak of gedeelte daarvan
+    die krachtens deze overeenkomst is bestemd voor de uitoefening van een kleinhandelsbedrijf, van een restaurant-
+    of cafébedrijf, van een afhaal- of besteldienst of van een ambachtsbedrijf, indien in de verhuurde ruimte een
+    voor het publiek toegankelijk lokaal voor rechtstreekse levering van roerende zaken of voor dienstverlening
+    aanwezig is, of voor de uitoefening van een hotelbedrijf, dan wel een onroerende zaak die is bestemd voor de
+    uitoefening van een kampeerbedrijf (de zogenoemde middenstandsbedrijfsruimte);</p>
+  <p>&#9744; andere bedrijfsruimte (artikel 7:230a BW): een gebouwde onroerende zaak of gedeelte daarvan die noch
+    woonruimte, noch bedrijfsruimte in de zin van artikel 7:290 BW is, zoals kantoorruimte of een
+    bedrijfshal.</p>
+  <p>De regels over huur van woonruimte (Boek 7, titel 4, afdeling 5 van het Burgerlijk Wetboek), waaronder die
+    over de huurprijs, de servicekosten en de waarborgsom, zijn op deze overeenkomst niet van toepassing. Voor
+    zover de wet bepaalt dat daarvan niet ten nadele van de huurder kan worden afgeweken, gaan die bepalingen voor
+    op afwijkende afspraken in deze overeenkomst. Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW,
+    dan kunnen bedingen die ten nadele van de huurder afwijken van de bepalingen van afdeling 6 worden vernietigd
+    (behalve bij een overeenkomst van 2 jaar of korter, artikel 7:301 lid 1 BW),
+    tenzij de rechter ze op verzoek van een van de partijen heeft goedgekeurd; een afwijking van artikel 7:307 BW
+    kan niet worden goedgekeurd (artikel 7:291 BW).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Het gehuurde is uitsluitend bestemd voor de uitoefening van: ______________________________ (bestemming).
+    De huurder gebruikt het gehuurde alleen overeenkomstig deze bestemming en gedraagt zich ten aanzien van het
+    gebruik als een goed huurder (artikelen 7:213 en 7:214 BW). Een ander gebruik is alleen toegestaan na
+    voorafgaande schriftelijke toestemming van de verhuurder. Een wijziging van de bestemming kan gevolgen hebben
+    voor de wettelijke regeling die op het gehuurde van toepassing is.</p>
+  <p>De huurder draagt op eigen kosten zorg voor de vergunningen, ontheffingen en meldingen die voor zijn
+    bedrijfsvoering in het gehuurde vereist zijn, waaronder die met betrekking tot brandveilig gebruik. Kan een
+    vereiste vergunning niet worden verkregen door de bouwkundige staat of de ligging van het gehuurde, dan kan dat
+    een gebrek opleveren (artikel 7:204 lid 2 BW); de wettelijke rechten van de huurder bij gebreken blijven dan
+    onverlet.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Deze overeenkomst gaat in op <strong th:text="${startDate}">ingangsdatum</strong>.</p>
+  <p th:if="${!fixedTerm}">De overeenkomst is aangegaan voor onbepaalde tijd.</p>
+  <p th:if="${fixedTerm}">De overeenkomst is aangegaan voor bepaalde tijd<span th:if="${endDate != null}">, tot en
+    met <strong th:text="${endDate}">einddatum</strong></span>.</p>
+  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW, dan geldt de overeenkomst voor 5 jaar of, als
+    een langere bepaalde duur is overeengekomen, voor die langere duur (artikel 7:292 lid 1 BW). Een overeenkomst
+    die voor 5 jaar geldt, wordt na het verstrijken daarvan van rechtswege met 5 jaar verlengd; een overeenkomst die
+    is aangegaan voor een termijn langer dan 5 jaar maar korter dan 10 jaar, wordt na het verstrijken van die
+    termijn van rechtswege verlengd met een tweede termijn die zoveel korter is dan 5 jaar als de eerste termijn
+    langer is dan 5 jaar (artikel 7:292 lid 2 BW). Wordt de verlengde overeenkomst niet tegen het einde van de
+    tweede termijn opgezegd, dan wordt zij voortgezet voor onbepaalde tijd, tenzij uit de overeenkomst een bepaalde
+    tijd voortvloeit of partijen een bepaalde tijd overeenkomen (artikel 7:300 lid 1 BW).</p>
+  <p>Op een overeenkomst van 2 jaar of korter voor bedrijfsruimte in de zin van artikel 7:290 BW zijn de artikelen
+    7:291 tot en met 7:300 BW niet van toepassing (artikel 7:301 lid 1 BW). Heeft het gebruik op grond van zo&rsquo;n
+    overeenkomst langer dan 2 jaar geduurd, dan geldt van rechtswege een overeenkomst op de tussen partijen
+    overeengekomen voorwaarden, maar voor 5 jaar, waarop de verstreken 2 jaar in mindering komen (artikel 7:301
+    lid 2 BW). Dat gevolg treedt niet in als partijen v&oacute;&oacute;r het verstrijken van de termijn van 2 jaar
+    een andere overeenkomst sluiten die onder artikel 7:292 lid 1 BW valt, of een daarvan afwijkende overeenkomst,
+    mits de goedkeuring van de rechter van de afwijkende bedingen is verzocht v&oacute;&oacute;r het verstrijken
+    van die termijn (artikel 7:301 lid 3 BW).</p>
+  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan bepalen partijen de duur vrij. Een voor
+    bepaalde tijd aangegane huur eindigt dan, zonder dat daartoe een opzegging vereist is, wanneer die tijd is
+    verstreken (artikel 7:228 lid 1 BW), tenzij partijen hieronder iets anders overeenkomen. Behoudt de huurder na
+    afloop van de huurovereenkomst met goedvinden van de verhuurder het gebruik van het gehuurde, dan wordt de
+    overeenkomst daardoor, tenzij van een andere bedoeling blijkt, voor onbepaalde tijd verlengd (artikel 7:230
+    BW). Afspraak over verlenging, indien overeengekomen: ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>De huurprijs bedraagt <strong th:text="${rentAmount}">bedrag</strong>
+    <span th:text="${paymentFrequency}">per maand</span>, exclusief omzetbelasting.<span class="clause-ref"
+    data-ref="vat" th:if="${refs['vat']}"> Is de verhuur met omzetbelasting belast, dan is de huurder daarnaast
+    omzetbelasting verschuldigd (zie artikel <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Daarnaast betaalt de huurder een
+    voorschot op de servicekosten (zie artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Voor bedrijfsruimte gelden geen wettelijke maximale huurprijzen; de regels over huurprijzen van woonruimte,
+    waaronder die van de Wet betaalbare huur, zijn niet van toepassing. De huurprijs is tussen partijen vrij
+    overeengekomen.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Voor de aanpassing van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>De huurprijs wordt 1 maal per jaar aangepast, voor het eerst 12 maanden na de ingangsdatum van deze
+    overeenkomst, op basis van de wijziging van de consumentenprijsindex (CPI), reeks alle huishoudens, zoals
+    gepubliceerd door het Centraal Bureau voor de Statistiek (CBS). De aangepaste huurprijs is gelijk aan de
+    geldende huurprijs, vermenigvuldigd met het indexcijfer van de kalendermaand die 3 maanden v&oacute;&oacute;r
+    de aanpassingsdatum ligt en gedeeld door het indexcijfer van de kalendermaand die 15 maanden v&oacute;&oacute;r
+    die datum ligt. Leidt de berekening tot een lagere huurprijs, dan geldt: ______________________________
+    (verlaging / geen verlaging). Wordt de reeks niet meer gepubliceerd, dan geldt de daarmee het meest
+    vergelijkbare reeks van het CBS. De verhuurder deelt de aangepaste huurprijs tijdig schriftelijk aan de huurder
+    mee.</p>
+  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW, dan laat deze aanpassing onverlet dat zowel de
+    huurder als de verhuurder kan vorderen dat de rechter de huurprijs, als die niet overeenstemt met die van
+    vergelijkbare bedrijfsruimte ter plaatse, nader vaststelt: indien de overeenkomst voor bepaalde tijd geldt, na
+    afloop van de overeengekomen duur, en in alle andere gevallen telkens wanneer ten minste 5 jaar zijn verstreken
+    sinds de dag waarop de laatste door partijen vastgestelde huurprijs is ingegaan of waarop de laatste door de
+    rechter vastgestelde huurprijs is gevorderd (artikel 7:303 lid 1 BW). De rechter let daarbij op het gemiddelde
+    van de huurprijzen van vergelijkbare bedrijfsruimte ter plaatse in een tijdvak van 5 jaar voorafgaand aan de
+    dag van het instellen van de vordering, herleid volgens de algemene ontwikkeling van het prijspeil, en wijst een
+    verhoging af voor zover die is gegrond op verbeteringen die op kosten van de huurder zijn aangebracht
+    (artikel 7:303 leden 2 en 3 BW). De vordering is alleen ontvankelijk als zij vergezeld gaat van een advies
+    over de nadere huurprijs van 1 of meer door partijen gezamenlijk benoemde deskundigen; bereiken partijen geen
+    overeenstemming over de benoeming, dan benoemt de rechter de deskundige op verzoek van de meest gerede partij
+    (artikel 7:304 leden 1 en 2 BW).</p>
+  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan geldt geen wettelijke regeling voor de nadere
+    vaststelling van de huurprijs door de rechter; de huurprijs wijzigt dan alleen op grond van deze bepaling of
+    van een afspraak tussen partijen, behoudens het bijzondere geval van artikel 7:305 BW.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Naast de huurprijs betaalt de huurder per betalingstermijn een voorschot op de vergoeding voor de leveringen
+    en diensten die de verhuurder in verband met het gehuurde verzorgt (servicekosten), zoals in deze overeenkomst
+    vermeld. Leveringen en diensten waarop de servicekosten betrekking hebben: ______________________________</p>
+  <p>De verhuurder verstrekt de huurder elk jaar een naar soort uitgesplitst overzicht van de in dat jaar werkelijk
+    gemaakte kosten, met vermelding van de wijze van berekening. Wat te veel of te weinig aan voorschotten is
+    betaald, wordt na verstrekking van dat overzicht tussen partijen verrekend. Na verstrekking van het overzicht
+    kan de verhuurder het voorschot aanpassen aan de te verwachten kosten.</p>
+  <p>De wettelijke regels over servicekosten van woonruimte en de bevoegdheid van de huurcommissie gelden niet
+    voor deze overeenkomst.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>De verhuur van onroerende zaken is in beginsel vrijgesteld van omzetbelasting (artikel 11 lid 1 onder b van
+    de Wet op de omzetbelasting 1968). Partijen kiezen voor belaste verhuur (ja / nee):
+    ______________________________</p>
+  <p>Belaste verhuur is alleen mogelijk als de huurder het gehuurde gebruikt voor doeleinden waarvoor een volledig
+    of nagenoeg volledig recht op aftrek van omzetbelasting bestaat, de verhuurder niet de vrijstelling van
+    artikel 25a lid 1 van die wet toepast, en partijen blijkens de schriftelijke huurovereenkomst voor belaste
+    verhuur hebben gekozen of gezamenlijk een verzoek daartoe aan de inspecteur hebben gedaan (artikel 11 lid 1
+    onder b, onder 5&deg;, van de Wet op de omzetbelasting 1968). Bij belaste verhuur is de huurder over de
+    huurprijs en, voor zover belast, over de servicekosten omzetbelasting verschuldigd.</p>
+  <p>Kiezen partijen voor belaste verhuur, dan vermelden zij hieronder een omschrijving van het gehuurde met
+    plaatselijke en kadastrale aanduiding en de datum van aanvang van het boekjaar van de huurder, en voegt de
+    huurder een door hem ondertekende verklaring toe waaruit blijkt dat hij het gehuurde gebruikt voor doeleinden
+    waarvoor een volledig of nagenoeg volledig recht op aftrek bestaat (artikel 6a lid 2 van de
+    Uitvoeringsbeschikking omzetbelasting 1968). Kadastrale aanduiding: ______________________________. Aanvang
+    boekjaar van de huurder: ______________________________</p>
+  <p>Voldoet de huurder in een boekjaar niet meer aan die voorwaarde, dan stelt hij de verhuurder daarvan binnen
+    4 weken na afloop van dat boekjaar in kennis door middel van een door hem ondertekende verklaring en zendt hij
+    binnen dezelfde termijn een afschrift daarvan aan de inspecteur (artikel 6a lid 6 van de Uitvoeringsbeschikking
+    omzetbelasting 1968). De huurder vergoedt de verhuurder de schade die deze lijdt doordat de vrijstelling
+    alsnog van toepassing wordt, voor zover dat aan de huurder is toe te rekenen.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">De huurder stelt bij aanvang van de huur tot zekerheid van de nakoming van
+    zijn verplichtingen uit deze overeenkomst een waarborgsom of een bankgarantie ten bedrage van
+    <strong th:text="${depositAmount}">bedrag</strong>.</p>
+  <p th:if="${depositAmount == null}">De huurder stelt bij aanvang van de huur tot zekerheid van de nakoming van
+    zijn verplichtingen uit deze overeenkomst een waarborgsom of een bankgarantie ter hoogte van het tussen partijen
+    schriftelijk overeengekomen bedrag.</p>
+  <p>Vorm van de zekerheid (waarborgsom / bankgarantie van een in de Europese Unie gevestigde bank):
+    ______________________________. Rente over een waarborgsom: ______________________________. Voor
+    bedrijfsruimte geldt geen wettelijk maximum voor de zekerheid; de wettelijke regeling van de waarborgsom van
+    woonruimte is niet van toepassing.</p>
+  <p>Na het einde van de huur en de oplevering geeft de verhuurder de zekerheid terug, of het restant daarvan na
+    verrekening van wat de huurder op grond van deze overeenkomst nog verschuldigd is, binnen
+    ______________________________ (termijn). Van een verrekening stelt de verhuurder de huurder schriftelijk in
+    kennis, met een specificatie van de verrekende bedragen.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Voor de vaststelling van schade geldt de oplevering (zie artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zie artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> en de voorschotten op de servicekosten</span><span
+    th:if="${refs['vat']}">, vermeerderd met de omzetbelasting voor zover die verschuldigd is,</span>
+    <span th:text="${paymentFrequency}">per maand</span><span th:if="${paymentDueDay == 1}"> bij
+    vooruitbetaling</span>,
+    <span th:if="${paymentDueDay != null}">uiterlijk op de <strong th:text="${paymentDueDay}">1</strong>e dag van
+      de maand waarin de betalingstermijn aanvangt</span><span th:if="${paymentDueDay == null}">uiterlijk op de tussen partijen
+      overeengekomen betaaldag</span>, door overmaking naar de rekening die de verhuurder daarvoor schriftelijk
+    heeft opgegeven.</p>
+  <p>De huurder betaalt zonder korting of verrekening met een tegenvordering op de verhuurder, onverminderd zijn
+    wettelijke bevoegdheid de redelijke kosten van het zelf verhelpen van een gebrek in mindering op de huurprijs
+    te brengen als de verhuurder met het verhelpen in verzuim is (artikel 7:206 lid 3 BW).</p>
+  <p>Betaalt de huurder niet tijdig, dan is hij over het achterstallige bedrag de wettelijke rente verschuldigd
+    (artikel 6:119 BW) of, als deze overeenkomst een handelsovereenkomst is, de wettelijke rente voor
+    handelsovereenkomsten (artikel 6:119a lid 1 BW). Daarnaast vergoedt hij de redelijke kosten ter verkrijging
+    van voldoening buiten rechte (artikel 6:96 lid 2 onder c BW); bij een handelsovereenkomst bedraagt die
+    vergoeding ten minste 40 euro (artikel 6:96 lid 4 BW).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>De verhuurder verhelpt op verlangen van de huurder gebreken aan het gehuurde, tenzij dit onmogelijk is of
+    uitgaven vereist die in de gegeven omstandigheden redelijkerwijs niet van de verhuurder zijn te vergen
+    (artikel 7:206 lid 1 BW). Voor rekening van de verhuurder komen in ieder geval het groot onderhoud en het
+    herstel van de fundering, de constructie, het dak, de gevels en de gemeenschappelijke installaties van het
+    gebouw.</p>
+  <p>De huurder verricht op eigen kosten de kleine herstellingen (artikel 7:217 BW) en het onderhoud aan de
+    binnenzijde van het gehuurde en aan de door of voor hem aangebrachte voorzieningen, tenzij deze nodig zijn
+    geworden doordat de verhuurder is tekortgeschoten in zijn verplichting gebreken te verhelpen. Andere verdeling
+    van het onderhoud, indien overeengekomen: ______________________________</p>
+  <p>De huurder meldt een gebrek onverwijld aan de verhuurder (artikel 7:222 BW). Is de verhuurder met het
+    verhelpen van een gebrek in verzuim, dan kan de huurder het gebrek zelf verhelpen en de redelijke kosten op de
+    verhuurder verhalen, desgewenst door die in mindering op de huurprijs te brengen; hiervan kan niet ten nadele
+    van de huurder worden afgeweken (artikel 7:206 lid 3 BW). Voor gebreken die de verhuurder bij het aangaan van
+    de overeenkomst kende of had behoren te kennen, kan van de artikelen 7:206 leden 1 en 2, 7:207 en 7:208 BW niet
+    ten nadele van de huurder worden afgeweken (artikel 7:209 BW).</p>
+  <p>De huurder geeft de verhuurder gelegenheid tot het uitvoeren van dringende werkzaamheden aan het gehuurde,
+    onverminderd zijn aanspraken op vermindering van de huurprijs, op ontbinding van de huurovereenkomst en op
+    schadevergoeding (artikel 7:220 lid 1 BW). De verhuurder kondigt werkzaamheden tijdig aan en houdt zoveel
+    mogelijk rekening met de bedrijfsvoering van de huurder.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>De huurder verandert de inrichting of gedaante van het gehuurde niet geheel of gedeeltelijk dan na
+    schriftelijke toestemming van de verhuurder, tenzij het gaat om veranderingen en toevoegingen die bij het einde
+    van de huur zonder noemenswaardige kosten kunnen worden ongedaan gemaakt en verwijderd (artikel 7:215 lid 1 BW).
+    Partijen beschouwen het aanbrengen van reclame-uitingen aan de buitenzijde van het gebouw als een verandering
+    in deze zin.</p>
+  <p>Verleent de verhuurder de toestemming niet, dan kan de huurder vorderen dat de rechter hem machtigt de
+    veranderingen aan te brengen. De rechter wijst de vordering bij bedrijfsruimte slechts toe als de veranderingen
+    noodzakelijk zijn voor een doelmatig gebruik van het gehuurde door de huurder en geen zwaarwichtige bezwaren aan
+    de zijde van de verhuurder zich daartegen verzetten; hij kan aan de machtiging voorwaarden verbinden of daarbij
+    een last opleggen (artikel 7:215 leden 3 tot en met 5 BW). Van deze regels kan niet ten nadele van de huurder
+    worden afgeweken (artikel 7:215 lid 6 BW).</p>
+  <p>De huurder is tot de ontruiming bevoegd door hem aangebrachte veranderingen en toevoegingen ongedaan te maken,
+    mits het gehuurde daarbij wordt gebracht in een toestand die redelijkerwijs in overeenstemming met de
+    oorspronkelijke kan worden geacht (artikel 7:216 lid 1 BW). Afspraak over het verwijderen van veranderingen bij
+    het einde van de huur: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>De huurder geeft het gehuurde niet geheel of gedeeltelijk aan een ander in gebruik, tenzij de verhuurder
+    daarvoor vooraf schriftelijk toestemming heeft gegeven. Zonder deze afspraak zou de huurder daartoe bevoegd
+    zijn, tenzij hij moest aannemen dat de verhuurder tegen het in gebruik geven aan die ander redelijke bezwaren
+    zou hebben (artikel 7:221 BW).</p>
+  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW en is overdracht door de huurder aan een derde
+    van het in het gehuurde door de huurder zelf of een ander uitgeoefende bedrijf gewenst, dan kan de huurder
+    vorderen dat de rechter hem machtigt die derde als huurder in zijn plaats te stellen. De rechter kan de
+    vordering slechts toewijzen als de huurder of de ander die het bedrijf uitoefent een zwaarwichtig belang heeft
+    bij de overdracht van het bedrijf, en wijst haar steeds af als de voorgestelde huurder niet voldoende waarborgen
+    biedt voor een volledige nakoming van de overeenkomst en voor een behoorlijke bedrijfsvoering; hij kan aan de
+    machtiging voorwaarden verbinden of daarbij een last opleggen (artikel 7:307 BW). Voor zover artikel 7:291 BW van
+    toepassing is (niet bij een overeenkomst van 2 jaar of korter, artikel 7:301 lid 1 BW), kan van deze regeling
+    niet ten nadele van de huurder worden afgeweken.</p>
+  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan bestaat zo&rsquo;n wettelijke regeling van
+    indeplaatsstelling niet; overdracht van de huurovereenkomst aan een derde vereist dan de medewerking van de
+    verhuurder.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>De verhuurder verzekert het gebouw waarvan het gehuurde deel uitmaakt in gebruikelijke omvang, waaronder tegen
+    brand- en stormschade. De huurder verzekert op eigen kosten zijn inventaris, voorraden en de door of voor hem
+    aangebrachte voorzieningen en sluit voor de duur van de huur een bedrijfsaansprakelijkheidsverzekering af; hij
+    toont de verzekeringen op verzoek van de verhuurder aan.</p>
+  <p>De huurder is aansprakelijk voor schade aan het gehuurde die is ontstaan door een hem toe te rekenen
+    tekortschieten in de nakoming van een verplichting uit de huurovereenkomst. Alle schade wordt vermoed daardoor
+    te zijn ontstaan, behalve brandschade en schade aan de buitenzijde van het gehuurde (artikel 7:218 leden 1 en
+    2 BW).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Bij de start, verlenging of vernieuwing van een huurovereenkomst voor een utiliteitsgebouw, zoals een kantoor-
+    of winkelgebouw, is op grond van het Besluit bouwwerken leefomgeving een geldig energielabel verplicht, tenzij
+    een wettelijke uitzondering van toepassing is. Is voor het gehuurde een energielabel verplicht of aanwezig, dan
+    verstrekt de verhuurder de huurder uiterlijk bij het aangaan van deze overeenkomst een afschrift van het geldige
+    energielabel. Een energielabel is geldig tot de op het label vermelde datum.</p>
+  <p>Is het gehuurde een kantoorgebouw of een deel daarvan, dan mag het op grond van het Besluit bouwwerken
+    leefomgeving alleen als kantoor worden gebruikt als het ten minste energielabel C heeft, behoudens de daarin
+    geregelde uitzonderingen, onder meer bij een gebruiksoppervlakte van de kantoorfuncties en hun nevenfuncties van
+    minder dan 100 m², bij kantoorfuncties van minder dan 50% van de totale gebruiksoppervlakte van het gebouw en
+    bij een gebouw dat ten hoogste 2 jaar wordt gebruikt. Partij die de maatregelen treft die nodig zijn om aan die
+    eis te voldoen of te blijven voldoen: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Bij aanvang van de huur maken partijen gezamenlijk een beschrijving op van de staat van het gehuurde
+    (opleveringsrapport), met de meterstanden en de overhandigde sleutels. Beide partijen ondertekenen de
+    beschrijving en ieder ontvangt een exemplaar.</p>
+  <p>Bij het einde van de huur stelt de huurder het gehuurde weer ter beschikking van de verhuurder, in de staat
+    waarin hij het volgens die beschrijving heeft aanvaard, met uitzondering van geoorloofde veranderingen en
+    toevoegingen en van wat door ouderdom is tenietgegaan of beschadigd. Is geen beschrijving opgemaakt, dan wordt
+    de huurder, behoudens tegenbewijs, verondersteld het gehuurde te hebben ontvangen in de staat waarin het zich
+    bij het einde van de huur bevindt (artikel 7:224 lid 2 BW).<span class="clause-ref" data-ref="alterations"
+    th:if="${refs['alterations']}"> Voor door de huurder aangebrachte veranderingen geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['alterations']}"></span>).</span></p>
+  <p>Houdt de huurder het gehuurde na het einde van de huur onrechtmatig onder zich, dan kan de verhuurder over de
+    tijd dat hij het gehuurde mist een vergoeding vorderen gelijk aan de huurprijs, onverminderd zijn recht op
+    vergoeding van de meerdere schade (artikel 7:225 BW).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> De afrekening van de zekerheid volgt na de oplevering (zie artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Opzegging van deze overeenkomst geschiedt bij deurwaardersexploot of bij aangetekende brief. Partijen kunnen de
+    huur, nadat de overeenkomst tot stand is gekomen, ook met wederzijds goedvinden beëindigen; daarvoor is geen
+    opzegging vereist.</p>
+  <p>Is het gehuurde bedrijfsruimte in de zin van artikel 7:290 BW, dan geldt, behalve voor een overeenkomst van
+    2 jaar of korter (artikel 7:301 lid 1 BW), het volgende. Een overeenkomst die voor 5 jaar geldt en een
+    overeenkomst die is aangegaan voor een termijn langer dan 5 jaar maar korter dan 10 jaar, kunnen door ieder van
+    de partijen worden opgezegd tegen het einde van de eerste en tegen het einde van de tweede termijn; de
+    opzegtermijn bedraagt ten minste 1 jaar en de opzegging geschiedt bij exploot of bij aangetekende brief
+    (artikel 7:293 leden 1 en 2 BW). Is de overeenkomst na de tweede termijn voor onbepaalde tijd voortgezet, dan
+    kan ieder van de partijen haar opzeggen; is zij voor bepaalde tijd voortgezet of aangegaan voor een duur van
+    10 jaar of langer, dan eindigt zij niet door het enkele verloop van de huurtijd, maar kan zij door ieder van de
+    partijen tegen het einde van die huurtijd worden opgezegd, met inachtneming van dezelfde vereisten (artikel
+    7:300 leden 2 en 3 BW).</p>
+  <p>Een opzegging door de verhuurder is nietig als zij niet de gronden vermeldt die tot de opzegging hebben geleid
+    (artikel 7:294 BW). Heeft de huurder niet zelf opgezegd en na de opzegging door de verhuurder niet schriftelijk
+    in de beëindiging toegestemd, dan blijft de overeenkomst na de dag waartegen rechtsgeldig is opgezegd van
+    rechtswege van kracht totdat de rechter onherroepelijk heeft beslist op een vordering van de verhuurder; de
+    verhuurder kan, als hij 6 weken na de opzegging van de huurder geen schriftelijke mededeling heeft ontvangen
+    dat deze in de beëindiging toestemt, op de in de opzegging vermelde gronden vorderen dat de rechter het
+    tijdstip vaststelt waarop de overeenkomst eindigt (artikel 7:295 BW).</p>
+  <p>Is opgezegd tegen het einde van de eerste termijn, dan kan de rechter de vordering slechts toewijzen op de
+    grond dat de bedrijfsvoering van de huurder niet is geweest zoals een goed huurder betaamt, of op de grond dat
+    de verhuurder aannemelijk maakt dat hij, zijn echtgenoot, zijn geregistreerde partner, een bloed- of
+    aanverwant in de eerste graad of een pleegkind het verhuurde persoonlijk in duurzaam gebruik wil nemen en hij
+    het daartoe dringend nodig heeft; onder duurzaam gebruik valt niet vervreemding van de bedrijfsruimte, maar wel
+    renovatie die zonder beëindiging van de huur niet mogelijk is (artikel 7:296 lid 1 BW). Die laatste grond is
+    niet toewijsbaar als de verhuurder de rechtsopvolger is van een vorige verhuurder, niet diens echtgenoot,
+    geregistreerde partner, bloed- of aanverwant in de eerste graad of pleegkind is, en de opzegging is geschied
+    binnen 3 jaar nadat de rechtsopvolging schriftelijk ter kennis van de huurder is gebracht (artikel 7:296 lid 2
+    BW).</p>
+  <p>Is opgezegd tegen het einde van de tweede termijn, dan kan de rechter de vordering toewijzen op grond van een
+    redelijke afweging van de belangen van de verhuurder bij beëindiging tegen die van de huurder en van de
+    onderhuurder aan wie bevoegdelijk is onderverhuurd bij verlenging; hij wijst de vordering in elk geval af als
+    van de huurder bij die afweging niet kan worden gevergd dat hij het gehuurde ontruimt (artikel 7:296 lid 3 BW).
+    Hij wijst de vordering in ieder geval toe als zich een van de gronden van artikel 7:296 lid 1 BW voordoet, met
+    de beperking van lid 2, als de huurder niet toestemt in een redelijk aanbod tot het aangaan van een nieuwe
+    overeenkomst met betrekking tot het gehuurde, voor zover dat aanbod geen wijziging van de huurprijs inhoudt, of
+    als de verhuurder een krachtens het geldende omgevingsplan aan het verhuurde toegedeelde functie wil
+    verwezenlijken (artikel 7:296 lid 4 BW). Voor een opzegging na de tweede termijn zijn deze regels van
+    overeenkomstige toepassing (artikel 7:300 lid 3 BW).</p>
+  <p>Wijst de rechter de vordering toe, dan stelt hij tevens het tijdstip van de ontruiming vast (artikel 7:296
+    lid 5 BW); hij kan een bedrag vaststellen dat de verhuurder aan de huurder of aan de onderhuurder aan wie
+    bevoegdelijk is onderverhuurd moet betalen ter tegemoetkoming in diens verhuis- en inrichtingskosten, waarna de
+    verhuurder zijn vordering binnen de door de rechter gestelde termijn kan intrekken (artikel 7:297 BW). Eindigt
+    de overeenkomst op de grond dat een in artikel 7:296 lid 1 onder b BW genoemde persoon het verhuurde persoonlijk
+    in duurzaam gebruik wil nemen, terwijl die wil in werkelijkheid niet aanwezig is geweest, dan is de verhuurder
+    tot schadevergoeding gehouden (artikel 7:299 BW). Geniet de verhuurder, nadat de overeenkomst door zijn
+    opzegging is geëindigd, voordeel doordat het verhuurde wordt gebruikt voor een bedrijf dat gelijksoortig is aan
+    het daar door de gewezen huurder of een bevoegde onderhuurder uitgeoefende bedrijf, dan kan deze een naar
+    billijkheid te berekenen vergoeding vorderen; voordeel uit de aard of ligging van het verhuurde of uit de
+    daaraan aangebrachte veranderingen telt niet mee, en de vergoeding kan niet worden toegekend als dat gebruik pas
+    begint nadat sinds het einde van de overeenkomst meer dan 1 jaar is verstreken (artikel 7:308 BW).</p>
+  <p>Is het gehuurde andere bedrijfsruimte (artikel 7:230a BW), dan eindigt een voor onbepaalde tijd aangegane of
+    verlengde huur door opzegging tegen een voor de huurbetaling overeengekomen dag met een opzegtermijn van ten
+    minste 1 maand (artikel 7:228 lid 2 BW). Opzegtermijn voor de huurder: ______________________________;
+    opzegtermijn voor de verhuurder: ______________________________.</p>
+  <p>Na het einde van de huur kan de huurder van andere bedrijfsruimte de rechter verzoeken de termijn waarbinnen
+    ontruiming moet plaatsvinden te verlengen; het verzoek moet worden ingediend binnen 2 maanden na het tijdstip
+    waartegen schriftelijk ontruiming is aangezegd. Dit geldt niet als de huurder zelf de huur heeft opgezegd,
+    uitdrukkelijk in de beëindiging heeft toegestemd of is veroordeeld tot ontruiming wegens niet-nakoming van zijn
+    verplichtingen (artikel 7:230a leden 1 en 2 BW). De indiening van het verzoek schorst de verplichting tot
+    ontruiming totdat op het verzoek is beslist (artikel 7:230a lid 3 BW). Het verzoek wordt slechts toegewezen als
+    de belangen van de huurder en van de onderhuurder aan wie bevoegdelijk is onderverhuurd door de ontruiming
+    ernstiger worden geschaad dan die van de verhuurder bij voortzetting van het gebruik door de huurder, en wordt
+    niettemin afgewezen als de verhuurder aannemelijk maakt dat van hem wegens onbehoorlijk gebruik van het
+    verhuurde, wegens ernstige overlast, aan de medegebruikers of aan hemzelf aangedaan, of wegens wanbetaling niet
+    gevergd kan worden dat de huurder het gebruik langer behoudt (artikel 7:230a lid 4 BW). De verlenging bedraagt
+    ten hoogste 1 jaar na het eindigen van de overeenkomst en kan op verzoek van de huurder nog 2 maal met telkens
+    ten hoogste 1 jaar worden verlengd; het verzoek daartoe wordt uiterlijk 1 maand v&oacute;&oacute;r het
+    verstrijken van de termijn ingediend (artikel 7:230a lid 5 BW). Van deze regels kan niet ten nadele van de
+    huurder worden afgeweken (artikel 7:230a lid 9 BW).</p>
+  <p>Ontbinding van deze overeenkomst op de grond dat de huurder tekortgeschoten is in de nakoming van zijn
+    verplichtingen kan, behoudens de in de wet genoemde uitzonderingen, slechts door de rechter geschieden
+    (artikel 7:231 leden 1 en 3 BW). Wordt de huurder failliet verklaard, dan kunnen zowel de curator als de
+    verhuurder de huur tussentijds opzeggen tegen een tijdstip waarop dergelijke overeenkomsten naar plaatselijk
+    gebruik eindigen, met inachtneming van de overeengekomen of gebruikelijke termijn, waarbij een termijn van
+    3 maanden in elk geval voldoende is; zijn huurpenningen vooruitbetaald, dan kan niet eerder worden opgezegd dan
+    tegen de dag waarop de termijn waarvoor is vooruitbetaald eindigt (artikel 39 lid 1 Faillissementswet).
+    Overdracht van het gehuurde door de verhuurder beëindigt de huur niet: de rechten en verplichtingen van de
+    verhuurder gaan over op de verkrijger (artikel 7:226 BW).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Voor de oplevering geldt het daarover in deze overeenkomst bepaalde (zie artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Ieder van de partijen verwerkt persoonsgegevens van de andere partij, haar vertegenwoordigers en
+    contactpersonen alleen voor zover dat nodig is voor het aangaan en uitvoeren van deze overeenkomst en voor het
+    voldoen aan wettelijke verplichtingen, overeenkomstig de Algemene verordening gegevensbescherming (AVG,
+    Verordening (EU) 2016/679), en bewaart die gegevens niet langer dan daarvoor noodzakelijk is.</p>
+  <p>De betrokkenen kunnen hun rechten op grond van de AVG uitoefenen, waaronder het recht op inzage, rectificatie
+    en wissing van hun persoonsgegevens, en kunnen een klacht indienen bij de toezichthoudende autoriteit, in
+    Nederland de Autoriteit Persoonsgegevens.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Op deze overeenkomst is Nederlands recht van toepassing.</p>
+  <p>Geschillen over deze overeenkomst worden behandeld en beslist door de kantonrechter, ongeacht het beloop of de
+    waarde van de vordering (artikel 93 onder c van het Wetboek van Burgerlijke Rechtsvordering). Is het gehuurde
+    bedrijfsruimte in de zin van artikel 7:290 BW, dan is uitsluitend de rechter bevoegd binnen wiens rechtsgebied
+    het gehuurde of het grootste gedeelte daarvan is gelegen; is het andere bedrijfsruimte, dan is die rechter mede
+    bevoegd en kiezen partijen voor die rechter (artikel 103 van het Wetboek van Burgerlijke Rechtsvordering).</p>
+  <p>Is een bepaling van deze overeenkomst nietig of wordt zij vernietigd, dan blijven de overige bepalingen van
+    kracht; partijen vervangen de bepaling dan door een geldige bepaling die de bedoeling van partijen zo dicht
+    mogelijk benadert.</p>
+</div>
+
+</body>
+</html>

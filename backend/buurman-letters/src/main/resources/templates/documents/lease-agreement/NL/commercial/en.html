@@ -1,0 +1,445 @@
+<!--
+  legal-basis: Burgerlijk Wetboek Boek 7, titel 4 (huur), afdelingen 1 to 4 (algemene bepalingen) and afdeling 6
+               (huur van bedrijfsruimte), as in force from 01-07-2026 (wetten.overheid.nl BWBR0005290, version
+               "geldend van 01-07-2026 t/m heden", consulted 03-10-2026 and 04-10-2026): art. 7:204, 7:206, 7:207,
+               7:208, 7:209, 7:213, 7:214, 7:215, 7:216, 7:217, 7:218, 7:220, 7:221, 7:222, 7:224, 7:225, 7:226,
+               7:228, 7:230, 7:230a, 7:231, 7:290, 7:291, 7:292, 7:293, 7:294, 7:295, 7:296, 7:297, 7:299, 7:300,
+               7:301, 7:303, 7:304, 7:305, 7:307, 7:308. No scheduled amendment of afdeling 6 or of 7:228, 7:230a;
+               the only open change on 7:290 is the dormant huurkoop bill (kst 24212, wijzigingenoverzicht read
+               04-10-2026). Residential-only rules (afdeling 5: Wet vaste huurcontracten, Wet betaalbare huur,
+               7:261b) do not apply to bedrijfsruimte.
+               Burgerlijk Wetboek Boek 6 (BWBR0005289, geldend van 16-07-2026): art. 6:96, 6:119, 6:119a.
+               Wet op de omzetbelasting 1968 (BWBR0002629, geldend van 01-01-2026) art. 11 lid 1 onder b, onder 5;
+               Uitvoeringsbeschikking omzetbelasting 1968 (BWBR0002634, geldend van 01-04-2026) art. 6a.
+               Wetboek van Burgerlijke Rechtsvordering (BWBR0001827, geldend van 14-07-2026) art. 93 and 103.
+               Faillissementswet (BWBR0001860, geldend van 01-09-2026) art. 39.
+               Energy label: Besluit bouwwerken leefomgeving (rvo.nl "Verplicht energielabel voor utiliteitsgebouwen"
+               and "Energielabel C kantoren", read 04-10-2026; monument exemption for the label duty lapsed 29-05-2026).
+               AVG: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "ten minste 1 jaar" is "at least 1 year" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of nl.html; the Dutch text is authoritative. Draft text, not vetted by legal
+  counsel. Reflects Dutch law (Burgerlijk Wetboek) in English. Only prose differs from nl.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds
+  only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>The undersigned:</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter referred to as &ldquo;the landlord&rdquo;,</p>
+  <p>registered in the trade register of the Netherlands Chamber of Commerce (Kamer van Koophandel) under number: ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) referred to as &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly) referred to as
+    &ldquo;the tenant&rdquo;,</p>
+  <p>registered in the trade register of the Netherlands Chamber of Commerce (Kamer van Koophandel) under number: ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>declare that they have agreed as set out in this lease agreement for business premises. If this agreement
+    names more than 1 tenant, each of them is jointly and severally liable (hoofdelijk aansprakelijk) for the
+    performance of all obligations of the tenant under this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who takes on lease, the business premises located at
+    <strong th:text="${propertyAddress}">address</strong>, with a lettable floor area of approximately
+    ________ m², together with the immovable appurtenances belonging to them and the parking spaces and facilities
+    described in this agreement or in an annex to it, hereinafter referred to as &ldquo;the leased
+    premises&rdquo;.</p>
+  <p>Which statutory regime applies to the leased premises follows from the law and depends on the purpose for
+    which the parties have agreed in this agreement that the premises are intended. The parties record below which
+    regime they intend; this choice cannot depart from the statutory classification. Tick what applies:</p>
+  <p>&#9744; business premises within the meaning of article 7:290 paragraph 2 of the Civil Code (BW): an immovable
+    built property or part of it that under this agreement is intended for carrying on a retail business, a
+    restaurant or café business, a takeaway or delivery service or a craft business, provided that the let space
+    contains a room accessible to the public for the direct supply of movable goods or for the provision of
+    services, or for carrying on a hotel business, or an immovable property intended for carrying on a camping
+    business (so-called retail and catering premises, middenstandsbedrijfsruimte);</p>
+  <p>&#9744; other business premises (article 7:230a of the Civil Code): an immovable built property or part of it
+    that is neither residential accommodation nor business premises within the meaning of article 7:290 of the Civil
+    Code, such as office space or an industrial building.</p>
+  <p>The rules on the lease of residential accommodation (Book 7, title 4, section 5 of the Civil Code), including
+    those on the rent, the service charges and the security deposit, do not apply to this agreement. Where the law
+    provides that its provisions cannot be departed from to the detriment of the tenant, those provisions prevail
+    over any deviating arrangements in this agreement. If the leased premises are business premises within the
+    meaning of article 7:290 of the Civil Code, stipulations that depart from the provisions of section 6 to the
+    detriment of the tenant can be annulled (except in an agreement of 2 years or less, article 7:301 paragraph 1 of
+    the Civil Code), unless the court has approved them at the request of one of the
+    parties; a departure from article 7:307 of the Civil Code cannot be approved (article 7:291 of the Civil
+    Code).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The leased premises are intended exclusively for carrying on: ______________________________ (permitted use,
+    bestemming). The tenant uses the leased premises only in accordance with this permitted use and conducts
+    itself as a good tenant with regard to their use (articles 7:213 and 7:214 of the Civil Code). Any other use is
+    permitted only with the prior written consent of the landlord. A change of the permitted use may affect the
+    statutory regime that applies to the leased premises.</p>
+  <p>The tenant arranges, at its own expense, the permits, exemptions and notifications required for its business
+    operations in the leased premises, including those relating to fire-safe use. If a required permit cannot be
+    obtained because of the structural condition or the location of the leased premises, this may constitute a
+    defect (article 7:204 paragraph 2 of the Civil Code); the statutory rights of the tenant in respect of defects
+    then remain unaffected.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>This agreement takes effect on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The agreement is entered into for an indefinite period.</p>
+  <p th:if="${fixedTerm}">The agreement is entered into for a fixed term<span th:if="${endDate != null}">, up to and
+    including <strong th:text="${endDate}">end date</strong></span>.</p>
+  <p>If the leased premises are business premises within the meaning of article 7:290 of the Civil Code, the
+    agreement applies for 5 years or, if a longer fixed duration has been agreed, for that longer duration
+    (article 7:292 paragraph 1 of the Civil Code). An agreement that applies for 5 years is extended by operation of
+    law by 5 years once that period has expired; an agreement entered into for a term longer than 5 years but
+    shorter than 10 years is, once that term has expired, extended by operation of law by a second term that is
+    shorter than 5 years by as much as the first term is longer than 5 years (article 7:292 paragraph 2 of the Civil
+    Code). If the extended agreement is not terminated by notice to the end of the second term, it continues for an
+    indefinite period, unless a fixed period results from the agreement or the parties agree a fixed period
+    (article 7:300 paragraph 1 of the Civil Code).</p>
+  <p>Articles 7:291 to 7:300 of the Civil Code do not apply to an agreement of 2 years or less for business
+    premises within the meaning of article 7:290 of the Civil Code (article 7:301 paragraph 1 of the Civil Code). If
+    the use under such an agreement has lasted longer than 2 years, an agreement on the terms agreed between the
+    parties applies by operation of law, but for 5 years, from which the 2 years already elapsed are deducted
+    (article 7:301 paragraph 2 of the Civil Code). That consequence does not arise if, before the period of
+    2 years expires, the parties conclude another agreement that falls under article 7:292 paragraph 1 of the Civil
+    Code, or an agreement deviating from it, provided that the court's approval of the deviating stipulations has
+    been requested before that period expires (article 7:301 paragraph 3 of the Civil Code).</p>
+  <p>If the leased premises are other business premises (article 7:230a of the Civil Code), the parties determine
+    the duration freely. A lease entered into for a fixed term then ends, without notice of termination being
+    required, when that term has expired (article 7:228 paragraph 1 of the Civil Code), unless the parties agree
+    otherwise below. If, after the lease agreement has ended, the tenant retains the use of the leased premises with
+    the landlord's consent, the agreement is thereby extended for an indefinite period, unless a different
+    intention appears (article 7:230 of the Civil Code). Arrangement on extension, if agreed:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent amounts to <strong th:text="${rentAmount}">amount</strong>
+    <span th:text="${paymentFrequency}">per month</span>, exclusive of VAT (omzetbelasting).<span class="clause-ref"
+    data-ref="vat" th:if="${refs['vat']}"> If the letting is subject to VAT, the tenant additionally owes VAT (see
+    article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays an
+    advance on the service charges (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>No statutory maximum rents apply to business premises; the rules on the rents of residential accommodation,
+    including those of the Affordable Rent Act (Wet betaalbare huur), do not apply. The rent has been agreed freely
+    between the parties.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The adjustment of the rent is governed by the provisions of this agreement on that subject (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is adjusted 1 time per year, for the first time 12 months after the start date of this agreement, on
+    the basis of the change in the consumer price index (CPI), all households series, as published by Statistics
+    Netherlands (Centraal Bureau voor de Statistiek, CBS). The adjusted rent equals the current rent multiplied by
+    the index figure of the calendar month falling 3 months before the adjustment date and divided by the index
+    figure of the calendar month falling 15 months before that date. If the calculation results in a lower rent, the
+    following applies: ______________________________ (reduction / no reduction). If the series is no longer
+    published, the most comparable CBS series applies. The landlord notifies the tenant of the adjusted rent in
+    writing and in good time.</p>
+  <p>If the leased premises are business premises within the meaning of article 7:290 of the Civil Code, this
+    adjustment does not affect the right of both the tenant and the landlord to claim that the court set the rent
+    anew if it does not correspond to that of comparable business premises in the locality: if the agreement applies
+    for a fixed term, after the agreed duration has expired, and in all other cases each time at least 5 years have
+    passed since the day on which the last rent set by the parties took effect or on which the last rent set by the
+    court was claimed (article 7:303 paragraph 1 of the Civil Code). The court then has regard to the average of the
+    rents of comparable business premises in the locality during a period of 5 years preceding the day on which the
+    claim is brought, adjusted in line with the general development of the price level, and rejects an increase to
+    the extent that it is based on improvements made at the tenant's expense (article 7:303 paragraphs 2 and 3 of
+    the Civil Code). The claim is admissible only if it is accompanied by an opinion on the new rent drawn up by 1 or
+    more experts appointed jointly by the parties; if the parties do not reach agreement on the appointment, the
+    court appoints the expert at the request of the more diligent party (article 7:304 paragraphs 1 and 2 of the
+    Civil Code).</p>
+  <p>If the leased premises are other business premises (article 7:230a of the Civil Code), there is no statutory
+    regime for the court to set the rent anew; the rent then changes only on the basis of this provision or of an
+    arrangement between the parties, save in the special case of article 7:305 of the Civil Code.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays for each payment period an advance on the charge for the supplies and
+    services that the landlord provides in connection with the leased premises (service charges, servicekosten), as
+    stated in this agreement. Supplies and services to which the service charges relate:
+    ______________________________</p>
+  <p>Each year the landlord provides the tenant with a statement, broken down by type, of the costs actually
+    incurred in that year, stating the method of calculation. Any amount paid in advances in excess or short is
+    settled between the parties after that statement has been provided. After the statement has been provided, the
+    landlord may adjust the advance to the expected costs.</p>
+  <p>The statutory rules on service charges for residential accommodation and the jurisdiction of the rent tribunal
+    (huurcommissie) do not apply to this agreement.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of immovable property is in principle exempt from VAT (article 11 paragraph 1(b) of the Turnover Tax
+    Act, Wet op de omzetbelasting 1968). The parties opt for taxed letting (yes / no):
+    ______________________________</p>
+  <p>Taxed letting is possible only if the tenant uses the leased premises for purposes for which a full or almost
+    full right to deduct VAT exists, the landlord does not apply the exemption of article 25a paragraph 1 of that
+    act, and the parties have opted for taxed letting as shown by the written lease agreement or have jointly
+    submitted a request to that effect to the tax inspector (article 11 paragraph 1(b), under 5&deg;, of the Turnover
+    Tax Act, Wet op de omzetbelasting 1968). In the case of taxed letting, the tenant owes VAT on the rent and, to
+    the extent taxed, on the service charges.</p>
+  <p>If the parties opt for taxed letting, they state below a description of the leased premises with their local
+    and cadastral designation and the date on which the tenant's financial year begins, and the tenant attaches a
+    statement signed by it showing that it uses the leased premises for purposes for which a full or almost full
+    right to deduct exists (article 6a paragraph 2 of the Turnover Tax Implementing Order, Uitvoeringsbeschikking
+    omzetbelasting 1968). Cadastral designation: ______________________________. Start of the tenant's
+    financial year: ______________________________</p>
+  <p>If in a financial year the tenant no longer meets that condition, it informs the landlord of this within
+    4 weeks after the end of that financial year by means of a statement signed by it and, within the same period,
+    sends a copy of it to the tax inspector (article 6a paragraph 6 of the Turnover Tax Implementing Order,
+    Uitvoeringsbeschikking omzetbelasting 1968). The tenant compensates the landlord for the loss the landlord
+    suffers because the exemption applies after all, to the extent that this is attributable to the tenant.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">At the start of the lease, the tenant provides, as security for the
+    performance of its obligations under this agreement, a security deposit or a bank guarantee in the amount of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">At the start of the lease, the tenant provides, as security for the
+    performance of its obligations under this agreement, a security deposit or a bank guarantee in the amount agreed
+    in writing between the parties.</p>
+  <p>Form of the security (security deposit / bank guarantee from a bank established in the European Union):
+    ______________________________. Interest on a security deposit: ______________________________. No statutory
+    maximum applies to the security for business premises; the statutory rules on the security deposit for
+    residential accommodation do not apply.</p>
+  <p>After the end of the lease and the handover, the landlord returns the security, or the balance of it after
+    setting off what the tenant still owes under this agreement, within ______________________________ (period). The
+    landlord notifies the tenant in writing of any set-off, with a specification of the amounts set off.<span
+    class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Damage is established at the handover (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the advances on the service charges</span><span
+    th:if="${refs['vat']}">, plus VAT to the extent it is owed,</span>
+    <span th:text="${paymentFrequency}">per month</span><span th:if="${paymentDueDay == 1}"> in
+    advance</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of
+      the month in which the payment period begins</span><span th:if="${paymentDueDay == null}">no later than the payment day
+      agreed between the parties</span>, by transfer to the account that the landlord has designated in writing for
+    that purpose.</p>
+  <p>The tenant pays without any deduction or set-off against a counterclaim on the landlord, without prejudice to
+    its statutory power to deduct from the rent the reasonable costs of remedying a defect itself if the landlord is
+    in default of remedying it (article 7:206 paragraph 3 of the Civil Code).</p>
+  <p>If the tenant does not pay on time, it owes statutory interest on the overdue amount (article 6:119 of the Civil
+    Code) or, if this agreement is a commercial agreement (handelsovereenkomst), the statutory interest for
+    commercial agreements (article 6:119a paragraph 1 of the Civil Code). In addition, it reimburses the reasonable
+    costs of obtaining payment out of court (article 6:96 paragraph 2(c) of the Civil Code); in the case of a
+    commercial agreement this reimbursement amounts to at least 40 euros (article 6:96 paragraph 4 of the Civil
+    Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>At the tenant's request, the landlord remedies defects in the leased premises, unless this is impossible or
+    requires expenditure that cannot reasonably be expected of the landlord in the circumstances (article 7:206
+    paragraph 1 of the Civil Code). The landlord bears in any event the major maintenance and the repair of the
+    foundations, the structure, the roof, the façades and the common installations of the building.</p>
+  <p>The tenant carries out, at its own expense, the minor repairs (article 7:217 of the Civil Code) and the
+    maintenance of the interior of the leased premises and of the facilities installed by or for it, unless these
+    have become necessary because the landlord has failed in its obligation to remedy defects. Other division of
+    maintenance, if agreed: ______________________________</p>
+  <p>The tenant reports a defect to the landlord without delay (article 7:222 of the Civil Code). If the landlord is
+    in default of remedying a defect, the tenant may remedy the defect itself and recover the reasonable costs from
+    the landlord, if it so wishes by deducting them from the rent; this cannot be departed from to the detriment of
+    the tenant (article 7:206 paragraph 3 of the Civil Code). For defects that the landlord knew or ought to have
+    known of when the agreement was concluded, articles 7:206 paragraphs 1 and 2, 7:207 and 7:208 of the Civil Code
+    cannot be departed from to the detriment of the tenant (article 7:209 of the Civil Code).</p>
+  <p>The tenant gives the landlord the opportunity to carry out urgent works on the leased premises, without
+    prejudice to its claims to a rent reduction, to dissolution of the lease agreement and to damages (article 7:220
+    paragraph 1 of the Civil Code). The landlord announces works in good time and takes the tenant's business
+    operations into account as far as possible.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant does not change the layout or form of the leased premises, in whole or in part, except with the
+    written consent of the landlord, unless the changes and additions can be undone and removed at the end of the
+    lease without significant cost (article 7:215 paragraph 1 of the Civil Code). The parties regard the
+    installation of advertising on the outside of the building as a change in this sense.</p>
+  <p>If the landlord does not give consent, the tenant may claim that the court authorise it to make the changes.
+    For business premises, the court grants the claim only if the changes are necessary for an efficient use of the
+    leased premises by the tenant and no serious objections on the part of the landlord oppose them; it may attach
+    conditions to the authorisation or impose an obligation (article 7:215 paragraphs 3 to 5 of the Civil Code).
+    These rules cannot be departed from to the detriment of the tenant (article 7:215 paragraph 6 of the Civil
+    Code).</p>
+  <p>Until it vacates the leased premises, the tenant is entitled to undo changes and additions it has made,
+    provided that the leased premises are thereby brought into a condition that can reasonably be regarded as
+    consistent with the original condition (article 7:216 paragraph 1 of the Civil Code). Arrangement on the removal
+    of changes at the end of the lease: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant does not give the leased premises, in whole or in part, to another person for use, unless the
+    landlord has given prior written consent for this. Without this arrangement the tenant would be entitled to do
+    so, unless it had to assume that the landlord would have reasonable objections to giving the premises for use to
+    that other person (article 7:221 of the Civil Code).</p>
+  <p>If the leased premises are business premises within the meaning of article 7:290 of the Civil Code and the
+    tenant wishes to transfer to a third party the business carried on in the leased premises by the tenant itself
+    or by another person, the tenant may claim that the court authorise it to substitute that third party as tenant
+    in its place. The court may grant the claim only if the tenant or the other person carrying on the business has
+    a compelling interest in the transfer of the business, and always rejects it if the proposed tenant does not
+    offer sufficient guarantees for full performance of the agreement and for proper business operations; it may
+    attach conditions to the authorisation or impose an obligation (article 7:307 of the Civil Code). To the extent that
+    article 7:291 of the Civil Code applies (not in an agreement of 2 years or less, article 7:301 paragraph 1 of the
+    Civil Code), this regime cannot be departed from to the detriment of the tenant.</p>
+  <p>If the leased premises are other business premises (article 7:230a of the Civil Code), no such statutory
+    substitution regime exists; a transfer of the lease agreement to a third party then requires the cooperation of
+    the landlord.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building of which the leased premises form part to the customary extent, including
+    against fire and storm damage. The tenant insures, at its own expense, its inventory, stock and the facilities
+    installed by or for it, and takes out business liability insurance for the duration of the lease; it provides
+    proof of the insurance at the landlord's request.</p>
+  <p>The tenant is liable for damage to the leased premises caused by a failure attributable to it in the
+    performance of an obligation under the lease agreement. All damage is presumed to have been caused in this way,
+    except fire damage and damage to the outside of the leased premises (article 7:218 paragraphs 1 and 2 of the
+    Civil Code).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>At the start, extension or renewal of a lease agreement for a non-residential building, such as an office or
+    shop building, a valid energy label is mandatory under the Buildings (Living Environment) Decree (Besluit
+    bouwwerken leefomgeving), unless a statutory exception applies. If an energy label is mandatory or available for
+    the leased premises, the landlord provides the tenant with a copy of the valid energy label no later than at the
+    conclusion of this agreement. An energy label is valid until the date stated on the label.</p>
+  <p>If the leased premises are an office building or part of one, under the Buildings (Living Environment) Decree
+    they may only be used as an office if they have at least energy label C, save for the exceptions provided in that
+    decree, among others where the usable floor area of the office functions and their ancillary functions is less
+    than 100 m², where office functions make up less than 50% of the total usable floor area of the building and
+    where a building is used for no more than 2 years. Party that takes the measures needed to meet or continue to
+    meet that requirement: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At the start of the lease, the parties jointly draw up a description of the condition of the leased premises
+    (handover report, opleveringsrapport), including the meter readings and the keys handed over. Both parties sign
+    the description and each receives a copy.</p>
+  <p>At the end of the lease, the tenant makes the leased premises available to the landlord again in the condition
+    in which it accepted them according to that description, with the exception of permitted changes and additions
+    and of what has perished or been damaged through age. If no description has been drawn up, the tenant is
+    presumed, unless proven otherwise, to have received the leased premises in the condition in which they are at
+    the end of the lease (article 7:224 paragraph 2 of the Civil Code).<span class="clause-ref" data-ref="alterations"
+    th:if="${refs['alterations']}"> Changes made by the tenant are governed by the provisions of this agreement on that subject (see article <span th:text="${refs['alterations']}"></span>).</span></p>
+  <p>If the tenant unlawfully retains the leased premises after the end of the lease, the landlord may claim, for the
+    time during which it is deprived of the leased premises, compensation equal to the rent, without prejudice to its
+    right to compensation for any greater loss (article 7:225 of the Civil Code).<span class="clause-ref"
+    data-ref="deposit"
+    th:if="${refs['deposit']}"> The settlement of the security follows after the handover (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Notice of termination of this agreement is given by a bailiff's writ (deurwaardersexploot) or by registered
+    letter. After the agreement has been concluded, the parties may also end the lease by mutual consent; no notice
+    of termination is then required.</p>
+  <p>If the leased premises are business premises within the meaning of article 7:290 of the Civil Code, the
+    following applies, except for an agreement of 2 years or less (article 7:301 paragraph 1 of the Civil Code). An
+    agreement that applies for 5 years and an agreement entered into for a term longer than 5 years but shorter than
+    10 years may be terminated by either party by notice to the end of the first and to the end of the second term;
+    the notice period is at least 1 year and notice is given by writ or by registered letter (article 7:293
+    paragraphs 1 and 2 of the Civil Code). If, after the second term, the agreement has been continued for an
+    indefinite period, either party may terminate it by notice; if it has been continued for a fixed period or was
+    entered into for a duration of 10 years or more, it does not end by the mere expiry of the lease period but may be
+    terminated by either party by notice to the end of that lease period, subject to the same requirements (article
+    7:300 paragraphs 2 and 3 of the Civil Code).</p>
+  <p>A notice of termination by the landlord is void if it does not state the grounds that led to the notice
+    (article 7:294 of the Civil Code). If the tenant has not given notice itself and has not consented in writing to
+    the termination after the landlord's notice, the agreement remains in force by operation of law after the day to
+    which notice was validly given until the court has given a final decision on a claim of the landlord; if, 6 weeks
+    after the notice, the landlord has not received a written statement from the tenant that it consents to the
+    termination, the landlord may claim, on the grounds stated in the notice, that the court fix the date on which the
+    agreement ends (article 7:295 of the Civil Code).</p>
+  <p>If notice has been given to the end of the first term, the court may grant the claim only on the ground that
+    the tenant's business operations have not been those befitting a good tenant, or on the ground that the landlord
+    makes it plausible that the landlord, its spouse, its registered partner, a relative by blood or marriage in the
+    first degree or a foster child wishes to take the leased premises into lasting personal use and that it urgently
+    needs them for that purpose; lasting use does not include disposal of the business premises, but does include a
+    renovation that is not possible without ending the lease (article 7:296 paragraph 1 of the Civil Code). The
+    latter ground cannot be granted if the landlord is the legal successor of a previous landlord, is not its spouse,
+    registered partner, relative by blood or marriage in the first degree or foster child, and notice was given
+    within 3 years after the succession was notified to the tenant in writing (article 7:296 paragraph 2 of the
+    Civil Code).</p>
+  <p>If notice has been given to the end of the second term, the court may grant the claim on the basis of a
+    reasonable balancing of the interests of the landlord in termination against those of the tenant and of the
+    subtenant to whom the premises have been sublet with authority in continuation; it rejects the claim in any event
+    if, in that balancing, the tenant cannot be required to vacate the leased premises (article 7:296 paragraph 3 of
+    the Civil Code). It grants the claim in any event if one of the grounds of article 7:296 paragraph 1 of the Civil
+    Code exists, subject to the restriction in paragraph 2, if the tenant does not accept a reasonable offer to enter
+    into a new agreement in respect of the leased premises, insofar as that offer does not involve a change of the
+    rent, or if the landlord wishes to realise a function assigned to the leased premises under the applicable
+    environment plan (omgevingsplan) (article 7:296 paragraph 4 of the Civil Code). These rules apply accordingly to a
+    notice given after the second term (article 7:300 paragraph 3 of the Civil Code).</p>
+  <p>If the court grants the claim, it also fixes the date of vacation (article 7:296 paragraph 5 of the Civil
+    Code); it may set an amount that the landlord must pay to the tenant or to the subtenant to whom the premises have
+    been sublet with authority as a contribution to its relocation and fitting-out costs, after which the landlord
+    may withdraw its claim within the period set by the court (article 7:297 of the Civil Code). If the agreement ends
+    on the ground that a person referred to in article 7:296 paragraph 1(b) of the Civil Code wishes to take the
+    leased premises into lasting personal use, while that wish did not in fact exist, the landlord is liable for
+    damages (article 7:299 of the Civil Code). If, after the agreement has ended by its notice, the landlord derives
+    an advantage from the leased premises being used for a business similar to the business carried on there by the
+    former tenant or an authorised subtenant, the latter may claim compensation calculated on the basis of equity;
+    an advantage arising from the nature or location of the leased premises or from changes made to them is not taken
+    into account, and the compensation cannot be awarded if that use only begins after more than 1 year has passed
+    since the end of the agreement (article 7:308 of the Civil Code).</p>
+  <p>If the leased premises are other business premises (article 7:230a of the Civil Code), a lease entered into or
+    extended for an indefinite period ends by notice to a day agreed for the payment of rent with a notice period of
+    at least 1 month (article 7:228 paragraph 2 of the Civil Code). Notice period for the tenant:
+    ______________________________; notice period for the landlord: ______________________________.</p>
+  <p>After the end of the lease, the tenant of other business premises may ask the court to extend the period within
+    which the premises must be vacated; the request must be filed within 2 months after the date by which vacation was
+    demanded in writing. This does not apply if the tenant has terminated the lease itself, has expressly consented
+    to its termination or has been ordered to vacate because of non-performance of its obligations (article 7:230a
+    paragraphs 1 and 2 of the Civil Code). Filing the request suspends the obligation to vacate until the request has
+    been decided (article 7:230a paragraph 3 of the Civil Code). The request is granted only if the interests of the
+    tenant and of the subtenant to whom the premises have been sublet with authority are more seriously harmed by the
+    vacation than those of the landlord by continued use by the tenant, and is nevertheless rejected if the landlord
+    makes it plausible that, because of improper use of the leased premises, serious nuisance caused to the co-users
+    or to the landlord itself, or non-payment, the landlord cannot be required to let the tenant retain the use any
+    longer (article 7:230a paragraph 4 of the Civil Code). The extension is for no more than 1 year after the end of
+    the agreement and may, at the tenant's request, be extended 2 more times by no more than 1 year each time; the
+    request for this is filed no later than 1 month before the period expires (article 7:230a paragraph 5 of the
+    Civil Code). These rules cannot be departed from to the detriment of the tenant (article 7:230a paragraph 9 of
+    the Civil Code).</p>
+  <p>Dissolution of this agreement on the ground that the tenant has failed to perform its obligations can, save for
+    the exceptions provided by law, only be effected by the court (article 7:231 paragraphs 1 and 3 of the Civil
+    Code). If the tenant is declared bankrupt, both the receiver (curator) and the landlord may terminate the lease
+    early by notice to a date on which such agreements end according to local custom, observing the agreed or
+    customary notice period, a period of 3 months being sufficient in any event; if rent has been paid in advance,
+    notice cannot be given to a date earlier than the day on which the period for which payment was made in advance
+    ends (article 39 paragraph 1 of the Bankruptcy Act, Faillissementswet). A transfer of the leased premises by the
+    landlord does not end the lease: the rights and obligations of the landlord pass to the acquirer (article 7:226
+    of the Civil Code).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The handover is governed by the provisions of this agreement on that subject (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes personal data of the other party, its representatives and contact persons only to the
+    extent necessary for concluding and performing this agreement and for complying with legal obligations, in
+    accordance with the General Data Protection Regulation (GDPR, Algemene verordening gegevensbescherming AVG,
+    Regulation (EU) 2016/679), and does not keep those data longer than necessary for that purpose.</p>
+  <p>The data subjects may exercise their rights under the GDPR, including the right of access, rectification and
+    erasure of their personal data, and may lodge a complaint with the supervisory authority, in the Netherlands the
+    Dutch Data Protection Authority (Autoriteit Persoonsgegevens).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Dutch law.</p>
+  <p>Disputes concerning this agreement are heard and decided by the subdistrict court judge (kantonrechter),
+    irrespective of the amount or value of the claim (article 93(c) of the Code of Civil Procedure, Wetboek van
+    Burgerlijke Rechtsvordering). If the leased premises are business premises within the meaning of article 7:290
+    of the Civil Code, only the court within whose district the leased premises or the greater part of them are
+    located has jurisdiction; if they are other business premises, that court also has jurisdiction and the parties
+    choose that court (article 103 of the Code of Civil Procedure, Wetboek van Burgerlijke Rechtsvordering).</p>
+  <p>If a provision of this agreement is void or is annulled, the other provisions remain in force; the parties then
+    replace the provision by a valid provision that comes as close as possible to the parties' intention.</p>
+</div>
+
+</body>
+</html>

@@ -635,6 +635,40 @@ public final class LeaseDocumentRegistry {
   // Constants, citation pattern and foreign markers for NL-COMMERCIAL go here, only inside these
   // markers.
 
+  /**
+   * Mirror of V113__seed_nl_commercial_lease_clauses.sql: huur van bedrijfsruimte, nl authoritative
+   * and an English courtesy translation (the other app languages fall back to nl). Same citation
+   * format and Dutch markers as NL residential.
+   */
+  private static final Entry NL_COMMERCIAL =
+      new Entry(
+          "NL",
+          LeaseKind.COMMERCIAL,
+          "nl",
+          List.of("nl", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-label", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("data-protection", false, false, 18),
+              new ClauseSpec("disputes", false, false, 19)),
+          List.of("de verhuurder", "tenzij", "overeenkomst", "zie artikel", "deurwaardersexploot"),
+          Optional.of(DUTCH_CITATION));
+
   // ===== end NL-COMMERCIAL =====
 
   // ===== NO entries (country pack) =====
@@ -721,6 +755,7 @@ public final class LeaseDocumentRegistry {
     // ===== end LU ENTRIES =====
 
     // ===== NL-COMMERCIAL ENTRIES (country pack) =====
+    entries.add(NL_COMMERCIAL);
 
     // ===== end NL-COMMERCIAL ENTRIES =====
 
