@@ -1,0 +1,292 @@
+<!--
+  legal-basis: Lov om leje af erhvervslokaler m.v. (erhvervslejeloven), LBK nr 1446 af 09/11/2022, status
+               "Gaeldende" with no later amendments listed on www.retsinformation.dk (eli/lta/2022/1446, read
+               2026-10-04): § 1, § 4, § 5, § 6, § 9, § 10, § 11, § 12, § 13, § 16, § 18, § 21, § 22, § 25, § 27, § 33,
+               § 34, § 36, § 37, § 38, § 39, § 40, § 42, § 43, § 45, § 48, § 49, § 50, § 51, § 54, § 55, § 56,
+               § 60, § 61, § 62, § 63, § 64, § 65, § 66, § 69, § 70, § 71, § 73, § 74, § 75, § 76, § 77.
+               Paakravsgebyr § 69, stk. 3: 108 kr. in 1999 level plus 2 pct. of the amount owed above 1.000 kr.,
+               regulated annually under the same provision (current regulated amount not verified from a primary
+               source, so not stated).
+               Moms: momsloven § 13, stk. 1, nr. 8 (exemption for letting of real property) and § 51, stk. 1
+               (voluntary registration), per Skatteforvaltningen's Juridisk Vejledning D.A.14.5.2 (info.skat.dk).
+               Energy label: lov om fremme af energibesparelser i bygninger, LBK nr 1253 af 22/10/2025, § 7, stk. 1.
+               Renteloven § 5 (default interest). Lov om boligforhold (lov nr. 342 af 22/03/2022): boligret.
+               GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); databeskyttelsesloven;
+               Datatilsynet.
+               Verified 2026-10-04 against retsinformation.dk (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in da.html, never spelled out (da "3 måneders varsel" is "3 months' notice" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Danish law (erhvervslejeloven). Each clause-<key> fragment
+  holds only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Mellem</p>
+  <p><strong th:text="${landlordName}">Udlejer</strong>, i det følgende &bdquo;udlejeren&ldquo;,</p>
+  <p>CVR-nr.: ______________________________</p>
+  <p>repræsenteret ved: ______________________________, og</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Lejer</strong>, i det
+    følgende (samlet) &bdquo;lejeren&ldquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de nedenfor underskrivende lejere, i det følgende
+    (samlet) &bdquo;lejeren&ldquo;,</p>
+  <p>CVR-nr.: ______________________________</p>
+  <p>repræsenteret ved: ______________________________,</p>
+  <p>indgås følgende lejeaftale om erhvervslokaler. Er der flere lejere, hæfter de solidarisk for alle
+    forpligtelser efter denne aftale.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Udlejeren udlejer til lejeren lokalerne beliggende <strong th:text="${propertyAddress}">Adresse</strong>
+    med et areal på ca. ________ m² samt de fællesarealer, parkeringspladser og det tilbehør, der er angivet i
+    denne aftale, i det følgende &bdquo;det lejede&ldquo;. Det lejede er udelukkende udlejet til andet end
+    beboelse.</p>
+  <p>Lejeforholdet er omfattet af lov om leje af erhvervslokaler m.v. (erhvervslejeloven) (§ 1, stk. 1).
+    Lovens fravigelige bestemmelser finder anvendelse, medmindre andet er aftalt i denne aftale eller må
+    anses for indeholdt i den (§ 4); lovens ufravigelige bestemmelser går forud for denne aftale.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Det lejede udlejes til brug for: ______________________________ (det aftalte formål). Lejeren må ikke uden
+    udlejerens samtykke bruge det lejede til andet formål end aftalt (§ 34, stk. 1).</p>
+  <p>Lejeren indhenter for egen regning de offentlige tilladelser, der knytter sig til lejerens virksomhed.
+    Er brugen af det lejede i strid med lovgivning eller offentlige forskrifter, der var gældende ved aftalens
+    indgåelse, har lejeren de rettigheder, der følger af § 22.</p>
+  <p>Lejeren har ret til skiltning på mure, døre og vinduer, der hører til det lejede, i det omfang det er
+    sædvanligt efter lejerens forretnings og ejendommens art (§ 39, stk. 1). Lejeren af en butik, et hotel,
+    en restauration og lignende skal holde forretningen åben og i forsvarlig drift i sædvanligt omfang
+    (§ 39, stk. 2).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Lejeforholdet begynder den <strong th:text="${startDate}">Startdato</strong>.</p>
+  <th:block th:if="${!fixedTerm}">
+    <p>Lejeforholdet løber, indtil det opsiges af en af parterne efter reglerne i denne aftale og i loven.</p>
+    <p>Udlejeren kan ikke opsige lejeforholdet til ophør før den: ______________ (udlejerens uopsigelighed).
+      Lejeren kan ikke opsige lejeforholdet til ophør før den: ______________ (lejerens uopsigelighed).</p>
+  </th:block>
+  <th:block th:if="${fixedTerm}">
+    <p>Lejeforholdet er tidsbestemt<span th:if="${endDate != null}"> og ophører uden opsigelse den
+      <strong th:text="${endDate}">Slutdato</strong></span>. Det tidsbestemte lejeforhold kan ikke ved
+      opsigelse bringes til ophør i lejeperioden, medmindre dette er aftalt eller den anden part
+      misligholder aftalen (§ 63, stk. 1).</p>
+    <p>Benytter lejeren med udlejerens vidende det lejede i mere end 3 måneder efter den aftalte lejetids
+      udløb, uden at udlejeren har opfordret lejeren til at flytte, fortsætter lejeforholdet på de aftalte
+      vilkår bortset fra vilkåret om tidsbegrænsning (§ 63, stk. 2).</p>
+    <p>Tidsbegrænsningen kan tilsidesættes, hvis den på tidspunktet for aftalens indgåelse ikke var
+      tilstrækkeligt begrundet i udlejerens forhold; sag herom skal være anlagt senest 1 år efter
+      lejeforholdets påbegyndelse, dog senest 6 måneder før den aftalte lejetids udløb, og er aftalen indgået
+      for et kortere tidsrum end 6 måneder, uden ugrundet ophold efter lejeforholdets påbegyndelse
+      (§ 63, stk. 3). Grunden til tidsbegrænsningen: ______________________________</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Lejen udgør <strong th:text="${rentAmount}">Beløb</strong>
+    <span th:text="${paymentFrequency}">om måneden</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Hertil kommer moms, hvis udlejeren er momsregistreret for udlejningen (se artikel
+    <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Herudover betaler lejeren de udgifter, der er angivet i denne aftale (se
+    artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Lejens størrelse ved lejeaftalens indgåelse fastsættes efter parternes aftale (§ 9, stk. 1). Ved
+    regulering for fremtidige ændringer af skatter og afgifter efter §§ 10-12 tages udgangspunkt i de skatter
+    og afgifter, der påhviler ejendommen pr.: ______________ (§ 5, stk. 4).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">For regulering af lejen gælder det, der er bestemt i denne aftale (se artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Lejen reguleres årligt pr. ______________ efter udviklingen i Danmarks Statistiks nettoprisindeks
+    siden seneste regulering, dog således at lejen ikke nedsættes ved reguleringen (§ 9, stk. 1).</p>
+  <p>Forøges ejendomsskatterne eller pålægges ejendommen nye eller forøgede afgifter efter § 11, kan
+    udlejeren forlange udgiften udlignet gennem en lejeforhøjelse med 3 måneders varsel; kravet skal være
+    skriftligt og indeholde en beregning af ændringen og oplysning om lejerens adgang til at gøre indsigelse
+    (§ 10, stk. 1, 4 og 5). Bortfalder eller nedsættes skatterne eller afgifterne, nedsættes lejen tilsvarende
+    (§ 12, stk. 1).</p>
+  <p>Hver part kan forlange lejen reguleret til markedslejen, hvis den gældende leje er væsentligt lavere
+    eller væsentligt højere end markedslejen (§ 13, stk. 1). Kravet kan tidligst få virkning 4 år efter
+    lejeperiodens begyndelse og 4 år efter ikrafttræden af en vilkårsændring efter § 14; et krav om
+    lejeforhøjelse kan tidligst få virkning 4 år efter, at en lejeforhøjelse efter § 13, stk. 1, sidst er
+    trådt i kraft, og et krav om lejenedsættelse tidligst 4 år efter, at en lejenedsættelse efter § 13, stk. 1,
+    sidst er trådt i kraft (§ 13, stk. 2). Reguleringen fordeles over 4 år (§ 13, stk. 4). Fravigelse af § 13 i dette lejeforhold:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Ud over lejen betaler lejeren følgende udgiftsarter vedrørende det lejede, med den anslåede størrelse af
+    den enkelte udgift: ______________________________________________. Udgiftsarter, der ikke er angivet
+    her, kan udlejeren ikke opkræve, medmindre de ikke var kendte ved lejeaftalens indgåelse, eller
+    udlejeren godtgør, at manglerne ikke har forringet lejerens retsstilling (§ 5, stk. 2).</p>
+  <p>Leverer udlejeren varme og varmt vand, opgøres udgifterne i et forbrugsregnskab (§ 45); udgifter, der
+    ud over brændsel indgår i forbrugsregnskabet: ______________________________ (§ 5, stk. 3). Lejeren betaler
+    acontobidrag med lige store beløb sammen med lejen (§ 48, stk. 2). Forbrugsregnskabet skal være kommet
+    frem til lejeren senest 4 måneder efter regnskabsårets udløb eller, i de tilfælde af levering af varme eller
+    køling fra et kollektivt forsyningsanlæg eller af vand, der er nævnt i § 49, stk. 1, senest 3 måneder efter udlejerens
+    modtagelse af endelig afregning, hvis dette tidspunkt er senere (§ 49, stk. 1); ellers mister udlejeren
+    retten til tillægsbetaling (§ 51, stk. 1). Lejeren kan skriftligt gøre indsigelse senest 6 uger efter
+    modtagelsen (§ 49, stk. 3). Overstiger en tillægsbetaling 3 måneders leje, kan lejeren betale i 3 lige
+    store månedlige rater (§ 50, stk. 1).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Udlejning af fast ejendom er fritaget for moms (momslovens § 13, stk. 1, nr. 8). Er udlejeren efter
+    momslovens § 51, stk. 1, frivilligt registreret for udlejningen af det lejede, tillægges lejen og de
+    øvrige ydelser efter denne aftale moms med den til enhver tid gældende sats.</p>
+  <p>Udlejeren er frivilligt registreret for moms for udlejningen af det lejede (ja/nej): ________</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Lejeren betaler ved lejemålets indgåelse et depositum på
+    <strong th:text="${depositAmount}">Beløb</strong> til sikkerhed for lejerens forpligtelser efter denne
+    aftale.</p>
+  <p th:if="${depositAmount == null}">Lejeren betaler ved lejemålets indgåelse et depositum, hvis størrelse
+    parterne har aftalt skriftligt, til sikkerhed for lejerens forpligtelser efter denne aftale.</p>
+  <p>Erhvervslejeloven fastsætter ikke et loft over depositum og forudbetalt leje; beløbene aftales frit.
+    Forudbetalt leje: ______________________________. Aftaler om forudbetaling af leje, indskud, depositum
+    eller lignende er gyldige mod enhver uden tinglysning, når beløbene tilsammen ikke overstiger ½ års leje
+    (§ 6, stk. 1); overstiger beløbene tilsammen ½ års leje, er aftalen herom kun beskyttet mod tredjemand
+    efter de almindelige regler om tinglysning.</p>
+  <p>Depositum tilbagebetales efter fraflytning med fradrag af lejerens dokumenterede forpligtelser over for
+    udlejeren.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">
+    For det lejedes stand ved fraflytningen gælder det, der er bestemt i denne aftale (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Lejeren betaler lejen<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> og de øvrige ydelser</span>
+    <span th:text="${paymentFrequency}">om måneden</span> forud,
+    <span th:if="${paymentDueDay != null}">senest den <strong th:text="${paymentDueDay}">1</strong>. i den
+      måned, betalingen vedrører</span><span th:if="${paymentDueDay == null}">senest den 1. i den måned,
+      betalingen vedrører</span>, til det betalingssted her i landet, som udlejeren anviser (§ 42, § 43, stk. 1).</p>
+  <p>Forfalder lejen på en helligdag, en lørdag eller grundlovsdag, udskydes forfaldsdagen til den
+    efterfølgende hverdag. Betaling er rettidig, når den sker senest den 3. hverdag efter forfaldsdagen
+    (§ 43, stk. 2).</p>
+  <p>Ved for sen betaling skylder lejeren rente efter § 5 i renteloven. Udlejerens påkrav og påkravsgebyr er
+    beskrevet i bestemmelsen om lejeforholdets ophør.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Udlejeren skal holde ejendommen og det lejede forsvarligt ved lige, herunder holde alle indretninger til
+    afløb og til forsyning med elektricitet, gas, vand og varme i god og brugbar stand, og sørge for
+    renholdelse og sædvanlig belysning af ejendommen og adgangsvejene (§ 16, stk. 1 og 2).</p>
+  <p>Den indvendige vedligeholdelse af det lejede (fornyelse af hvidtning, maling, tapetsering og lakering af
+    gulve, § 16, stk. 3) påhviler: ______________________________. Er intet angivet, påhviler den indvendige
+    vedligeholdelse udlejeren.</p>
+  <p>Lejeren skal behandle det lejede forsvarligt og er erstatningsansvarlig for skade, som forvoldes ved
+    uforsvarlig adfærd af lejeren, lejerens personale eller andre, som lejeren har givet adgang til det
+    lejede (§ 33, stk. 1 og 2). Skader, hvis udbedring er uopsættelig, skal lejeren straks anmelde til
+    udlejeren; andre skader uden ugrundet ophold (§ 33, stk. 3). Afhjælper udlejeren ikke straks en mangel
+    efter påkrav, kan lejeren lade den afhjælpe for udlejerens regning (§ 18, stk. 1).</p>
+  <p>Udlejeren har adgang til det lejede, når forholdene kræver det (§ 25). Arbejder i det lejede varsles
+    skriftligt med 8 uger, idet der ved beregningen af fristen ses bort fra juli måned; uopsættelige
+    reparationer kan altid foretages uden varsel (§ 27, stk. 1 og 2).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Lejeren må ikke uden udlejerens samtykke foretage ændringer af det lejede, bortset fra de indretninger,
+    loven giver lejeren ret til (§ 36). Lejeren har ret til at foretage sædvanlige installationer, medmindre
+    udlejeren godtgør, at ejendommens el- og afløbskapacitet ikke er tilstrækkelig, og skal med rimeligt
+    varsel give udlejeren meddelelse herom (§ 37).</p>
+  <p>Lejeren har ret til at foretage ombygninger, der er sædvanlige for den type virksomhed, der efter
+    aftalen drives i det lejede, med 8 ugers varsel; udlejeren kan modsætte sig ombygningen, hvis udlejeren
+    godtgør, at den vil være til ulempe for ejendommen eller dens lejere (§ 38, stk. 1). Udlejeren kan
+    forlange et rimeligt depositum til sikkerhed for retablering (§ 38, stk. 3), og lejeren skal ved
+    lejeforholdets ophør retablere det lejede (§ 38, stk. 4).</p>
+  <p>Lejeren er erstatningsansvarlig for skade, der er forårsaget af lejerens installationer, ombygninger og
+    ændringer, og udlejeren kan kræve sikkerhed herfor ved forsikring eller på anden måde (§ 40). Har lejeren
+    med udlejerens samtykke foretaget andre ændringer, kan udlejeren kun kræve retablering, når udlejeren har
+    taget forbehold herom (§ 75, stk. 2).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Lejeren har ret til at lade en anden lejer inden for samme branche fortsætte lejeforholdet på uændrede
+    lejevilkår (afståelsesret), medmindre udlejeren har vægtige grunde, herunder den indtrædende lejers
+    økonomi eller branchekendskab, til at modsætte sig dette (§ 55, stk. 1). For afståelse til et aktie- eller
+    anpartsselskab fra en fysisk person eller en juridisk person med ubegrænset hæftelse gælder de særlige
+    betingelser i § 55, stk. 1, og tidligere lejeres ret til at genindtræde følger af § 55, stk. 2-5.</p>
+  <p>Afståelsesretten efter § 55 kan fraviges ved aftale. Fravigelse i dette lejeforhold:
+    ______________________________. Lejerens ægtefælles og arvingers rettigheder efter § 56 berøres ikke.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Lejeren må ikke uden udlejerens samtykke overlade brugen af det lejede eller nogen del heraf til andre
+    (§ 34, stk. 2). Lejeren er erstatningsansvarlig for skade, som forvoldes ved uforsvarlig adfærd af
+    andre, som lejeren har givet adgang til det lejede, herunder ved fremleje (§ 33, stk. 2).</p>
+  <p>Aftalt ret til fremleje: ______________________________. En lejer med ret til fremleje må ikke uden
+    ægtefællens samtykke fremleje, hvis det lejede derved ikke længere kan tjene som grundlag for
+    ægtefællernes eller den anden ægtefælles virksomhed (§ 54).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Udlejeren har, inden denne lejeaftale blev indgået, udleveret energimærkningen for lejemålet til
+    lejeren, som det påhviler udlejeren efter § 7, stk. 1, i lov om fremme af energibesparelser i bygninger,
+    medmindre lejemålet efter de regler, der er fastsat i medfør af loven, er undtaget fra kravet om
+    energimærkning.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Ved overtagelsen gennemgår parterne det lejede i fællesskab og udarbejder en rapport om dets stand, som
+    begge parter underskriver. Er det lejede mangelfuldt ved lejeforholdets begyndelse, skal lejeren senest
+    2 uger efter lejeforholdets begyndelse meddele udlejeren, at lejeren vil gøre manglen gældende, medmindre
+    manglen ikke kan erkendes ved sædvanlig agtpågivenhed eller udlejeren har handlet svigagtigt (§ 21).</p>
+  <p>Det lejede skal være fraflyttet senest kl. 12.00 på fraflytningsdagen og afleveres i samme stand som ved
+    overtagelsen med undtagelse af den forringelse, som skyldes slid og ælde og ikke er omfattet af lejerens
+    vedligeholdelsespligt, samt mangler, som det påhviler udlejeren at udbedre (§ 74, stk. 1). Udlejeren kan
+    ikke gøre krav gældende vedrørende det lejedes stand ved fraflytningen, når der er forløbet mere end
+    4 uger fra fraflytningsdagen, medmindre lejeren har handlet svigagtigt, eller manglen ikke kan erkendes
+    ved sædvanlig agtpågivenhed; i så fald skal udlejeren gøre kravet gældende uden ugrundet ophold efter, at
+    manglen er eller burde være opdaget (§ 74, stk. 2). Lejeren opgiver senest 8 dage før fraflytning den
+    adresse, som meddelelser, herunder indsigelser efter § 74, kan sendes til (§ 73, stk. 2).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Depositum afregnes
+    derefter (se artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Lejeren kan opsige lejeaftalen med 3 måneders varsel til den 1. i en kalendermåned, medmindre andet er
+    aftalt i denne aftale (§ 60, stk. 1, § 64, stk. 1). Lejeren må ikke uden sin ægtefælles samtykke opsige
+    lejeforhold om lokaler, hvortil ægtefællernes eller den anden ægtefælles virksomhed er knyttet
+    (§ 60, stk. 2).</p>
+  <p>Udlejeren kan kun opsige lejeforholdet i de tilfælde, der er nævnt i § 61, stk. 2, og med de
+    begrænsninger, der følger af § 61, stk. 3-6, og § 62. Udlejerens opsigelse skal være skriftlig og
+    indeholde oplysning om opsigelsesgrunden, om lejerens adgang til at gøre indsigelse senest 6 uger efter,
+    at opsigelsen er kommet frem, og om lejerens rettigheder efter §§ 66 og 67 (§ 65). Ved opsigelse efter
+    § 61, stk. 2, nr. 1, har lejeren krav på et opsigelsesvarsel på 1 år til aftalt flyttedag (§ 64, stk. 2). Ved opsigelse af andre
+    lejeforhold end de i § 61, stk. 1, nævnte skal udlejeren, bortset fra ved opsigelse som følge af lejerens
+    misligholdelse, betale lejeren erstatning og, i lejeforhold omfattet af § 62, godtgørelse for tabt
+    kundekreds efter § 66.</p>
+  <p th:if="${fixedTerm}">Er lejeforholdet tidsbestemt<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (se artikel <span th:text="${refs['term']}"></span>)</span>, kan det ikke opsiges
+    i lejeperioden, medmindre dette er aftalt eller den anden part misligholder aftalen.</p>
+  <p>Udlejeren kan hæve lejeaftalen i de tilfælde, der er nævnt i § 69, stk. 1, medmindre forholdet er af
+    uvæsentlig betydning (§ 70). Som følge af for sen betaling kan udlejeren kun hæve lejeaftalen, hvis
+    lejeren ikke har berigtiget restancen senest 3 dage efter, at skriftligt påkrav er kommet frem; påkravet
+    skal være afgivet efter sidste rettidige betalingsdag og skal udtrykkeligt angive, at lejeforholdet kan
+    ophæves, hvis restancen ikke betales inden fristens udløb (§ 69, stk. 3). Som gebyr for påkravet kan
+    udlejeren kræve det beløb, der følger af § 69, stk. 3 (108 kr. i 1999-niveau, reguleret årligt efter
+    nettoprisindekset, med tillæg af 2 pct. af det skyldige beløb ud over 1.000 kr.). Hæver udlejeren
+    lejeaftalen, skal lejeren straks fraflytte og erstatte udlejerens tab efter § 71.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> For
+    fraflytningen gælder det, der er bestemt i denne aftale (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Parterne behandler personoplysninger om de personer, der handler på den anden parts vegne, kun i det
+    omfang, det er nødvendigt for indgåelse og opfyldelse af denne aftale og for at overholde retlige
+    forpligtelser, efter databeskyttelsesforordningen (forordning (EU) 2016/679) og databeskyttelsesloven.
+    Oplysningerne opbevares ikke længere end nødvendigt til disse formål.</p>
+  <p>De registrerede kan gøre deres rettigheder efter databeskyttelsesforordningen gældende, herunder retten
+    til indsigt, berigtigelse og sletning, og kan klage til Datatilsynet.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Denne aftale er underlagt dansk ret.</p>
+  <p>Tvister, som udspringer af erhvervslejeloven eller denne aftale, indbringes i 1. instans for byretten
+    som boligret (§ 76, stk. 1), medmindre parterne har aftalt, at tvisterne helt eller delvis skal afgøres
+    ved voldgift (§ 77, stk. 1). Aftalt voldgift: ______________________________. Er en bestemmelse i denne
+    aftale ugyldig, berører det ikke gyldigheden af aftalens øvrige bestemmelser.</p>
+</div>
+
+</body>
+</html>

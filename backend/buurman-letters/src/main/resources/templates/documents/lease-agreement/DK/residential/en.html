@@ -1,0 +1,306 @@
+<!--
+  legal-basis: Lov om leje (lejeloven), lov nr. 341 af 22/03/2022, as amended by lov nr. 1311 af 27/09/2022,
+               lov nr. 482 af 12/05/2023, lov nr. 753 af 13/06/2023, lov nr. 1790 af 28/12/2023, lov nr. 1793 af
+               28/12/2023, lov nr. 1641 af 16/12/2025 (in force 01/01/2026), lov nr. 263 af 11/02/2026 and lov nr. 615
+               af 30/06/2026; no consolidated act (LBK) issued; status "Gaeldende" on www.retsinformation.dk
+               (eli/lta/2022/341, read 2026-10-04): § 6, § 11, § 13, § 14, § 17, § 42, § 44, § 46, § 53, § 54, § 57, § 58,
+               § 59, § 60, § 63, § 64, § 65, § 67, § 68, § 69, § 71, § 75, § 77, § 78, § 79, § 84, § 89, § 90, § 91, § 95, § 102, § 103,
+               § 111, § 112, § 115, § 116, § 117, § 118, § 149, § 150, § 152, § 157, § 158, § 169, § 170, § 171,
+               § 172, § 173, § 175, § 176, § 182, § 183, § 184, § 186, § 187, § 190, § 204.
+               Paakravsgebyr § 182, stk. 2: 287 kr. in 2021 level, regulated under § 204, stk. 1: 335 kr. for 2026
+               (VEJ nr 9886 af 04/09/2025) and 344 kr. from 01/01/2027 (VEJ nr 9959 af 08/09/2026), retsinformation.dk.
+               Authorised standard form: § 14 and bekendtgoerelse nr. 77 af 29/01/2025 (typeformular A, 10. udgave,
+               Danish and English editions; in force 01/02/2025; replaced BEK nr 1214 af 30/08/2022).
+               Lov om boligforhold (lov nr. 342 af 22/03/2022): huslejenaevn and boligret.
+               Energy label: lov om fremme af energibesparelser i bygninger, LBK nr 1253 af 22/10/2025, § 7, stk. 1.
+               Renteloven § 5 (default interest). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679); databeskyttelsesloven; Datatilsynet.
+               Verified 2026-10-04 against retsinformation.dk (texts read on that date).
+               Pending: bill on digital communication (forslag til lov om aendring af lov om leje, Digital
+               kommunikation; first fremsat 15/01/2026, renewed hearing published 04/09/2026, deadline 18/09/2026,
+               expected in force 01/01/2027; hoeringsportalen.dk Hearing 71434) would allow the landlord's notice
+               and paakrav as digital documents by agreement - re-check the § 13, stk. 2, sentence of the
+               termination clause on 01/01/2027 together with the 344 kr. fee change.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in da.html, never spelled out (da "3 måneders leje" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of da.html; the Danish text is authoritative. It states Danish law (lov om leje)
+  in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only prose
+  differs from da.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never
+  hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (udlejer), and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (lejer),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant(s) signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (lejer),</p>
+  <p>the following lease of a residential dwelling (lejeaftale om en beboelseslejlighed) is concluded. If there
+    are several tenants, they are jointly and severally liable (solidarisk) for all obligations under this
+    agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, for residential purposes, the dwelling at
+    <strong th:text="${propertyAddress}">address</strong> with the rooms and appurtenances described in this
+    agreement, hereinafter &ldquo;the leased premises&rdquo; (det lejede).</p>
+  <p>The tenancy is governed by the Danish Rent Act (lov om leje, lejeloven). This agreement is deemed concluded
+    on the terms of the Act, to the extent that nothing else is expressly provided (§ 11, subsection 2).
+    Provisions of this agreement that conflict with mandatory rules of the Act have no effect.</p>
+  <p>This agreement is not the authorised standard form (typeformular A, 10. udgave) under Executive Order
+    no. 77 of 29 January 2025 on authorised standard forms for leases (bekendtgørelse om autoriserede
+    standardblanketter for lejeaftaler). When a lease of a residential dwelling is concluded, standard forms
+    (blanketter) may be used only if they are authorised (§ 14, subsection 1). Provisions of this agreement that
+    impose greater obligations on the tenant or give the tenant fewer rights than provided in the Act are invalid
+    (§ 14, subsection 3).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The tenancy runs until it is terminated by notice from either party under the rules
+    of the Act.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The tenancy is for a fixed term (tidsbestemt)<span th:if="${endDate != null}"> and ends without notice on
+      <strong th:text="${endDate}">end date</strong></span>. A fixed-term tenancy ends without notice when the
+      agreed term expires and cannot be terminated by notice during the term, unless this has been agreed or
+      the other party is in breach of the agreement (§ 173, subsection 1).</p>
+    <p>Reason for the fixed term (the landlord&rsquo;s circumstances): ______________________________________________</p>
+    <p>If the tenant, with the landlord&rsquo;s knowledge, uses the leased premises for more than 1 month after
+      the agreed term has expired, without the landlord having asked the tenant to move out, the tenancy
+      continues without a time limit (§ 173, subsection 2). The housing court (boligretten) may set the time
+      limit aside if it cannot be regarded as sufficiently justified by the landlord&rsquo;s circumstances
+      (§ 173, subsection 3).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (leje) is <strong th:text="${rentAmount}">amount</strong>
+    <span th:text="${paymentFrequency}">per month</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant pays on-account contributions (acontobidrag)
+    towards consumption costs (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The amount of the rent is determined by the rules of the Rent Act that apply to the tenancy. The landlord
+    states that the rent has been set under the following rules (cost-based rent, omkostningsbestemt leje,
+    under Chapter 3; the value of the leased premises, det lejedes værdi, under Chapter 4; or freely agreed rent,
+    fri leje, under § 54): ______________________________</p>
+  <p>If freely agreed rent has been agreed for a tenancy covered by § 54, subsection 1, no. 2 or 3, it is a
+    condition for setting the rent freely that the lease states that the tenancy is covered by those provisions
+    (§ 54, subsection 2). If the amount of the rent has not been agreed, it is deemed to be the amount that is
+    reasonable under the rules of the Act (§ 11, subsection 3). Disagreements about the amount of the rent are
+    decided by the rent tribunal (huslejenævnet).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Adjustment of the rent is governed by what this agreement provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is adjusted under the rules of the Rent Act for the set of rules that applies to the tenancy.</p>
+  <p>If the rent has been set freely under § 54, subsection 1, or according to the value of the leased premises
+    under Chapter 4, the parties agree that the rent is adjusted annually in line with the net price index
+    (nettoprisindeks) of Statistics Denmark (Danmarks Statistik). The adjustment is made by the landlord&rsquo;s
+    written notice to the tenant (§ 53, subsection 2, § 54, subsection 3). The first adjustment may take effect
+    from: ______________________________</p>
+  <p>For tenancies with cost-based rent in a regulated municipality (reguleret kommune, § 6, subsection 1),
+    § 53 does not apply; the rent is instead adjusted under the rules of Chapter 3. The landlord&rsquo;s right
+    to a rent increase on account of increased property taxes and charges under §§ 46-48 and to an increase for
+    improvements under the rules of the Act is not affected by this provision. For tenancies not covered by § 6, subsection 1,
+    the following applies: a demand for a rent increase under § 42 must be made in writing, stating the amount of and the reason for the increase and informing
+    the tenant of the right to object, and may be implemented with 3 months&rsquo; notice
+    (§ 44, subsections 1 and 2).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>If the landlord supplies heating and hot water, the landlord may claim reimbursement of the costs of the
+    tenant&rsquo;s consumption and of the tenant&rsquo;s share of other costs under § 72, subsections 4 and 5;
+    these costs cannot be included in the rent (§ 65, subsection 1). If the landlord supplies cooling, cold water,
+    or electricity and gas, the landlord may claim reimbursement of the costs of the tenant&rsquo;s consumption
+    (§ 67, subsection 1, § 68, subsection 1, § 69); if the property is exempt from the requirement of
+    individual metering of cooling or cold water, those costs are included in the rent. The costs are allocated according to customary allocation rules based on consumption
+    meters.</p>
+  <p>The tenant pays on-account contributions towards the tenant&rsquo;s share of the costs, in equal amounts
+    together with the rent. The total contributions for 1 year may not exceed the cost expected to be charged
+    for the accounting period (§ 71, subsections 2 and 3).</p>
+  <p>The consumption statement (forbrugsregnskab) must have reached the tenant no later than 4 months after the
+    end of the accounting year or, if the statement includes costs of supplies from a collective supply plant
+    or a natural gas plant, no later than 3 months after the landlord has received the final settlement, if
+    that is later (§ 75); if the statement has not arrived within that time limit, the landlord loses the
+    right to claim an additional payment (§ 79, subsection 1). The tenant may object in writing no later than 6 weeks
+    after the statement has arrived (§ 77). If an additional payment exceeds 3 months&rsquo; rent, the tenant
+    may pay it in 3 equal monthly instalments (§ 78, subsection 1). Payment for a communal antenna and access
+    to electronic communication services is made under § 84.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On conclusion of the lease the tenant pays a security deposit
+    (depositum) of <strong th:text="${depositAmount}">amount</strong> as security for the tenant&rsquo;s
+    obligations on moving out.</p>
+  <p th:if="${depositAmount == null}">On conclusion of the lease the tenant pays a security deposit
+    (depositum), in the amount agreed in writing between the parties, as security for the tenant&rsquo;s
+    obligations on moving out.</p>
+  <p>The deposit may not exceed an amount equal to 3 months&rsquo; rent (§ 59, subsection 1); an agreement on a
+    higher deposit cannot be enforced for the part that exceeds 3 months&rsquo; rent (§ 64). The landlord may
+    also require prepaid rent (forudbetalt leje) for a period of up to 3 months, provided that the prepaid rent
+    does not at the same time exceed the rent payable in the period from the tenant&rsquo;s notice of
+    termination until the tenancy ends (§ 59, subsection 3). Prepaid rent: ______________________________</p>
+  <p>If a rent increase is implemented, an adjustment of the deposit and the prepaid rent may be required; if
+    the rent is reduced, a corresponding part is repaid (§ 60, subsection 1). The deposit is repaid after the
+    tenant has moved out, less the tenant&rsquo;s documented obligations towards the landlord. Disagreements
+    about the deposit are decided by the rent tribunal (§ 63, § 190).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The move-out inspection is governed by what this agreement provides
+    (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the on-account contributions</span>
+    <span th:text="${paymentFrequency}">per month</span> in advance,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of
+      the month to which the payment relates</span><span th:if="${paymentDueDay == null}">no later than day 1 of
+      the month to which the payment relates</span>, to the account with a bank in Denmark designated by the
+    landlord (§ 57). Rent cannot be required to be paid for more than 3 months at a time
+    (§ 58, subsection 3).</p>
+  <p>Payment is in time if made no later than on the due date. If the rent falls due on a public holiday, a
+    Saturday or Constitution Day (grundlovsdag), the due date is postponed to the following weekday
+    (§ 58, subsection 4).</p>
+  <p>In the event of late payment the tenant owes interest under § 5 of the Interest Act (renteloven). The
+    landlord&rsquo;s payment demand (påkrav) and the fee for it are described in the provision on the end of
+    the tenancy.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The leased premises may be used only as a residence for the tenant and the tenant&rsquo;s household. The
+    tenant may not use the leased premises for any purpose other than the agreed one without the
+    landlord&rsquo;s consent (§ 150, subsection 1).</p>
+  <p>The tenant must treat the leased premises with due care and is liable for damage caused by careless
+    conduct of the tenant, the tenant&rsquo;s household or others whom the tenant has given access to the
+    leased premises (§ 149, subsections 1 and 2). The tenant must comply with the general house rules
+    (ordensregler) that apply to the property (§ 152, subsection 2).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not, without the landlord&rsquo;s consent, let persons other than members of the
+    tenant&rsquo;s household use the leased premises or any part of them, except where the Act gives the tenant
+    a right to sublet (fremleje) (§ 150, subsection 2).</p>
+  <p>The tenant has the right to sublet up to half of the dwelling&rsquo;s living rooms (beboelsesrum) for
+    residential use; the total number of persons living in the dwelling may not exceed the number of living
+    rooms (§ 157, subsection 1).</p>
+  <p>The tenant has the right to sublet a dwelling let exclusively for residential use for up to 2 years when
+    the tenant&rsquo;s absence is temporary and due to illness, a business trip, a period of study, a temporary
+    transfer or similar (§ 158, subsection 1). The landlord may object to such a sublease when the property
+    comprises fewer than 13 residential dwellings, when the total number of persons in the dwelling would exceed
+    the number of living rooms, or when the landlord otherwise has reasonable grounds to object to the sublease
+    (§ 158, subsection 2).</p>
+  <p>Subleases must be concluded in writing, and before the sublease period begins the tenant must send the
+    landlord a copy of the sublease agreement (§ 157, subsection 3).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord must keep the property and the leased premises in proper repair, including maintaining all
+    installations for drainage and for the supply of electricity, gas, water, heating and cooling
+    (§ 112, subsection 2). The landlord is responsible for both the interior and the exterior maintenance
+    (indvendig og udvendig vedligeholdelse) and sets aside amounts for the interior maintenance on a
+    maintenance account for the dwelling (vedligeholdelseskonto) under §§ 116-118. During the tenancy the tenant
+    must maintain and, where necessary, renew locks and keys (§ 112, subsection 3).</p>
+  <p>The tenant must report damage whose repair cannot be postponed to the landlord immediately, and other
+    damage without undue delay (§ 149, subsection 3). If the landlord does not remedy a defect immediately
+    after a demand, the tenant may remedy it at the landlord&rsquo;s expense and claim a proportionate rent
+    reduction for as long as the defect reduces the value of the leased premises
+    (§ 95, subsections 1 and 2).</p>
+  <p>The landlord has access to the leased premises when circumstances require it (§ 102). The landlord may
+    start works in the leased premises with 6 weeks&rsquo; notice when carrying them out does not cause the
+    tenant significant inconvenience; before other works the tenant is entitled to 3 months&rsquo; notice;
+    urgent repairs may always be carried out without notice (§ 103, subsections 1-3).</p>
+</div>
+
+<div th:fragment="clause-energy-label" data-clause="energy-label">
+  <p>Before this lease was concluded, the landlord handed the energy label (energimærkning) for the leased
+    premises to the tenant, as the landlord is obliged to do under § 7, subsection 1, of the Act on the
+    Promotion of Energy Savings in Buildings (lov om fremme af energibesparelser i bygninger), unless the
+    leased premises are exempt from the energy-labelling requirement under the rules laid down under that
+    Act.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord makes the leased premises available to the tenant in good and proper condition; the leased
+    premises must be clean, the windowpanes intact and all external doors fitted with working locks with
+    the corresponding keys (§ 89). If the landlord lets more than 1 residential dwelling, the landlord must
+    inspect the dwelling on moving in, summon the tenant to the inspection and draw up a move-in report
+    (indflytningsrapport), which is handed to the tenant at the inspection; if the tenant is not present at the
+    inspection or will not acknowledge receipt of the report, it is sent to the tenant no later than 2 weeks
+    after the inspection (§ 90, subsections 1 and 2).</p>
+  <p>If the leased premises are defective at the start of the tenancy, the tenant must notify the landlord no
+    later than 2 weeks after the start of the tenancy that the tenant intends to invoke the defect, unless the
+    defect cannot be detected with ordinary care or the landlord has acted fraudulently (§ 91).</p>
+  <p>On moving out, the leased premises must be vacated no later than 12.00 noon on the moving-out day and
+    returned in the same condition as at handover, except for deterioration due to wear and tear that is not
+    covered by the tenant&rsquo;s maintenance obligation and defects that the landlord is obliged to remedy
+    (§ 187, subsection 1). If the landlord lets more than 1 residential dwelling, the landlord must inspect the
+    dwelling no later than 2 weeks after becoming aware of the move-out, summon the tenant in writing with at
+    least 1 week&rsquo;s notice, unless a shorter notice is agreed when the tenancy has been terminated or
+    rescinded, and draw up a move-out report (fraflytningsrapport); otherwise the landlord&rsquo;s claim for
+    restoration lapses (§ 187, subsections 3-5). Claims for restoration must be made no later than 2 weeks
+    after the move-out inspection or, for tenancies without a duty to hold a move-out inspection, after the
+    moving-out day, and costs not included in the move-out report are of no concern to the tenant, unless the
+    defect cannot be detected with ordinary care or the tenant has acted fraudulently
+    (§ 187, subsection 2). No later than 8 days before
+    moving out, the tenant gives the address to which notices, including claims for restoration, can be sent
+    (§ 186, subsection 2).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The deposit is then settled (see article
+    <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Unless otherwise agreed, the tenant may terminate the lease with 3 months&rsquo; notice to the first
+    weekday of a calendar month that is not the day before a public holiday
+    (§ 169, subsection 1, § 175, subsection 1). However, the tenant
+    may not terminate a lease of the family home without the consent of the tenant&rsquo;s spouse
+    (§ 169, subsection 2).</p>
+  <p>The landlord may terminate the lease only in the cases listed in §§ 170 and 171, and subject to the
+    limitations in § 172. The landlord&rsquo;s notice under § 170, no. 2 and 3, and § 171 must be in writing,
+    state the ground for termination where notice is given under § 171, and inform the tenant of the right to
+    object no later than 6 weeks after the notice has arrived; otherwise it is invalid (§ 176). For notice under
+    § 170, no. 2 and 3, and § 171, subsection 1, no. 1, the tenant is entitled to a notice period of at least
+    1 year to the first weekday of a calendar month that is not the day before a public holiday
+    (§ 175, subsection 2).</p>
+  <p th:if="${fixedTerm}">If the tenancy is for a fixed term<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span>, it cannot be
+    terminated by notice during the term, unless this has been agreed or the other party is in breach of the
+    agreement.</p>
+  <p>The landlord may rescind the lease (hæve lejeaftalen) in the cases listed in § 182, subsection 1, unless the
+    matter is of minor importance (§ 183). For late payment the landlord may rescind the lease only if the
+    tenant has not paid the arrears no later than 14 days after a written payment demand (påkrav) has arrived;
+    the demand may be sent at the earliest after the 3rd weekday after the last day for timely payment and
+    must state expressly that the tenancy may be rescinded if the arrears are not paid before the time limit
+    expires (§ 182, subsection 2). As a fee for the demand the landlord may charge the amount that follows from
+    § 182, subsection 2, and § 204, subsection 1 (335 kr. in 2026 and 344 kr. from 1 January 2027). The
+    landlord&rsquo;s notice of termination and payment demand cannot be given as digital documents
+    (§ 13, subsection 2).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Moving out is governed by what this agreement provides (see
+    article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only insofar as this is necessary for concluding
+    and performing this agreement and for complying with legal obligations, in accordance with the General Data
+    Protection Regulation (GDPR, Regulation (EU) 2016/679) and the Danish Data Protection Act
+    (databeskyttelsesloven). The data are kept no longer than necessary for those purposes.</p>
+  <p>The tenant may exercise the rights under the GDPR against the landlord, in particular the rights of
+    access, rectification and erasure, and may lodge a complaint with the Danish Data Protection Agency
+    (Datatilsynet).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Danish law.</p>
+  <p>Disputes that fall within the competence of the rent tribunal under the Rent Act are brought before the
+    rent tribunal (huslejenævnet) of the municipality in which the property is located. Other disputes and
+    appeals against decisions of the rent tribunal are heard by the housing court (boligretten) under the
+    rules of the Housing Conditions Act (lov om boligforhold). If a provision of this agreement is invalid, the
+    validity of the remaining provisions is unaffected; the rules of the Act apply instead.</p>
+</div>
+
+</body>
+</html>

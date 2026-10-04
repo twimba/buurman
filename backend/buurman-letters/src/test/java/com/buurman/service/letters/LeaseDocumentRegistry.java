@@ -760,6 +760,75 @@ public final class LeaseDocumentRegistry {
   // ===== DK entries (country pack) =====
   // Constants, citation pattern and foreign markers for DK go here, only inside these markers.
 
+  /**
+   * The Danish statute citation format: the section sign and number, {@code § 59}, {@code § 175},
+   * followed in the same sentence by the subsection digit ("§ 59, stk. 1" / "§ 59, subsection 1").
+   * No letter suffix: Danish prose often follows a section number with the preposition "i" ("§ 7,
+   * stk. 1, i lov om ..."), which must not become part of the token.
+   */
+  public static final Pattern DANISH_CITATION = Pattern.compile("§\\s*\\d+");
+
+  /** Danish marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> DANISH_MARKERS =
+      List.of("udlejeren", "lejeren", "lejemålet", "lejeaftalen", "se artikel", "medmindre");
+
+  /** Mirror of V100__seed_dk_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry DK_RESIDENTIAL =
+      new Entry(
+          "DK",
+          LeaseKind.RESIDENTIAL,
+          "da",
+          List.of("da", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-label", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("termination", true, false, 14),
+              new ClauseSpec("data-protection", false, false, 15),
+              new ClauseSpec("disputes", false, false, 16)),
+          DANISH_MARKERS,
+          Optional.of(DANISH_CITATION));
+
+  /** Mirror of V100__seed_dk_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry DK_COMMERCIAL =
+      new Entry(
+          "DK",
+          LeaseKind.COMMERCIAL,
+          "da",
+          List.of("da", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("subletting", false, false, 14),
+              new ClauseSpec("energy-label", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("data-protection", false, false, 18),
+              new ClauseSpec("disputes", false, false, 19)),
+          DANISH_MARKERS,
+          Optional.of(DANISH_CITATION));
+
   // ===== end DK =====
 
   // ===== FI entries (country pack) =====
@@ -941,6 +1010,8 @@ public final class LeaseDocumentRegistry {
     // ===== end CZ ENTRIES =====
 
     // ===== DK ENTRIES (country pack) =====
+    entries.add(DK_RESIDENTIAL);
+    entries.add(DK_COMMERCIAL);
 
     // ===== end DK ENTRIES =====
 
