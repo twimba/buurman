@@ -13,7 +13,8 @@
                Lease: prescribed class, 2018-04-30, form dated 2020/12, additional terms void where inconsistent).
                O. Reg. 516/06 s. 17 (permitted charges: refundable key deposit, NSF administration charge of not more
                than $20). Guideline 2027 (1.9 per cent) on ontario.ca/page/rent-increase-guideline (not printed).
-               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as read on
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as
+               read on
                ccq.lexum.com; legisquebec.gouv.qc.ca refused automated access), arts. 1851-1891 (lease in general:
                1864, 1870-1873, 1890, 1891) and 1892-2000 (lease of a dwelling): 1893, 1894, 1895 (copy within 10
                days, mandatory form), 1896 (notice to a new lessee, amended 2024, c. 2), 1897 (French unless the
@@ -32,7 +33,8 @@
                Privacy: Personal Information Protection and Electronic Documents Act (federal); Act respecting the
                protection of personal information in the private sector (Quebec); Personal Information Protection Act
                (British Columbia) - named from knowledge, listed as unverified in the pack report.
-               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com, tal.gouv.qc.ca.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com,
+               tal.gouv.qc.ca.
                Pending: Ontario 2025, c. 14, Sched. 12 provisions not yet in force; Quebec rent-fixing regulation
                applies to notices given from 2026-01-01; British Columbia allowable increase for 2027 announced
                annually (not printed).
@@ -83,10 +85,15 @@
       it, and an additional term that is inconsistent with the mandatory terms of the Standard Form of Lease is
       void. If the landlord does not use the Standard Form of Lease, the tenant may demand it in writing once during
       the tenancy; if the landlord has not provided it at least 21 days after the demand, the tenant may withhold
-      rent up to a total amount equal to 1 month&rsquo;s rent (section 12.1, subsections 5 to 7), and in the cases
-      set out in section 47.0.1 the tenant may end a yearly or fixed-term tenancy early with 60 days&rsquo; notice.
-      A tenancy agreement is not void solely because it is not in the prescribed form (section 12.1, subsection
-      11).</p>
+      rent up to a total amount equal to 1 month&rsquo;s rent (section 12.1, subsections 5 to 7); the landlord may
+      require the withheld rent to be paid only if the landlord complies with the demand no later than 30 days after
+      the date of the first rent payment withheld (section 12.1, subsection 9). In the cases set out in section 47.0.1
+      the tenant may end a yearly or fixed-term tenancy early with 60 days&rsquo; notice. A tenancy agreement is not
+      void solely because it is not in the prescribed form (section 12.1, subsection 11).</p>
+    <p>Declaration of the parties (tick 1 box; required where the dwelling is in Ontario): [ ] the parties have
+      signed the Residential Tenancy Agreement (Standard Form of Lease) dated 2020/12 on ______________, and this
+      document contains only additional terms attached to it; [ ] the tenancy does not belong to the prescribed class,
+      for the following reason: ______________________________</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
     <p>The dwelling is in Quebec. A lease of a dwelling must be made on the form whose use is made mandatory by
@@ -97,7 +104,13 @@
       TAL; the terms of this document may then at most supplement it to the extent that they are compatible with it.
       A clause of a lease of a dwelling that derogates from articles 1892 to 2000 of the Civil Code of Quebec, or
       from the other articles listed in article 1893, is without effect. The lease must be drawn up in French; it may
-      be drawn up in another language only if that is the express wish of the parties (article 1897).</p>
+      be drawn up in another language only if that is the express wish of the parties (article 1897). If the lessor
+      fails to give the lessee a copy of the lease within 10 days or to use the mandatory form, the lessee may not,
+      however, apply for the resiliation of the lease on that ground (article 1895, paragraph 3).</p>
+    <p>Declaration of the parties (tick 1 box; required where the dwelling is in Quebec): [ ] the parties have
+      entered into the lease on the mandatory form of the TAL on ______________, and this document contains only
+      additional terms compatible with it; [ ] the lease is not a lease of a dwelling governed by articles 1892 to
+      2000 of the Civil Code of Quebec, for the following reason: ______________________________</p>
   </th:block>
   <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">The dwelling is in British Columbia. The landlord must
     prepare the tenancy agreement in writing, and it must set out the standard terms prescribed by the Residential
@@ -111,7 +124,7 @@
     materially between provinces and territories, and some of them prescribe a mandatory lease form or standard
     terms that apply despite this agreement: in Ontario the Standard Form of Lease, in Quebec the lease form of the
     Tribunal administratif du logement, in British Columbia the standard terms of the Residential Tenancy
-    Regulation. This document is not such a form. The parties must check the law of the province or territory
+    Regulation. THIS DOCUMENT IS NOT SUCH A FORM. The parties must check the law of the province or territory
     concerned before signing.</p>
   <p>Where a provision of the applicable provincial or territorial law that cannot be excluded or varied by agreement
     conflicts with this agreement, that provision prevails.</p>
@@ -136,8 +149,9 @@
   <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
     <p>In British Columbia, if on the date specified as the end of a fixed-term tenancy the landlord and the tenant
       have not entered into a new tenancy agreement, they are deemed to have renewed the tenancy agreement on the same
-      terms as a periodic tenancy from month to month, unless the agreement validly requires the tenant to vacate at the end of the
-      term (section 44, subsection 3). Such a requirement is permitted only where the landlord is an individual who,
+      terms as a periodic tenancy from month to month, unless the agreement validly requires the tenant to vacate
+      at the end of the term (section 44, subsection 3). Such a requirement is permitted only where the landlord
+      is an individual who,
       or whose close family member, will occupy the rental unit at the end of the term (section 13, subsection 2, of
       the Residential Tenancy Act and section 13.1 of the Residential Tenancy Regulation).</p>
     <p th:if="${fixedTerm}">Requirement to vacate at the end of the fixed term (tick 1 box): [ ] does not apply;
@@ -182,8 +196,9 @@
       giving the lessee a notice of modification at least 3 months but not more than 6 months before the end of the
       term; for a lease of less than 12 months, at least 1 month but not more than 2 months before the end of the
       term; for a lease of indeterminate term, at least 1 month but not more than 2 months before the modification;
-      for the lease of a room, at least 10 days but not more than 20 days (article 1942). A lessee who refuses the modification must notify the lessor within 1 month after receiving
-      the notice, failing which the lessee is deemed to have accepted the renewal on the proposed conditions (article
+      for the lease of a room, at least 10 days but not more than 20 days (article 1942). A lessee who refuses the
+      modification must notify the lessor within 1 month after receiving the notice, failing which the lessee is
+      deemed to have accepted the renewal on the proposed conditions (article
       1945); the lessor may then apply to the Tribunal administratif du logement within 1 month after receiving the
       refusal to have the rent fixed, failing which the lease is renewed on the previous conditions (article
       1947).</p>
@@ -208,9 +223,9 @@
   </th:block>
   <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">The
     rent may be increased only in the manner, with the written notice, at the intervals and within the limits that
-    the law of the province or territory in which the dwelling is located permits. Most provinces and territories
-    require written notice of several months and allow no more than 1 increase in 12 months; some limit the amount of
-    the increase.</p>
+    the law of the province or territory in which the dwelling is located permits. Many provinces and territories
+    require written notice of several months and limit how often the rent may be increased; some also limit the
+    amount of the increase.</p>
 </div>
 
 <div th:fragment="clause-service-costs" data-clause="service-costs">
@@ -247,7 +262,8 @@
       (section 20).<span th:if="${depositAmount != null}"> The security deposit is
       <strong th:text="${depositAmount}">amount</strong>.</span> Pet damage deposit (if any):
       ______________________________</p>
-    <p>Within 15 days after the later of the date the tenancy ends and the date the landlord receives the tenant&rsquo;s
+    <p>Within 15 days after the later of the date the tenancy ends and the date the landlord receives the
+    tenant&rsquo;s
       forwarding address in writing, the landlord must repay the deposits with any interest calculated in
       accordance with the regulations, or apply for dispute resolution claiming against them (section 38,
       subsection 1); a landlord who does neither must pay the tenant 2 times the amount of the deposits (section 38,
@@ -310,9 +326,12 @@
     <p>The tenant may assign the rental unit or sublet it only with the landlord&rsquo;s consent (section 95,
       subsection 1, and section 97, subsection 1, of the Residential Tenancies Act, 2006). The landlord may not
       arbitrarily or unreasonably refuse consent to a sublet to a potential subtenant or to an assignment to a
-      potential assignee (section 97, subsection 2, and section 95, subsection 5). If the landlord refuses an
-      assignment or does not respond within 7 days after the request, the tenant may give notice of termination
-      within 30 days after the request (section 95, subsection 4). The landlord may charge only the reasonable
+      potential assignee (section 97, subsection 2, and section 95, subsection 5). The tenant may give notice of
+      termination within 30 days after the request if the landlord refuses consent to an assignment in general,
+      refuses consent to any assignment when asked about a particular potential assignee, or does not respond within
+      7 days after the request (section 95, subsection 4, and section 96); a refusal of a particular potential
+      assignee gives no such right and is governed instead by the rule that consent may not be arbitrarily or
+      unreasonably refused. The landlord may charge only the reasonable
       out-of-pocket expenses incurred in giving consent (section 95, subsection 7, and section 97, subsection 3).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
@@ -347,8 +366,11 @@
       maintenance standards, even if the tenant was aware of a defect before entering into the agreement (section
       20, subsections 1 and 2, of the Residential Tenancies Act, 2006).</p>
     <p>The landlord may enter the unit without written notice in an emergency or with the tenant&rsquo;s consent
-      at the time of entry (section 26, subsection 1); otherwise, for the purposes listed in section 27, subsection
-      1, only after written notice given at least 24 hours before the entry that states the reason, the day and a
+      at the time of entry (section 26, subsection 1), and in the other cases set out in section 26, subsections 2
+      and 3 (regular cleaning required by the agreement, and showing the unit to prospective tenants between 8 a.m.
+      and 8 p.m. after a notice or agreement to terminate, with a reasonable effort to inform the tenant first);
+      otherwise, for the purposes listed in section 27, subsection 1, only after written notice given at least 24
+      hours before the entry that states the reason, the day and a
       time between 8 a.m. and 8 p.m. (section 27, subsection 3).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
@@ -432,8 +454,9 @@
       prescribed form (section 43, subsection 1, of the Residential Tenancies Act, 2006). The tenant may end the
       tenancy at the end of a rental period or of the fixed term by giving notice at least 60 days before the
       termination date in the case of a monthly or yearly tenancy or a fixed term, or at least 28 days before it in
-      the case of a daily or weekly tenancy; the termination date must be the last day of a rental period or, for a
-      fixed term, its expiration date (section 44, subsections 1 to 4, and section 47). A notice or an agreement to
+      the case of a daily or weekly tenancy; the termination date must be the last day of a rental period, for a
+      yearly tenancy the last day of a yearly period on which the tenancy is based and, for a fixed term, its
+      expiration date (section 44, subsections 1 to 4, and section 47). A notice or an agreement to
       terminate given or made at the time the tenancy agreement is entered into, or as a condition of entering into
       it, is void (section 37, subsections 4 and 5), except for the student housing described in subsections 6 and
       7 of that section.</p>
@@ -458,7 +481,8 @@
       1957 to 1970, by notice given at least 6 months before the expiry of a fixed-term lease (1 month where the term
       is 6 months or less) or, for a lease of indeterminate term, 6 months before the date of repossession or
       eviction (article 1960). An evicted lessee is entitled to reasonable moving expenses and to an indemnity equal
-      to 1 month&rsquo;s rent for each year of uninterrupted lease, of not less than 3 and not more than 24 months&rsquo;
+      to 1 month&rsquo;s rent for each year of uninterrupted lease, of not less than 3 and not more than 24
+      months&rsquo;
       rent (article 1965). Repossession and eviction are excluded where the lessee or the lessee&rsquo;s spouse is
       65 years of age or over, has occupied the dwelling for at least 10 years and has an income equal to or less than
       125 per cent of the maximum income for eligibility for low-rental housing, except in the situations listed in

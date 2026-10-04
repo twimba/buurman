@@ -7,7 +7,8 @@
                amendment 2021, c. 4, Sched. 11): s. 18 (re-entry where rent unpaid for 15 days, unless otherwise
                agreed), 19 (notice before re-entry or forfeiture for breaches other than non-payment of rent), 20
                (relief against forfeiture), 23 (consent to assign or sublet not to be unreasonably withheld unless
-               the lease expressly provides otherwise), 27 (local improvement taxes), 28, 30 and 43 (distress).
+               the lease expressly provides otherwise), 27 (local improvement taxes), 28 (notice to quit for
+               weekly and monthly tenancies), 30 and 43 (distress).
                Quebec: Civil Code of Quebec, CQLR c. CCQ-1991, arts. 1851-1891 (lease in general; arts. 1892-2000 on
                the lease of a dwelling do not apply to premises let for business): 1851, 1854, 1855, 1856, 1857,
                1863, 1864, 1866, 1870-1873, 1877-1883, 1885-1887 (lease inscribed in the land register), 1890, 1891
@@ -160,7 +161,8 @@
     interest unless otherwise agreed and less any amount the tenant owes, within 30 days after the end of the lease
     and the return of the premises.</p>
   <p th:if="${countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC')}">The
-    statutory limits on deposits for residential tenancies in this province (in Ontario the rent deposit, in Quebec the
+    statutory limits on deposits for residential tenancies in this province (in Ontario the rent deposit, in
+    Quebec the
     prohibition of any deposit, in British Columbia the cap of 1/2 of 1 month&rsquo;s rent) do not apply to
     premises leased for business purposes.</p>
 </div>
@@ -174,7 +176,8 @@
     method: ______________________________, without deduction or set-off except as the law requires.</p>
   <p>An amount not paid when due bears interest from its due date until payment at the yearly rate of ________ per
     cent. Under section 4 of the Interest Act (Canada), interest that a written contract makes payable at a rate for
-    a period of less than 1 year is limited unless the contract expressly states the equivalent yearly rate.</p>
+    a period of less than 1 year is limited to 5 per cent per year unless the contract expressly states the
+    equivalent yearly rate.</p>
 </div>
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
@@ -217,7 +220,9 @@
       of the intended sublessee or assignee and obtain the lessor&rsquo;s consent (article 1870 of the Civil Code of
       Quebec). The lessor may not refuse consent without a serious reason and must state the reasons for a refusal
       within 15 days after receiving the notice, failing which consent is deemed given (article 1871); the lessor may
-      exact only the reasonable expenses resulting from the sublease or assignment (article 1872).</p>
+      exact only the reasonable expenses resulting from the sublease or assignment (article 1872). For premises other
+      than a dwelling these rules apply unless the parties agree otherwise, since article 1893 makes them mandatory
+      only for the lease of a dwelling.</p>
     <p>An assignment releases the former lessee from its obligations unless the parties agree otherwise (article
       1873). The parties agree that on an assignment the tenant (tick 1 box): [ ] is released; [ ] remains liable
       together with the assignee.</p>
@@ -287,8 +292,9 @@
     paying, before judgment, the rent due, the costs and interest (article 1883). A party who intends to resiliate a
     lease of indeterminate term must give the other party notice within the same time as the term fixed for payment
     of the rent or, if that term exceeds 3 months, within 3 months (article 1882). As Quebec law is generally
-    understood, the lessor has no right of distress without legal process; seizure of the lessee&rsquo;s property
-    requires a judgment.</p>
+    understood, the lessor may not seize the lessee&rsquo;s property without legal process; seizure requires judicial
+    process (a judgment, or a seizure before judgment authorized by the court). Commercial lessors often take a
+    movable hypothec on the lessee&rsquo;s property instead.</p>
   <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">In British Columbia the landlord&rsquo;s remedies for
     unpaid rent include, subject to its conditions and exemptions, distress under the Rent Distress Act and the
     Commercial Tenancy Act.</p>

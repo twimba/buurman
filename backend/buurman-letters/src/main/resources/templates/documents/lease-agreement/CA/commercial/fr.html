@@ -7,7 +7,8 @@
                amendment 2021, c. 4, Sched. 11): s. 18 (re-entry where rent unpaid for 15 days, unless otherwise
                agreed), 19 (notice before re-entry or forfeiture for breaches other than non-payment of rent), 20
                (relief against forfeiture), 23 (consent to assign or sublet not to be unreasonably withheld unless
-               the lease expressly provides otherwise), 27 (local improvement taxes), 28, 30 and 43 (distress).
+               the lease expressly provides otherwise), 27 (local improvement taxes), 28 (notice to quit for
+               weekly and monthly tenancies), 30 and 43 (distress).
                Quebec: Civil Code of Quebec, CQLR c. CCQ-1991, arts. 1851-1891 (lease in general; arts. 1892-2000 on
                the lease of a dwelling do not apply to premises let for business): 1851, 1854, 1855, 1856, 1857,
                1863, 1864, 1866, 1870-1873, 1877-1883, 1885-1887 (lease inscribed in the land register), 1890, 1891
@@ -54,7 +55,8 @@
   <p>numéro d&rsquo;inscription aux fins de la TPS/TVH : ______________________________ numéro
     d&rsquo;inscription aux fins de la TVQ (Québec) : ______________________________</p>
   <p>représenté par : ______________________________.</p>
-  <p>Lorsque le locataire est constitué de plusieurs personnes, chacune d&rsquo;elles est tenue solidairement de toutes
+  <p>Lorsque le locataire est constitué de plusieurs personnes, chacune d&rsquo;elles est tenue solidairement de
+  toutes
     les obligations du locataire découlant du présent bail.</p>
   <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Lorsque les lieux sont situés au Québec, les termes
     &laquo;&nbsp;locateur&nbsp;&raquo; et &laquo;&nbsp;locataire&nbsp;&raquo; ont le sens que leur donne le Code
@@ -109,7 +111,8 @@
     1 an, pour cette durée, aux mêmes conditions (article 1879). La sûreté consentie par un tiers ne s&rsquo;étend pas
     au bail reconduit (article 1881).</p>
   <p th:if="${!(countryCode == 'CA' and regionCode == 'QC')}">À moins que le droit de la province ou du territoire où
-    se trouvent les lieux n&rsquo;en dispose autrement, le locataire n&rsquo;a aucun droit de demeurer dans les lieux ni
+    se trouvent les lieux n&rsquo;en dispose autrement, le locataire n&rsquo;a aucun droit de demeurer dans les
+    lieux ni
     droit à un nouveau bail à la fin de la durée, sauf en vertu de l&rsquo;option de renouvellement du présent
     bail.</p>
 </div>
@@ -155,7 +158,8 @@
 </div>
 
 <div th:fragment="clause-sales-tax" data-clause="sales-tax">
-  <p>Le loyer de base et le loyer additionnel s&rsquo;entendent hors taxe sur les produits et services ou taxe de vente
+  <p>Le loyer de base et le loyer additionnel s&rsquo;entendent hors taxe sur les produits et services ou taxe de
+  vente
     harmonisée (TPS/TVH) et, au Québec, hors taxe de vente du Québec (TVQ). Lorsque le loyer constitue une fourniture
     taxable et que le locateur est un inscrit, le locataire paie ces taxes au taux applicable en plus du loyer, aux
     mêmes dates que le loyer, sur présentation d&rsquo;une facture ou d&rsquo;un relevé indiquant les numéros
@@ -185,8 +189,9 @@
     loi.</p>
   <p>Toute somme non payée à l&rsquo;échéance porte intérêt depuis la date d&rsquo;échéance jusqu&rsquo;au paiement au
     taux annuel de ________ pour cent. Selon l&rsquo;article 4 de la Loi sur l&rsquo;intérêt (Canada), l&rsquo;intérêt
-    qu&rsquo;un contrat écrit rend payable à un taux calculé pour une période de moins de 1 an est limité, à moins que
-    le contrat n&rsquo;énonce expressément le taux annuel équivalent.</p>
+    qu&rsquo;un contrat écrit rend payable à un taux calculé pour une période de moins de 1 an est limité à 5 pour
+    cent
+    par an, à moins que le contrat n&rsquo;énonce expressément le taux annuel équivalent.</p>
 </div>
 
 <div th:fragment="clause-maintenance" data-clause="maintenance">
@@ -232,13 +237,19 @@
     et 2, de la Loi sur la location commerciale).</p>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
     <p>Au Québec, le locataire doit aviser le locateur de son intention de sous-louer ou de céder, lui indiquer le nom
-      et l&rsquo;adresse du sous-locataire ou du cessionnaire envisagé et obtenir son consentement (article 1870 du Code
+      et l&rsquo;adresse du sous-locataire ou du cessionnaire envisagé et obtenir son consentement (article 1870
+      du Code
       civil du Québec). Le locateur ne peut refuser son consentement sans un motif sérieux et doit indiquer les motifs
       de son refus dans les 15 jours de la réception de l&rsquo;avis, faute de quoi il est réputé avoir consenti
-      (article 1871); il ne peut exiger que le remboursement des dépenses raisonnables résultant de la sous-location ou
-      de la cession (article 1872).</p>
+      (article 1871); il ne peut exiger que le remboursement des dépenses raisonnables résultant de la
+      sous-location ou
+      de la cession (article 1872). Pour des lieux autres qu&rsquo;un logement, ces règles s&rsquo;appliquent à moins
+      que les parties n&rsquo;en conviennent autrement, puisque l&rsquo;article 1893 ne les rend impératives que
+      pour le
+      bail d&rsquo;un logement.</p>
     <p>La cession de bail décharge l&rsquo;ancien locataire de ses obligations, à moins que les parties n&rsquo;aient
-      convenu autrement (article 1873). Les parties conviennent qu&rsquo;en cas de cession le locataire (cocher 1 case)
+      convenu autrement (article 1873). Les parties conviennent qu&rsquo;en cas de cession le locataire (cocher 1
+      case)
       : [ ] est libéré; [ ] demeure tenu avec le cessionnaire.</p>
   </th:block>
   <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC'))}">Sauf convention écrite contraire
@@ -264,7 +275,8 @@
 
 <div th:fragment="clause-registration" data-clause="registration">
   <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, les droits résultant du bail peuvent être publiés
-    (article 1852 du Code civil du Québec). S&rsquo;il reste à courir plus de 12 mois d&rsquo;un bail immobilier à durée
+    (article 1852 du Code civil du Québec). S&rsquo;il reste à courir plus de 12 mois d&rsquo;un bail immobilier à
+    durée
     fixe à compter de l&rsquo;aliénation du bien, l&rsquo;acquéreur peut résilier le bail à l&rsquo;expiration de ces
     12 mois en donnant par écrit un préavis de 6 mois au locataire, à moins que le bail n&rsquo;ait été inscrit au
     bureau de la publicité des droits avant l&rsquo;acte d&rsquo;aliénation (article 1887). Le locataire peut faire
@@ -277,12 +289,14 @@
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
-  <p>Le locateur et le locataire constatent par écrit l&rsquo;état des lieux lorsque le locataire en prend possession et
+  <p>Le locateur et le locataire constatent par écrit l&rsquo;état des lieux lorsque le locataire en prend
+  possession et
     lorsqu&rsquo;il les remet; chacun signe le constat et en conserve une copie.</p>
   <p>À la fin du bail, le locataire remet les lieux propres et dans l&rsquo;état constaté au début, sauf l&rsquo;usure
     normale et les travaux permis par le présent bail, et remet toutes les clés.</p>
   <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locataire remet le bien dans l&rsquo;état où il
-    l&rsquo;a reçu, mais n&rsquo;est pas tenu des changements résultant de la vétusté, de l&rsquo;usure normale du bien
+    l&rsquo;a reçu, mais n&rsquo;est pas tenu des changements résultant de la vétusté, de l&rsquo;usure normale du
+    bien
     ou d&rsquo;une force majeure (article 1890 du Code civil du Québec).</p>
 </div>
 
@@ -298,22 +312,26 @@
     permettre au locateur de reprendre possession des lieux si le loyer demeure impayé 15 jours après son échéance,
     même sans demande formelle (article 18, paragraphe 1, de la Loi sur la location commerciale). Un droit de reprise
     de possession ou de déchéance pour un manquement autre que le non-paiement du loyer ne peut être exercé
-    qu&rsquo;après un avis précisant le manquement, exigeant qu&rsquo;il y soit remédié s&rsquo;il peut l&rsquo;être et
+    qu&rsquo;après un avis précisant le manquement, exigeant qu&rsquo;il y soit remédié s&rsquo;il peut
+    l&rsquo;être et
     exigeant une indemnité, et l&rsquo;omission du locataire de s&rsquo;y conformer dans un délai raisonnable (article
     19, paragraphe 2); le locataire peut demander au tribunal d&rsquo;être relevé de la reprise de possession ou de la
     déchéance (article 20). Le droit de saisie-gagerie du locateur pour arriérés de loyer prévu par cette loi demeure
     ouvert, sous réserve de ses conditions et exemptions (articles 30 et 43).</p>
   <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, lorsque l&rsquo;inexécution d&rsquo;une
     obligation cause un préjudice sérieux, l&rsquo;autre partie peut demander la résiliation du bail, outre des
-    dommages-intérêts (article 1863 du Code civil du Québec); le locataire poursuivi en résiliation du bail pour défaut
+    dommages-intérêts (article 1863 du Code civil du Québec); le locataire poursuivi en résiliation du bail pour
+    défaut
     de paiement du loyer peut l&rsquo;éviter en payant, avant jugement, le loyer dû, les frais et les intérêts
     (article 1883). La partie qui entend résilier un bail à durée indéterminée doit donner à l&rsquo;autre partie un
     avis dans le même délai que le terme fixé pour le paiement du loyer ou, si ce terme excède 3 mois, dans un délai
-    de 3 mois (article 1882). Selon la compréhension généralement admise du droit québécois, le locateur ne dispose
-    d&rsquo;aucun droit de saisie-gagerie sans procédure judiciaire; la saisie des biens du locataire requiert un
-    jugement.</p>
+    de 3 mois (article 1882). Selon la compréhension généralement admise du droit québécois, le locateur ne peut
+    saisir les biens du locataire sans procédure judiciaire; la saisie requiert une intervention judiciaire (un
+    jugement, ou une saisie avant jugement autorisée par le tribunal). Les locateurs commerciaux se font souvent
+    consentir plutôt une hypothèque mobilière sur les biens du locataire.</p>
   <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">En Colombie-Britannique, les recours du locateur pour loyer
-    impayé comprennent, sous réserve de leurs conditions et exemptions, la saisie-gagerie en vertu du Rent Distress Act
+    impayé comprennent, sous réserve de leurs conditions et exemptions, la saisie-gagerie en vertu du Rent
+    Distress Act
     et du Commercial Tenancy Act.</p>
   <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">La
     question de savoir si le locateur peut saisir les biens du locataire pour loyer impayé, et l&rsquo;avis qui doit

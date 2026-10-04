@@ -13,7 +13,8 @@
                Lease: prescribed class, 2018-04-30, form dated 2020/12, additional terms void where inconsistent).
                O. Reg. 516/06 s. 17 (permitted charges: refundable key deposit, NSF administration charge of not more
                than $20). Guideline 2027 (1.9 per cent) on ontario.ca/page/rent-increase-guideline (not printed).
-               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as read on
+               Quebec: Civil Code of Quebec, CQLR c. CCQ-1991 (Code civil du Quebec, text updated 2026-09-22 as
+               read on
                ccq.lexum.com; legisquebec.gouv.qc.ca refused automated access), arts. 1851-1891 (lease in general:
                1864, 1870-1873, 1890, 1891) and 1892-2000 (lease of a dwelling): 1893, 1894, 1895 (copy within 10
                days, mandatory form), 1896 (notice to a new lessee, amended 2024, c. 2), 1897 (French unless the
@@ -32,7 +33,8 @@
                Privacy: Personal Information Protection and Electronic Documents Act (federal); Act respecting the
                protection of personal information in the private sector (Quebec); Personal Information Protection Act
                (British Columbia) - named from knowledge, listed as unverified in the pack report.
-               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com, tal.gouv.qc.ca.
+               Sources consulted 2026-10-04: ontario.ca/laws (e-Laws), bclaws.gov.bc.ca, ccq.lexum.com,
+               tal.gouv.qc.ca.
                Pending: Ontario 2025, c. 14, Sched. 12 provisions not yet in force; Quebec rent-fixing regulation
                applies to notices given from 2026-01-01; British Columbia allowable increase for 2027 announced
                annually (not printed).
@@ -89,10 +91,18 @@
       obligatoires du bail standard est nulle. Si le locateur n&rsquo;utilise pas le bail standard, le locataire peut
       l&rsquo;exiger par écrit une fois pendant la location; si le locateur ne l&rsquo;a pas fourni au moins 21 jours
       après la demande, le locataire peut retenir des loyers jusqu&rsquo;à concurrence d&rsquo;un montant total égal à
-      1 mois de loyer (article 12.1, paragraphes 5 à 7), et, dans les cas prévus à l&rsquo;article 47.0.1, le
-      locataire peut mettre fin de façon anticipée à une location à l&rsquo;année ou à durée déterminée moyennant un
-      préavis de 60 jours. Une convention de location n&rsquo;est pas nulle du seul fait qu&rsquo;elle n&rsquo;est pas
-      rédigée selon la formule prescrite (article 12.1, paragraphe 11).</p>
+      1 mois de loyer (article 12.1, paragraphes 5 à 7); le locateur ne peut exiger le paiement des loyers retenus
+      que s&rsquo;il se conforme à la demande au plus tard 30 jours après la date du premier paiement de loyer retenu
+      (article 12.1, paragraphe 9). Dans les cas prévus à l&rsquo;article 47.0.1, le locataire peut mettre fin de
+      façon
+      anticipée à une location à l&rsquo;année ou à durée déterminée moyennant un préavis de 60 jours. Une convention
+      de location n&rsquo;est pas nulle du seul fait qu&rsquo;elle n&rsquo;est pas rédigée selon la formule prescrite
+      (article 12.1, paragraphe 11).</p>
+    <p>Déclaration des parties (cocher 1 case; obligatoire lorsque le logement est situé en Ontario) : [ ] les
+      parties ont signé la Convention de location à usage d&rsquo;habitation (Bail standard) datée de 2020/12 le
+      ______________, et le présent document ne contient que des conditions supplémentaires jointes à celle-ci;
+      [ ] la location n&rsquo;appartient pas à la catégorie prescrite, pour le motif suivant :
+      ______________________________</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
     <p>Le logement est situé au Québec. Le bail d&rsquo;un logement doit être fait sur le formulaire dont
@@ -104,7 +114,14 @@
       compléter dans la mesure où elles sont compatibles avec lui. Est sans effet la clause d&rsquo;un bail de
       logement qui déroge aux articles 1892 à 2000 du Code civil du Québec ou aux autres articles énumérés à
       l&rsquo;article 1893. Le bail doit être rédigé en français; il ne peut être rédigé dans une autre langue que si
-      telle est la volonté expresse des parties (article 1897).</p>
+      telle est la volonté expresse des parties (article 1897). Si le locateur fait défaut de remettre au locataire
+      un exemplaire du bail dans les 10 jours ou d&rsquo;utiliser le formulaire obligatoire, le locataire ne peut
+      toutefois pas demander pour ce motif la résiliation du bail (article 1895, alinéa 3).</p>
+    <p>Déclaration des parties (cocher 1 case; obligatoire lorsque le logement est situé au Québec) : [ ] les
+      parties ont conclu le bail sur le formulaire obligatoire du TAL le ______________, et le présent document ne
+      contient que des conditions supplémentaires compatibles avec celui-ci; [ ] le bail n&rsquo;est pas un bail de
+      logement régi par les articles 1892 à 2000 du Code civil du Québec, pour le motif suivant :
+      ______________________________</p>
   </th:block>
   <p th:if="${countryCode == 'CA' and regionCode == 'BC'}">Le logement est situé en Colombie-Britannique. Le
     locateur doit rédiger la convention de location par écrit, et celle-ci doit reproduire les conditions standard
@@ -120,7 +137,7 @@
     à l&rsquo;autre, et certains prescrivent une formule de bail obligatoire ou des conditions standard qui
     s&rsquo;appliquent malgré la présente convention : en Ontario le bail standard, au Québec le formulaire de bail du
     Tribunal administratif du logement, en Colombie-Britannique les conditions standard du Residential Tenancy
-    Regulation. Le présent document n&rsquo;est pas une telle formule. Les parties doivent vérifier le droit de la
+    Regulation. LE PRÉSENT DOCUMENT N&rsquo;EST PAS UNE TELLE FORMULE. Les parties doivent vérifier le droit de la
     province ou du territoire concerné avant de signer.</p>
   <p>Lorsqu&rsquo;une disposition du droit provincial ou territorial applicable, à laquelle il ne peut être dérogé par
     convention, est contraire à la présente convention, cette disposition l&rsquo;emporte.</p>
@@ -182,7 +199,8 @@
       1).</p>
     <p>Pendant la location, l&rsquo;augmentation ne peut dépasser le taux légal que le ministre fixe pour chaque année
       civile et qui n&rsquo;est pas supérieur à 2,5 pour cent, sauf dans les cas permis par les articles 121, 123, 126
-      ou 127 de cette loi (article 120, paragraphes 1 et 2). Le taux légal ne s&rsquo;applique pas lorsque aucune partie
+      ou 127 de cette loi (article 120, paragraphes 1 et 2). Le taux légal ne s&rsquo;applique pas lorsque aucune
+      partie
       de l&rsquo;immeuble où se trouve le logement n&rsquo;était occupée à des fins d&rsquo;habitation le 15 novembre
       2018 ou avant cette date (article 6.1, paragraphe 2, de cette loi, qui vise aussi les rajouts et, aux termes du
       paragraphe 3, certains logements aménagés dans des maisons).</p>
@@ -197,36 +215,47 @@
       l&rsquo;arrivée du terme; pour un bail de moins de 12 mois, au moins 1 mois, mais pas plus de 2 mois, avant le
       terme; pour un bail à durée indéterminée, au moins 1 mois, mais au plus 2 mois, avant la modification; pour le
       bail d&rsquo;une chambre, au moins 10 jours, mais au plus 20 jours (article 1942). Le locataire qui refuse la
-      modification doit en aviser le locateur dans un délai de 1 mois à compter de la réception de l&rsquo;avis, faute de quoi il est réputé
-      avoir accepté la reconduction aux conditions proposées (article 1945); le locateur peut alors s&rsquo;adresser au
-      Tribunal administratif du logement dans un délai de 1 mois à compter de la réception de l&rsquo;avis de refus pour faire fixer le
+      modification doit en aviser le locateur dans un délai de 1 mois à compter de la réception de l&rsquo;avis,
+      faute de quoi il est réputé
+      avoir accepté la reconduction aux conditions proposées (article 1945); le locateur peut alors
+      s&rsquo;adresser au
+      Tribunal administratif du logement dans un délai de 1 mois à compter de la réception de l&rsquo;avis de
+      refus pour faire fixer le
       loyer, faute de quoi le bail est reconduit aux conditions antérieures (article 1947).</p>
-    <p>Ni l&rsquo;une ni l&rsquo;autre partie ne peut s&rsquo;adresser au tribunal pour faire fixer le loyer ou modifier
-      une autre condition du bail d&rsquo;un logement loué par une coopérative d&rsquo;habitation, ou d&rsquo;un logement
-      situé dans un immeuble nouvellement bâti ou récemment affecté à la location, dans les 5 années qui suivent la date
-      à laquelle l&rsquo;immeuble est prêt pour l&rsquo;usage auquel il est destiné (article 1955). Le locateur ne peut
+    <p>Ni l&rsquo;une ni l&rsquo;autre partie ne peut s&rsquo;adresser au tribunal pour faire fixer le loyer ou
+    modifier
+      une autre condition du bail d&rsquo;un logement loué par une coopérative d&rsquo;habitation, ou d&rsquo;un
+      logement
+      situé dans un immeuble nouvellement bâti ou récemment affecté à la location, dans les 5 années qui suivent
+      la date
+      à laquelle l&rsquo;immeuble est prêt pour l&rsquo;usage auquel il est destiné (article 1955). Le locateur ne
+      peut
       invoquer ces restrictions à l&rsquo;encontre du locataire que si elles sont prévues dans le bail et, pour un
       immeuble neuf ou dont l&rsquo;affectation a changé, que si le bail indique le loyer maximal qu&rsquo;il pourra
-      imposer pendant ces 5 années; pour un tel logement, le locataire qui refuse la modification proposée doit quitter
+      imposer pendant ces 5 années; pour un tel logement, le locataire qui refuse la modification proposée doit
+      quitter
       le logement à la fin du bail (article 1945).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
     <p>Le locateur ne peut imposer une augmentation de loyer pendant au moins 12 mois après la date à laquelle le
       loyer est devenu exigible pour la première fois ou, si le loyer a déjà été augmenté, après la date
-      d&rsquo;effet de la dernière augmentation (article 42, paragraphe 1, du Residential Tenancy Act). Le locateur doit
+      d&rsquo;effet de la dernière augmentation (article 42, paragraphe 1, du Residential Tenancy Act). Le
+      locateur doit
       aviser le locataire de l&rsquo;augmentation au moyen de la formule approuvée au moins 3 mois avant sa date
       d&rsquo;effet (article 42, paragraphes 2 et 3).</p>
     <p>L&rsquo;augmentation ne peut dépasser le montant calculé selon le Residential Tenancy Regulation (le taux
       d&rsquo;inflation, soit la variation moyenne en pourcentage sur 12 mois de l&rsquo;indice des prix à la
       consommation, ensemble, pour la Colombie-Britannique), un montant ordonné par le directeur ou un montant accepté
-      par écrit par le locataire (article 43, paragraphe 1); le locataire peut déduire du loyer une augmentation perçue
+      par écrit par le locataire (article 43, paragraphe 1); le locataire peut déduire du loyer une augmentation
+      perçue
       en violation de ces règles (article 43, paragraphe 5).</p>
   </th:block>
   <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
     loyer ne peut être augmenté que de la manière, avec le préavis écrit, aux intervalles et dans les limites que
-    permet le droit de la province ou du territoire où se trouve le logement. La plupart des provinces et territoires
-    exigent un préavis écrit de plusieurs mois et ne permettent pas plus de 1 augmentation par période de 12 mois;
-    certains limitent le montant de l&rsquo;augmentation.</p>
+    permet le droit de la province ou du territoire où se trouve le logement. De nombreuses provinces et de
+    nombreux territoires
+    exigent un préavis écrit de plusieurs mois et limitent la fréquence des augmentations de loyer; certains limitent
+    aussi le montant de l&rsquo;augmentation.</p>
 </div>
 
 <div th:fragment="clause-service-costs" data-clause="service-costs">
@@ -256,7 +285,8 @@
   </th:block>
   <p th:if="${countryCode == 'CA' and regionCode == 'QC'}">Au Québec, le locateur ne peut exiger une somme
     d&rsquo;argent autre que le loyer, sous forme de dépôt ou autrement (article 1904 du Code civil du Québec). Aucun
-    dépôt de garantie n&rsquo;est exigible en vertu de la présente convention; un montant inscrit à titre de dépôt pour
+    dépôt de garantie n&rsquo;est exigible en vertu de la présente convention; un montant inscrit à titre de dépôt
+    pour
     ce contrat n&rsquo;est pas exigible pour un logement situé au Québec.</p>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
     <p>Le locateur ne peut exiger ni accepter un dépôt de garantie ou un dépôt pour dommages causés par un animal
@@ -333,8 +363,12 @@
       paragraphe 1, et article 97, paragraphe 1, de la Loi de 2006 sur la location à usage d&rsquo;habitation). Le
       locateur ne peut refuser arbitrairement ou de façon déraisonnable de consentir à la sous-location à un
       sous-locataire éventuel ou à la cession à un cessionnaire éventuel (article 97, paragraphe 2, et article 95,
-      paragraphe 5). Si le locateur refuse une cession ou ne répond pas dans les 7 jours de la demande, le locataire
-      peut donner un avis de résiliation dans les 30 jours de la demande (article 95, paragraphe 4). Le locateur ne
+      paragraphe 5). Le locataire peut donner un avis de résiliation dans les 30 jours de la demande si le locateur
+      refuse de consentir à une cession en général, refuse de consentir à toute cession lorsqu&rsquo;il est consulté
+      sur un cessionnaire éventuel précis, ou ne répond pas dans les 7 jours de la demande (article 95, paragraphe 4,
+      et article 96); le refus d&rsquo;un cessionnaire éventuel précis ne donne pas ce droit et relève plutôt de la
+      règle selon laquelle le consentement ne peut être refusé arbitrairement ou de façon déraisonnable. Le
+      locateur ne
       peut exiger que les débours raisonnables engagés pour donner son consentement (article 95, paragraphe 7, et
       article 97, paragraphe 3).</p>
   </th:block>
@@ -343,7 +377,8 @@
       intention, lui avoir indiqué le nom et l&rsquo;adresse du sous-locataire ou du cessionnaire envisagé et avoir
       obtenu son consentement (article 1870 du Code civil du Québec); l&rsquo;avis de cession doit indiquer la date de
       cession prévue (article 1978.1). Le locateur ne peut refuser de consentir à la sous-location sans un motif
-      sérieux et doit indiquer les motifs de son refus dans les 15 jours de la réception de l&rsquo;avis, faute de quoi
+      sérieux et doit indiquer les motifs de son refus dans les 15 jours de la réception de l&rsquo;avis, faute de
+      quoi
       il est réputé avoir consenti (article 1871).</p>
     <p>Le locateur peut refuser de consentir à la cession pour un motif autre qu&rsquo;un motif sérieux; le bail est
       alors résilié à la date de cession indiquée dans l&rsquo;avis du locataire (article 1978.2). Le locateur ne peut
@@ -371,14 +406,18 @@
       de conclure la convention (article 20, paragraphes 1 et 2, de la Loi de 2006 sur la location à usage
       d&rsquo;habitation).</p>
     <p>Le locateur peut entrer dans le logement sans préavis écrit en cas d&rsquo;urgence ou si le locataire y consent
-      au moment de l&rsquo;entrée (article 26, paragraphe 1); dans les autres cas, aux fins énumérées à
+      au moment de l&rsquo;entrée (article 26, paragraphe 1), ainsi que dans les autres cas prévus à l&rsquo;article
+      26, paragraphes 2 et 3 (nettoyage régulier exigé par la convention, et visite du logement par des locataires
+      éventuels entre 8 heures du matin et 8 heures du soir après un avis ou un accord de résiliation, moyennant un
+      effort raisonnable pour en informer d&rsquo;abord le locataire); dans les autres cas, aux fins énumérées à
       l&rsquo;article 27, paragraphe 1, uniquement après un préavis écrit remis au moins 24 heures avant
       l&rsquo;entrée, indiquant le motif, le jour et une heure située entre 8 heures du matin et 8 heures du soir
       (article 27, paragraphe 3).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
     <p>Le locateur est tenu de délivrer un logement en bon état d&rsquo;habitabilité et de le maintenir ainsi pendant
-      toute la durée du bail (article 1910 du Code civil du Québec), et de le délivrer en bon état de propreté, état que
+      toute la durée du bail (article 1910 du Code civil du Québec), et de le délivrer en bon état de propreté,
+      état que
       le locataire est tenu de maintenir (article 1911). Le locateur fait toutes les réparations nécessaires, à
       l&rsquo;exception des menues réparations d&rsquo;entretien, qui sont à la charge du locataire à moins
       qu&rsquo;elles ne résultent de la vétusté ou d&rsquo;une force majeure (article 1864).</p>
@@ -398,11 +437,13 @@
     <p>À moins que le locataire ne donne sa permission ou qu&rsquo;un autre cas prévu à l&rsquo;article 29, paragraphe
       1, ne s&rsquo;applique (par exemple une urgence où l&rsquo;entrée est nécessaire pour protéger des personnes ou
       des biens), le locateur ne peut entrer dans le logement qu&rsquo;après avoir donné un préavis écrit au moins
-      24 heures et au plus 30 jours avant l&rsquo;entrée, indiquant un motif raisonnable ainsi qu&rsquo;une date et une
+      24 heures et au plus 30 jours avant l&rsquo;entrée, indiquant un motif raisonnable ainsi qu&rsquo;une date
+      et une
       heure situées entre 8 heures du matin et 9 heures du soir, sauf accord contraire du locataire.</p>
   </th:block>
   <p th:if="${!(countryCode == 'CA' and (regionCode == 'ON' or regionCode == 'QC' or regionCode == 'BC'))}">Le
-    locateur garde le logement en bon état et propre à l&rsquo;habitation conformément à la loi et aux normes de santé,
+    locateur garde le logement en bon état et propre à l&rsquo;habitation conformément à la loi et aux normes de
+    santé,
     de sécurité et d&rsquo;habitation applicables; le locataire le garde propre et répare les dommages qu&rsquo;il
     cause, à l&rsquo;exception de l&rsquo;usure normale. Sauf urgence, le locateur n&rsquo;entre dans le logement
     qu&rsquo;avec le préavis et aux heures qu&rsquo;exige le droit de la province ou du territoire où se trouve le
@@ -463,24 +504,30 @@
   <th:block th:if="${countryCode == 'CA' and regionCode == 'ON'}">
     <p>En Ontario, un avis de résiliation doit être rédigé selon la formule approuvée par la Commission de la location
       immobilière ou selon la formule prescrite (article 43, paragraphe 1, de la Loi de 2006 sur la location à usage
-      d&rsquo;habitation). Le locataire peut mettre fin à la location à la fin d&rsquo;une période de location ou de la
+      d&rsquo;habitation). Le locataire peut mettre fin à la location à la fin d&rsquo;une période de location ou
+      de la
       durée déterminée en donnant un avis au moins 60 jours avant la date de résiliation dans le cas d&rsquo;une
-      location au mois ou à l&rsquo;année ou d&rsquo;une durée déterminée, ou au moins 28 jours avant cette date dans le
+      location au mois ou à l&rsquo;année ou d&rsquo;une durée déterminée, ou au moins 28 jours avant cette date
+      dans le
       cas d&rsquo;une location à la journée ou à la semaine; la date de résiliation doit être le dernier jour
-      d&rsquo;une période de location ou, pour une durée déterminée, sa date d&rsquo;expiration (article 44,
-      paragraphes 1 à 4, et article 47). Est nul l&rsquo;avis ou l&rsquo;accord de résiliation donné ou conclu au moment
+      d&rsquo;une période de location, pour une location à l&rsquo;année le dernier jour d&rsquo;une période annuelle
+      sur laquelle la location est fondée et, pour une durée déterminée, sa date d&rsquo;expiration (article 44,
+      paragraphes 1 à 4, et article 47). Est nul l&rsquo;avis ou l&rsquo;accord de résiliation donné ou conclu au
+      moment
       de la conclusion de la convention de location ou comme condition de sa conclusion (article 37, paragraphes 4 et
       5), sauf pour les logements d&rsquo;étudiants visés aux paragraphes 6 et 7 de cet article.</p>
     <p>Le locateur ne peut mettre fin à la location que pour les motifs et avec les avis prévus par la Loi, et ne peut
       reprendre possession du logement que si le locataire l&rsquo;a quitté ou abandonné ou si une ordonnance
       d&rsquo;expulsion de la Commission l&rsquo;autorise (article 39). Si le locataire ne paie pas le loyer
       légalement dû, le locateur peut donner un avis de résiliation qui prend effet au plus tôt le 7e jour qui suit la
-      remise de l&rsquo;avis (article 59, paragraphe 1, en vigueur depuis le 21 septembre 2026); l&rsquo;avis est nul si
+      remise de l&rsquo;avis (article 59, paragraphe 1, en vigueur depuis le 21 septembre 2026); l&rsquo;avis est
+      nul si
       le locataire paie l&rsquo;arriéré et le loyer devenu exigible avant que le locateur ne présente une requête à la
       Commission (article 59, paragraphe 3).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'QC'}">
-    <p>Au Québec, le locataire qui n&rsquo;a pas reçu d&rsquo;avis de modification peut éviter la reconduction d&rsquo;un
+    <p>Au Québec, le locataire qui n&rsquo;a pas reçu d&rsquo;avis de modification peut éviter la reconduction
+    d&rsquo;un
       bail à durée fixe, ou mettre fin à un bail à durée indéterminée, en donnant au locateur un avis de
       non-reconduction ou de résiliation dans les mêmes délais que ceux que doit respecter le locateur pour un avis de
       modification (article 1946 du Code civil du Québec; voir l&rsquo;article 1942). Le locataire peut aussi résilier
@@ -492,14 +539,18 @@
       12 mois, ou plus tôt dans les cas prévus à ces articles.</p>
     <p>Le locateur ne peut reprendre le logement ou évincer le locataire que dans les cas et aux conditions prévus aux
       articles 1957 à 1970, au moyen d&rsquo;un avis donné au moins 6 mois avant l&rsquo;expiration d&rsquo;un bail à
-      durée fixe (1 mois si la durée est de 6 mois ou moins) ou, pour un bail à durée indéterminée, 6 mois avant la date
+      durée fixe (1 mois si la durée est de 6 mois ou moins) ou, pour un bail à durée indéterminée, 6 mois avant
+      la date
       de la reprise ou de l&rsquo;éviction (article 1960). Le locataire évincé a droit à des frais raisonnables de
-      déménagement et à une indemnité équivalente à 1 mois de loyer pour chaque année de location ininterrompue, qui ne
+      déménagement et à une indemnité équivalente à 1 mois de loyer pour chaque année de location ininterrompue,
+      qui ne
       peut être inférieure à 3 mois ni excéder 24 mois de loyer (article 1965). La reprise et l&rsquo;éviction sont
-      exclues lorsque le locataire ou son conjoint est âgé de 65 ans ou plus, occupe le logement depuis au moins 10 ans
+      exclues lorsque le locataire ou son conjoint est âgé de 65 ans ou plus, occupe le logement depuis au moins
+      10 ans
       et a un revenu égal ou inférieur à 125 pour cent du revenu maximal permettant d&rsquo;être admissible à un
       logement à loyer modique, sauf dans les situations énumérées à l&rsquo;article 1959.1. Le locateur peut obtenir
-      la résiliation du bail si le locataire est en retard de plus de 3 semaines pour le paiement du loyer ou, s&rsquo;il
+      la résiliation du bail si le locataire est en retard de plus de 3 semaines pour le paiement du loyer ou,
+      s&rsquo;il
       en subit un préjudice sérieux, si le locataire en retarde fréquemment le paiement (article 1971).</p>
   </th:block>
   <th:block th:if="${countryCode == 'CA' and regionCode == 'BC'}">
