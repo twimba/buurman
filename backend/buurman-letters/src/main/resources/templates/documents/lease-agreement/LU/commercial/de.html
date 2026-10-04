@@ -1,0 +1,322 @@
+<!--
+  legal-basis: Code civil, livre III, titre VIII, chapitre II, section III (Des regles particulieres aux baux
+               commerciaux), art. 1762-3 to 1762-13 as enacted by the loi du 3 fevrier 2018 portant sur le bail
+               commercial et modifiant certaines dispositions du Code civil (Memorial A n° 110 du 6 fevrier 2018,
+               legilux.public.lu filestore, in force 01/03/2018; art. 3: applicable to running contracts; art. 1762-6,
+               paragraphe 4, effective 12 months after entry into force); art. 2 of that law repealed art. 1736,
+               alinea 3, Code civil. Code civil art. 1714, 1736.
+               Loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation, art. 1er, paragraphe 3 (texte
+               coordonne du 01/08/2024, logement.public.lu): the law does not apply to buildings used for commercial,
+               administrative, industrial or craft purposes or for a liberal profession, but its chapter V (art. 19:
+               juge de paix of the place of the building) applies to them.
+               VAT: loi modifiee du 12 fevrier 1979 concernant la taxe sur la valeur ajoutee (exemption of the letting
+               of immovable property and option for taxation) - cited generally, articles not re-read.
+               Energy performance of non-residential buildings: reglement grand-ducal modifie du 31 aout 2010
+               (batiments fonctionnels), as listed on guichet.public.lu - cited generally.
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi du 1er aout 2018 portant
+               organisation de la Commission nationale pour la protection des donnees (Memorial A n° 686).
+               Indexation: indice des prix a la consommation national (IPCN) published by STATEC
+               (statistiques.public.lu) - contractual stipulation, no statutory index rule for commercial leases.
+               Verified 2026-10-04 against the Memorial A texts (legilux.public.lu filestore); no later amendment of
+               art. 1762-3 to 1762-13 was found, but the consolidated legilux view (JavaScript only) could not be read.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "6 mois de loyer" is "6 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  German courtesy translation of fr.html; the French text is authoritative (Luxembourg legislation is enacted in
+  French). It states Luxembourg law (Code civil, Geschaeftsraummiete, loi du 3 fevrier 2018) in German and is not
+  German or Austrian law. Draft text, not vetted by legal counsel. Only prose differs from fr.html: fragments, th:
+  expressions and attributes are identical (enforced by LeaseDocumentFidelityTest). Each clause-<key> fragment holds
+  only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Zwischen</p>
+  <p><strong th:text="${landlordName}">Vermieter</strong>, nachstehend &bdquo;der Vermieter&ldquo; (bailleur),</p>
+  <p>Rechtsform, Gesellschaftssitz und Nummer im Handels- und Firmenregister (registre de commerce et des sociétés, RCS): ______________________________</p>
+  <p>Umsatzsteuer-Identifikationsnummer: ______________________________</p>
+  <p>vertreten durch: ______________________________, und</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Mieter</strong>, nachstehend
+    (gemeinsam) &bdquo;der Mieter&ldquo; (preneur),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">dem oder den unterzeichnenden Mietern, nachstehend (gemeinsam)
+    &bdquo;der Mieter&ldquo; (preneur),</p>
+  <p>Rechtsform, Gesellschaftssitz und Nummer im Handels- und Firmenregister (RCS): ______________________________</p>
+  <p>Umsatzsteuer-Identifikationsnummer: ______________________________</p>
+  <p>Niederlassungsgenehmigung (autorisation d'établissement) des Mieters (Nummer), gegebenenfalls: ______________________________</p>
+  <p>vertreten durch: ______________________________,</p>
+  <p>wird der vorliegende Geschäftsraummietvertrag (bail commercial) geschlossen, für den die Artikel des
+    Zivilgesetzbuches (Code civil) über die Sachmiete und die besonderen Vorschriften für Geschäftsraummietverträge in
+    Artikel 1762-3 bis 1762-13 des Zivilgesetzbuches gelten. Sind mehrere Mieter Parteien dieses Vertrags, so
+    vereinbaren die Parteien, dass sie für alle sich daraus ergebenden Verpflichtungen gesamtschuldnerisch haften.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Der Vermieter vermietet dem Mieter, der annimmt, die Räume in
+    <strong th:text="${propertyAddress}">Anschrift</strong>, nachstehend &bdquo;die Mieträume&ldquo;, die wie folgt
+    beschrieben werden:</p>
+  <p>Beschreibung der Mieträume, Fläche und Nebenräume (Verkaufsfläche, Büros, Lagerräume,
+    Stellplätze): ______________________________</p>
+  <p>Katasterbezeichnung: ______________________________</p>
+  <p>Jeder Mietvertrag über ein Gebäude, das zur Ausübung einer gewerblichen, industriellen oder handwerklichen
+    Tätigkeit bestimmt ist, ist ein Geschäftsraummietvertrag (Artikel 1762-3 des Zivilgesetzbuches). Die besonderen
+    Vorschriften für Geschäftsraummietverträge gelten nicht für Mietverträge mit einer Dauer von 1 Jahr oder weniger
+    (Artikel 1762-4 des Zivilgesetzbuches). Das geänderte Gesetz vom 21. September 2006 über die Wohnraummiete gilt
+    nicht für Räume, die gewerblichen, administrativen, industriellen oder handwerklichen Zwecken oder der Ausübung
+    eines freien Berufs dienen, vorbehaltlich seiner Vorschriften über die Beilegung von Streitigkeiten (Artikel 1
+    Absatz 3 dieses Gesetzes).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>Die Mieträume sind ausschließlich zur Ausübung folgender Tätigkeit bestimmt: ______________________________</p>
+  <p>Der Mieter übt in den Mieträumen ohne vorherige schriftliche Zustimmung des Vermieters keine andere Tätigkeit aus.
+    Er beschafft auf eigene Kosten die für seine Tätigkeit erforderlichen behördlichen Genehmigungen, insbesondere die
+    Niederlassungsgenehmigung, hält sie aufrecht und beachtet die für seinen Betrieb geltenden Vorschriften.</p>
+  <p>Die Parteien vereinbaren, dass der Vermieter nicht dafür einsteht, dass die Mieträume die Ausübung der Tätigkeit
+    nach dem Baurecht oder den für diese Tätigkeit geltenden besonderen Vorschriften erlauben, vorbehaltlich folgender
+    abweichender Angabe: ______________________________</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Der Mietvertrag beginnt am <strong th:text="${startDate}">Beginn</strong>.</p>
+  <p>Der Geschäftsraummietvertrag kann auf bestimmte oder unbestimmte Zeit geschlossen werden; ist kein Ende
+    angegeben, so gilt er als auf unbestimmte Zeit geschlossen. Der Vertrag bindet einen neuen Erwerber oder jeden
+    neuen Inhaber eines dinglichen Rechts an dem Gebäude (Artikel 1762-4 des Zivilgesetzbuches).</p>
+  <p th:if="${fixedTerm}">Dieser Vertrag wird auf bestimmte Zeit geschlossen<span th:if="${endDate != null}">
+    und endet am <strong th:text="${endDate}">Ende</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Dieser Vertrag wird auf unbestimmte Zeit geschlossen.</p>
+  <p>Unbeschadet von Artikel 1739 des Zivilgesetzbuches verlängert sich jeder Mietvertrag, der aus welchem Grund auch
+    immer endet, stillschweigend auf unbestimmte Zeit; der Mieter ist verpflichtet, die vereinbarte Mietsicherheit
+    entsprechend dieser Verlängerung zu erneuern oder anzupassen, sodass der Vermieter bis zum Ende des Mietverhältnisses
+    über die Sicherheit verfügt (Artikel 1762-7 Absatz 2 des Zivilgesetzbuches).<span class="clause-ref"
+    data-ref="renewal" th:if="${refs['renewal']}"> Das Recht auf Erneuerung ist in diesem Vertrag geregelt (siehe
+    Artikel <span th:text="${refs['renewal']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Die Miete beträgt <strong th:text="${rentAmount}">Betrag</strong> ohne Mehrwertsteuer und ohne
+    Nebenkosten (zahlbar <span th:text="${paymentFrequency}">monatlich</span>).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> Die Nebenkosten werden gesondert gezahlt (siehe Artikel
+    <span th:text="${refs['service-costs']}"></span>).</span><span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Die Mehrwertsteuer ist in diesem Vertrag geregelt (siehe Artikel
+    <span th:text="${refs['vat']}"></span>).</span></p>
+  <p>Die Höhe der Miete wird zwischen den Parteien frei vereinbart; das geänderte Gesetz vom 21. September 2006 über die
+    Wohnraummiete und seine Vorschriften über die Mietobergrenze und die Mietkommission gelten für diesen
+    Mietvertrag nicht.</p>
+  <p>Jeder Mietzuschlag, der dem Vermieter oder dem Vermittler wegen des Vertragsabschlusses gezahlt wird, ist von
+    Rechts wegen nichtig. Jede Verpflichtung des Mieters gegenüber dem Vermieter, für die Untervermietung oder die
+    Abtretung des Mietvertrags einen bestimmten Vermittler einzuschalten, ist von Rechts wegen nichtig (Artikel 1762-5
+    Absätze 1 und 2 des Zivilgesetzbuches).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Die Indexierung der Miete richtet sich nach den Bestimmungen dieses Vertrags (siehe Artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Die Parteien vereinbaren, dass die Miete jedes Jahr am Jahrestag des Beginns des Mietvertrags entsprechend der
+    Veränderung des nationalen Verbraucherpreisindex (indice des prix à la consommation national, IPCN) angepasst wird,
+    den das Nationale Institut für Statistik und Wirtschaftsstudien (STATEC) veröffentlicht, nach der Formel: angepasste
+    Miete = Grundmiete &times; neuer Index / Basisindex.</p>
+  <p>Basisindex (Monat und Wert) und Monat des Referenzindex für jede Anpassung: ______________________________</p>
+  <p>Wird der Index nicht mehr veröffentlicht oder auf eine neue Basis umgestellt, so gilt der an seine Stelle tretende
+    Index oder der umbasierte Index mit dem veröffentlichten Verkettungskoeffizienten. Unterbleibt eine Anpassung während
+    eines Zeitraums, so liegt darin kein Verzicht auf künftige Anpassungen.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Zusätzlich zur Miete trägt der Mieter folgende mit der Nutzung und dem Betrieb der Mieträume verbundene
+    Nebenkosten, Steuern und Abgaben: ______________________________</p>
+  <p>Die Nebenkosten werden durch Vorauszahlungen von ________ Euro je Zahlungstermin entrichtet, die jährlich anhand
+    einer Abrechnung ausgeglichen werden, die der Vermieter dem Mieter mit den Belegen oder deren Kopien übermittelt.
+    Mehreren Mieträumen gemeinsame Nebenkosten werden nach folgendem Schlüssel verteilt: ______________________________</p>
+  <p>Die Parteien vereinbaren, dass die Grundsteuer (impôt foncier) und die Verwaltungskosten des Vermieters von diesem
+    getragen werden, vorbehaltlich folgender abweichender Vereinbarung: ______________________________</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>Die Vermietung von Grundstücken ist grundsätzlich von der Mehrwertsteuer befreit. Der Vermieter kann unter den
+    Voraussetzungen und nach dem Verfahren des geänderten Gesetzes vom 12. Februar 1979 über die Mehrwertsteuer und
+    seiner Durchführungsverordnungen für die Anwendung dieser Steuer optieren, wenn der Mieter ein Steuerpflichtiger
+    ist, der die Mieträume für Zwecke seiner wirtschaftlichen Tätigkeit nutzt.</p>
+  <p>Option zur Mehrwertsteuer: ja / nein. Bei Ausübung der Option erhöhen sich die Miete und die Nebenkosten um die
+    Steuer zum geltenden Satz, und der Mieter teilt dem Vermieter unverzüglich jede Änderung der Nutzung der Mieträume
+    mit, die sich auf die Option auswirken kann.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Der Mieter stellt dem Vermieter eine Mietsicherheit (garantie locative) in Höhe von
+    <strong th:text="${depositAmount}">Betrag</strong> zur Sicherung der Zahlung der Miete oder aller übrigen
+    Verpflichtungen aus dem Mietvertrag.</p>
+  <p th:if="${depositAmount == null}">Der Mieter stellt dem Vermieter eine Mietsicherheit (garantie locative) in
+    folgender Höhe zur Sicherung der Zahlung der Miete oder aller übrigen Verpflichtungen aus dem Mietvertrag: ________ Euro.</p>
+  <p>Die Mietsicherheit darf 6 Monatsmieten nicht übersteigen; der Vermieter darf eine Mietsicherheit in Form einer
+    Bankgarantie auf erstes Anfordern oder des Abschlusses einer Versicherung oder einer anderen Sicherheit, die
+    mindestens 6 Monatsmieten abdeckt, nicht ablehnen (Artikel 1762-5 Absatz 3 des Zivilgesetzbuches). Die
+    Parteien vereinbaren, dass der Betrag der Mietsicherheit 6 Monatsmieten nicht übersteigt.</p>
+  <p>Vereinbarte Form der Sicherheit: ______________________________. Bei einer Verlängerung des Mietvertrags erneuert
+    oder passt der Mieter die Sicherheit so an, dass der Vermieter bis zum Ende des Mietverhältnisses darüber verfügt
+    (Artikel 1762-7 Absatz 2 des Zivilgesetzbuches).</p>
+  <p>Die Parteien vereinbaren, dass die Sicherheit oder ihr Restbetrag nach Abzug der dem Vermieter noch geschuldeten,
+    ordnungsgemäß belegten Beträge dem Mieter innerhalb von ________ Monaten nach der Rückgabe der Mieträume und der
+    Erstellung des Auszugsprotokolls zurückgegeben wird.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Der Mieter zahlt die Miete<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (siehe Artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> und die Nebenkostenvorauszahlungen</span>
+    <span th:text="${paymentFrequency}">monatlich</span> im Voraus,
+    <span th:if="${paymentDueDay != null}">spätestens am <strong th:text="${paymentDueDay}">1</strong>. Tag jedes
+      Zahlungszeitraums</span><span th:if="${paymentDueDay == null}">zu dem zwischen den Parteien vereinbarten Termin</span>,
+    durch Überweisung auf das vom Vermieter bezeichnete Konto.</p>
+  <p>Bankkonto des Vermieters (IBAN): ______________________________</p>
+  <p>Bei Fälligkeit nicht gezahlte Beträge sind unter den gesetzlich vorgesehenen Voraussetzungen, insbesondere nach
+    einer Mahnung (mise en demeure), zum gesetzlichen Zinssatz zu verzinsen. Die Parteien vereinbaren, dass der Vermieter eine Rechnung
+    oder Quittung ausstellt, die den geltenden steuerlichen Anforderungen entspricht.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Der Vermieter übergibt die Mieträume in gutem Zustand in jeder Hinsicht und führt während der Mietdauer die
+    notwendig werdenden Reparaturen durch, mit Ausnahme der dem Mieter obliegenden Reparaturen (réparations locatives),
+    gemäß dem Zivilgesetzbuch und vorbehaltlich folgender Vereinbarungen: ______________________________</p>
+  <p>Der Mieter trägt die laufende Instandhaltung der Mieträume und seiner Einrichtungen, kleine Reparaturen und die
+    dem Mieter obliegenden Reparaturen sowie die Anpassungsarbeiten, die die für seine Tätigkeit geltenden Vorschriften
+    verlangen. Er meldet dem Vermieter unverzüglich jeden Schaden und jede dem Vermieter obliegende Reparatur und
+    gewährt Zugang zu den Mieträumen für deren Ausführung.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>Der Mieter führt ohne vorherige schriftliche Zustimmung des Vermieters keine Arbeiten aus, die den Rohbau, die
+    Fassaden, das Dach oder die gemeinsamen technischen Anlagen betreffen. Genehmigte Ausbauarbeiten werden auf seine
+    Kosten und unter seiner Verantwortung von qualifizierten Unternehmen und unter Beachtung der erforderlichen
+    behördlichen Genehmigungen ausgeführt.</p>
+  <p>Die Parteien vereinbaren, dass die vom Mieter vorgenommenen Ein- und Umbauten bei Mietende ohne Entschädigung dem
+    Vermieter verbleiben, es sei denn, der Vermieter verlangt die Wiederherstellung des ursprünglichen Zustands auf
+    Kosten des Mieters, vorbehaltlich folgender abweichender Vereinbarung: ______________________________</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Jede Klausel, die die Abtretung des Mietvertrags oder die Untervermietung der Mieträume oder eines Teils der
+    Mieträume verbietet, ist von Rechts wegen nichtig, wenn die Abtretung oder Untervermietung zusammen mit der
+    Übertragung des Geschäftsbetriebs (fonds) erfolgt, sofern eine identische Tätigkeit fortgeführt wird (Artikel 1762-6
+    Absatz 1 des Zivilgesetzbuches). Hat sich der Vermieter jedoch einen Teil des Gebäudes vorbehalten, um ihn selbst zu
+    bewohnen oder von seiner Familie bewohnen zu lassen, so bleibt das Verbot der Abtretung oder Untervermietung wirksam.</p>
+  <p>Jede vollständige oder teilweise Abtretung oder Untervermietung wird dem Vermieter mit einer vollständigen Kopie
+    des Abtretungs- oder Untermietvertrags mitgeteilt. Innerhalb von 30 Tagen nach der Mitteilung des Vorhabens der
+    Abtretung oder Untervermietung kann der Vermieter seine Zustimmung aus berechtigten Gründen verweigern, und innerhalb
+    von 8 Tagen nach dieser Verweigerung kann der Mieter den Friedensrichter (juge de paix) anrufen. Der Abtretende haftet weiterhin als
+    gesamtschuldnerischer Bürge des Abtretungsempfängers oder Untermieters für alle Verpflichtungen aus dem Mietvertrag
+    (Artikel 1762-6 Absätze 2 und 3 des Zivilgesetzbuches).</p>
+  <p>Außer bei einer Untervermietung, bei der der Mieter für die Tätigkeit des Untermieters spezifische Investitionen
+    getätigt hat, dürfen die vom Untermieter an den Mieter gezahlten Mieten die vom Mieter an den Vermieter gezahlten
+    Mieten nicht übersteigen (Artikel 1762-6 Absatz 4 des Zivilgesetzbuches). Außerhalb der in Absatz 1 dieses Artikels
+    genannten Fälle vereinbaren die Parteien, dass Abtretung und Untervermietung der vorherigen schriftlichen Zustimmung
+    des Vermieters bedürfen.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>Der Mieter versichert bei einer anerkannt zahlungsfähigen Gesellschaft seine Haftung als Mieter (Feuer,
+    Wasserschäden, Explosion), seine Einrichtungen, seine Ausstattung und seine Waren sowie seine
+    Betriebshaftpflicht und weist dies dem Vermieter bei der Schlüsselübergabe und danach jährlich auf Verlangen nach.</p>
+  <p>Der Vermieter versichert das Gebäude als Eigentümer. Die Parteien können einen gegenseitigen Regressverzicht
+    zwischen ihnen und ihren Versicherern vereinbaren: ja / nein.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Soweit die großherzoglichen Vorschriften über die Gesamtenergieeffizienz von Nichtwohngebäuden (bâtiments
+    fonctionnels) dies verlangen, stellt der Vermieter dem Mieter eine Kopie des gültigen Energiepasses des Gebäudes zur Verfügung.</p>
+  <p>Energieeffizienzklasse und Datum der Ausstellung des Energiepasses, gegebenenfalls: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Ein Einzugsprotokoll (état des lieux) wird von den Parteien oder einem von ihnen gewählten Sachverständigen bei der
+    Schlüsselübergabe kontradiktorisch erstellt und diesem Vertrag beigefügt; ein Auszugsprotokoll wird bei der Rückgabe
+    der Mieträume in gleicher Weise erstellt. Die Parteien vereinbaren, dass die Kosten eines einvernehmlich gewählten
+    Sachverständigen zwischen ihnen je zur Hälfte geteilt werden.</p>
+  <p>Bei Mietende gibt der Mieter die Mieträume in dem Zustand zurück, in dem er sie laut Einzugsprotokoll erhalten hat,
+    abgesehen von normaler Abnutzung und vorbehaltlich der Vereinbarungen über Ein- und Umbauten.<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> Die Rückgabe der Sicherheit richtet sich nach dem Auszugsprotokoll
+    (siehe Artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>Der Mieter sowie der Untermieter, sofern der Mietvertrag die Untervermietung nicht verbietet, kann bei Ablauf des
+    Mietvertrags dessen Erneuerung verlangen; jede gegenteilige Klausel im schriftlichen Mietvertrag, die dem Mieter oder
+    dem Untermieter dieses Recht verweigert, ist von Rechts wegen nichtig (Artikel 1762-10 des Zivilgesetzbuches).</p>
+  <p>Das Verlangen ist per Einschreiben mit Rückschein an den Vermieter an die in diesem Vertrag angegebene Anschrift,
+    andernfalls an seinen Wohnsitz oder Gesellschaftssitz, bei sonstigem Rechtsverlust mindestens 6 Monate vor Ablauf
+    des Mietvertrags zu richten; der Vermieter teilt seine Stellungnahme innerhalb von 3 Monaten nach Eingang mit. Gibt
+    es mehrere Vermieter, so ist das Verlangen an jeden von ihnen zu richten, vorbehaltlich einer abweichenden Klausel
+    dieses Vertrags.</p>
+  <p>Anschrift des Vermieters für das Erneuerungsverlangen: ______________________________</p>
+  <p>Der Vermieter kann nach einer Nutzungsdauer der Mieträume von mindestens 9 Jahren den Mietvertrag jederzeit kündigen
+    oder seine Erneuerung ablehnen, ohne dies begründen zu müssen, wenn der Vermieter oder ein Dritter dem Mieter vor dem
+    Ende des Mietvertrags eine Räumungsentschädigung (indemnité d'éviction) zahlt; fehlt eine Klausel, die die Bestimmung
+    ihrer Höhe ermöglicht, so können die Parteien den Friedensrichter anrufen, der die Entschädigung auf der Grundlage des
+    Marktwerts des Geschäftsbetriebs (fonds de commerce) für die betreffende Tätigkeit festsetzt (Artikel 1762-12 des Zivilgesetzbuches).</p>
+  <p>Vereinbarte Methode zur Bestimmung der Räumungsentschädigung, gegebenenfalls: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>Ein Mieter, dessen Mietvertrag seit mindestens 18 Jahren besteht, hat ein Vorkaufsrecht an den Mieträumen, es sei
+    denn, sie werden öffentlich versteigert, an ein mit dem Vermieter bis einschließlich zum dritten Grad verwandtes oder
+    verschwägertes Familienmitglied übertragen oder unentgeltlich übertragen. Dieses Recht kann nur ausgeübt werden, wenn
+    der Mieter das gesamte Gebäude gemietet hat oder die Mieträume dem Miteigentumsrecht unterliegen (Artikel 1762-13 des
+    Zivilgesetzbuches).</p>
+  <p>Der Vermieter übermittelt dem Mieter das Verkaufsangebot per Einschreiben und weist ihn darauf hin, dass er ein
+    Gegenangebot machen kann. Der Mieter hat 1 Monat Zeit, um sein Recht auszuüben und gegebenenfalls ein Gegenangebot zu
+    machen; sein Schweigen gilt als Ablehnung des Angebots. Diese Frist verlängert sich um 1 Monat, wenn der Mieter bei
+    einem in der Europäischen Union niedergelassenen Finanzinstitut einen Kredit beantragt hat. Die Mieträume dürfen an
+    einen Dritten nur zu einem höheren Preis als dem vom Mieter angebotenen verkauft werden. Werden sie trotz dieses Rechts
+    an einen Dritten verkauft, kann der benachteiligte Mieter vom Verkäufer Schadensersatz verlangen, der nicht niedriger
+    sein darf als die Miete für 1 Jahr.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Die Kündigungsfrist dieses Vertrags darf 6 Monate nicht unterschreiten; die Kündigung wird per Einschreiben mit
+    Rückschein mitgeteilt (Artikel 1762-7 Absatz 1 des Zivilgesetzbuches). Vereinbarte Kündigungsfrist, falls länger:
+    ________ Monate.</p>
+  <p th:if="${fixedTerm}">Dieser befristete Vertrag kann vor seinem Ende nur in den gesetzlich oder in diesem Vertrag
+    vorgesehenen Fällen gekündigt werden. Gegebenenfalls vereinbarte vorzeitige Kündigungsmöglichkeit: ______________________________</p>
+  <p>Der Vermieter kann den Mietvertrag mit sofortiger Wirkung kündigen, wenn der Mieter seine vertraglichen Pflichten
+    nicht erfüllt. Er kann den Mietvertrag mit der in Artikel 1762-7 des Zivilgesetzbuches vorgesehenen Frist kündigen
+    oder seine Erneuerung ablehnen: 1° zur Eigennutzung durch den Vermieter oder seine Abkömmlinge ersten
+    Grades; 2° bei Aufgabe jeder Vermietung für eine identische Tätigkeit; 3° bei Wiederaufbau oder Umbau des
+    vermieteten Gebäudes (Artikel 1762-11 des Zivilgesetzbuches).<span class="clause-ref"
+    data-ref="renewal" th:if="${refs['renewal']}"> Die Kündigung gegen Zahlung einer Räumungsentschädigung ist in diesem
+    Vertrag geregelt (siehe Artikel <span th:text="${refs['renewal']}"></span>).</span></p>
+  <p>Der Vermieter kann beim Friedensrichter nach Ablauf der Kündigungsfrist eine Entscheidung beantragen, die die
+    Zwangsräumung des Mieters erlaubt. Der Friedensrichter kann auf Antrag des zur Räumung verurteilten Mieters oder
+    Untermieters einen einmaligen Aufschub von höchstens 9 Monaten gewähren, unter den kumulativen Voraussetzungen, dass
+    alle fälligen Mieten und Nebenkostenvorauszahlungen am Tag der Antragstellung bezahlt sind und dass der Aufschub
+    gewährt wird, damit der Antragsteller ein anderes Gebäude finden kann, um seine Tätigkeit fortzusetzen und seine
+    Verpflichtungen aus den Arbeitsverträgen mit den Beschäftigten zu erfüllen (Artikel 1762-9 des Zivilgesetzbuches).</p>
+  <p>Stirbt der Mieter, so wird der Mietvertrag mit dem Übernehmer fortgesetzt, sofern dieser den gewerblichen,
+    industriellen oder handwerklichen Betrieb fortführt und mit dem verstorbenen Mieter bis einschließlich zum fünften
+    Grad verwandt ist oder andernfalls dessen Ehegatte oder Lebensgefährte (concubin) ist (Artikel 1762-8 des
+    Zivilgesetzbuches). Die Parteien können den Vertrag einvernehmlich beenden.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Bei der Rückgabe der
+    Mieträume wird ein Auszugsprotokoll erstellt (siehe Artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Jede Partei verarbeitet personenbezogene Daten der anderen Partei und der für diese handelnden Personen nur, soweit
+    dies für den Abschluss und die Durchführung dieses Vertrags und die Erfüllung ihrer gesetzlichen Pflichten
+    erforderlich ist, im Einklang mit der Datenschutz-Grundverordnung (DSGVO, Verordnung
+    (EU) 2016/679) und dem Gesetz vom 1. August 2018 über die Organisation der Nationalen Kommission für den
+    Datenschutz.</p>
+  <p>Die betroffenen Personen können die ihnen nach der DSGVO zustehenden Rechte ausüben, insbesondere die Rechte auf
+    Auskunft, Berichtigung und Löschung, und können bei der Nationalen Kommission für den Datenschutz (Commission
+    nationale pour la protection des données, CNPD) Beschwerde einlegen.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Dieser Vertrag unterliegt luxemburgischem Recht.</p>
+  <p>Der Friedensrichter (juge de paix) des Ortes, an dem die Mieträume liegen, ist auch bei Bestreitung des Rechtstitels für
+    Streitigkeiten zwischen Vermietern und Mietern über das Bestehen und die Durchführung des Mietvertrags zuständig (Artikel 19 des
+    geänderten Gesetzes vom 21. September 2006 über die Wohnraummiete, das nach seinem Artikel 1
+    Absatz 3 auf Geschäftsräume anwendbar ist). Die Parteien bemühen sich, ihre Streitigkeiten vor jeder Klage
+    gütlich beizulegen.</p>
+</div>
+
+</body>
+</html>

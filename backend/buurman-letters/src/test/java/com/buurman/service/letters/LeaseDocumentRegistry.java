@@ -629,6 +629,89 @@ public final class LeaseDocumentRegistry {
   // ===== LU entries (country pack) =====
   // Constants, citation pattern and foreign markers for LU go here, only inside these markers.
 
+  /**
+   * The Luxembourg statute citation format, language-neutral across fr/de/en: the article number
+   * after "article(s)" / "art." / "Artikel(n)", with a hyphenated Code civil number or a Latin
+   * suffix that belongs to the token ({@code article 1762-7}, {@code article 2quinquies}, {@code
+   * Artikel 5 Absatz 2bis}). The paragraph is written as a digit after the reference in every
+   * language (fr "article 12, paragraphe 3" / "article 1er, paragraphe 2", de "Artikel 12 Absatz
+   * 3", en "article 12, paragraph 3"); the gate pairs that digit (the "er" of "1er" is skipped). An
+   * alinéa is "alinéa 2" / "Unterabsatz 2" / "subparagraph 2" after the paragraph. The statute is
+   * named "loi modifiée du 21 septembre 2006" / "geänderten Gesetzes vom 21. September 2006" /
+   * "amended Law of 21 September 2006" so that its date never sits within 3 words of an article.
+   */
+  public static final Pattern LUXEMBOURG_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|articles?|artikel|artikeln)\\s{1,20})\\d+(?:-\\d+)*"
+              + "(?:bis|ter|quater|quinquies|sexies)?",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** French marker words that must not leak into the de/en translations outside glosses. */
+  private static final List<String> LUXEMBOURG_FRENCH_MARKERS =
+      List.of("le bailleur", "le locataire", "le preneur", "voir l'article", "conformément");
+
+  /** Mirror of V105__seed_lu_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry LU_RESIDENTIAL =
+      new Entry(
+          "LU",
+          LeaseKind.RESIDENTIAL,
+          "fr",
+          List.of("fr", "de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", true, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("shared-tenancy", false, false, 11),
+              new ClauseSpec("maintenance", false, false, 12),
+              new ClauseSpec("energy-certificate", false, false, 13),
+              new ClauseSpec("pre-emption", false, false, 14),
+              new ClauseSpec("succession", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("data-protection", false, false, 18),
+              new ClauseSpec("disputes", false, false, 19)),
+          LUXEMBOURG_FRENCH_MARKERS,
+          Optional.of(LUXEMBOURG_CITATION));
+
+  /** Mirror of V105__seed_lu_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry LU_COMMERCIAL =
+      new Entry(
+          "LU",
+          LeaseKind.COMMERCIAL,
+          "fr",
+          List.of("fr", "de", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("renewal", false, false, 17),
+              new ClauseSpec("pre-emption", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          LUXEMBOURG_FRENCH_MARKERS,
+          Optional.of(LUXEMBOURG_CITATION));
+
   // ===== end LU =====
 
   // ===== NL-COMMERCIAL entries (country pack) =====
@@ -717,6 +800,8 @@ public final class LeaseDocumentRegistry {
     // ===== end IT ENTRIES =====
 
     // ===== LU ENTRIES (country pack) =====
+    entries.add(LU_RESIDENTIAL);
+    entries.add(LU_COMMERCIAL);
 
     // ===== end LU ENTRIES =====
 

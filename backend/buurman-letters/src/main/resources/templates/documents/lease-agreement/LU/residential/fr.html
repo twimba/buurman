@@ -1,0 +1,375 @@
+<!--
+  legal-basis: Loi modifiee du 21 septembre 2006 sur le bail a usage d'habitation et modifiant certaines dispositions du
+               Code civil, texte coordonne du 01/08/2024 published by the ministere du Logement
+               (logement.public.lu, bl-loi-modifiee-du-21-09-2006.pdf, linked as the current text on the page
+               updated 05.02.2026): art. 1er, 2, 2bis-2sexies, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16-18,
+               19, 31, 33bis.
+               Loi du 23 juillet 2024 (Memorial A n° 311 du 25 juillet 2024, legilux.public.lu filestore, in force
+               01/08/2024): colocation (art. 2bis-2sexies), 10 % cap per rent adaptation, garantie locative cut to
+               2 months with restitution rules (art. 5, paragraphe 2bis), agency fees shared by half, art. 1714 Code
+               civil (written form). Transitional rules art. 33bis: the new rules on art. 4, art. 5 paragraphe 1er
+               (second sentence of alinea 1 and alinea 2) and art. 12 paragraphe 1er apply to leases concluded after
+               01/08/2024; colocation only for colocation leases concluded after that date.
+               Code civil art. 1714, 1736, 1758, 1761 (wording as set by the loi du 21 septembre 2006, art. 31, and
+               the loi du 23 juillet 2024, art. 12).
+               Loi du 20 decembre 2019 (salubrite, hygiene, securite et habitabilite des logements) and reglement
+               grand-ducal du 20 decembre 2019; loi du 6 decembre 2019 (detecteurs autonomes de fumee); loi modifiee
+               du 5 aout 1993 and reglements grand-ducaux on the energy performance of residential buildings - as
+               summarised on guichet.public.lu (pages updated 26.06.2025, 26.08.2025 and 03.05.2022).
+               RGPD: reglement (UE) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); loi du 1er aout 2018 portant
+               organisation de la Commission nationale pour la protection des donnees (Memorial A n° 686).
+               Verified 2026-10-04 against the coordinated text, the Memorial A texts (legilux.public.lu filestore)
+               and guichet.public.lu.
+               Pending: reform of the rent-capping method (5 % of the invested capital) under study only; no bill
+               adopted as of 2026-10-04 - re-verify the rent and rent-adjustment clauses.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fr.html, never spelled out (fr "2 mois de loyer" is "2 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Luxembourg law (loi modifiee du 21 septembre 2006 sur le bail a
+  usage d'habitation) for a dwelling let to one or more natural persons. Luxembourg legislation is in French; the
+  German and English versions are courtesy translations. Each clause-<key> fragment holds only the clause body; the
+  shell supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is
+  excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">Bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>identité complète du bailleur (nom et prénoms ou dénomination, domicile ou siège, numéro d'immatriculation au
+    registre de commerce et des sociétés le cas échéant)&nbsp;: ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Locataire</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les locataires soussignés, ci-après (ensemble)
+    &laquo;&nbsp;le locataire&nbsp;&raquo;,</p>
+  <p>identité complète de chaque locataire (nom, prénoms, date et lieu de naissance, domicile actuel)&nbsp;: ______________________________</p>
+  <p>il est conclu le présent contrat de bail à usage d'habitation, régi par les articles du Code civil relatifs au
+    louage des choses sous réserve des règles particulières de la loi modifiée du 21 septembre 2006 sur le bail à
+    usage d'habitation et modifiant certaines dispositions du Code civil, ci-après &laquo;&nbsp;la loi modifiée du
+    21 septembre 2006&nbsp;&raquo; (article 1er, paragraphe 1, de la loi modifiée du 21 septembre 2006).</p>
+  <p>Le présent contrat est établi par écrit, à peine de nullité, en autant d'exemplaires que de parties
+    (article 5, paragraphe 1, de la loi modifiée du 21 septembre 2006&nbsp;; article 1714 du Code civil).
+    Lorsque plusieurs locataires sont parties au présent contrat sans relever du régime de la colocation, les
+    parties stipulent qu'ils sont tenus solidairement de l'ensemble des obligations qui en résultent.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur donne en location au locataire, qui l'accepte, le logement situé
+    <strong th:text="${propertyAddress}">Adresse</strong>, ci-après &laquo;&nbsp;le logement&nbsp;&raquo;.</p>
+  <p>référence cadastrale du logement&nbsp;: ______________________________</p>
+  <p>désignation de toutes les pièces et parties d'immeuble couvrant l'objet du bail (pièces d'habitation, cuisine,
+    installations sanitaires, cave, grenier, garage, emplacement de stationnement, jardin, parties communes)&nbsp;: ______________________________</p>
+  <p>logement meublé&nbsp;: oui / non&nbsp;; le cas échéant, l'inventaire du mobilier est annexé au présent contrat.</p>
+  <p>La loi modifiée du 21 septembre 2006 s'applique exclusivement à la location de logements à usage d'habitation
+    à des personnes physiques, quelle que soit l'affectation stipulée dans le contrat de bail, sauf opposition
+    justifiée par le bailleur en cas de réaffectation par le locataire en cours de contrat (article 1er,
+    paragraphe 2, de la loi modifiée du 21 septembre 2006). Elle ne s'applique notamment pas aux immeubles affectés
+    à un usage commercial, administratif, industriel, artisanal ou à l'exercice d'une profession libérale, aux
+    résidences secondaires, aux locaux ne formant pas l'accessoire du logement ni aux chambres d'hôtel (article 1er,
+    paragraphe 3, de la même loi)&nbsp;; le présent modèle ne convient pas à ces cas.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail prend effet le <strong th:text="${startDate}">date de prise d'effet</strong>.</p>
+  <p>Le contrat de bail peut être conclu à durée déterminée ou indéterminée (article 12, paragraphe 1, de la loi
+    modifiée du 21 septembre 2006). Le bail d'un logement est censé être fait à durée indéterminée s'il n'est pas
+    spécifié dans le contrat de bail écrit pour quelle durée les parties ont voulu se lier (article 1758 du Code
+    civil).</p>
+  <p th:if="${fixedTerm}">Le présent contrat est conclu pour une durée déterminée<span th:if="${endDate != null}">
+    et arrive à son terme le <strong th:text="${endDate}">date de fin</strong></span>.</p>
+  <p th:if="${!fixedTerm}">Le présent contrat est conclu pour une durée indéterminée.</p>
+  <p>Tout contrat de bail visé par la loi modifiée du 21 septembre 2006 qui vient à cesser pour n'importe quelle
+    cause est prorogé à durée indéterminée, sauf dans les cas énumérés à l'article 12, paragraphe 2, de cette
+    loi.<span class="clause-ref" data-ref="termination" th:if="${refs['termination']}"> Les modalités de
+    résiliation figurent au présent contrat (voir l'article <span th:text="${refs['termination']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer, sans les charges, est fixé à <strong th:text="${rentAmount}">Montant</strong> (terme
+    <span th:text="${paymentFrequency}">mensuel</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Les acomptes ou le forfait pour charges sont fixés séparément (voir l'article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>La location d'un logement à usage d'habitation ne peut rapporter au bailleur un revenu annuel dépassant un taux
+    de 5 % du capital investi dans le logement (article 3, paragraphe 1, de la loi modifiée du 21 septembre 2006).
+    Le capital investi est déterminé, réévalué et, le cas échéant, décoté selon les règles de l'article 3,
+    paragraphes 2 à 4, de cette loi. En cas de colocation ou de location à baux multiples, la somme des loyers ne
+    peut dépasser ce loyer maximal.</p>
+  <p>Supplément de loyer pour le mobilier, en cas de logement meublé (au plus 1,5 % du montant total des factures des
+    meubles garnissant le logement, seuls les meubles dont les factures datent de moins de 10 ans au jour de la
+    conclusion du bail ou de l'adaptation du loyer étant pris en considération)&nbsp;: ________ euros par mois.</p>
+  <p>Lorsque le bailleur offre un ou plusieurs services au locataire, le montant du coût mensuel de chaque service
+    est distingué du montant du loyer mensuel (article 4 de la loi modifiée du 21 septembre 2006). Services et coût
+    mensuel de chacun, le cas échéant&nbsp;: ______________________________</p>
+  <p>La conclusion du bail ne peut être liée au paiement de sommes autres que le loyer. En cas d'intervention d'un
+    agent immobilier ou d'un autre tiers dans la location du logement, les frais et honoraires de ces personnes sont
+    partagés par moitié entre le bailleur et le locataire (article 5, paragraphe 1, de la loi modifiée du
+    21 septembre 2006).</p>
+  <p>Les parties ont la possibilité de saisir la commission des loyers conformément à l'article 8 de la loi modifiée
+    du 21 septembre 2006 en cas de litige sur la fixation du loyer.<span class="clause-ref" data-ref="disputes"
+    th:if="${refs['disputes']}"> La procédure est précisée au présent contrat (voir l'article
+    <span th:text="${refs['disputes']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">L'adaptation du loyer obéit aux stipulations du présent contrat (voir l'article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Le loyer et le supplément de loyer pour le mobilier, qu'ils soient fixés de l'accord des parties, par la
+    commission des loyers ou judiciairement, ne peuvent faire l'objet d'une adaptation que tous les 2 ans. Cette
+    période de 2 ans ne prend pas fin par suite d'un changement de bailleur&nbsp;; elle prend fin de plein droit s'il
+    y a changement de locataire, sans préjudice de la continuation du bail prévue à l'article 13, alinéa 1, de la
+    loi modifiée du 21 septembre 2006 (article 3, paragraphe 5, de la même loi).</p>
+  <p>La hausse du loyer ne peut pas dépasser 10 % et le loyer adapté reste soumis au plafond de 5 % du capital
+    investi. Si, en cas d'augmentation du loyer de plus de 10 %, le locataire adresse une réclamation par lettre
+    recommandée au bailleur, la part du loyer dépassant la hausse de 10 % n'est pas due à partir du premier terme
+    suivant la date de cette réclamation.</p>
+  <p>Les clauses de valeur conventionnelles qui diffèrent du régime prévu par la loi, notamment l'indexation
+    automatique du loyer, perdent leur effet à partir du premier terme suivant la date d'une réclamation adressée
+    par lettre recommandée au bailleur (article 5, paragraphe 5, de la loi modifiée du 21 septembre 2006).</p>
+  <p>La partie qui demande une augmentation ou une réduction du loyer notifie d'abord son intention à l'autre partie
+    par écrit, sous peine d'irrecevabilité de sa requête devant la commission des loyers&nbsp;; la détermination du
+    loyer par la commission ou par le juge ne produit ses effets qu'à partir du premier terme venant à échoir après
+    la saisine du collège des bourgmestre et échevins (articles 8 et 11 de la loi modifiée du 21 septembre
+    2006).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Le bailleur ne peut mettre à charge du locataire que les montants qu'il justifie avoir déboursés lui-même pour
+    le compte du locataire. Ne peuvent être mis à charge du locataire que les frais exposés pour la consommation
+    d'énergie, pour l'entretien courant du logement et des parties communes, pour les menues réparations ainsi que
+    les taxes liées à l'usage du logement (article 5, paragraphe 3, de la loi modifiée du 21 septembre 2006).</p>
+  <p>Montant des acomptes sur les charges ou du forfait pour charges&nbsp;: ________ euros par mois (acomptes /
+    forfait). Les acomptes peuvent être adaptés aux frais réellement exposés pour compte du locataire au cours des
+    exercices antérieurs. Le forfait n'est admis que s'il correspond à la consommation et aux charges normales du
+    locataire&nbsp;; il peut être adapté au cours du bail, et les parties peuvent convenir au cours du bail de passer
+    d'un régime à l'autre (article 5, paragraphe 4, de la même loi).</p>
+  <p>Les charges communes à plusieurs logements sont réparties annuellement selon le mode de computation suivant,
+    convenu entre les parties&nbsp;: ______________________________. Les parties stipulent que le bailleur adresse
+    au locataire un décompte annuel des charges, accompagné des pièces justificatives ou de leur copie. Si les frais
+    résultent d'un décompte d'un immeuble en copropriété approuvé en assemblée générale, les positions de ce
+    décompte à charge du locataire sont présumées justifiées et échues, la preuve contraire étant admise&nbsp;; à la
+    demande du locataire, le bailleur lui communique une copie des extraits du règlement de copropriété concernant
+    la destination de l'immeuble, la jouissance et l'usage des parties privatives et communes et la quote-part du
+    lot loué dans chacune des catégories de charges.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Le locataire fournit au bailleur une garantie locative de
+    <strong th:text="${depositAmount}">Montant</strong>, pour garantir le paiement du loyer ou des autres obligations
+    découlant du contrat de bail.</p>
+  <p th:if="${depositAmount == null}">Le locataire fournit au bailleur une garantie locative du montant suivant,
+    pour garantir le paiement du loyer ou des autres obligations découlant du contrat de bail&nbsp;: ________ euros.</p>
+  <p>La garantie locative ne peut dépasser 2 mois de loyer (article 5, paragraphe 2, de la loi modifiée du
+    21 septembre 2006)&nbsp;; les parties stipulent que le montant de la garantie locative ne dépasse pas 2 mois de
+    loyer. Le bailleur ne peut refuser, même après la conclusion du bail, une garantie locative sous forme d'une
+    garantie bancaire. Forme de la garantie convenue (garantie bancaire, virement sur le compte du bailleur, autre
+    forme)&nbsp;: ______________________________</p>
+  <p>Lorsque, à la fin du bail, l'état des lieux de sortie est conforme à l'état des lieux d'entrée, sauf usure et
+    vétusté normale, et que le bailleur n'a pas de revendication en matière d'arriérés de loyer ou de dégâts
+    locatifs, la moitié de la garantie locative est restituée dans un délai maximal de 1 mois à partir de la remise
+    des clés au bailleur ou à son mandataire, en mains propres ou par lettre recommandée avec avis de réception. La
+    régularisation définitive et la restitution du solde, déduction faite des sommes restant encore dues au
+    bailleur pour autant qu'elles sont dûment justifiées, sont effectuées au plus tard dans le mois qui suit soit la
+    réception des décomptes relatifs aux charges locatives, que le bailleur est tenu de demander auprès des
+    différents services et administrations au plus tard 1 mois après la fin du bail, soit l'approbation définitive
+    des comptes annuels de l'immeuble lors de la prochaine assemblée générale des copropriétaires (article 5,
+    paragraphe 2bis, de la loi modifiée du 21 septembre 2006).</p>
+  <p>Si l'état des lieux d'entrée n'est pas conforme à l'état des lieux de sortie, sauf usure ou vétusté normale, ou
+    en cas de contestation du bailleur, celui-ci peut retenir de la garantie locative les sommes qui lui restent
+    encore dues ainsi que toute somme dont il pourrait être tenu en lieu et place du locataire, sous réserve qu'elle
+    soit dûment justifiée par des pièces à l'appui dans le délai maximal de 1 mois précité.</p>
+  <p>À défaut de restitution dans les délais prévus et à partir d'une mise en demeure par lettre recommandée avec
+    avis de réception adressée par le locataire au bailleur ou à son mandataire, la partie de la garantie restant
+    due au locataire est majorée d'une somme égale à 10 % du loyer mensuel en principal pour chaque période mensuelle
+    commencée en retard, sauf si le défaut de restitution dans les délais résulte d'un motif imputable au locataire.
+    En cas de transfert de propriété du logement, les garanties sont transférées de plein droit au nouveau
+    propriétaire.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">
+    L'état des lieux est établi dans les conditions du présent contrat (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le locataire paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> et les acomptes ou le forfait pour charges</span> par terme
+    <span th:text="${paymentFrequency}">mensuel</span>, d'avance,
+    <span th:if="${paymentDueDay != null}">au plus tard le <strong th:text="${paymentDueDay}">1</strong> de chaque
+      période de paiement</span><span th:if="${paymentDueDay == null}">à la date convenue entre les parties</span>,
+    par virement sur le compte désigné par le bailleur ou par tout autre moyen convenu.</p>
+  <p>Compte bancaire du bailleur (IBAN)&nbsp;: ______________________________</p>
+  <p>Les sommes impayées à leur échéance portent intérêt au taux légal dans les conditions prévues par le Code civil,
+    notamment après une mise en demeure. Les parties stipulent que le bailleur délivre au locataire qui en fait la
+    demande une quittance des paiements reçus.</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Le locataire use du logement en bon père de famille, conformément à sa destination d'habitation, et respecte le
+    règlement d'ordre intérieur de l'immeuble et, le cas échéant, les extraits du règlement de copropriété qui lui
+    ont été communiqués. Le bailleur peut s'opposer, pour des motifs justifiés, à une réaffectation du logement par
+    le locataire en cours de contrat (article 1er, paragraphe 2, de la loi modifiée du 21 septembre 2006).</p>
+  <p>Le locataire ne transforme pas le logement sans l'accord écrit préalable du bailleur. Il permet l'accès au
+    logement pour les réparations urgentes ainsi que, après avoir été prévenu en temps utile, pour les visites
+    nécessaires à l'entretien du logement et, en fin de bail ou en cas de vente, pour les visites de candidats
+    locataires ou acquéreurs, aux jours et heures convenus entre les parties.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Toute cession de bail portant sur un bail à usage d'habitation n'est interdite qu'en cas de stipulation
+    contractuelle expresse dans le contrat de bail (article 2 de la loi modifiée du 21 septembre 2006). Cession du
+    bail interdite&nbsp;: oui / non.</p>
+  <p>Les parties stipulent que le locataire ne sous-loue tout ou partie du logement qu'avec l'accord écrit préalable
+    du bailleur. Les règles de la loi modifiée du 21 septembre 2006 relatives à la fixation du loyer, aux charges, à
+    la garantie locative et à la commission des loyers s'appliquent également aux relations entre locataires
+    principaux et sous-locataires ou cessionnaires (article 2, alinéa 2, de cette loi).</p>
+</div>
+
+<div th:fragment="clause-shared-tenancy" data-clause="shared-tenancy">
+  <p>Le présent paragraphe ne s'applique que si les locataires optent, avec l'accord exprès du bailleur, pour le
+    régime de la colocation en signant un pacte de colocation au plus tard à la date de signature du présent contrat
+    unique&nbsp;; la location consentie exclusivement à des époux ou à des partenaires liés par un partenariat légal
+    n'est pas une colocation, et le logement comprend au minimum une pièce d'habitation ou un local sanitaire commun
+    à tous les colocataires (article 2bis de la loi modifiée du 21 septembre 2006). Ces règles sont d'ordre public.</p>
+  <p>Régime de la colocation&nbsp;: oui / non&nbsp;; date de signature du pacte de colocation&nbsp;: ______________________________&nbsp;;
+    le cas échéant, montant de la part du bailleur occupant dans les frais de la vie en colocation&nbsp;: ______________________________</p>
+  <p>Les colocataires sont tenus solidairement vis-à-vis du bailleur des obligations qui résultent du contrat de bail
+    (article 2quater de la même loi). Lorsque l'ensemble des colocataires mettent fin au bail en même temps, le
+    congé est signé par chacun d'entre eux et notifié au bailleur par lettre recommandée avec avis de réception,
+    avec un délai de résiliation de 3 mois. Le colocataire qui souhaite se libérer de ses obligations avant le terme
+    du bail le notifie simultanément au bailleur, par lettre recommandée avec avis de réception, et à ses
+    colocataires, moyennant un préavis de 3 mois, et cherche un colocataire remplaçant dans les conditions prévues
+    à l'article 2quinquies, paragraphe 2, de la même loi.</p>
+  <p>Lorsqu'au moins la moitié des colocataires signataires du bail ont donné leur congé dans un intervalle de
+    3 mois, le bailleur peut mettre fin au contrat dans un délai de 1 mois à partir de la notification du dernier
+    congé, moyennant un délai de résiliation de 3 mois, par lettre recommandée avec avis de réception adressée à
+    chaque colocataire (article 2quinquies, paragraphe 4, de la même loi). Le colocataire sortant et sa caution sont
+    déliés pour le futur dans les cas et aux dates prévus à l'article 2sexies de la même loi.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur délivre le logement en bon état de réparations de toute espèce, l'entretient en état de servir à
+    l'usage d'habitation et y fait, pendant la durée du bail, toutes les réparations qui peuvent devenir nécessaires,
+    autres que les réparations locatives, conformément au Code civil. Le logement répond aux critères de salubrité,
+    d'hygiène, de sécurité et d'habitabilité fixés par la loi du 20 décembre 2019 et son règlement grand-ducal
+    d'exécution.</p>
+  <p>Le locataire prend à sa charge l'entretien courant du logement, les menues réparations et les réparations
+    locatives, sauf si elles sont occasionnées par vétusté ou force majeure. Il signale sans délai au bailleur tout
+    dommage ou toute réparation à la charge de celui-ci.</p>
+  <p>Le logement est équipé par le bailleur de détecteurs autonomes de fumée conformément à la loi du 6 décembre
+    2019&nbsp;; les parties stipulent que le locataire en assure l'entretien courant.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Le bailleur remet au locataire une copie certifiée conforme du certificat de performance énergétique valide du
+    logement, établi conformément à la loi modifiée du 5 août 1993 concernant l'utilisation rationnelle de l'énergie
+    et à la réglementation grand-ducale sur la performance énergétique des bâtiments d'habitation.</p>
+  <p>Classe de performance énergétique&nbsp;: ________&nbsp;; classe d'isolation thermique&nbsp;: ________&nbsp;;
+    date d'établissement du certificat&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-pre-emption" data-clause="pre-emption">
+  <p>Le locataire dont le bail court depuis au moins 18 ans bénéficie d'un droit de préemption sur le logement loué,
+    à moins que celui-ci ne fasse l'objet d'une vente par adjudication publique, qu'il ne soit cédé à un membre de la
+    famille du bailleur parent ou allié jusqu'au troisième degré inclusivement ou qu'il ne fasse l'objet d'une cession
+    gratuite. Ce droit ne peut être exercé que si le locataire a loué tout l'immeuble ou si l'appartement loué est
+    placé sous le régime de la copropriété (article 15 de la loi modifiée du 21 septembre 2006).</p>
+  <p>Le bailleur adresse au locataire l'offre de vente par lettre recommandée, en l'avertissant qu'il a le droit de
+    faire une contre-proposition. Le locataire dispose de 1 mois pour user de son droit et faire éventuellement une
+    contre-proposition&nbsp;; son silence vaut refus de l'offre. Ce délai est prorogé de 1 mois si le locataire a
+    formulé une demande de prêt auprès d'un établissement financier établi au Grand-Duché. Le logement ne peut être
+    vendu à un tiers qu'à un prix supérieur à celui offert par le locataire. En cas de vente à un tiers en dépit de ce
+    droit, le locataire lésé peut réclamer au vendeur des dommages-intérêts qui ne peuvent être inférieurs au montant
+    des loyers de 1 an.</p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>En cas d'abandon du domicile par le locataire ou en cas de décès du locataire, le contrat de bail continue à
+    durée indéterminée au profit du conjoint ayant cohabité avec le locataire ou du partenaire ayant fait une
+    déclaration de partenariat avec le locataire et ayant vécu en couple avec celui-ci, ainsi qu'au profit des
+    descendants, des ascendants ou du concubin qui vivaient avec lui en communauté domestique depuis au moins 6 mois
+    à la date de l'abandon du domicile ou du décès et qui avaient déclaré leur domicile à la commune dans le logement
+    pendant cette période (article 13 de la loi modifiée du 21 septembre 2006).</p>
+  <p>En cas de demandes multiples, le juge se prononce en fonction des intérêts en présence. Les droits du bailleur
+    contre le locataire ayant abandonné le logement ne sont pas affectés. À défaut de personnes remplissant ces
+    conditions, le contrat de bail est résilié de plein droit par le décès du locataire.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Un état des lieux d'entrée est établi par écrit et contradictoirement par les parties, ou par un expert choisi
+    par elles, et signé au plus tard le jour de l'entrée en jouissance des lieux par le locataire&nbsp;; lorsqu'une
+    garantie locative est stipulée, ce constat est obligatoire (article 5, paragraphe 2, de la loi modifiée du
+    21 septembre 2006). Un état des lieux de sortie est établi de la même manière lors de la restitution des clés.</p>
+  <p>Les parties stipulent que les frais d'un expert choisi d'un commun accord sont partagés par moitié entre elles
+    et que chaque partie reçoit un exemplaire signé de chaque état des lieux.<span class="clause-ref"
+    data-ref="deposit" th:if="${refs['deposit']}"> La restitution de la garantie locative suit la comparaison des
+    états des lieux (voir l'article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${!fixedTerm}">Le locataire peut résilier le présent contrat à durée indéterminée moyennant un délai de
+    résiliation de 3 mois, sauf si le présent contrat prévoit un délai supérieur (article 1736 du Code civil).</p>
+  <p th:if="${fixedTerm}">Le locataire est lié jusqu'au terme convenu, sauf accord du bailleur. Les parties
+    stipulent que le locataire qui ne souhaite pas la poursuite du bail au-delà de son terme en informe le bailleur
+    par lettre recommandée avec avis de réception au moins 3 mois avant ce terme. Le bailleur ne peut résilier le
+    contrat à durée déterminée avant son terme, encore qu'il déclare vouloir occuper lui-même le logement, s'il n'y a
+    eu convention contraire (article 1761 du Code civil).</p>
+  <p>Délai de résiliation supérieur convenu par les parties, le cas échéant&nbsp;: ________ mois.</p>
+  <p>Le contrat qui vient à cesser pour n'importe quelle cause est prorogé à durée indéterminée à moins que&nbsp;:
+    a) le bailleur déclare avoir besoin des lieux loués pour les occuper lui-même ou pour les faire occuper de manière
+    effective par un parent ou allié jusqu'au troisième degré inclusivement&nbsp;; b) le locataire ne remplisse pas
+    ses obligations&nbsp;; c) il existe d'autres motifs graves et légitimes à établir par le bailleur, le transfert de
+    propriété du logement ne valant pas motif grave et légitime (article 12, paragraphe 2, de la loi modifiée du
+    21 septembre 2006).</p>
+  <p>Dans le cas du point a), le délai de résiliation est de 6 mois. La lettre de résiliation doit être écrite,
+    motivée et accompagnée, le cas échéant, de pièces afférentes, et être envoyée par lettre recommandée à la poste
+    avec avis de réception&nbsp;; elle doit mentionner, sous peine de nullité, le texte de l'article 12,
+    paragraphe 3, de la loi modifiée du 21 septembre 2006. Le locataire peut, dans les conditions et délais prévus à
+    ce paragraphe, demander au juge de paix une prolongation du délai de résiliation.</p>
+  <p>L'acquéreur du logement ne peut expulser le locataire dont le bail n'a pas date certaine avant son acte
+    d'acquisition, mais qui avait été mis en possession des lieux avant cette date, à moins que l'une des conditions
+    définies à l'article 12, paragraphe 2, de la même loi ne soit réalisée. L'acquéreur qui veut occuper le logement
+    lui-même ou par un parent ou allié jusqu'au troisième degré inclusivement doit envoyer au locataire une lettre
+    recommandée de résiliation dans les 3 mois de l'acquisition&nbsp;; le paragraphe 3 de cet article s'applique,
+    sauf que le déguerpissement doit avoir lieu au plus tard 12 mois après la date d'envoi de la lettre de résiliation
+    (article 12, paragraphe 6, de la même loi).</p>
+  <p>Sauf cas de force majeure, l'ancien locataire a droit à des dommages-intérêts si, dans les 3 mois qui suivent
+    son départ, les lieux ne sont pas occupés aux fins invoquées comme motif de la résiliation, ce délai étant
+    suspendu pendant la durée des travaux de rénovation et de transformation entrepris de manière effective. Si le
+    tribunal constate que le motif invoqué pour empêcher la prorogation légale était dolosif, ces dommages-intérêts
+    ne peuvent être inférieurs au montant des loyers de 1 an (article 14 de la loi modifiée du 21 septembre
+    2006).</p>
+  <p>Les parties peuvent mettre fin au contrat d'un commun accord, de préférence par écrit. Le juge de paix peut,
+    dans les conditions prévues aux articles 16 à 18 de la loi modifiée du 21 septembre 2006, accorder un sursis à
+    l'exécution d'une décision de déguerpissement.<span class="clause-ref" data-ref="shared-tenancy"
+    th:if="${refs['shared-tenancy']}"> En cas de colocation, les règles particulières de résiliation s'appliquent
+    (voir l'article <span th:text="${refs['shared-tenancy']}"></span>).</span><span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> La restitution des lieux donne lieu à un
+    état des lieux de sortie (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Le bailleur traite les données à caractère personnel du locataire uniquement dans la mesure nécessaire à la
+    conclusion et à l'exécution du présent contrat et au respect de ses obligations légales, conformément au
+    règlement général sur la protection des données (RGPD, règlement (UE) 2016/679) et à la loi du 1er août 2018
+    portant organisation de la Commission nationale pour la protection des données. Il ne conserve pas ces données
+    au-delà de la durée nécessaire à ces finalités.</p>
+  <p>Le locataire peut exercer auprès du bailleur les droits que lui confère le RGPD, notamment les droits d'accès,
+    de rectification et d'effacement, et peut introduire une réclamation auprès de la Commission nationale pour la
+    protection des données (CNPD).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent contrat est soumis au droit luxembourgeois.</p>
+  <p>La partie qui se croit fondée à demander une augmentation ou une réduction du loyer notifie d'abord son
+    intention à l'autre partie par écrit&nbsp;; si un accord n'a pu être obtenu dans un délai de 1 mois, elle peut
+    adresser une requête au collège des bourgmestre et échevins de la commune où se situe le logement, qui la
+    transmet à la commission des loyers compétente. La requête n'est pas recevable pendant les 6 premiers mois du
+    bail (article 8 de la loi modifiée du 21 septembre 2006). La commission s'efforce de concilier les parties et, à
+    défaut, détermine le loyer&nbsp;; sa décision peut être contestée devant le juge de paix du lieu de la situation
+    du logement, à peine de déchéance, dans le mois de la notification de son procès-verbal (articles 9 et 10 de la
+    même loi).</p>
+  <p>Le juge de paix du lieu de la situation du logement est compétent pour connaître de toutes les contestations
+    entre bailleurs, locataires ou colocataires relatives à l'existence et à l'exécution du bail (article 19 de la
+    loi modifiée du 21 septembre 2006). Toute stipulation du présent contrat destinée à priver d'effet une
+    disposition de cette loi est nulle de plein droit (article 5, paragraphe 5, de la même loi).</p>
+</div>
+
+</body>
+</html>
