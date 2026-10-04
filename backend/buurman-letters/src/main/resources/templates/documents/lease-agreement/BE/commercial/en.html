@@ -1,0 +1,331 @@
+<!--
+  legal-basis: Handelshuurwet: wet van 30 april 1951, inserted as oud Burgerlijk Wetboek, boek III, titel VIII,
+               hoofdstuk II, afdeling 2bis "Regels betreffende de handelshuur in het bijzonder", art. 1-31, consolidated
+               text www.ejustice.just.fgov.be (Justel 1951043003, text updated to 14-05-2019), with the regional
+               versions: art. 1 (Walloon Region: § 2 and § 3, DWG 2018-07-17, in force 18-10-2018), art. 2, 1° (Flemish
+               Region: DVR 2016-06-17, in force 01-09-2016; Walloon Region: DWG 2018-03-15, in force 01-05-2018;
+               Brussels-Capital Region: ORD 2019-04-25, in force 19-05-2019: a lease concluded in writing for 1 year or
+               less is excluded and governed by the regional short-term commercial lease rules), art. 3 and 13 (Walloon
+               Region: agreement evidenced by a written document presented for registration, DWG 2018-03-15, in force
+               07-04-2018). Commercial leases are a regional competence since the sixth state reform; no region has
+               replaced the Handelshuurwet itself (checked 2026-10-04; Flemish Parliament proposals on brewery-tied
+               leases not adopted). Region branches on countryCode == 'BE' and the catalog region codes VLG / WAL / BRU
+               only where the regional versions differ (art. 1, 3, 13); general text otherwise.
+               Oud Burgerlijk Wetboek (Justel PDF 1804032154, updated to 28-05-2024): art. 1720, 1724, 1728bis, 1730,
+               1731, 1754, 1762bis (general lease rules, applicable to commercial leases in all regions).
+               VAT: Btw-Wetboek (exemption of the letting of immovable property and the optional taxed letting of
+               business buildings, cited generally). Registration duties: fiscal law, cited generally.
+               GDPR: Verordening (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against www.ejustice.just.fgov.be.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 jaar huur" is "3 years' rent" in English, "3 années de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Draft text, not vetted by legal counsel. Reflects Belgian law in English (translation of nl.html, which is
+  authoritative; commercial lease (handelshuur / bail commercial): lease of premises used mainly for retail trade or by
+  a craftsman in direct contact with the public). Belgian legal terms are given in parentheses at first use. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (verhuurder /
+    bailleur),</p>
+  <p>legal form, registered office and enterprise number (Crossroads Bank for Enterprises):
+    ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (together) &ldquo;the tenant&rdquo; (huurder / preneur),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the undersigned tenant(s), hereinafter (together) &ldquo;the
+    tenant&rdquo; (huurder / preneur),</p>
+  <p>legal form, registered office and enterprise number (Crossroads Bank for Enterprises):
+    ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>this commercial lease (handelshuurovereenkomst / bail commercial) is concluded. Where there are several tenants,
+    they are jointly, severally and indivisibly liable for all obligations under this lease.</p>
+  <p>This lease is governed by the specific rules on commercial leases (book III, title VIII, chapter II, section 2bis,
+    of the former Civil Code (oud Burgerlijk Wetboek / ancien Code civil), hereinafter &ldquo;the Commercial Lease
+    Act&rdquo; (Handelshuurwet / loi sur les baux commerciaux)) and otherwise by the general rules of the former Civil
+    Code on the lease of goods. Since the sixth state reform, the regions have been competent for commercial leases;
+    the Commercial Lease Act continues to apply in the 3 regions, with the amendments made by each region.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the immovable property located at
+    <strong th:text="${propertyAddress}">address</strong>, with an area of approximately ________ m², comprising:
+    ______________________________, hereinafter &ldquo;the leased property&rdquo;.</p>
+  <p>Premises intended for residential use or ancillary premises let with the property: ______________________________.
+    Where premises intended for residential use form part of the whole of the commercial establishment and the
+    landlord is the same, or ancillary premises are necessary for carrying on the trade and that use is expressly stated
+    in this lease, the statutory lease term also applies to those premises (article 4 of the Commercial Lease
+    Act).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The leased property is used mainly for the following retail trade or business of a craftsman in direct contact
+    with the public: ______________________________. Any other activity requires the landlord's prior written consent.
+    The tenant obtains the permits required for the tenant's activity.</p>
+  <p>The Commercial Lease Act applies to leases of immovable property which, either expressly or tacitly from the time
+    the tenant takes possession or under an express agreement of the parties during the lease, is used mainly by the
+    tenant or a subtenant for carrying on a retail trade or the business of a craftsman in direct contact with the
+    public (article 1 of the Commercial Lease Act). A lease concluded in writing for a term of 1 year or less is not
+    covered and is subject to the regional rules on short-term commercial leases (article 2 of the Commercial Lease
+    Act). If the use falls outside the Commercial Lease Act, the general rules of the former Civil Code apply and the
+    terms of this lease on duration, renewal and eviction compensation have contractual value only.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">In the Walloon Region, the Commercial Lease Act also
+    applies in full to leases concluded under a commercial partnership agreement within the meaning of article I.11,
+    2°, of the Code of Economic Law (Code de droit économique), and any term relating exclusively to premises let for
+    operating a specific brand is deemed unwritten (article 1, § 3, of the Commercial Lease Act).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease commences on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">It is concluded for a fixed term<span th:if="${endDate != null}"> and ends on
+    <strong th:text="${endDate}">end date</strong></span>; the term of the lease may not be shorter than 9 years
+    (article 3 of the Commercial Lease Act).</p>
+  <p th:if="${!fixedTerm}">It is concluded for a term of 9 years, the statutory minimum term (article 3 of the
+    Commercial Lease Act).</p>
+  <p>The tenant may end the current lease at the end of each three-year period by giving at least 6 months' notice by
+    bailiff's writ (gerechtsdeurwaardersexploot / exploit d'huissier) or by registered letter.</p>
+  <p>Right of the landlord to end the lease at the end of each three-year period by giving 1 year's notice by bailiff's
+    writ or by registered letter, in order actually to carry on a trade in the property personally or to have it
+    actually carried on by the relatives or the partnership referred to in article 3 of the Commercial Lease Act, under
+    all the conditions of that article: granted / not granted (delete as appropriate). A landlord who exercises that
+    right may owe eviction compensation (article 26 of the Commercial Lease Act).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The parties may end the current lease at any time by mutual
+    agreement, provided their agreement is recorded in a written document presented for registration (article 3 of the
+    Commercial Lease Act, as applicable in the Walloon Region).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">The parties may end the current
+    lease at any time by mutual agreement, provided their agreement is recorded in a notarial deed or in a declaration
+    made before the court (article 3 of the Commercial Lease Act).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    parties may end the current lease at any time by mutual agreement, provided their agreement is recorded in the form
+    the region prescribes: a notarial deed or a declaration made before the court in the Flemish Region and the
+    Brussels-Capital Region, a written document presented for registration in the Walloon Region (article 3 of the
+    Commercial Lease Act).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent, excluding costs, charges and taxes, amounts to <strong th:text="${rentAmount}">amount</strong>
+    (<span th:text="${paymentFrequency}">per month</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant pays the costs and charges (see article
+    <span th:text="${refs['service-costs']}"></span>).</span><span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> Value added tax is governed by the provisions of this lease on that subject (see article
+    <span th:text="${refs['vat']}"></span>).</span></p>
+  <p>The parties set the rent freely.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Indexation and review of the
+    rent are governed by the provisions of this lease on that subject (see article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Indexation of the rent agreed: yes / no (delete as appropriate). If an adjustment of the rent to the cost of living
+    has been agreed, it is permitted only 1 time per lease year and no earlier than on the anniversary of the lease's
+    entry into force; the adjusted rent may not exceed: base rent x new index / base index, calculated on the basis of
+    the index computed and designated for that purpose (health index, gezondheidsindex / indice santé); the new index
+    is that of the month preceding the anniversary month, the base index that of the month preceding the month in which
+    the agreement was concluded. Contractual provisions going further may be reduced to that adjustment (article
+    1728bis of the former Civil Code). Base index (month and base year): ______________________________</p>
+  <p>At the end of each three-year period, either party may ask the justice of the peace (vrederechter / juge de paix)
+    to review the rent, provided it proves that, owing to new circumstances, the normal rental value of the leased
+    property is at least 15 % higher or lower than the rent stated in the lease or set at the last review. The court
+    decides in equity, disregarding any favourable or unfavourable return attributable solely to the tenant. The claim
+    may only be brought during the last 3 months of the current three-year period; the reviewed rent applies from the
+    first day of the following three-year period (article 6 of the Commercial Lease Act).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays the following costs, charges and taxes, listed here exhaustively, with
+    their allocation key and stating whether they are charged as a fixed amount or as an advance:
+    ______________________________; amount of the fixed charge or advance: ________ euros per month.</p>
+  <p>Advance payments are settled at least annually on the basis of actual expenses; the landlord makes the supporting
+    documents available to the tenant. Costs and charges not mentioned in this lease remain payable by the
+    landlord.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The letting of immovable property is in principle exempt from value added tax, save for the exceptions and the
+    option, under the conditions of the VAT Code (Btw-Wetboek / Code de la TVA), to choose a VAT-taxed letting of
+    business buildings.</p>
+  <p>Option for a VAT-taxed letting: yes / no (delete as appropriate). If the parties choose it or the letting is
+    taxable by operation of law, the rent and charges are increased by VAT at the applicable rate, and the landlord
+    states the VAT on the landlord's invoices.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">To secure the performance of the tenant's obligations, the tenant provides a
+    rental guarantee (huurwaarborg / garantie locative) of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">To secure the performance of the tenant's obligations, the tenant provides a
+    rental guarantee (huurwaarborg / garantie locative) of the amount agreed in writing by the parties.</p>
+  <p>Form of the rental guarantee (blocked account in the tenant's name, bank guarantee or other form):
+    ______________________________</p>
+  <p>For commercial leases, the law sets no maximum amount and no compulsory form of rental guarantee; the regional
+    caps for residential leases do not apply. The guarantee is released at the end of the lease, after deduction of
+    the sums the tenant owes the landlord.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> and the costs and
+    charges</span> per instalment (<span th:text="${paymentFrequency}">per month</span>),
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the day agreed by the parties</span>, by transfer
+    to the landlord's bank account number (IBAN): ______________________________</p>
+  <p>In the event of late payment, the tenant owes, after formal notice, interest at the statutory rate on the arrears,
+    without prejudice to a penalty clause agreed by the parties below: ______________________________</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord delivers the leased property in a good state of maintenance in all respects and carries out, during
+    the lease, all repairs that may become necessary other than those payable by the tenant (article 1720 of the former
+    Civil Code). Unless otherwise provided below, the tenant is responsible for tenant's repairs or minor maintenance
+    repairs regarded as such by local custom (article 1754 of the former Civil Code).</p>
+  <p>The tenant tolerates urgent repairs that cannot be postponed until the end of the lease; if they last more than
+    40 days, the rent is reduced in proportion to the time and to the part of the leased property of which the tenant
+    has been deprived (article 1724 of the former Civil Code).</p>
+  <p>Different allocation of repairs and maintenance between the parties: ______________________________</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant has the right to make any alteration to the leased property that is useful to the tenant's business and
+    whose cost does not exceed 3 years' rent, provided it does not compromise the safety, salubrity or aesthetic value
+    of the building and the tenant informs the landlord in advance, by registered letter or bailiff's writ, of all the
+    intended changes, enclosing the plans and specifications. A landlord who wishes to object on legitimate grounds
+    does so in the same manner within 30 days of receiving the notice, failing which the landlord is deemed to consent;
+    a tenant who persists in the plan summons the landlord within 30 days (article 7 of the Commercial Lease Act).</p>
+  <p>The works are carried out at the tenant's risk and the landlord may require the tenant to insure the tenant's
+    liability for them (article 8 of the Commercial Lease Act). Where alterations have been made at the tenant's
+    expense with the landlord's express or tacit agreement or under a court decision, the landlord may not, unless
+    otherwise agreed, demand their removal when the tenant leaves, but may object to their removal; if they are not
+    removed, the landlord pays, at the landlord's choice, the value of the materials and labour or the increase in value
+    of the property. For alterations made without permission, the landlord may demand that the premises be restored to
+    their former condition, without prejudice to damages, or keep them without compensation (article 9 of the
+    Commercial Lease Act).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>Subject to what follows, the tenant may not assign the lease or sublet the property without the landlord's prior
+    written consent.</p>
+  <p>A prohibition on assigning the lease or subletting the property cannot prevent an assignment or sublease made
+    together with the transfer or lease of the business (handelszaak / fonds de commerce) and covering all the rights
+    of the main tenant, unless the landlord or the landlord's family lives in part of the building. The tenant serves
+    the draft deed on the landlord by registered letter or bailiff's writ; a landlord who has legitimate grounds to
+    object gives a reasoned objection in the same manner within 30 days of service, failing which the landlord is deemed
+    to consent. The objection is well founded in particular where the tenant has carried on the trade in the leased
+    property for less than 2 years or obtained the renewal less than 2 years ago, save for death or other exceptional
+    circumstances; the tenant may challenge the objection in court within 15 days (article 10 of the Commercial Lease
+    Act). In the event of assignment, the original tenant remains jointly and severally liable for all obligations under
+    the lease (article 11 of the Commercial Lease Act).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant insures the tenant's liability for fire and water damage, the tenant's liability as tenant and the
+    contents and fittings of the leased property; the landlord insures the building. Each party provides the other, on
+    request, with proof of insurance and of payment of the premium.</p>
+  <p>Insurers, policy numbers and any mutual waiver of recourse: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>To the extent that the rules of the region where the property lies require an energy performance certificate for
+    letting the leased property, the landlord holds one and gives the tenant a copy.</p>
+  <p>Number, date and energy class or performance index of the certificate: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The lease is presented for registration within the period and against the duty laid down by tax law; registration
+    gives it a certain date as against third parties.</p>
+  <p>Party bearing the registration duties: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The parties draw up, jointly and at shared cost, a detailed inventory of condition (plaatsbeschrijving / état des
+    lieux), either while the premises are unoccupied or during the first month of use; it is annexed to the lease and
+    registered. Failing agreement, the justice of the peace appoints an expert on application (article 1730 of the
+    former Civil Code).</p>
+  <p>If a detailed inventory has been drawn up, the tenant returns the property as received according to that
+    inventory, except for what has perished or deteriorated through age or force majeure; if none has been drawn up,
+    the tenant is presumed to have received the property in the condition in which it is at the end of the lease,
+    unless proven otherwise (article 1731 of the former Civil Code).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> Release of the rental guarantee follows the move-out inventory of condition (see
+    article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>The tenant has the right, in preference to all other persons, to obtain the renewal of the lease in order to
+    continue the same trade, at its expiry or at the expiry of the first or second renewal, each time for a term of
+    9 years; that right is limited to 3 renewals (article 13 of the Commercial Lease Act).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">A different term for the renewal may only be agreed by an
+    agreement of the parties recorded in a written document presented for registration (article 13 of the Commercial
+    Lease Act, as applicable in the Walloon Region).</p>
+  <p th:if="${countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'BRU')}">A different term for the renewal
+    may only be agreed by an agreement of the parties recorded in a notarial deed or in a declaration made before the
+    court (article 13 of the Commercial Lease Act).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">A
+    different term for the renewal may only be agreed by an agreement of the parties in the form the region prescribes:
+    a notarial deed or a declaration made before the court in the Flemish Region and the Brussels-Capital Region, a
+    written document presented for registration in the Walloon Region.</p>
+  <p>A tenant who wishes to renew notifies the landlord, on pain of forfeiture, by bailiff's writ or registered letter,
+    no earlier than 18 months and no later than 15 months before the current lease ends. On pain of nullity, the
+    notification states the conditions on which the tenant is prepared to conclude the new lease, and that the landlord
+    is deemed to agree to the renewal on those conditions unless, within 3 months and in the same manner, the landlord
+    notifies a reasoned refusal, other conditions or a third party's offer (article 14 of the Commercial Lease
+    Act).</p>
+  <p>The landlord may refuse the renewal on one of the grounds and under the conditions of article 16 of the Commercial
+    Lease Act, or without reason against payment of eviction compensation equal to 3 years' rent, possibly increased by
+    an amount sufficient to compensate fully for the damage caused. If the tenant has duly expressed the wish to obtain
+    the renewal and it is refused, the tenant is entitled, in the cases of article 25 of the Commercial Lease Act, to
+    the flat-rate eviction compensation laid down there; as long as the tenant has not received the compensation to
+    which the tenant is entitled, or the part of it that is not seriously disputed, the tenant may keep possession of
+    the property without owing any rent (article 27 of the Commercial Lease Act).</p>
+  <p>From the beginning of the eighteenth month before the current lease ends, the tenant allows prospective tenants or
+    buyers to view the property in accordance with custom.</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p>Even if the lease reserves the right to evict the tenant in the event of alienation, the acquirer of the property
+    may evict the tenant only in the cases of article 16, I, 1° to 4°, of the Commercial Lease Act, by giving 1 year's
+    notice within 3 months of the acquisition and stating the reason clearly, all on pain of forfeiture. The same
+    applies where the lease did not have a certain date before the alienation and the tenant has occupied the property
+    for at least 6 months (article 12 of the Commercial Lease Act). The acquirer may owe eviction compensation.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The tenant may end the lease at the end of each three-year period, and the landlord may do so only if this lease
+    grants the landlord that right, under the conditions and with the notice periods applicable to it<span
+    class="clause-ref" data-ref="term" th:if="${refs['term']}"> (see article
+    <span th:text="${refs['term']}"></span>)</span>.</p>
+  <p>If a tenant who has lost the right to renewal is left in possession of the property after the lease has ended, a
+    new lease of indefinite duration comes into being, which the landlord may end by giving at least 18 months' notice,
+    without prejudice to the tenant's right to request renewal (article 14 of the Commercial Lease Act).</p>
+  <p>If a party fails to perform its obligations, the other party may ask the court to terminate the lease; an express
+    termination clause is deemed unwritten (article 1762bis of the former Civil Code). At the end of the lease, the
+    tenant returns the property free of persons and goods.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> A move-out inventory of condition is then drawn up (see article
+    <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party and of the persons acting for it only to the extent
+    necessary for concluding and performing this lease and for complying with its legal obligations, in accordance
+    with the General Data Protection Regulation (GDPR, Regulation (EU) 2016/679) and the Belgian legislation
+    implementing it, and does not keep them longer than necessary.</p>
+  <p>The data subjects may exercise the rights conferred on them by the GDPR and lodge a complaint with the Data
+    Protection Authority (Gegevensbeschermingsautoriteit / Autorité de protection des données).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by Belgian law. Claims based on the Commercial Lease Act fall, notwithstanding any contrary
+    agreement concluded before the dispute arose, within the jurisdiction of the justice of the peace for the place
+    where the main immovable property lies (article 29 of the Commercial Lease Act).</p>
+  <p>Before bringing a claim, the claimant may, by application, have the future defendant summoned before the justice
+    of the peace for an attempt at amicable settlement (article 30 of the Commercial Lease Act). Terms of this lease
+    that conflict with the mandatory provisions of the Commercial Lease Act have no effect.</p>
+</div>
+
+</body>
+</html>

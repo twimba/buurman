@@ -648,10 +648,11 @@ class LeasePreviewServiceTest {
   }
 
   @Test
-  @DisplayName("BE has only the placeholder example text")
+  @DisplayName("BE has only the placeholder example text for a kind without documents")
   void beIsExampleText() {
+    // BE has RESIDENTIAL/COMMERCIAL documents since V097; MIXED_USE still falls back to LEGACY
     LeaseAgreementPreviewResponse r =
-        service.preview(request("BE", LeaseKind.RESIDENTIAL, "en", List.of()));
+        service.preview(request("BE", LeaseKind.MIXED_USE, "en", List.of()));
 
     assertThat(r.availability()).isEqualTo(LeaseAvailability.AVAILABLE_EXAMPLE_TEXT);
     assertThat(r.source()).isEqualTo(LeaseAgreementPreviewResponse.Source.EXAMPLE_TEXT);
@@ -881,11 +882,7 @@ class LeasePreviewServiceTest {
   void legacyEscaped() {
     LeaseAgreementPreviewRequest request =
         new LeaseAgreementPreviewRequest(
-            "BE",
-            LeaseKind.RESIDENTIAL,
-            "en",
-            copySample(sample(), "<script>x</script>"),
-            List.of());
+            "BE", LeaseKind.MIXED_USE, "en", copySample(sample(), "<script>x</script>"), List.of());
 
     String html = service.preview(request).html();
 

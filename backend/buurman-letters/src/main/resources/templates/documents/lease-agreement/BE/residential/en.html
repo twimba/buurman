@@ -1,0 +1,659 @@
+<!--
+  legal-basis: Belgian residential lease law is regional since the sixth state reform (bijzondere wet van 8 augustus
+               1980, art. 6, § 1, IV, 2°; transfer in force 01/07/2014). Region branches on countryCode == 'BE' and the
+               catalog region codes VLG / WAL / BRU (rent-regulations.json); general text for any other or unknown region.
+               Flanders: Vlaams Woninghuurdecreet (decreet van 9 november 2018, BS 07/12/2018, in force 01/01/2019),
+               consolidated text codex.vlaanderen.be (document 1029963, last amendments 2023): art. 3, 5, 6, 7, 8, 9,
+               10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 34, 35, 36,
+               37, 38, 39, 40, 43, 44, 51, 52. Vlaamse Codex Wonen van 2021 (conformity, via art. 12). Energiedecreet
+               van 8 mei 2009 (EPC, cited generally).
+               Wallonia: decret wallon du 15 mars 2018 relatif au bail d'habitation (MB 28/03/2018, in force
+               01/09/2018), consolidated text wallex.wallonie.be (version in force from 01/07/2024): art. 3, 6, 7, 8,
+               9, 14, 15, 17, 21, 24, 25/1, 26, 27, 28, 30, 37, 47, 49, 51/1, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62,
+               63; art. 62, § 1 guarantee capped at 2 months (decret du 19 mai 2023). Code wallon de l'habitation
+               durable art. 3 to 4bis (via art. 9). Decret du 28 novembre 2013 relatif a la performance energetique des
+               batiments (via art. 3, § 1, 12°).
+               Brussels: Code bruxellois du Logement / Brusselse Huisvestingscode (ordonnance du 17 juillet 2003,
+               version 2013), title XI, consolidated text www.ejustice.just.fgov.be (Justel 2003071790, updated to
+               26-06-2026): art. 215, 216, 217, 218, 218/1, 219, 220, 220/1, 221, 223, 224, 224/1, 224/2, 224/3,
+               225/1, 225/2, 226, 228, 228/1 to 228/5 (regional registration, in force 01-01-2025), 229, 230, 230/1,
+               231, 233, 234, 237, 238, 239, 240, 242, 247/1, 248, 249, 250 (ordonnance du 4 avril 2024, in force
+               01-11-2024; art. 224/1 in force 01-05-2025).
+               Federal residual law: oud Burgerlijk Wetboek, boek III, titel VIII, hoofdstuk II, afdeling I, art. 1728bis,
+               1730, 1731 (Justel PDF 1804032154, updated to 28-05-2024). Registration: Wetboek der registratie-,
+               hypotheek- en griffierechten art. 32, 5° (as cited by the regional texts). GDPR: Verordening (EU)
+               2016/679 (eur-lex.europa.eu CELEX 32016R0679); wet van 30 juli 2018 (cited generally).
+               Verified 2026-10-04 against codex.vlaanderen.be, wallex.wallonie.be and www.ejustice.just.fgov.be.
+               Pending: Walloon proposition de decret (Parlement de Wallonie, February 2026) limiting indexation by PEB
+               class (not adopted on 2026-10-04); re-verify the rent-adjustment clause if it is adopted.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 maanden huur" is "3 months' rent" in English, "3 mois de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Draft text, not vetted by legal counsel. Reflects Belgian law in English (translation of nl.html, which is
+  authoritative): the regional law of the region where the dwelling lies (Flanders, Wallonia or Brussels-Capital)
+  for a dwelling let as the tenant's main residence. Belgian legal terms are given in parentheses at first use. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (verhuurder /
+    bailleur),</p>
+  <p>for a natural person: name, first 2 given names, domicile and national register number or, failing that, date
+    and place of birth; for a legal person: name, registered office and enterprise number: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (together) &ldquo;the tenant&rdquo; (huurder / preneur),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the undersigned tenant(s), hereinafter (together) &ldquo;the
+    tenant&rdquo; (huurder / preneur),</p>
+  <p>for each tenant: name, first 2 given names, domicile and national register number or, failing that, date and
+    place of birth: ______________________________,</p>
+  <p>this lease is concluded for a dwelling that the tenant, with the landlord's consent, uses as his or her main
+    residence (hoofdverblijfplaats / résidence principale) from the moment of taking possession. Where there are
+    several tenants, they are jointly, severally and indivisibly liable for all obligations under this lease.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The dwelling lies in the Flemish Region. Title II of the
+    Flemish Residential Lease Decree (Vlaams Woninghuurdecreet, decree of 9 November 2018) applies to this lease; the
+    provisions of that title are mandatory unless they provide otherwise (article 6 of the Flemish Residential Lease
+    Decree). For matters the decree does not govern, the general rules on the lease of goods in the former Civil Code
+    (oud Burgerlijk Wetboek) apply.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The dwelling lies in the Walloon Region. The Walloon
+    Residential Lease Decree (décret wallon relatif au bail d'habitation, decree of 15 March 2018) applies to this
+    lease, in particular its chapter III on leases relating to the tenant's main residence; unless they provide
+    otherwise, the rules of that chapter are mandatory (article 52, § 5, of the Walloon Residential Lease
+    Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The dwelling lies in the Brussels-Capital Region. Title
+    XI of the Brussels Housing Code (Code bruxellois du Logement / Brusselse Huisvestingscode, ordinance of 17 July
+    2003) applies to this lease, in particular its chapter III on leases relating to the tenant's main residence;
+    unless they provide otherwise, the rules of that title are mandatory (article 216 of the Brussels Housing
+    Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Residential
+    leases are governed by the region where the dwelling lies: the Flemish Residential Lease Decree (Vlaams
+    Woninghuurdecreet) in the Flemish Region, the Walloon Residential Lease Decree (décret wallon relatif au bail
+    d'habitation) in the Walloon Region and title XI of the Brussels Housing Code (Code bruxellois du Logement /
+    Brusselse Huisvestingscode) in the Brussels-Capital Region. The mandatory rules of the region where the dwelling
+    lies prevail over any contrary term of this lease; regional rules may therefore apply.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the dwelling located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the dwelling&rdquo;.</p>
+  <p>Description of all rooms and parts of the building that are let (including cellar, attic, garage, garden and
+    common parts): ______________________________</p>
+  <p>Habitable floor area: ________ m²; number of bedrooms: ________; individual or collective meters for water,
+    gas and electricity, with meter numbers and EAN codes: ______________________________</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The landlord delivers the dwelling in a good state of
+    maintenance in all respects; it must meet the conformity requirement of the Flemish Housing Code (Vlaamse Codex
+    Wonen van 2021). A lease of a dwelling that does not meet that requirement is void, except for a renovation lease
+    (renovatiehuurovereenkomst) under the conditions of article 13 of the Flemish Residential Lease Decree; the nullity
+    must be established by the court (article 12, § 2, of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Except under a renovation lease (bail à rénovation), the
+    dwelling meets the safety, health and habitability requirements of articles 3 to 4bis of the Walloon Sustainable
+    Housing Code (Code wallon de l'habitation durable) (article 9, § 1, of the Walloon Residential Lease Decree). If
+    the dwelling does not meet them and the landlord, after formal notice, does not carry out the necessary works,
+    the tenant may, where the non-conformity is not attributable to the tenant, demand that the works be carried out
+    or seek the termination of the lease with damages; pending the works, the court may grant a rent reduction.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The landlord delivers the dwelling in a good state of
+    repair of every kind; it must meet the basic safety, health and equipment requirements for dwellings laid down
+    under the Brussels Housing Code (article 219, § 2, of the Brussels Housing Code). If it does not, and the
+    non-conformity is not attributable to the tenant, the tenant may demand that the works be carried out or seek the
+    termination of the lease with damages.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    landlord delivers the dwelling in a good state of maintenance; it must meet the safety, health and habitability or
+    equipment standards of the region where it lies.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease commences on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The parties agree a fixed term<span th:if="${endDate != null}">, ending on
+    <strong th:text="${endDate}">end date</strong></span>. If that term is 3 years or less, the rules for a
+    short-term lease apply; if it exceeds 9 years, the rules for a long-term lease apply; in all other cases the
+    lease is deemed to be concluded for 9 years.</p>
+  <p th:if="${!fixedTerm}">The parties do not agree a different term: the lease is deemed to be concluded for
+    9 years.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Every main-residence lease is deemed to be concluded for 9 years. It ends after 9 years if the landlord has
+      given notice at least 6 months before the expiry date; otherwise it is extended each time for 3 years on the
+      same terms (article 16 of the Flemish Residential Lease Decree).</p>
+    <p>By way of derogation, the lease may be concluded in writing for a term of 3 years or less. It may be extended
+      only 1 time, only in writing and on the same terms, without the total term of the lease exceeding 3 years, and
+      it ends if either party has given notice at least 3 months before the agreed term expires. Failing timely
+      notice, or if the tenant continues to occupy the property without objection from the landlord, it is deemed to
+      be concluded for 9 years from the start date of the first short-term lease, at the same rent and on the same
+      terms, subject to indexation and review (article 21, § 1, of the Flemish Residential Lease Decree). The lease
+      may also be concluded in writing for more than 9 years or for the tenant's lifetime (articles 22 and 23 of the
+      Flemish Residential Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Every main-residence lease is deemed to be concluded for 9 years. It ends after 9 years upon notice given by
+      the landlord at least 6 months, and by the tenant at least 3 months, before the expiry date; otherwise it is
+      extended each time for 3 years on the same terms (article 55, § 1, of the Walloon Residential Lease
+      Decree).</p>
+    <p>By way of derogation, a lease may be concluded for a term of 3 years or less. It may be extended only 2 times,
+      only in writing and on the same terms, without prejudice to the indexation of the rent upon renewal, without the
+      total term of the lease exceeding 3 years. It ends upon notice given by either party at least 3 months before the
+      agreed term expires; for a term of 3 months or less, notice is deemed given by signing the lease or its
+      extension. Failing timely notice, or if the tenant continues to occupy the dwelling without objection from the
+      landlord, it is deemed to be concluded for 9 years from the entry into force of the initial lease, at the same
+      rent and on the same terms, without prejudice to indexation and review (article 55, § 6, of the Walloon
+      Residential Lease Decree). The lease may also be concluded in writing for more than 9 years or for the tenant's
+      lifetime (article 55, § 7, of the Walloon Residential Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Every main-residence lease is deemed to be concluded for 9 years. It ends after 9 years upon notice given by
+      either party at least 6 months before the expiry date; otherwise it is extended each time for 3 years on the
+      same terms (article 237, § 1, of the Brussels Housing Code).</p>
+    <p>By way of derogation, a lease may be concluded in writing for a term of 3 years or less. It may be extended
+      only 1 time, only by a writing contained in the lease, an amendment or a later writing and on the same terms,
+      without prejudice to indexation upon renewal, without the total term of the lease exceeding 3 years. Unless
+      extended, a lease of less than 6 months ends when the agreed term expires; a lease of 6 months or more ends upon
+      notice given by either party at least 3 months before the agreed term expires. Failing timely notice, or if the
+      tenant continues to occupy the dwelling without objection from the landlord, it is deemed to be concluded for
+      9 years from the entry into force of the initial lease, at the same rent and on the same terms (article 238 of
+      the Brussels Housing Code). The lease may also be concluded in writing for more than 9 years or for the tenant's
+      lifetime (article 239 of the Brussels Housing Code).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    every region, a main-residence lease is in principle deemed to be concluded for 9 years and, failing notice, it
+    is extended each time for 3 years; a short-term lease of no more than 3 years and a lease of more than 9 years
+    must be concluded in writing. The number of permitted extensions of a short-term lease and the notice periods at
+    expiry differ by region; the rules of the region where the dwelling lies apply.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent, excluding costs and charges, amounts to <strong th:text="${rentAmount}">amount</strong>
+    (<span th:text="${paymentFrequency}">per month</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> In addition, the tenant pays the costs and charges (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The parties set the rent freely, in compliance with the mandatory rules of the region where the dwelling
+    lies.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Reference rent (loyer de référence / referentiehuurprijs) of the dwelling, or the range around that reference
+      rent, according to the indicative rent grid (article 218, § 1, of the Brussels Housing Code): ________ euros per
+      month.</p>
+    <p>The landlord may not propose an abusive rent. A rent is presumed abusive if it exceeds the reference rent by
+      more than 20 %, unless the difference is justified by substantial comfort features of the dwelling or its
+      surroundings, or if it does not exceed the reference rent by more than 20 % but the dwelling or its surroundings
+      show substantial quality defects; the tenant may then request a review of the rent (articles 224 and 224/1 of the
+      Brussels Housing Code).</p>
+    <p>For a short-term lease: amount and payment date of the last rent charged to the previous tenant, disclosed in
+      advance by the landlord (article 217, § 1, of the Brussels Housing Code): ______________________________</p>
+  </th:block>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Indexation and review of the
+    rent are governed by the provisions of this lease on that subject (see article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Unless the parties expressly exclude it below, the rent is adjusted to the cost of living on the basis of the
+    health index (gezondheidsindex / indice santé). Adjustment excluded: yes / no (delete as appropriate). Base index
+    (month and base year): ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>The adjustment takes place 1 time per lease year on the anniversary of the lease's entry into force, only if
+      the interested party requests it in writing, and has retroactive effect only for the 3 months preceding the
+      month of the request. The adjusted rent may not exceed: base rent x new index / base index; the new index is the
+      health index of the month preceding the anniversary month, the base index that of the month preceding the month
+      in which the lease or the rent review entered into force (article 34 of the Flemish Residential Lease
+      Decree).</p>
+    <p>The parties may agree a review of the rent between the ninth and the sixth month before the end of each
+      three-year period. Failing agreement, the court may review the rent if, owing to new circumstances, the normal
+      rental value is at least 20 % higher or lower than the rent payable, or increase the rent if the normal rental
+      value has risen by at least 10 % owing to works carried out at the landlord's expense, except works needed to
+      bring the dwelling into conformity; the claim may only be brought between the sixth and the third month before
+      the end of the three-year period. The parties may also agree a review at any time on account of energy-saving
+      investments (article 35 of the Flemish Residential Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>The adjustment is due 1 time per lease year on the anniversary of the lease's entry into force, only after a
+      written request by the interested party, and has effect for the past only for the 3 months preceding the month
+      of the request. An adjustment that increases the rent is due only if the lease was concluded in writing and, for
+      immovable property, registered (article 57 of the Walloon Residential Lease Decree). The adjusted rent may not
+      exceed: base rent x new index / base index; the new index is the health index of the month preceding the
+      anniversary month, the base index that of the month preceding the month in which the agreement was concluded
+      (article 26 of the Walloon Residential Lease Decree).</p>
+    <p>The parties may agree a review of the rent between the ninth and the sixth month before the end of each
+      three-year period. Failing agreement, the court may review the rent if, owing to new circumstances, the normal
+      rental value is at least 20 % higher or lower than the rent payable, or increase the rent if the normal rental
+      value has risen by at least 10 % owing to works carried out at the landlord's expense, except conformity works;
+      an increase is due only if the written lease has been registered, and the claim may only be brought between the
+      sixth and the third month before the end of the three-year period (article 58, § 1, of the Walloon Residential
+      Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Provided the lease was concluded in writing, the adjustment is due 1 time per lease year on the anniversary of
+      the lease's entry into force, under the conditions of article 1728bis of the former Civil Code; it takes place
+      only after a written request by the interested party and has effect for the past only for the 3 months preceding
+      the month of the request. An adjustment that increases the rent is due only if the written lease has been
+      registered and the energy performance certificate (certificat PEB / EPB-certificaat) has been provided to the
+      tenant (article 224/2 of the Brussels Housing Code).</p>
+    <p>The parties may agree a review of the rent between the ninth and the sixth month before the end of each
+      three-year period and may ask the joint rent committee (commission paritaire locative) for an opinion. Failing
+      agreement, the court may review the rent if, owing to new circumstances, the reference rent is at least 20 %
+      higher than the rent payable and the dwelling shows no substantial quality defects justifying that difference,
+      or increase the rent if the reference rent is at least 10 % higher owing to works carried out at the landlord's
+      expense, except conformity works; an increase is due only if the lease has been registered, and the claim may
+      only be brought between the sixth and the third month before the end of the three-year period (article 240 of
+      the Brussels Housing Code).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    every region, indexation takes place at most 1 time per lease year, on the anniversary of the lease's entry into
+    force, upon written request and with limited retroactive effect, according to the formula base rent x new health
+    index / base index. The conditions for an increase (such as a written and registered lease or the provision of
+    the energy performance certificate) and the grounds for reviewing the rent at the end of each three-year period
+    differ by region; the rules of the region where the dwelling lies apply.</p>
+  <p>Contractual provisions going beyond the statutory adjustment may be reduced to that adjustment.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant bears the costs and charges relating to the use of the dwelling; the costs
+    and charges relating to the exercise of rights in rem over the dwelling remain payable by the landlord. The
+    immovable property withholding tax (onroerende voorheffing / précompte immobilier) may not be charged to the
+    tenant.</p>
+  <p>Nature, calculation method and allocation key of the costs and charges, stating whether they are charged as a
+    fixed amount or as an advance: ______________________________; amount of the fixed charge or advance: ________
+    euros per month.</p>
+  <p>Unless a fixed amount has been expressly agreed, the costs and charges must correspond to actual expenses; they
+    are recorded in a separate account and the supporting documents are produced to the tenant. Either party may at
+    any time ask the court to review a fixed charge or convert it into actual costs and charges.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">So provides article 36 of the Flemish Residential Lease
+    Decree; the Flemish Government lays down a non-exhaustive list of costs that may be charged to the tenant or to
+    the landlord.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">So provide article 24 and article 59 of the Walloon
+    Residential Lease Decree; the lease states the amount and nature of the charges and whether they are fixed or
+    advance payments (article 3, § 1, of the Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Where they are not fixed, only the costs for items
+    explicitly and exhaustively listed in this lease are due, except exceptional or new charges that correspond to
+    actual expenses; each year, within 12 months after the anniversary of the entry into force, the landlord provides
+    the tenant with a separate statement (article 224/3 of the Brussels Housing Code). The immovable property
+    withholding tax remains payable by the landlord (article 226 of the Brussels Housing Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    detailed rules on statements and supporting documents differ by region; the rules of the region where the dwelling
+    lies apply.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">To secure the performance of the tenant's obligations, the tenant provides a
+    rental guarantee (huurwaarborg / garantie locative) of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">To secure the performance of the tenant's obligations, the tenant provides a
+    rental guarantee (huurwaarborg / garantie locative) of the amount agreed in writing by the parties.</p>
+  <p>Form of rental guarantee chosen by the tenant: ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>The rental guarantee may not exceed 3 months' rent. The tenant chooses 1 of the following forms: an
+      individualised account in the tenant's name with a financial institution, a security interest with a financial
+      institution in the tenant's name, or a bank guarantee under a standard contract between a public social welfare
+      centre (OCMW) and a financial institution; with the landlord's agreement, the guarantee may also be provided by a
+      personal surety. The interest earned is capitalised for the benefit of the tenant (article 37, § 1, of the
+      Flemish Residential Lease Decree). To the extent that the amount stated above exceeds 3 months' rent, the excess
+      cannot be required as a rental guarantee.</p>
+    <p>The guarantee may only be released for the benefit of either party on production of a written agreement drawn
+      up no earlier than at the end of the lease, or of a copy of a court decision (article 37, § 3, of the Flemish
+      Residential Lease Decree). A landlord who holds the guarantee and fails to place it in an individualised account
+      owes interest at the average financial market rate.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>The rental guarantee may not exceed an amount equal to 2 months' rent. The tenant chooses 1 of the following
+      forms: an individualised account opened in the tenant's name with a financial institution, a bank guarantee that
+      the tenant builds up gradually by constant monthly instalments over the term of the lease, up to a maximum of
+      3 years, or a bank guarantee under a standard contract between a public social welfare centre (CPAS) and a
+      financial institution. With an individualised account, the interest earned is capitalised for the benefit of the
+      tenant (article 62, § 1, of the Walloon Residential Lease Decree). To the extent that the amount stated above
+      exceeds 2 months' rent, the excess cannot be required as a rental guarantee.</p>
+    <p>The account or the bank guarantee may only be released for the benefit of either party on production of a
+      written agreement drawn up no earlier than at the end of the lease, or of a copy of a court decision (article 62,
+      § 3, of the Walloon Residential Lease Decree). A landlord who holds the guarantee and fails to place it owes
+      interest at the average financial market rate.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>The rental guarantee may not exceed an amount equal to 2 months' rent. The tenant chooses 1 of the following
+      forms: an individualised account opened in the tenant's name with a financial institution approved by the FSMA,
+      a bank guarantee under a standard contract between a public social welfare centre (CPAS) and a financial
+      institution, a bank guarantee that the tenant builds up gradually, a security interest in the tenant's name with
+      a financial institution, or a personal surety (article 248 of the Brussels Housing Code). To the extent that the
+      amount stated above exceeds 2 months' rent, the excess cannot be required as a rental guarantee.</p>
+    <p>The guarantee may only be released for the benefit of either party on production of a written agreement drawn
+      up no earlier than at the end of the lease, or of a copy of a court decision. Save for contentious proceedings,
+      the guarantee is released within 2 months at the latest after the keys are returned; otherwise the amount owed
+      is increased by 10 % of the monthly rent for each month or part of a month (article 249, § 2, of the Brussels
+      Housing Code).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    maximum amount of the rental guarantee and the permitted forms differ by region (at most 3 months' rent in the
+    Flemish Region, at most 2 months' rent in the Walloon Region and in the Brussels-Capital Region); the guarantee may
+    only be released with a written agreement of both parties drawn up no earlier than at the end of the lease, or on
+    the basis of a court decision.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> and the costs and
+    charges</span> per instalment (<span th:text="${paymentFrequency}">per month</span>),
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">on the day agreed by the parties</span>, by transfer
+    to the landlord's bank account number (IBAN): ______________________________</p>
+  <p>In the event of late payment, the tenant owes, after formal notice, interest at the statutory rate on the
+    arrears.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Payment of the rent and charges may only be requested to
+    a bank account stated in this lease; without prejudice to statutory interest, any penalty clause for late payment
+    of the rent is prohibited (articles 225/1 and 225/2 of the Brussels Housing Code).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling with the care of a prudent person (als een goed huisvader / en bon père de
+    famille) and in accordance with its purpose as a main residence. The tenant informs the landlord of repairs that
+    are needed and are the landlord's responsibility. The landlord ensures the tenant's peaceful enjoyment of the
+    dwelling and may enter it only at times agreed with the tenant.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">If the tenant does not use the dwelling in accordance with
+    its purpose or puts it to a use that is detrimental to the landlord, the landlord may, depending on the
+    circumstances, seek the termination of the lease (article 28 of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">If the tenant uses the dwelling for a purpose other than
+    the one for which it was intended, or in a way that may cause damage to the landlord, the landlord may, depending
+    on the circumstances, seek the termination of the lease (article 11 of the Walloon Residential Lease
+    Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The landlord may not prohibit the tenant from registering
+    his or her domicile at the dwelling (article 218, § 6, of the Brussels Housing Code). A term that simply prohibits
+    keeping a pet is deemed unwritten; keeping pets may, however, be made conditional on the absence of nuisance, and
+    their number or species may be limited on reasonable grounds (article 218/1 of the Brussels Housing Code).</p>
+  <p>Rules on pets, the house rules of the building and other arrangements on use: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not assign the lease without the landlord's prior written consent; after an authorised
+    assignment, the assignor is released from all future obligations unless the assignment agreement provides
+    otherwise. A tenant who uses the dwelling as a main residence may not sublet the whole of it; with the landlord's
+    consent the tenant may sublet part of it, provided the remainder remains the tenant's main residence. The term of
+    the sublease may not exceed the remaining term of the main lease, and the tenant informs the subtenant in advance
+    of the tenant's status and of the extent of the subtenant's rights.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">So provide article 31 and article 32 of the Flemish
+    Residential Lease Decree.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">So provide article 47, article 49 and article 60 of the
+    Walloon Residential Lease Decree.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The draft assignment is notified to the landlord by
+    registered letter; the landlord communicates consent or refusal within 30 days of receipt, failing which the
+    assignment is deemed accepted (article 230 of the Brussels Housing Code). The draft sublease is notified to the
+    landlord by registered letter at least 15 days before it is concluded (article 230/1 of the Brussels Housing
+    Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    formalities and time limits for assignment and subletting differ by region; the rules of the region where the
+    dwelling lies apply.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord maintains the dwelling so that it can serve the use for which it is let and carries out all
+    necessary repairs other than those payable by the tenant. The tenant bears minor repairs or tenant's repairs
+    (huurherstellingen / réparations locatives); repairs needed solely because of age or force majeure remain the
+    landlord's responsibility.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The tenant is also responsible for repairs made necessary
+    by use contrary to the dwelling's purpose or to prudent use and by a failure to report; the Flemish Government
+    lays down a list of minor repairs (articles 25 and 26 of the Flemish Residential Lease Decree). The tenant
+    tolerates urgent repairs that cannot be postponed until the end of the lease; if they last more than 30 days, the
+    rent is reduced in proportion to the time and to the part of the dwelling of which the tenant has been deprived,
+    and if they make normal occupation impossible, the tenant may have the lease terminated (article 27 of the Flemish
+    Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Tenant's repairs or minor maintenance are repairs of
+    minor importance resulting from normal use of the premises; the Walloon Government lays down a non-exhaustive list
+    (articles 8 and 15 of the Walloon Residential Lease Decree). The tenant tolerates urgent repairs and the
+    energy-saving works specified by the Government; if they last more than 40 days, the rent is reduced in proportion
+    to the time and to the part of the dwelling of which the tenant has been deprived (article 21 of the Walloon
+    Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The tenant is responsible for tenant's repairs, except
+    those caused by age or force majeure, and for minor maintenance; the landlord is responsible for all other
+    repairs, and the Government lays down a non-exhaustive list (article 223 of the Brussels Housing Code). Works to
+    improve energy performance or to adapt the dwelling to the tenant's disability may be carried out during the lease
+    under the conditions of article 221 of the Brussels Housing Code.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    list of repairs payable by the tenant and the rules on urgent repairs during the lease are laid down by the region
+    where the dwelling lies.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The tenant is liable for fire and water damage unless the
+    tenant proves that the fire broke out through no fault of the tenant's, and insures that liability with a policy
+    whose cover is not suspended; the landlord likewise insures the landlord's liability for fire and water damage
+    (article 29 of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The tenant is liable for fire unless the tenant proves
+    that it broke out through no fault of the tenant's; that liability is covered by insurance that the tenant, unless
+    the parties agree otherwise, takes out before moving in. The tenant provides proof of payment of the premiums each
+    year; if the tenant fails to do so within the month after moving in or after its anniversary, the landlord may ask
+    the landlord's own home insurer to add a waiver-of-recourse clause in favour of the tenant and pass the cost on to
+    the tenant (article 17 of the Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The tenant is liable for fire and water damage unless the
+    tenant proves that they occurred through no fault of the tenant's; that liability is covered by insurance that the
+    tenant, unless the parties agree otherwise, takes out before moving in. The tenant provides proof of payment of the
+    premiums each year; if the tenant fails to do so within the month after moving in or after the landlord's request,
+    the landlord may ask the landlord's own home insurer to add a waiver-of-recourse clause in favour of the tenant and
+    pass the cost on to the tenant (article 220/1 of the Brussels Housing Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    tenant is liable for fire and insures that liability; the details (water damage, proof of insurance, insurance by
+    the landlord) are laid down by the region where the dwelling lies.</p>
+  <p>Tenant's insurer and policy number: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The landlord holds the energy performance certificate
+    (EPC) required for the dwelling under the Flemish Energy Decree of 8 May 2009 (Energiedecreet) and its
+    implementing orders, and gives the tenant a copy.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The lease states the date of the most recent energy
+    performance certificate (certificat PEB), where it is required by the Walloon decree of 28 November 2013 on the
+    energy performance of buildings, and the performance index assigned to the dwelling (article 3, § 1, of the
+    Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Before the lease is concluded, the landlord provides the
+    tenant with the energy performance certificate (certificat PEB / EPB-certificaat) (article 217, § 1, of the
+    Brussels Housing Code); without that certificate, an indexation that increases the rent is not due.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    landlord gives the tenant the energy performance certificate required by the rules of the region where the
+    dwelling lies.</p>
+  <p>Number, date and energy class or performance index of the certificate: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The obligation to register the lease and the inventory of
+    condition lies with the landlord; the costs of late registration are borne entirely by the landlord (article 11
+    of the Flemish Residential Lease Decree). As long as the lease has not been registered after the 2-month period
+    referred to in article 32, 5°, of the Registration, Mortgage and Court Fees Code (Wetboek der registratie-,
+    hypotheek- en griffierechten), the notice period and the compensation payable by the tenant do not apply
+    (article 20, § 1, of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The obligation to register the lease lies with the
+    landlord; the costs of late registration are borne entirely by the landlord (article 53 of the Walloon Residential
+    Lease Decree). After the 2-month period referred to in article 32, 5°, of the Registration, Mortgage and Court
+    Fees Code (Code des droits d'enregistrement, d'hypothèque et de greffe) and as long as the lease has not been
+    registered, the notice period and the compensation payable by the tenant do not apply, provided that a formal
+    notice from the tenant to register the lease has remained without effect for 1 month (article 54 of the Walloon
+    Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The landlord registers the lease free of charge within
+    2 months of signature in the electronic register of the regional lease registration service, by uploading the
+    lease signed by both parties, its annexes and the move-in inventory of condition. After that period and as long as
+    the lease has not been registered, the notice periods, the compensation payable by the tenant and the rules for
+    reviewing the rent do not apply (article 228/5 of the Brussels Housing Code). This is without prejudice to the
+    obligations imposed by tax law.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    landlord has the lease and the inventory of condition registered within 2 months of signature, in accordance with
+    the rules of the region where the dwelling lies; as long as the lease has not been registered, the tenant may, in
+    the cases laid down by the region, give notice without a notice period or compensation.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The parties draw up, jointly and at shared cost, a detailed move-in inventory of condition (plaatsbeschrijving /
+    état des lieux), either while the premises are unoccupied or during the first month in which the tenant can use
+    the dwelling; it is annexed to the lease and registered. Failing agreement, the justice of the peace
+    (vrederechter / juge de paix) appoints an expert on application.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">At the request of either party, a move-out inventory of
+    condition is drawn up jointly and at shared cost at the end of the lease, no later than when the keys are returned
+    and accepted. If a detailed inventory was drawn up at the start, the tenant returns the dwelling as received
+    according to that inventory, except for what has perished or deteriorated through age or force majeure and for
+    repairs payable by the landlord (articles 9 and 39 of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Either party may require a joint move-out inventory of
+    condition at shared cost; it is drawn up after the tenant has vacated the premises and before the keys are returned
+    (article 27 of the Walloon Residential Lease Decree). If a detailed inventory was drawn up, the tenant returns the
+    dwelling as received, except for what has perished or deteriorated through age or force majeure (article 28 of the
+    Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The move-in and move-out inventories record the meter
+    readings, the meter numbers and the EAN codes. Either party may require a joint move-out inventory of condition at
+    shared cost; it is drawn up after the tenant has vacated the premises and before the keys are returned, and no
+    later than within the month after the tenant has vacated the premises (article 220 of the Brussels Housing
+    Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    rules on the move-out inventory of condition are laid down by the region where the dwelling lies. If no detailed
+    move-in inventory was drawn up, the tenant is presumed to have received the dwelling in the condition in which it
+    is at the end of the lease, unless proven otherwise.</p>
+  <p class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">Release of the rental guarantee follows the
+    move-out inventory of condition (see article <span th:text="${refs['deposit']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Before transferring a right in rem over the dwelling, the
+    landlord informs the prospective acquirer of the existence and type of the lease. The acquirer succeeds to all the
+    landlord's rights and obligations on the date of the notarial deed or, if later, on the date on which the transfer
+    takes effect, even if the lease reserves a right to evict in the event of sale (article 38 of the Flemish
+    Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">If the lease has a certain date before the alienation of
+    the dwelling, the acquirer succeeds to the landlord's rights and obligations on the date of the notarial deed, even
+    if the lease reserves a right to evict in the event of alienation. If it has no certain date but the tenant has
+    occupied the dwelling for at least 6 months, the same applies, but the acquirer may end the lease on the grounds
+    and under the conditions of notice by the landlord, by giving 3 months' notice, on pain of forfeiture within
+    3 months after the notarial deed (article 63 of the Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Before the alienation, the landlord informs the
+    prospective acquirer of the existence of the lease and provides a copy of it; the new holder of the right in rem
+    succeeds for the future to the landlord's rights and obligations, and any term reserving a right to evict in the
+    event of alienation is deemed unwritten (article 229 of the Brussels Housing Code). In a private sale, the landlord
+    notifies the tenant of the intention to sell before any public announcement (article 242 of the Brussels Housing
+    Code), and the tenant of a main residence enjoys a right of preference under the conditions and with the
+    exceptions of article 247/1 of the Brussels Housing Code.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">On
+    the alienation of the dwelling, the acquirer in principle succeeds to the landlord's rights and obligations; the
+    conditions, the information duties and any right of preference of the tenant are laid down by the region where the
+    dwelling lies.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>In all cases in which notice may be given at any time, the notice period starts on the first day of the month
+    following the month in which notice is given. Notice is given by registered letter, by bailiff's writ
+    (gerechtsdeurwaardersexploot / exploit d'huissier de justice) or by delivery against acknowledgement of
+    receipt.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Under a 9-year lease, the landlord may end the lease: at any time, with a notice period of 6 months, in order
+      to occupy the dwelling personally and actually or have it occupied by the relatives referred to in article 17 of
+      the Flemish Residential Lease Decree, under all the conditions of that article; at any time, with a notice period
+      of 6 months, for thorough renovation works under all the conditions of article 18 of the Flemish Residential
+      Lease Decree; and at the end of the first or second three-year period, without giving reasons, with a notice
+      period of 6 months and against payment of compensation of 9 or 6 months' rent (article 19 of the Flemish
+      Residential Lease Decree). The parties may exclude or limit these early-termination options.</p>
+    <p>The tenant may end the lease at any time with a notice period of 3 months; if the lease thereby ends during the
+      first three-year period, the landlord is entitled to compensation of 3, 2 or 1 month's rent depending on whether
+      it ends during the first, second or third year. If the landlord ends the lease under articles 17 to 19, the
+      tenant may in turn give notice at any time with a notice period of 1 month, without compensation (article 20 of
+      the Flemish Residential Lease Decree).</p>
+    <p>Under a short-term lease, the landlord may not give early notice; the tenant may give notice at any time with a
+      notice period of 3 months, against compensation of 1.5 months', 1 month's or 0.5 month's rent depending on
+      whether the lease ends during the first, second or third year, counted from the start date of the first lease
+      (article 21, § 2, of the Flemish Residential Lease Decree). A tenant who proves exceptional circumstances may
+      request an extension (article 24 of the Flemish Residential Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Under a 9-year lease, the landlord may end the lease: at any time, with 6 months' notice, in order to occupy
+      the dwelling personally and actually or have it occupied by the relatives referred to in article 55, § 2, of the
+      Walloon Residential Lease Decree, under all the conditions of that paragraph; at the end of the first or second
+      three-year period, with 6 months' notice, in order to rebuild, convert or renovate the building, under all the
+      conditions of article 55, § 3, of the Walloon Residential Lease Decree; and at the end of the first or second
+      three-year period, without giving reasons, with 6 months' notice and against payment of compensation of 9 or
+      6 months' rent (article 55, § 4, of the Walloon Residential Lease Decree). The parties may exclude or limit these
+      early-termination options.</p>
+    <p>The tenant may end the lease at any time with 3 months' notice; if the lease ends during the first three-year
+      period, the landlord is entitled to compensation of 3, 2 or 1 month's rent depending on whether it ends during
+      the first, second or third year. If the landlord ends the lease under paragraphs 2 to 4, the tenant may also end
+      the lease at any time with 1 month's notice, without compensation (article 55, § 5, of the Walloon Residential
+      Lease Decree).</p>
+    <p>Under a short-term lease, the tenant may end the lease at any time with 3 months' notice, against compensation
+      of 1 month's rent; the landlord may end it early only after the first year of the lease, in order to occupy the
+      dwelling personally and actually or have it occupied under the conditions of article 55, § 2, with 3 months'
+      notice and compensation of 1 month's rent (article 55, § 6, of the Walloon Residential Lease Decree). An express
+      termination clause (clause résolutoire expresse) is deemed unwritten (article 37 of the Walloon Residential Lease
+      Decree). A tenant who proves exceptional circumstances may request an extension (article 56 of the Walloon
+      Residential Lease Decree).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Under a 9-year lease, the landlord may end the lease: at any time, with 6 months' notice, in order to occupy
+      the dwelling personally and actually or have it occupied by the relatives referred to in article 237, § 2, of the
+      Brussels Housing Code, under all the conditions of that paragraph; at the end of the first or second three-year
+      period, with 6 months' notice, in order to rebuild, convert or renovate the building, under all the conditions of
+      article 237, § 3, of the Brussels Housing Code; and at the end of the first or second three-year period, without
+      giving reasons, with 6 months' notice and against payment of compensation of 9 or 6 months' rent (article 237,
+      § 4, of the Brussels Housing Code). The parties may exclude or limit these early-termination options.</p>
+    <p>The tenant may end the lease at any time with 3 months' notice; if the lease ends during the first three-year
+      period, the landlord is entitled to compensation of 3, 2 or 1 month's rent depending on whether it ends during
+      the first, second or third year. If the landlord ends the lease under paragraphs 2 to 4, the tenant may also end
+      the lease at any time with 1 month's notice, without compensation, and the landlord remains bound to carry out the
+      reason given for the notice (article 237, § 5, of the Brussels Housing Code).</p>
+    <p>Under a short-term lease, the tenant may end the lease at any time with 3 months' notice, against compensation
+      of 1 month's rent; the landlord may end it early only after the first year of the lease, under the conditions of
+      article 237, § 2, with 3 months' notice and compensation of 1 month's rent, and the tenant may then in turn end
+      the lease at any time with 1 month's notice, without compensation (article 238 of the Brussels Housing Code). A
+      tenant who proves exceptional circumstances may request an extension (article 250 of the Brussels Housing
+      Code).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    every region, the tenant under a 9-year lease may give notice at any time with 3 months' notice, with compensation
+    of 3, 2 or 1 month's rent if the lease ends during the first, second or third year, and the landlord may give
+    notice only on the grounds laid down by law (personal occupation, renovation works or, against compensation,
+    without reasons at the end of a three-year period), under the conditions of the region where the dwelling lies.
+    The rules for early termination of a short-term lease differ by region.</p>
+  <p>The parties may end the lease at any time by mutual agreement. If a party fails to perform its obligations, the
+    other party may ask the court to terminate the lease.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> At the end of the lease, a move-out inventory of condition is drawn up (see
+    article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-annexes" data-clause="annexes">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">This lease refers to the explanatory note (vulgariserende
+    toelichting) drawn up by the Flemish Government on, among other things, health, safety and habitability standards,
+    registration, term, indexation, tenant's repairs, fire insurance and termination of the lease (articles 8 and 10
+    of the Flemish Residential Lease Decree); the tenant declares to have been able to read it. The move-in inventory
+    of condition is annexed to this lease.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The annex drawn up by the Walloon Government, containing a
+    concise and educational explanation of the statutory provisions on, among other things, health, safety and
+    habitability standards, registration and the fact that it is free of charge, term, review and indexation of the
+    rent, tenant's repairs and termination, must be attached to this lease (article 3, § 2, of the Walloon Residential
+    Lease Decree). The move-in inventory of condition is annexed to this lease.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The annex drawn up by the Government of the
+    Brussels-Capital Region, containing an explanation of the statutory provisions on, among other things, health,
+    safety and equipment standards, registration and the fact that it is free of charge, term, the indicative rent
+    grid, review, indexation, charges, tenant's repairs, termination and pets, must be attached to this lease
+    (article 218, § 5, of the Brussels Housing Code). The move-in inventory of condition is annexed to this lease.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
+    explanatory annex or note prescribed by the region where the dwelling lies and the move-in inventory of condition
+    are annexed to this lease.</p>
+  <p>Other annexes: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant's personal data only to the extent necessary for concluding and performing
+    this lease and for complying with the landlord's legal obligations, in accordance with the General Data Protection
+    Regulation (GDPR, Regulation (EU) 2016/679) and the Belgian legislation implementing it. From prospective tenants
+    the landlord requests only the data and documents permitted by the rules of the region where the dwelling lies.
+    The landlord does not keep the data longer than necessary.</p>
+  <p>The tenant may exercise against the landlord the rights conferred by the GDPR, including the rights of access,
+    rectification and erasure, and may lodge a complaint with the Data Protection Authority
+    (Gegevensbeschermingsautoriteit / Autorité de protection des données).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by Belgian law. Disputes concerning this lease fall, whatever the amount of the claim,
+    within the jurisdiction of the justice of the peace for the place where the dwelling lies. The parties may also
+    settle their dispute amicably, including through mediation.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Any arbitration agreement concluded before the dispute
+    arises is void by operation of law (article 44 of the Flemish Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">The parties may submit their dispute to an arbitrator only
+    after it has arisen; any arbitration clause agreed before the dispute arises is deemed unwritten (article 51/1 of
+    the Walloon Residential Lease Decree).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The parties may submit their dispute to an arbitrator only
+    after it has arisen; any arbitration clause agreed before the dispute arises is deemed unwritten (article 233 of
+    the Brussels Housing Code).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">An
+    arbitration clause concluded before the dispute arises has no effect under the rules of each region.</p>
+  <p>Terms of this lease that conflict with the mandatory rules of the applicable regional law have no effect; the
+    statutory rules apply in their place.</p>
+</div>
+
+</body>
+</html>

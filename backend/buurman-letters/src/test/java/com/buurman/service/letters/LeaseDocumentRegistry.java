@@ -579,6 +579,88 @@ public final class LeaseDocumentRegistry {
   // ===== BE entries (country pack) =====
   // Constants, citation pattern and foreign markers for BE go here, only inside these markers.
 
+  /**
+   * The Belgian statute citation format, language-neutral across nl/fr/en: the article number after
+   * "artikel(en)" / "article(s)" / "art.", with a Belgian slash or Latin suffix that belongs to the
+   * token ({@code artikel 224/1}, {@code article 1728bis}, {@code artikel 51/1}). The paragraph is
+   * written "§ n" after the reference in every language (nl "artikel 37, § 1", fr "article 37, §
+   * 1er", en "article 37, § 1"); the gate pairs that digit (the "er" of the French "1er" is not a
+   * digit). Paragraph numbers spelled as ordinals ("eerste lid") are not used in the documents.
+   */
+  public static final Pattern BELGIAN_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|artikel|artikelen|articles?)\\s{1,20})\\d+(?:/\\d+)?"
+              + "(?:bis|ter|quater|quinquies)?",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Dutch marker words that must not leak into the fr/en translations outside glosses. */
+  private static final List<String> BELGIAN_DUTCH_MARKERS =
+      List.of("de verhuurder", "de huurder", "huurovereenkomst", "zie artikel", "overeenkomstig");
+
+  /** Mirror of V097__seed_be_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry BE_RESIDENTIAL =
+      new Entry(
+          "BE",
+          LeaseKind.RESIDENTIAL,
+          "nl",
+          List.of("nl", "fr", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("insurance", false, false, 12),
+              new ClauseSpec("energy-certificate", true, false, 13),
+              new ClauseSpec("registration", false, false, 14),
+              new ClauseSpec("handover-inspection", false, false, 15),
+              new ClauseSpec("transfer", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("annexes", true, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          BELGIAN_DUTCH_MARKERS,
+          Optional.of(BELGIAN_CITATION));
+
+  /** Mirror of V097__seed_be_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry BE_COMMERCIAL =
+      new Entry(
+          "BE",
+          LeaseKind.COMMERCIAL,
+          "nl",
+          List.of("nl", "fr", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("registration", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("renewal", false, false, 18),
+              new ClauseSpec("transfer", false, false, 19),
+              new ClauseSpec("termination", true, false, 20),
+              new ClauseSpec("data-protection", false, false, 21),
+              new ClauseSpec("disputes", false, false, 22)),
+          BELGIAN_DUTCH_MARKERS,
+          Optional.of(BELGIAN_CITATION));
+
   // ===== end BE =====
 
   // ===== CA entries (country pack) =====
@@ -677,6 +759,8 @@ public final class LeaseDocumentRegistry {
     // ===== end AT ENTRIES =====
 
     // ===== BE ENTRIES (country pack) =====
+    entries.add(BE_RESIDENTIAL);
+    entries.add(BE_COMMERCIAL);
 
     // ===== end BE ENTRIES =====
 
