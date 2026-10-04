@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jooq.exception.IntegrityConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,8 +25,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
@@ -190,6 +193,55 @@ class JwtAuthenticationConverterTest {
       verify(userRepository).save(captor.capture());
       assertThat(captor.getValue().getFirstName()).isEqualTo("Jean");
       assertThat(captor.getValue().getLastName()).isEqualTo("Claude Van Damme");
+    }
+
+    @Test
+    @DisplayName("rejects stale subject whose email belongs to another account without saving")
+    void rejectsStaleSubjectWithExistingEmail() {
+      User otherAccount =
+          User.builder()
+              .id(UUID.randomUUID())
+              .identifier(Optional.of(USER_SID))
+              .keycloakId("kc-recreated-456")
+              .email(EMAIL)
+              .build();
+      when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.empty());
+      when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(otherAccount));
+
+      assertThatThrownBy(() -> converter.convert(buildJwt(Map.of())))
+          .isInstanceOf(InvalidBearerTokenException.class)
+          .hasMessageNotContaining(EMAIL);
+
+      verify(userRepository, never()).save(any());
+      verify(teamMemberRepository, never()).findAllByUserId(any());
+    }
+
+    @Test
+    @DisplayName("returns user created by a concurrent request when insert hits unique constraint")
+    void returnsConcurrentlyCreatedUser() {
+      User concurrentlyCreated = buildUser(Optional.empty(), Optional.empty());
+      when(userRepository.findByKeycloakId(KEYCLOAK_ID))
+          .thenReturn(Optional.empty())
+          .thenReturn(Optional.of(concurrentlyCreated));
+      when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+      when(userRepository.save(any())).thenThrow(new DuplicateKeyException("users_email_key"));
+      when(teamMemberRepository.findAllByUserId(USER_ID)).thenReturn(Collections.emptyList());
+
+      UserAuthentication result = (UserAuthentication) converter.convert(buildJwt(Map.of()));
+
+      assertThat(result.getPrincipal().getUserIdentifier()).isEqualTo(USER_SID.value());
+    }
+
+    @Test
+    @DisplayName("rejects token when insert races with a different identity taking the email")
+    void rejectsWhenRaceLostToDifferentIdentity() {
+      when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.empty());
+      when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+      when(userRepository.save(any()))
+          .thenThrow(new IntegrityConstraintViolationException("users_email_key"));
+
+      assertThatThrownBy(() -> converter.convert(buildJwt(Map.of())))
+          .isInstanceOf(InvalidBearerTokenException.class);
     }
   }
 
