@@ -229,7 +229,17 @@ class GbLeaseRegionRenderTest {
 
   @ParameterizedTest(name = "{0} fixedTerm={1}")
   @CsvSource(
-      value = {"ENG, true", "ENG, false", "SCT, true", "SCT, false", "NULL, true", "NULL, false"},
+      value = {
+        "ENG, true",
+        "ENG, false",
+        "WLS, true",
+        "WLS, false",
+        "SCT, true",
+        "SCT, false",
+        "NIR, true",
+        "NULL, true",
+        "NULL, false"
+      },
       nullValues = "NULL")
   @DisplayName("commercial term: fixed term with end date, or periodic tenancy")
   void commercialTerm(String region, boolean fixedTerm) {
@@ -247,7 +257,7 @@ class GbLeaseRegionRenderTest {
     }
     assertThat(html.contains("registered at HM Land Registry"))
         .as("Land Registry sentence only in England and Wales")
-        .isEqualTo("ENG".equals(region));
+        .isEqualTo("ENG".equals(region) || "WLS".equals(region));
   }
 
   @Test
