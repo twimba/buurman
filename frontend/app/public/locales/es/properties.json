@@ -234,7 +234,8 @@
     "editModal": "Editar Documento",
     "downloading": "Descargando...",
     "generated_one": "{{count}} archivo generado",
-    "generated_other": "{{count}} archivos generados"
+    "generated_other": "{{count}} archivos generados",
+    "generated_many": "{{count}} de archivos generados"
   },
   "photos": {
     "title": "Fotos",
