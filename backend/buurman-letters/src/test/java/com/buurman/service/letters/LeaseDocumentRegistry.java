@@ -1192,6 +1192,90 @@ public final class LeaseDocumentRegistry {
   // ===== IT entries (country pack) =====
   // Constants, citation pattern and foreign markers for IT go here, only inside these markers.
 
+  /**
+   * The Italian statute citation format: the article number after "art." / "artt." /
+   * "articolo/articoli" / "article(s)", with an optional Latin suffix: {@code art. 2, comma 1} /
+   * {@code article 2, paragraph 1}, {@code art. 4-bis}, {@code art. 447-bis}. The "comma" /
+   * "paragraph" digit that follows is the digit the gate pairs; a statute number such as "legge
+   * 431/1998" is not a token (no "art." before it) and is compared as plain digits, written the
+   * same way ("della legge 431/1998" / "of Law 431/1998") in both languages.
+   */
+  public static final Pattern ITALIAN_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|artt\\.|articol[oi]|articles?)\\s{1,20})\\d+(?:-(?:bis|ter|quater))?",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Italian marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> ITALIAN_MARKERS =
+      List.of(
+          "il locatore", "il conduttore", "vedi l'articolo", "ai sensi dell'art", "della legge");
+
+  /** Mirror of V104__seed_it_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry IT_RESIDENTIAL =
+      new Entry(
+          "IT",
+          LeaseKind.RESIDENTIAL,
+          "it",
+          List.of("it", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", true, false, 12),
+              new ClauseSpec("registration", false, false, 13),
+              new ClauseSpec("succession", false, false, 14),
+              new ClauseSpec("handover-inspection", false, false, 15),
+              new ClauseSpec("termination", true, false, 16),
+              new ClauseSpec("notices", false, false, 17),
+              new ClauseSpec("guarantor", false, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          ITALIAN_MARKERS,
+          Optional.of(ITALIAN_CITATION));
+
+  /** Mirror of V104__seed_it_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry IT_COMMERCIAL =
+      new Entry(
+          "IT",
+          LeaseKind.COMMERCIAL,
+          "it",
+          List.of("it", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("pre-emption", false, false, 14),
+              new ClauseSpec("goodwill-compensation", false, false, 15),
+              new ClauseSpec("insurance", false, false, 16),
+              new ClauseSpec("energy-certificate", true, false, 17),
+              new ClauseSpec("registration", false, false, 18),
+              new ClauseSpec("handover-inspection", false, false, 19),
+              new ClauseSpec("termination", true, false, 20),
+              new ClauseSpec("notices", false, false, 21),
+              new ClauseSpec("guarantor", false, false, 22),
+              new ClauseSpec("data-protection", false, false, 23),
+              new ClauseSpec("disputes", false, false, 24)),
+          ITALIAN_MARKERS,
+          Optional.of(ITALIAN_CITATION));
+
   // ===== end IT =====
 
   // ===== LU entries (country pack) =====
@@ -1295,6 +1379,8 @@ public final class LeaseDocumentRegistry {
     // ===== end IE ENTRIES =====
 
     // ===== IT ENTRIES (country pack) =====
+    entries.add(IT_RESIDENTIAL);
+    entries.add(IT_COMMERCIAL);
 
     // ===== end IT ENTRIES =====
 
