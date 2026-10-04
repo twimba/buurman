@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 
 export const LEGAL_DISCLAIMER_TEXT =
-  'NL residential clauses are draft legal text pending counsel review; other countries use placeholder text. Not vetted legal content.';
+  'Residential and commercial lease documents exist for every rent-regulation catalog country. They are draft legal text, not vetted by counsel. Other lease kinds still use placeholder text.';
 
 /** Standing notice (not an alert: it is static page context, not a status change). */
 export const LegalDisclaimer = ({ className = '' }: { className?: string }) => (
