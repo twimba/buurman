@@ -24,15 +24,15 @@ import com.buurman.domain.LeaseKind;
 /**
  * The CZ lease documents are English only: Czech is not a document language, so the English text is
  * a convenience text. The locator never marks it authoritative (courtesy notice at runtime) and the
- * documents themselves say that the text should be checked in Czech. The residential document
- * branches on the term (fixed: renewal under section 2285; indefinite: section 2204), the deposit
- * and the payment day; the commercial termination clause follows the term (sections 2308 to 2310
- * for a fixed term, section 2312 for an indefinite one).
+ * documents themselves say that they are drawn up and signed in English only. The residential
+ * document branches on the term (fixed: renewal under section 2285; indefinite: section 2204), the
+ * deposit and the payment day; the commercial termination clause follows the term (sections 2308 to
+ * 2310 for a fixed term, section 2312 for an indefinite one).
  */
 @DisplayName("CZ lease: English convenience text, term and termination branches")
 class CzLeaseRenderTest {
 
-  private static final String CONVENIENCE = "The English text is a convenience text";
+  private static final String ENGLISH_ONLY = "drawn up and signed in English only";
   private static final String DEPOSIT = "CZK 45,000.00";
   private static final String END_DATE = "31 October 2027";
 
@@ -127,8 +127,9 @@ class CzLeaseRenderTest {
     String html = render(kind, keys(leaseKind), false, true, Map.of());
     assertThat(html)
         .contains(messages.getMessage("lease.notice.courtesy", null, Locale.ENGLISH))
-        .contains(CONVENIENCE)
-        .contains("checked in Czech")
+        .contains(ENGLISH_ONLY)
+        .contains("checked by a person qualified in Czech law")
+        .contains("which version prevails")
         .doesNotContain("${");
   }
 
@@ -188,6 +189,84 @@ class CzLeaseRenderTest {
         .contains("notice period of 6 months")
         .contains("(section 2312 of the Civil Code)")
         .doesNotContain("section 2308");
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"residential", "commercial"})
+  @DisplayName(
+      "the language statement and the prevailing-version line survive a required-only render")
+  void languageStatementInRequiredParties(String kind) {
+    LeaseKind leaseKind = kind.equals("residential") ? LeaseKind.RESIDENTIAL : LeaseKind.COMMERCIAL;
+    List<String> required =
+        LeaseDocumentRegistry.find("CZ", leaseKind).orElseThrow().requiredClauseKeys();
+    String html = render(kind, required, false, true, Map.of());
+    assertThat(html).contains(ENGLISH_ONLY).contains("which version prevails");
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"residential", "commercial"})
+  @DisplayName("parties: named tenants are printed, else the signing tenants are referred to")
+  void partiesTenantNames(String kind) {
+    String named = render(kind, List.of("parties"), true, true, Map.of());
+    assertThat(named).contains("J. Novák").doesNotContain("the tenant or tenants signing below");
+    for (String empty : java.util.Arrays.asList(null, "")) {
+      Map<String, Object> noNames = new HashMap<>();
+      noNames.put("tenantNames", empty);
+      String html = render(kind, List.of("parties"), true, true, noNames);
+      assertThat(html).contains("the tenant or tenants signing below").doesNotContain("null");
+    }
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"residential", "commercial"})
+  @DisplayName("term: a fixed term without an end date prints the fill-in line and no end date")
+  void fixedTermWithoutEndDate(String kind) {
+    Map<String, Object> noEnd = new HashMap<>();
+    noEnd.put("endDate", null);
+    String html = render(kind, List.of("term"), true, true, noEnd);
+    assertThat(html)
+        .contains(
+            "fixed term (nájem na dobu určitou). Term, if it does not follow from the end date")
+        .doesNotContain(END_DATE)
+        .doesNotContain("and ends on <strong>");
+  }
+
+  @Test
+  @DisplayName("commercial deposit: an agreed deposit is printed, else a fill-in line; no cap")
+  void commercialDeposit() {
+    String set = render("commercial", List.of("deposit"), true, true, Map.of());
+    assertThat(set).contains(DEPOSIT).doesNotContain("do not agree a security deposit");
+    Map<String, Object> noDeposit = new HashMap<>();
+    noDeposit.put("depositAmount", null);
+    String unset = render("commercial", List.of("deposit"), true, true, noDeposit);
+    assertThat(unset)
+        .doesNotContain(DEPOSIT)
+        .contains("do not agree a security deposit (jistota)")
+        .contains("does not apply to this lease");
+  }
+
+  @Test
+  @DisplayName("commercial rent: the VAT suffix appears only when the VAT clause is included")
+  void commercialRentVatSuffix() {
+    String suffix = "exclusive of value added tax where the lease is taxable";
+    assertThat(render("commercial", List.of("rent", "vat"), true, true, Map.of())).contains(suffix);
+    assertThat(render("commercial", List.of("rent"), true, true, Map.of())).doesNotContain(suffix);
+  }
+
+  @Test
+  @DisplayName("commercial term: the renewal reading and its opt-out print only for a fixed term")
+  void commercialRenewalOptOut() {
+    String optOut = "[ ] The parties agree that the lease is not renewed in this way";
+    String fixed = render("commercial", List.of("term"), true, true, Map.of());
+    assertThat(fixed)
+        .contains(optOut)
+        .contains("under the prevailing reading of that section, section 2285")
+        .contains(END_DATE);
+    String indefinite = render("commercial", List.of("term"), true, false, Map.of());
+    assertThat(indefinite)
+        .doesNotContain(optOut)
+        .doesNotContain("section 2285")
+        .contains("indefinite term (nájem na dobu neurčitou)");
   }
 
   @Test

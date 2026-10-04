@@ -5,14 +5,14 @@
                the lease of business premises); version 19 in force from 01.01.2027 (Act No. 159/2026 Coll.)
                compared word for word on 2026-10-04: sections 2201 to 2331 unchanged. Sections used: 1970
                (late-payment interest), 2201 to 2234 (general provisions on lease: 2203, 2204, 2205, 2206, 2207,
-               2208, 2210, 2214, 2215, 2216, 2217, 2218, 2219, 2220, 2221, 2222, 2223, 2225, 2228, 2229, 2232),
+               2208, 2210, 2214, 2215, 2216, 2217, 2218, 2219, 2220, 2221, 2222, 2223, 2225, 2228, 2229, 2230, 2232),
                2285 (applied by 2311), 2302 to 2315 (lease of premises used for business, nájem prostoru sloužícího
                podnikání).
                Act No. 67/2013 Coll. on services connected with the use of flats and non-residential premises in a
                building with flats, version in force 01.01.2026: sections 1(2), 7, 8 (applied with section 2303 of
                the Civil Code).
                Act No. 235/2004 Coll. on value added tax (zákon č. 235/2004 Sb., o dani z přidané hodnoty), version
-               in force 01.01.2026: section 56a(1), (3) and (5).
+               in force 01.01.2026: section 56a(1), (2), (3) and (5).
                Act No. 406/2000 Coll. on energy management, version in force 01.08.2026: section 7a(2), (3), (4),
                (5) and (10).
                Government Regulation No. 351/2013 Coll. (late-payment interest), version in force 01.01.2026:
@@ -29,7 +29,8 @@
   translation: authoritative
   English is the only language of this document: Czech is not among the document languages of the application,
   and no Czech version exists. The runtime locator therefore shows the courtesy notice on this document, and the
-  text itself states that it is a convenience text to be checked in Czech. Czech legal terms are given in
+  text itself states that it is drawn up and signed in English only and should be checked by a person qualified in
+  Czech law. Czech legal terms are given in
   parentheses at first use. Draft text, not vetted by legal counsel. Reflects Czech law (lease of premises used
   for business), not the law of any other country; not for a lease of a flat or of premises used neither for
   housing nor for business (section 2302(2) of the Civil Code: general provisions only). Each clause-<key> fragment
@@ -63,11 +64,13 @@
     2234 of the Civil Code (Act No. 89/2012 Coll., občanský zákoník) (section 2302(1) of the Civil Code). The parties
     conclude this agreement in writing. Where the tenant consists of several persons, they are jointly and severally
     liable for all obligations of the tenant under this agreement.</p>
-  <p>Language: this agreement is drawn up in English only. The English text is a convenience text, not an official
-    translation, and no Czech version accompanies it; the Czech terms in parentheses are those of the Czech
-    statutes. The parties are advised to have the agreement checked in Czech by a person qualified in Czech law
-    before signing, and to sign a Czech version if they intend to rely on the agreement before Czech courts or
-    authorities, which may require a Czech translation.</p>
+  <p>Language: this agreement is drawn up and signed in English only; it is not a translation of a Czech original
+    and no Czech version exists. The Czech terms in parentheses are those of the Czech statutes. Czech courts and
+    authorities may require a Czech translation, as proceedings before them are conducted in Czech. The parties are
+    advised to have the agreement checked by a person qualified in Czech law before signing, or to sign a Czech
+    version as well.</p>
+  <p>If the parties also sign a Czech version of this agreement, they agree which version prevails in case of a
+    discrepancy: ______________________________</p>
 </div>
 
 <div th:fragment="clause-premises" data-clause="premises">
@@ -107,9 +110,10 @@
   <p th:if="${fixedTerm}">The lease is concluded for a fixed term (nájem na dobu určitou)<span
     th:if="${endDate != null}"> and ends on <strong th:text="${endDate}">end date</strong></span>. Term, if it does
     not follow from the end date: ______________________________</p>
-  <p th:if="${fixedTerm}">The provisions on the end of a fixed-term lease of a flat apply mutatis mutandis (section
-    2311 of the Civil Code): if the tenant continues to use the premises for at least 3 months after the day on which
-    the lease should have ended, and the landlord does not call on the tenant in that period, in writing, to leave
+  <p th:if="${fixedTerm}">Section 2311 of the Civil Code applies the provisions on the end of a fixed-term lease
+    of a flat mutatis mutandis; under the prevailing reading of that section, section 2285 of the Civil Code then
+    applies rather than the general rule of section 2230: if the tenant continues to use the premises for at least
+    3 months after the day on which the lease should have ended, and the landlord does not call on the tenant in that period, in writing, to leave
     the premises, the lease is deemed agreed again for the same term as before, but for no more than 2 years, unless
     the parties agree otherwise (section 2285 of the Civil Code).</p>
   <p th:if="${fixedTerm}">[ ] The parties agree that the lease is not renewed in this way and ends on the agreed
@@ -168,7 +172,7 @@
   <p>A landlord who is a VAT payer (plátce) may decide that the lease is a taxable supply where it lets the
     premises to another VAT payer, or to a person registered for VAT in another Member State under the conditions of
     section 56a(3) of that Act, for the purposes of their economic activity; this option is not available for
-    residential property (section 56a(5) of that Act).</p>
+    residential property as defined in section 56a(5) of that Act.</p>
   <p>The parties agree (tick 1 box):</p>
   <p>[ ] the lease is exempt from VAT;</p>
   <p>[ ] the landlord opts to tax the lease; the tenant pays VAT at the rate in force on the rent and on the
@@ -200,7 +204,8 @@
     to the landlord&rsquo;s account: ______________________________. This agreement departs from the default rule
     that rent is paid monthly in arrears (section 2218 of the Civil Code).</p>
   <p>If the tenant is late with a payment, the landlord may claim late-payment interest (úrok z prodlení) unless
-    the tenant is not responsible for the delay (section 1970 of the Civil Code); unless the parties agree
+    the tenant is not responsible for the delay, provided that the landlord has duly fulfilled its contractual
+    and statutory obligations (section 1970 of the Civil Code); unless the parties agree
     otherwise, its annual rate equals the repo rate of the Czech National Bank on the first day of the calendar
     period of 6 months (starting on 1 January or 1 July) in which the delay began, plus 8 percentage points (section
     2(1) of Government Regulation No. 351/2013 Coll.).</p>
@@ -300,7 +305,8 @@
 
 <div th:fragment="clause-termination" data-clause="termination">
   <p>The parties may end the lease at any time by written agreement. Notice of termination (výpověď) is given in
-    writing and must be delivered to the other party.</p>
+    writing and must be delivered to the other party. The parties agree that a notice period runs from the first
+    day of the calendar month following the month in which the notice was delivered.</p>
   <p th:if="${fixedTerm}">The tenant may terminate the fixed-term lease before the agreed term expires if (a) the
     tenant loses the capacity to carry on the activity for which the premises are intended; (b) the premises cease,
     for objective reasons, to be fit for the activity for which they were intended and the landlord does not provide
@@ -358,8 +364,6 @@
 <div th:fragment="clause-disputes" data-clause="disputes">
   <p>This agreement is governed by Czech law. The parties first try to settle disputes amicably; failing that, the
     competent Czech court decides.</p>
-  <p>If the parties also sign a Czech version of this agreement, they agree which version prevails in case of a
-    discrepancy: ______________________________</p>
   <p>Amendments to this agreement require written form.</p>
 </div>
 
