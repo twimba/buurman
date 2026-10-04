@@ -1,5 +1,6 @@
 package com.buurman.service.letters;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -17,9 +18,14 @@ import com.buurman.util.DocumentLanguages;
  *
  * <h2>Adding a country</h2>
  *
- * Add ONE {@link Entry} to {@link #ENTRIES}, next to the files, the seed migration and the bundle
- * keys; no test code changes. Example, a German residential lease in German (authoritative) and
- * English:
+ * Rule: a country pack edits ONLY inside its own {@code ===== <CC> =====} markers in this file and
+ * in the 13 bundles; this keeps parallel packs merge-clean. Constants, citation pattern and foreign
+ * markers go in the {@code <CC> entries (country pack)} block; the {@code entries.add(...)} lines
+ * go in the {@code <CC> ENTRIES} block of {@code buildEntries()}.
+ *
+ * <p>Add ONE {@link Entry} to {@link #ENTRIES}, next to the files, the seed migration and the
+ * bundle keys; no test code changes. Example, a German residential lease in German (authoritative)
+ * and English:
  *
  * <pre>{@code
  * new Entry(
@@ -565,18 +571,177 @@ public final class LeaseDocumentRegistry {
           PORTUGUESE_MARKERS,
           Optional.of(PORTUGUESE_CITATION));
 
-  /** Every shipped (country, kind); add new entries here. */
-  public static final List<Entry> ENTRIES =
-      List.of(
-          NL_RESIDENTIAL,
-          DE_RESIDENTIAL,
-          DE_COMMERCIAL,
-          FR_RESIDENTIAL,
-          FR_COMMERCIAL,
-          ES_RESIDENTIAL,
-          ES_COMMERCIAL,
-          PT_RESIDENTIAL,
-          PT_COMMERCIAL);
+  // ===== AT entries (country pack) =====
+  // Constants, citation pattern and foreign markers for AT go here, only inside these markers.
+
+  // ===== end AT =====
+
+  // ===== BE entries (country pack) =====
+  // Constants, citation pattern and foreign markers for BE go here, only inside these markers.
+
+  // ===== end BE =====
+
+  // ===== CA entries (country pack) =====
+  // Constants, citation pattern and foreign markers for CA go here, only inside these markers.
+
+  // ===== end CA =====
+
+  // ===== CH entries (country pack) =====
+  // Constants, citation pattern and foreign markers for CH go here, only inside these markers.
+
+  // ===== end CH =====
+
+  // ===== CZ entries (country pack) =====
+  // Constants, citation pattern and foreign markers for CZ go here, only inside these markers.
+
+  // ===== end CZ =====
+
+  // ===== DK entries (country pack) =====
+  // Constants, citation pattern and foreign markers for DK go here, only inside these markers.
+
+  // ===== end DK =====
+
+  // ===== FI entries (country pack) =====
+  // Constants, citation pattern and foreign markers for FI go here, only inside these markers.
+
+  // ===== end FI =====
+
+  // ===== GB entries (country pack) =====
+  // Constants, citation pattern and foreign markers for GB go here, only inside these markers.
+
+  // ===== end GB =====
+
+  // ===== GR entries (country pack) =====
+  // Constants, citation pattern and foreign markers for GR go here, only inside these markers.
+
+  // ===== end GR =====
+
+  // ===== IE entries (country pack) =====
+  // Constants, citation pattern and foreign markers for IE go here, only inside these markers.
+
+  // ===== end IE =====
+
+  // ===== IT entries (country pack) =====
+  // Constants, citation pattern and foreign markers for IT go here, only inside these markers.
+
+  // ===== end IT =====
+
+  // ===== LU entries (country pack) =====
+  // Constants, citation pattern and foreign markers for LU go here, only inside these markers.
+
+  // ===== end LU =====
+
+  // ===== NL-COMMERCIAL entries (country pack) =====
+  // Constants, citation pattern and foreign markers for NL-COMMERCIAL go here, only inside these
+  // markers.
+
+  // ===== end NL-COMMERCIAL =====
+
+  // ===== NO entries (country pack) =====
+  // Constants, citation pattern and foreign markers for NO go here, only inside these markers.
+
+  // ===== end NO =====
+
+  // ===== PL entries (country pack) =====
+  // Constants, citation pattern and foreign markers for PL go here, only inside these markers.
+
+  // ===== end PL =====
+
+  // ===== SE entries (country pack) =====
+  // Constants, citation pattern and foreign markers for SE go here, only inside these markers.
+
+  // ===== end SE =====
+
+  // ===== US entries (country pack) =====
+  // Constants, citation pattern and foreign markers for US go here, only inside these markers.
+
+  // ===== end US =====
+
+  /** Every shipped (country, kind); a country pack adds its entries inside its own markers. */
+  public static final List<Entry> ENTRIES = buildEntries();
+
+  private static List<Entry> buildEntries() {
+    List<Entry> entries = new ArrayList<>();
+    entries.add(NL_RESIDENTIAL);
+    entries.add(DE_RESIDENTIAL);
+    entries.add(DE_COMMERCIAL);
+    entries.add(FR_RESIDENTIAL);
+    entries.add(FR_COMMERCIAL);
+    entries.add(ES_RESIDENTIAL);
+    entries.add(ES_COMMERCIAL);
+    entries.add(PT_RESIDENTIAL);
+    entries.add(PT_COMMERCIAL);
+
+    // ===== AT ENTRIES (country pack) =====
+
+    // ===== end AT ENTRIES =====
+
+    // ===== BE ENTRIES (country pack) =====
+
+    // ===== end BE ENTRIES =====
+
+    // ===== CA ENTRIES (country pack) =====
+
+    // ===== end CA ENTRIES =====
+
+    // ===== CH ENTRIES (country pack) =====
+
+    // ===== end CH ENTRIES =====
+
+    // ===== CZ ENTRIES (country pack) =====
+
+    // ===== end CZ ENTRIES =====
+
+    // ===== DK ENTRIES (country pack) =====
+
+    // ===== end DK ENTRIES =====
+
+    // ===== FI ENTRIES (country pack) =====
+
+    // ===== end FI ENTRIES =====
+
+    // ===== GB ENTRIES (country pack) =====
+
+    // ===== end GB ENTRIES =====
+
+    // ===== GR ENTRIES (country pack) =====
+
+    // ===== end GR ENTRIES =====
+
+    // ===== IE ENTRIES (country pack) =====
+
+    // ===== end IE ENTRIES =====
+
+    // ===== IT ENTRIES (country pack) =====
+
+    // ===== end IT ENTRIES =====
+
+    // ===== LU ENTRIES (country pack) =====
+
+    // ===== end LU ENTRIES =====
+
+    // ===== NL-COMMERCIAL ENTRIES (country pack) =====
+
+    // ===== end NL-COMMERCIAL ENTRIES =====
+
+    // ===== NO ENTRIES (country pack) =====
+
+    // ===== end NO ENTRIES =====
+
+    // ===== PL ENTRIES (country pack) =====
+
+    // ===== end PL ENTRIES =====
+
+    // ===== SE ENTRIES (country pack) =====
+
+    // ===== end SE ENTRIES =====
+
+    // ===== US ENTRIES (country pack) =====
+
+    // ===== end US ENTRIES =====
+
+    return List.copyOf(entries);
+  }
 
   /** The entry for a country and kind. */
   public static Optional<Entry> find(String countryCode, LeaseKind kind) {
