@@ -120,7 +120,7 @@ public class LeasePreviewService {
     // Clause keys can only be checked against templates, so an unavailable country (no templates)
     // answers before this point and ignores them.
     List<LeaseClauseResolver.ClauseOverride> overrides =
-        toOverrides(request.clauses(), plan.templates());
+        toOverrides(Optional.ofNullable(request.clauses()).orElse(List.of()), plan.templates());
     LeaseAgreementExporter.AssembledLease assembled =
         exporter.assembleWithOverrides(
             plan, toRenderInput(request.sample(), plan.locale()), overrides);

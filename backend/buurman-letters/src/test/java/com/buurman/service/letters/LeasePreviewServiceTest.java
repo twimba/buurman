@@ -638,6 +638,17 @@ class LeasePreviewServiceTest {
   }
 
   @Test
+  @DisplayName("omitted clauses (null) behave like an empty list: every template keeps its default")
+  void nullClausesKeepTemplateDefaults() {
+    LeaseAgreementPreviewResponse withNull =
+        service.preview(request("NL", LeaseKind.RESIDENTIAL, "nl", null));
+    LeaseAgreementPreviewResponse withEmpty = service.preview(nl());
+
+    assertThat(withNull.availability()).isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+    assertThat(withNull.clauses()).isNotEmpty().isEqualTo(withEmpty.clauses());
+  }
+
+  @Test
   @DisplayName("a furnished request falls back to the residential templates")
   void furnishedFallsBackToResidential() {
     LeaseAgreementPreviewResponse r =
