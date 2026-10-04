@@ -645,6 +645,85 @@ public final class LeaseDocumentRegistry {
   // ===== PL entries (country pack) =====
   // Constants, citation pattern and foreign markers for PL go here, only inside these markers.
 
+  /**
+   * The Polish statute citation format: the article number after "art." / "article(s)": {@code art.
+   * 688 § 1 k.c.} / {@code Article 688 § 1 of the Civil Code}, {@code art. 6 ust. 1 u.o.p.l.} /
+   * {@code Article 6, paragraph 1, of the Tenant Protection Act}, {@code art. 8a ust. 4} / {@code
+   * Article 8a, paragraph 4}, {@code art. 688¹} / {@code Article 688¹}. Only the digits are the
+   * token, so a letter or superscript suffix ("8a", "688¹") is skipped before the paragraph digit
+   * after "§" / "ust." / "paragraph" that the gate pairs; "art." / "Article" is repeated before
+   * every article number in both languages ("art. 19a i art. 19f" / "Article 19a and Article 19f").
+   */
+  public static final Pattern POLISH_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|articles?)\\s{1,20})\\d+",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Polish marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> POLISH_MARKERS =
+      List.of("wynajmujący", "najemca", "najemcy", "zgodnie z", "zob. artykuł", "niniejsza umowa");
+
+  /** Mirror of V107__seed_pl_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry PL_RESIDENTIAL =
+      new Entry(
+          "PL",
+          LeaseKind.RESIDENTIAL,
+          "pl",
+          List.of("pl", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("succession", false, false, 14),
+              new ClauseSpec("termination", true, false, 15),
+              new ClauseSpec("notices", false, false, 16),
+              new ClauseSpec("data-protection", false, false, 17),
+              new ClauseSpec("disputes", false, false, 18)),
+          POLISH_MARKERS,
+          Optional.of(POLISH_CITATION));
+
+  /** Mirror of V107__seed_pl_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry PL_COMMERCIAL =
+      new Entry(
+          "PL",
+          LeaseKind.COMMERCIAL,
+          "pl",
+          List.of("pl", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("enforcement-submission", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("notices", false, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          POLISH_MARKERS,
+          Optional.of(POLISH_CITATION));
+
   // ===== end PL =====
 
   // ===== SE entries (country pack) =====
@@ -729,6 +808,8 @@ public final class LeaseDocumentRegistry {
     // ===== end NO ENTRIES =====
 
     // ===== PL ENTRIES (country pack) =====
+    entries.add(PL_RESIDENTIAL);
+    entries.add(PL_COMMERCIAL);
 
     // ===== end PL ENTRIES =====
 
