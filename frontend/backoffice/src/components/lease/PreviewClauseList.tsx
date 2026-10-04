@@ -16,6 +16,8 @@ interface PreviewClauseListProps {
   /** Disables every control (e.g. while the clause list is stale). */
   disabled?: boolean;
   focusRequest?: FocusRequest | null;
+  /** Called once the requested focus has been applied. */
+  onFocusApplied?: () => void;
 }
 
 const MOVE_BUTTON =
@@ -28,6 +30,7 @@ export const PreviewClauseList = ({
   onMove,
   disabled = false,
   focusRequest = null,
+  onFocusApplied,
 }: PreviewClauseListProps) => {
   const listRef = useRef<HTMLUListElement>(null);
   useEffect(() => {
@@ -37,8 +40,9 @@ export const PreviewClauseList = ({
           `[data-move="${focusRequest.clauseKey}:${focusRequest.button}"]`
         )
         ?.focus();
+      onFocusApplied?.();
     }
-  }, [focusRequest]);
+  }, [focusRequest, onFocusApplied]);
   return (
     <ul
       ref={listRef}

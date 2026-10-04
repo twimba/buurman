@@ -22,6 +22,7 @@ import {
 import { MAX_UI_TENANTS, buildPreviewRequest } from '../lib/leasePreviewForm';
 import type { PreviewForm } from '../lib/leasePreviewForm';
 import { decodePreviewForm, encodePreviewForm } from '../lib/leasePreviewUrl';
+import { shouldWriteUrl } from '../lib/leasePreviewUrlSync';
 import {
   deriveWarnings,
   previewErrorMessage,
@@ -89,23 +90,41 @@ export const LeaseAgreementPreviewPage = () => {
   const [choices, setChoices] = useState<LeasePreviewClauseChoice[] | null>(
     null
   );
-  const writtenQuery = useRef(searchParams.toString());
+  const [initialQuery] = useState(() => encodePreviewForm(form).toString());
+  const lastWritten = useRef(initialQuery);
+  const lastSeenDebounced = useRef(initialQuery);
   useEffect(() => {
     const query = searchParams.toString();
-    if (query !== writtenQuery.current) {
-      writtenQuery.current = query;
-      setForm(decodePreviewForm(searchParams));
+    if (query !== lastWritten.current) {
+      const navigated = decodePreviewForm(searchParams);
+      lastWritten.current = encodePreviewForm(navigated).toString();
+      setForm(navigated);
       setChoices(null);
     }
   }, [searchParams]);
   const debouncedForm = useDebouncedValue(form, DEBOUNCE_MS);
+  const setSearchParamsRef = useRef(setSearchParams);
+  const urlQueryRef = useRef(searchParams.toString());
   useEffect(() => {
-    const query = encodePreviewForm(debouncedForm).toString();
-    if (query !== writtenQuery.current) {
-      writtenQuery.current = query;
-      setSearchParams(new URLSearchParams(query), { replace: true });
+    setSearchParamsRef.current = setSearchParams;
+    urlQueryRef.current = searchParams.toString();
+  });
+  useEffect(() => {
+    const encodedDebounced = encodePreviewForm(debouncedForm).toString();
+    const write = shouldWriteUrl({
+      encodedDebounced,
+      lastSeenDebounced: lastSeenDebounced.current,
+      lastWritten: lastWritten.current,
+      currentUrlQuery: urlQueryRef.current,
+    });
+    lastSeenDebounced.current = encodedDebounced;
+    if (write) {
+      lastWritten.current = encodedDebounced;
+      setSearchParamsRef.current(new URLSearchParams(encodedDebounced), {
+        replace: true,
+      });
     }
-  }, [debouncedForm, setSearchParams]);
+  }, [debouncedForm]);
 
   const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
 
@@ -151,6 +170,9 @@ export const LeaseAgreementPreviewPage = () => {
 
   const data = preview.data;
   const stale = preview.isPlaceholderData;
+  // Waiting for the first clause list of a newly chosen country/kind (not just an invalid form).
+  const loadingScope =
+    base.scope !== scope(form) && built.ok && !preview.isError;
   const settledScope = scope(settled.form);
   if (
     data &&
@@ -423,14 +445,17 @@ export const LeaseAgreementPreviewPage = () => {
           </Section>
 
           <Section title="Clauses">
-            {clauses.length === 0 ? (
+            {loadingScope ? (
+              <p className="text-sm text-text-muted">Loading clauses…</p>
+            ) : clauses.length === 0 ? (
               <p className="text-sm text-text-muted">
                 No clauses for this selection.
               </p>
             ) : (
               <PreviewClauseList
                 clauses={clauses}
-                disabled={stale}
+                disabled={loadingScope}
+                onFocusApplied={() => setFocusRequest(null)}
                 focusRequest={focusRequest}
                 onToggle={(key) => changeClauses(toggleClause(clauses, key))}
                 onMove={moveAndFocus}
