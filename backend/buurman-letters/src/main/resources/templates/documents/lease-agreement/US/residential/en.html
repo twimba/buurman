@@ -1,0 +1,864 @@
+<!--
+  legal-basis: United States residential tenancy law is state and local law; federal law adds disclosures and
+               anti-discrimination rules. The state is read from the contract region (catalog codes: 2-letter
+               state codes such as CA, NY, OR, DC and city or county forms such as NJ-HOBOKEN or MN-STPAUL,
+               whose first 2 letters are the state). State-specific text is written for CA, DC, MA, MD, ME,
+               MN, NJ, NY, OR and WA (the states of the rent-regulation catalog plus Washington); for any
+               other or an unknown state a general text is printed that tells the parties to check the law
+               of the state, county and city in which the dwelling is located.
+               Federal: Residential Lead-Based Paint Hazard Reduction Act of 1992, 42 U.S.C. § 4852d, and
+               40 CFR Part 745 Subpart F (§ 745.101 exemptions, § 745.103 target housing and 0-bedroom
+               dwelling, § 745.107 disclosure before the lessee is obligated, § 745.113(b) Lead Warning
+               Statement for lessors, § 745.113(c) 3-year retention; eCFR as of 2026-09-01, amended
+               89 FR 89458, 12 November 2024). Fair Housing Act, 42 U.S.C. § 3604 (incl. § 3604(f)(3)(A)
+               reasonable modifications and § 3604(f)(3)(B) reasonable accommodations). Servicemembers Civil
+               Relief Act, 50 U.S.C. § 3955 (lease termination, notice with orders, effective date for
+               monthly rent, no early termination charge, refund within 30 days). E-SIGN Act, 15 U.S.C.
+               § 7001(a) and § 7003(b)(2)(B) (notices of default, eviction or right to cure under a rental
+               agreement for a primary residence excluded).
+               California: Civil Code § 1950.5 (as amended by AB 414, Stats. 2025 ch. 340, in force
+               1 January 2026: (c)(1) 1 month's rent, (c)(5) 2 months for a landlord meeting both conditions,
+               not for a service member, (c)(6) security collected before 1 July 2024, (f) initial
+               inspection, (g) photographs, (h)(1) 21 days); § 1946.1 (60 / 30 days); § 1946.2 (just cause
+               after 12 months, 24-month rule, (d) relocation assistance of 1 month's rent, (e) exemptions,
+               (f)(3) notice text); § 1947.12 (5% plus CPI or 10%, whichever is lower, over 12 months,
+               2 increments, (d) exemptions, (d)(5)(B)(i) exemption notice text; repealed 1 January 2030);
+               § 827(b) (30 / 90 days); § 1953 (void waivers); § 1954 (entry, 24 hours, 6 days if mailed);
+               § 1954.603 (bed bug notice); § 1962 (owner and manager disclosure, copy within 15 days);
+               § 2079.10a(a)(3) (Megan's Law notice text); § 1632(b)(3) (translation); § 1717 (reciprocal
+               attorney's fees); Government Code § 8589.45 (flood disclosure); Health and Safety Code § 26147
+               (mold disclosure). Texts read on california.public.law (mirror of leginfo.legislature.ca.gov,
+               verified 28 September 2026) and § 1950.5 / § 1947.12 directly on leginfo.legislature.ca.gov.
+               New York: General Obligations Law § 7-108 (1-a)(a) 1 month, (c)-(e) inspections and 14 days;
+               Real Property Law § 238-a (late fee after 5 days, USD 50 or 5%, whichever is less; screening
+               fee USD 20), § 226-c (30 / 60 / 90 days), § 235-e (receipts, 5-day certified-mail notice),
+               § 231-a (sprinkler notice), § 231-b (flood disclosure and notice text), § 235-b (warranty of
+               habitability), § 234 (reciprocal attorney's fees), Article 6-A Good Cause Eviction Law
+               (§ 211 local rent standard, § 212 New York City, § 216 grounds and rent presumption);
+               nysenate.gov.
+               Massachusetts: G.L. c. 186 § 15B as amended by St. 2025 c. 9 (in force 1 August 2025) ((1)(a)
+               entry, (1)(b) first month, last month, deposit equal to the first month's rent, lock cost,
+               (1)(c) 30 days, (2)(c) statement of condition, (3)(a) bank account and receipt within 30 days,
+               (3)(b) 5% interest, (4) 30 days); c. 186 § 12 (notice to quit); c. 111 § 197 (lead);
+               malegislature.gov (Wayback Machine copy of 28 September 2026).
+               District of Columbia: D.C. Code § 42-3502.08(h) (rent stabilization), § 42-3502.17 (as amended
+               by D.C. Law 26-156, 14 August 2026), § 42-3505.01(a) (eviction only as provided),
+               § 42-3505.31 (late fee 5%, 5 days), § 42-3509.04(b) (60 days); code.dccouncil.gov.
+               Maryland: Real Property §§ 8-203 (1 month, 45 days, interest), 8-208(c) and (d) (lease
+               contents, 5% late penalty, prohibited provisions); mgaleg.maryland.gov.
+               Maine: 14 M.R.S. §§ 6002, 6025, 6028, 6030-D, 6032, 6033 (legislature.maine.gov, data
+               extracted 20 October 2025).
+               Minnesota: Minn. Stat. §§ 504B.135, 504B.161, 504B.177, 504B.178, 504B.182, 504B.195,
+               504B.211 (revisor.mn.gov, 2025 Statutes).
+               New Jersey: N.J.S.A. 46:8-19, 46:8-21.1, 46:8-21.2, 46:8-44 to 46:8-46, 46:8-50, 2A:42-6.1,
+               2A:18-61.1, 2A:18-61.2, as described in the Department of Community Affairs guide "Truth in
+               Renting" (nj.gov, revised 4 August 2025); the statutes themselves were not reachable.
+               Oregon: ORS 90.228, 90.260, 90.300, 90.316, 90.322, 90.323, 90.324, 90.427
+               (oregon.public.law mirror of oregonlegislature.gov, accessed May 2025 by the mirror).
+               Washington: RCW 59.18.060, 59.18.140, 59.18.150, 59.18.170, 59.18.200, 59.18.260, 59.18.270,
+               59.18.280, 59.18.283, 59.18.285, 59.18.650, 59.18.700, 59.18.710, 59.18.720 (2025 c 209,
+               HB 1217, in force 7 May 2025; app.leg.wa.gov).
+               Sources consulted 2026-10-04; provisions not re-read on that date and rules stated only
+               generally are listed as unverified in the pack report.
+               Pending: California Civil Code § 1947.12 is repealed on 1 January 2030; RCW 59.18.700 to
+               59.18.720 expire on 1 July 2040; New York Real Property Law § 226-c changes after 15 June 2034
+               (Article 6-A version); local rent stabilization ordinances change yearly.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("30 days' notice", never "thirty days"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (United States); there is no translation. Draft text, not
+  vetted by legal counsel: a general form that does not claim to be valid in any state. Reflects the
+  residential tenancy law of the United States (federal law and the law of the states named above), not the law
+  of any other country. Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded; they sit
+  outside the state branches so that they render for every state. Never hard-code article numbers of this
+  agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This residential lease agreement is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;.</p>
+  <p>Where the tenant consists of several persons, each of them is jointly and severally liable for all
+    obligations of the tenant under this agreement.</p>
+  <p>Person authorized to manage the dwelling, with telephone number and street address:
+    ______________________________</p>
+  <p>Owner, or person authorized to act for the owner for service of process and for receiving notices and
+    demands, with telephone number and street address: ______________________________</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California these disclosures, the name, telephone number and address of the
+      person to whom rent is paid and the forms of payment are required by Civil Code &sect; 1962, and the
+      landlord gives the tenant a copy of this agreement within 15 days of its execution by the tenant.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the dwelling at <strong th:text="${propertyAddress}">address</strong>,
+    together with the appliances, furnishings and any parking or storage spaces listed here:
+    ______________________________, hereinafter &ldquo;the dwelling&rdquo;. The dwelling is let for use as
+    the tenant&rsquo;s residence.</p>
+  <p>Landlord-tenant law in the United States is mainly the law of the state, and in many places also of the
+    county or city, in which the dwelling is located; federal law adds disclosure and anti-discrimination
+    rules. This agreement is a general form. Where a statute or ordinance that cannot be waived by agreement
+    conflicts with this agreement, the statute or ordinance prevails, and the parties must check the law that
+    is in force when they sign and while the tenancy lasts.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${{'CA','DC','MA','MD','ME','MN','NJ','NY','OR','WA'}.contains(st)}">This agreement sets out
+      selected rules of the state (or of the District of Columbia) in which the dwelling is located; it does
+      not set out county or city ordinances, which may give the tenant further protection.</p>
+    <p th:unless="${{'CA','DC','MA','MD','ME','MN','NJ','NY','OR','WA'}.contains(st)}">The rules of the
+      state in which the dwelling is located are not set out in this agreement. The parties must check them,
+      in particular the limits on security deposits and late fees, the notice periods for rent increases and
+      for ending the tenancy, any just-cause or rent-stabilization rules and the disclosures that state law
+      requires.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The tenancy is for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>. If the tenant remains in possession after the end
+    of the fixed term with the landlord&rsquo;s consent and no new agreement is made, the tenancy continues
+    from month to month on the terms of this agreement, unless the law of the state provides
+    otherwise.</p>
+  <p th:if="${!fixedTerm}">The tenancy is periodic (month-to-month) and continues from period to
+    period until it is ended in accordance with this agreement and the law of the state.</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">In several states the landlord
+    may not end the tenancy, or refuse to renew it, without a cause that the law recognizes, even at the end
+    of a fixed term (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Utilities are dealt with separately (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Rent discounts, incentives, concessions or credits, if any, separately from the rent stated above:
+    ______________________________</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">Where Civil Code &sect; 1947.12 applies, the gross per-month rental rate and any
+      discounts, incentives, concessions or credits offered by the owner must be separately listed and
+      identified in this agreement (Civil Code &sect; 1947.12, subdivision (a)(1)).</p>
+    <p th:if="${st == 'WA'}">In Washington, the landlord may not charge more than a 5% difference in rent for
+      this dwelling depending on whether the agreement is month-to-month or for a specified period, and may
+      not make the terms of payment or other material conditions more burdensome for 1 type of agreement
+      than for the other (RCW 59.18.700, subsection (4)).</p>
+  </th:block>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by article <span th:text="${refs['rent-adjustment']}"></span>.</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>During a fixed term the rent may be changed only by written agreement of the parties. During a periodic
+    (month-to-month) tenancy the landlord may change the rent by written notice served in the manner and with
+    the notice period that the law of the state requires, and only within any limit that state or local law
+    sets.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>Where Civil Code &sect; 1947.12 applies (it does not apply, among others, to housing issued a
+        certificate of occupancy within the previous 15 years, to certain separately alienable dwellings
+        whose owner is not a real estate investment trust, a corporation or a limited liability company with
+        a corporate member and who has given the tenant the statutory exemption notice, and to the other
+        housing listed in subdivision (d) of that section), the owner may not, over any 12-month period,
+        increase the gross rental rate by more than 5% plus the percentage change in the cost of living, or
+        10%, whichever is lower, of the lowest gross rental rate charged for the dwelling at any time during
+        the 12 months before the effective date of the increase, and not in more than 2 increments over that
+        period. That section is repealed on 1 January 2030. A local rent ordinance may set a lower
+        limit.</p>
+      <p>For a periodic tenancy, notice of an increase of 10% or less (counting all increases in the 12 months
+        before its effective date) must be delivered at least 30 days before the increase takes effect, and
+        notice of a greater increase at least 90 days before, except that 30 days apply where the increase is
+        caused by a change in the tenant&rsquo;s income or family composition determined by a recertification
+        required by statute or regulation (Civil Code &sect; 827, subdivision (b)); service
+        by mail extends these periods as the Code of Civil Procedure provides.</p>
+    </th:block>
+    <th:block th:if="${st == 'OR'}">
+      <p>In Oregon, during a tenancy other than week-to-week, the landlord may not increase the rent during the
+        first year of the tenancy, may not increase it more than once in any 12-month period, must give the
+        tenant written notice at least 90 days before the effective date stating the amount of the increase,
+        the new rent and the effective date, and may not increase it by more than the maximum percentage that
+        the Oregon Department of Administrative Services publishes each year as the lesser of 10% or 7% plus
+        the consumer price index change set out in ORS 90.324 (ORS 90.323, subsection (2)). The percentage
+        limit does not apply where the first certificate of occupancy was issued less than 15 years before the
+        date of the notice, or to certain regulated affordable housing under the conditions of ORS 90.323,
+        subsection (5).</p>
+    </th:block>
+    <th:block th:if="${st == 'WA'}">
+      <p>In Washington, unless an exemption of RCW 59.18.710 applies (for example a dwelling whose first
+        certificate of occupancy was issued 12 or fewer years before the date of the notice), the landlord may
+        not increase the rent during the first 12 months of the tenancy, nor during any 12-month period by more
+        than 7% plus the consumer price index, or 10%, whichever is less (RCW 59.18.700, subsection (1)). The
+        landlord must give each affected tenant at least 90 days&rsquo; prior written notice of any increase,
+        in the form prescribed by RCW 59.18.720, and an increase may not take effect before the end of the
+        term of the rental agreement (RCW 59.18.140, subsection (3)); for a subsidized tenancy whose rent is
+        based on the income of the tenant or other circumstances specific to the subsidized household, the
+        notice period is 30 days. These rules expire on 1 July 2040.</p>
+    </th:block>
+    <th:block th:if="${st == 'NY'}">
+      <p>In New York, if the landlord intends to renew the tenancy with a rent increase of 5% or more, the
+        landlord must give written notice at least 30 days before, where the tenant has occupied the dwelling
+        for less than 1 year and the lease term is less than 1 year; at least 60 days before, where the
+        occupancy or the lease term is at least 1 year but less than 2 years; and at least 90 days before,
+        where the occupancy or the lease term is at least 2 years (Real Property Law &sect; 226-c). Without
+        timely notice the tenancy continues under the existing terms until the notice period has run.</p>
+      <p>Where the dwelling is covered by the Good Cause Eviction Law (Real Property Law Article 6-A, which
+        applies in New York City and in localities that adopt it, with the exemptions of that Article, for
+        example for small landlords), a rent increase in a calendar year greater than the local rent standard
+        (5% plus the annual change in the consumer price index, or 10%, whichever is lower) is presumed to be
+        unreasonable, a presumption the landlord may rebut on the grounds listed in Real Property Law
+        &sect; 216. Rent-stabilized and rent-controlled apartments are governed by their own rules and
+        orders.</p>
+    </th:block>
+    <th:block th:if="${st == 'DC'}">
+      <p>In the District of Columbia, for a rental unit subject to the rent stabilization program of the Rental
+        Housing Act of 1985, an increase in the rent charged for an occupied unit may not exceed the adjustment
+        of general applicability plus 2%, and never more than 10%; for a unit occupied by an elderly tenant
+        or a tenant with a disability, D.C. Code &sect; 42-3502.24 applies instead (D.C. Code &sect;
+        42-3502.08, subsection (h)). A rent increase does not
+        take effect until the first day on which rent is normally paid that occurs more than 60 days after the
+        notice of the increase is given to the tenant (D.C. Code &sect; 42-3509.04, subsection (b)).</p>
+    </th:block>
+    <th:block th:if="${st == 'NJ'}">
+      <p>New Jersey has no statewide limit on rent increases, but many municipalities have rent control
+        ordinances. A tenant covered by the Anti-Eviction Act may be evicted for failing to pay a rent increase
+        only if the increase is not unconscionable, complies with any applicable rent control ordinance and was
+        preceded by the required notice (N.J.S.A. 2A:18-61.1).</p>
+    </th:block>
+    <th:block th:if="${st == 'MD'}">
+      <p>Maryland has no statewide limit on rent increases; county or city rent stabilization laws may apply,
+        for example in Montgomery County, Prince George&rsquo;s County and Takoma Park.</p>
+    </th:block>
+    <th:block th:if="${st == 'ME'}">
+      <p>Maine has no statewide limit on rent increases; a city ordinance may apply, for example the rent
+        control ordinance of the City of Portland.</p>
+    </th:block>
+    <th:block th:if="${st == 'MN'}">
+      <p>Minnesota has no statewide limit on rent increases; a city ordinance may apply, for example the rent
+        stabilization ordinance of the City of Saint Paul.</p>
+    </th:block>
+    <p th:unless="${{'CA','OR','WA','NY','DC','NJ','MD','ME','MN'}.contains(st)}">Some states and cities
+      limit the amount or frequency of rent increases (for example California, Oregon and Washington
+      statewide, and rent-stabilized housing in New York and the District of Columbia); where such a limit
+      applies to the dwelling, it prevails over this agreement.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Utilities and services paid by the landlord: ______________________________</p>
+  <p>Utilities and services paid by the tenant directly to the provider: ______________________________</p>
+  <p>Utilities or other charges billed by the landlord to the tenant, with the amount or the method of
+    calculation: ______________________________</p>
+  <p>The landlord may charge the tenant only fees and charges that are stated in this agreement and permitted
+    by the law of the state; a fee that is not refundable must be stated as non-refundable.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'WA'}">In Washington, money paid as a non-refundable fee may not be designated as a
+      deposit, and a fee that this agreement does not clearly specify as non-refundable is treated as a
+      refundable deposit (RCW 59.18.285).</p>
+    <p th:if="${st == 'NY'}">In New York, apart from the fees that the Real Property Law permits (such as a
+      background and credit check fee of no more than the actual cost or USD 20, whichever is less, under
+      &sect; 238-a), no fee may be demanded for processing, reviewing or accepting an application.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays the landlord a security deposit of
+    <strong th:text="${depositAmount}">amount</strong> on or before the start of the tenancy.</p>
+  <p th:if="${depositAmount == null}">The tenant pays the landlord a security deposit of the amount agreed
+    between the parties: ______________________________, on or before the start of the tenancy.</p>
+  <p>The deposit secures the performance of the tenant&rsquo;s obligations. The landlord may deduct from it
+    only unpaid rent and other amounts that the tenant owes under this agreement, the reasonable cost of
+    repairing damage caused by the tenant, the tenant&rsquo;s household or guests beyond ordinary wear and
+    tear, and other amounts that the law of the state permits; it may not be used for ordinary wear and tear.
+    The landlord returns the deposit, or the balance with an itemized statement of the deductions, within the
+    period and in the manner that the law of the state requires.</p>
+  <p>Where the law of the state limits the amount of the deposit and the amount stated above exceeds that
+    limit, the landlord may not demand or receive the excess, and any excess received is returned to the
+    tenant.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>In California the landlord may not demand or receive security, however denominated, of more than
+        1 month&rsquo;s rent in addition to the rent for the first month (Civil Code &sect; 1950.5, subdivision
+        (c)(1)). A landlord that is a natural person, or a limited liability company all of whose members are
+        natural persons, and that owns no more than 2 residential rental properties that together include no
+        more than 4 dwelling units offered for rent, may receive up to 2 months&rsquo; rent, except where the
+        prospective tenant is a service member (subdivision (c)(5)); these limits do not apply to security
+        collected before 1 July 2024 (subdivision (c)(6)).</p>
+      <p>No later than 21 calendar days after the tenant has vacated the dwelling, the landlord furnishes an
+        itemized statement of the deductions, with the supporting documents that the section requires, and
+        returns the remaining security (Civil Code &sect; 1950.5, subdivision (h)); where the landlord received
+        the security or the rent electronically, the remainder is returned electronically as that subdivision
+        provides unless the parties agree otherwise in writing.</p>
+    </th:block>
+    <p th:if="${st == 'NY'}">In New York, a deposit or advance may not exceed the amount of 1 month&rsquo;s
+      rent, subject to the exceptions of General Obligations Law &sect; 7-108, subdivision 1-a. Within 14 days
+      after the tenant has vacated the dwelling, the landlord provides an itemized statement of any amount
+      retained and returns the rest; a landlord that does not do so forfeits the right to retain any part of
+      the deposit (subdivision 1-a, paragraph (e)).</p>
+    <th:block th:if="${st == 'MA'}">
+      <p>In Massachusetts, at or before the start of the tenancy the landlord, or an agent of the landlord, may
+        not require the tenant to pay to the landlord or the agent more than the rent for the first full month,
+        the rent for the last full month at the same rate, a security deposit equal to the first month&rsquo;s
+        rent and the purchase and installation cost of a key and lock (G.L. c. 186, &sect; 15B, subsection
+        (1)(b)).</p>
+      <p>The landlord holds the deposit in a separate, interest-bearing account in a bank located within
+        Massachusetts and gives the tenant, within 30 days after receiving it, a receipt naming the bank and
+        its location, the amount and the account number (subsection (3)(a)). Where the deposit is held for 1
+        year or longer, the landlord pays interest at 5% per year, or the lower amount received from the bank,
+        at the end of each year of the tenancy (subsection (3)(b)). The landlord returns the deposit or its
+        balance within 30 days after the end of the tenancy, with the sworn itemized list of damage and the
+        written evidence of cost that subsection (4) requires for any deduction for damage.</p>
+    </th:block>
+    <th:block th:if="${st == 'MD'}">
+      <p>In Maryland the deposit may not exceed the equivalent of 1 month&rsquo;s rent per dwelling unit,
+        regardless of the number of tenants, except that it may be up to 2 months&rsquo; rent where the tenant
+        has qualified for utility assistance through the Department of Human Services, this agreement requires
+        the tenant to pay for utility services directly to the landlord and the parties agree in writing to the
+        amount (Real Property &sect; 8-203, subsection (b)). The landlord may not require more than the deposit
+        and the first month&rsquo;s rent to commence this agreement (Real Property &sect; 8-208, subsection
+        (d)(11)).</p>
+      <p>Within 45 days after the end of the tenancy the landlord returns the deposit, less damages rightfully
+        withheld, with simple interest at the greater of the daily U.S. Treasury yield curve rate for 1 year,
+        as of the first business day of each year, or 1.5% per year; no interest is due unless the deposit has
+        been held for at least 6 months, for a period of less than a full month, or on a deposit of less than
+        USD 50 (Real Property &sect; 8-203, subsection (e)).</p>
+      <p>Receipt for the security deposit: the landlord acknowledges receipt of the deposit stated above on
+        ______________ (date). This receipt, with the statements that Real Property &sect; 8-203.1 requires,
+        forms part of this agreement (Real Property &sect; 8-208, subsection (c)(3)).</p>
+    </th:block>
+    <p th:if="${st == 'ME'}">In Maine the deposit may not exceed the rent for 2 months (14 M.R.S. &sect; 6032).
+      The landlord returns the deposit, or provides a written statement itemizing the reasons for retaining
+      any part of it together with the balance, within the time stated in this agreement, which may not exceed
+      30 days, and for a tenancy at will within 21 days after the termination of the tenancy or the surrender
+      and acceptance of the dwelling, whichever occurs later (14 M.R.S. &sect; 6033); this agreement sets that
+      time at 30 days. No part of the deposit may be retained for normal wear and tear.</p>
+    <p th:if="${st == 'MN'}">In Minnesota, within 3 weeks after the termination of the tenancy (or within
+      5 days where the tenant leaves because the building is legally condemned for reasons not due to the
+      tenant&rsquo;s conduct), and after receiving the tenant&rsquo;s mailing address or delivery instructions,
+      the landlord returns the deposit with simple, non-compounded interest of 1% per year, or furnishes a
+      written statement showing the specific reason for withholding any part of it (Minn. Stat. &sect;
+      504B.178).</p>
+    <p th:if="${st == 'NJ'}">In New Jersey, where the Security Deposit Law applies (it applies to most
+      residential rentals but not to an owner-occupied 2- or 3-family dwelling unless the tenant requests it in
+      writing),
+      the deposit may not exceed 1.5 times 1 month&rsquo;s rent, and any additional yearly increase of the
+      deposit may not exceed 10% of the current deposit (N.J.S.A. 46:8-21.2). The landlord holds it in an
+      interest-bearing account in New Jersey as N.J.S.A. 46:8-19 requires and notifies the tenant in writing,
+      within 30 days of receipt, of the name and address of the institution, the type of account, the current
+      rate of interest and the amount of the deposit. Within 30 days after the termination of the tenancy the
+      landlord returns the deposit with the interest earned, less any lawful deductions itemized in writing,
+      by personal delivery, registered mail or certified mail (N.J.S.A. 46:8-21.1), and within 5 business days
+      where the tenant is displaced by fire, flood, condemnation or evacuation.</p>
+    <p th:if="${st == 'OR'}">In Oregon the landlord gives the tenant a receipt for the deposit, and returns the
+      deposit, or the part that the landlord does not claim with a written accounting of the amounts claimed,
+      not later than 31 days after the tenancy terminates and the tenant delivers possession (ORS 90.300).</p>
+    <th:block th:if="${st == 'WA'}">
+      <p>In Washington no deposit may be collected unless this agreement is in writing and the landlord
+        provides at the start of the tenancy a written checklist or statement, signed and dated by both
+        parties, describing the condition and cleanliness of, or existing damage to, the dwelling, fixtures,
+        equipment, appliances and furnishings (RCW 59.18.260). The deposit may be withheld, in whole or in
+        part, under this agreement, only to pay unpaid rent and other amounts owed under it and to indemnify the
+        landlord
+        for damage to the dwelling for which the tenant is responsible, beyond wear resulting from ordinary
+        use. The landlord deposits it in a trust account in a financial institution or with a licensed escrow
+        agent located in Washington and gives the tenant a receipt and written notice of the name, address and
+        location of the depository (RCW 59.18.270).</p>
+      <p>Within 30 days after the termination of this agreement and the vacation of the dwelling, the landlord
+        gives a full and specific statement of the basis for retaining any of the deposit, with the
+        documentation that RCW 59.18.280 requires, together with any refund due.</p>
+    </th:block>
+    <p th:if="${st == 'DC'}">In the District of Columbia the deposit is collected, held with interest and
+      returned as the Security Deposit Act and the housing regulations (14 DCMR &sect;&sect; 308 to 311)
+      provide. Within 45 days after the termination of the tenancy the housing provider notifies the tenant in
+      writing of any amounts claimed, with photographs or other supporting documentation and a statement of the
+      tenant&rsquo;s right to dispute them within 30 calendar days (D.C. Code &sect; 42-3502.17, subsection
+      (e)).</p>
+    <p th:unless="${{'CA','NY','MA','MD','ME','MN','NJ','OR','WA','DC'}.contains(st)}">Federal law does not
+      limit security deposits. Many states limit the amount, require the deposit to be held in a separate or
+      interest-bearing account, require interest to be paid or set a deadline for its return; those rules
+      apply to this deposit.</p>
+  </th:block>
+  <p class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}">The condition of
+    the dwelling at the start and at the end of the tenancy is recorded as provided in article
+    <span th:text="${refs['handover-inspection']}"></span>.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent <span th:text="${paymentFrequency}">monthly</span>
+    <span th:if="${paymentDueDay != null}">in advance, no later than day
+      <strong th:text="${paymentDueDay}">1</strong> of each month</span><span
+      th:if="${paymentDueDay == null}">in advance, on the payment day agreed between the parties</span>, by
+    the method and to the person or account that the landlord designates in writing. Person or account to
+    which rent is paid (and, for payment in person, the usual days and hours): ______________________________.
+    Accepted forms of payment: ______________________________</p>
+  <p>Late fee, if any: ______________________________. A late fee may be charged only if it is stated here, is
+    a reasonable amount and complies with the law of the state.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">California law sets no fixed maximum for residential late fees; California courts
+      have treated them as liquidated damages, so a late fee should be a reasonable estimate of the
+      landlord&rsquo;s loss from late payment (an interpretation of case law, not a statutory figure).</p>
+    <th:block th:if="${st == 'NY'}">
+      <p>In New York no late fee may be charged unless the rent has not been paid within 5 days of the date it
+        was due, and the fee may not exceed USD 50 or 5% of the monthly rent, whichever is less (Real Property
+        Law &sect; 238-a, subdivision 2).</p>
+      <p>If the landlord has not received the rent within 5 days of the due date, the landlord sends the tenant,
+        by certified mail, a written notice of the failure to receive it (Real Property Law &sect; 235-e,
+        subdivision (d)). For rent paid in cash or by any instrument other than the tenant&rsquo;s personal
+        check, the landlord gives the tenant a written receipt (subdivision (a)).</p>
+    </th:block>
+    <p th:if="${st == 'DC'}">In the District of Columbia a late fee may not exceed 5% of the full amount of rent
+      due and may be charged only if this agreement states its maximum amount and the tenant has not paid the
+      full rent within 5 days, or any longer grace period stated here, after the due date; interest may not be
+      charged on a late fee, a late fee may be imposed only once on each late payment, and nonpayment of a late
+      fee is not a ground for eviction (D.C. Code &sect; 42-3505.31).</p>
+    <p th:if="${st == 'MA'}">In Massachusetts no interest or penalty for failure to pay rent may be imposed
+      until 30 days after the rent was due (G.L. c. 186, &sect; 15B, subsection (1)(c)).</p>
+    <p th:if="${st == 'MD'}">In Maryland a penalty for late payment of rent may not exceed 5% of the amount of
+      unpaid rent due for the rental period for which the payment was delinquent; where rent is paid in weekly
+      instalments the penalty is limited as Real Property &sect; 8-208, subsection (d)(3)(ii), provides.</p>
+    <p th:if="${st == 'ME'}">In Maine a payment of rent is late only if it is not made within 15 days from the
+      time it is due, and the penalty may not exceed 4% of the amount due for 1 month; it may be charged only
+      if the landlord gave the tenant written notice, when this agreement was entered into, that a penalty of
+      up to 4% of 1 month&rsquo;s rent may be charged for late payment, and this clause is that notice (14
+      M.R.S. &sect; 6028).</p>
+    <p th:if="${st == 'MN'}">In Minnesota a late fee may be charged only if the parties have agreed in writing
+      that a late fee may be imposed and when it will be imposed, and it may not exceed 8% of the overdue rent
+      payment
+      (Minn. Stat. &sect; 504B.177).</p>
+    <p th:if="${st == 'NJ'}">In New Jersey a tenant who is a senior citizen receiving a Social Security old age
+      pension, a railroad retirement pension or another governmental pension in lieu of it, or who receives
+      Social Security disability benefits, Supplemental Security Income or benefits under Work First New
+      Jersey, has a grace period of 5 business days when the rent is due on the first of the month, and no
+      delinquency or late charge may be assessed during it (N.J.S.A. 2A:42-6.1).</p>
+    <p th:if="${st == 'OR'}">In Oregon a late charge may be imposed only if the rent is not received by the 4th
+      day of the rental period and this agreement specifies the obligation, the type and amount of the charge
+      and the dates on which rent and the charge are due; the charge may not exceed a reasonable flat amount
+      charged once per rental period, a reasonable daily amount from the 5th day of no more than 6% of that flat
+      amount, or 5% of the periodic rent for each 5-day period of delinquency from the 5th day (ORS
+      90.260).</p>
+    <p th:if="${st == 'WA'}">In Washington no late fee may be charged for rent paid within 5 days following its
+      due date; if rent is more than 5 days past due, late fees may be charged from the first day after the due
+      date until paid (RCW 59.18.170, subsection (2)). The landlord applies each payment first to rent before
+      late payments, damages, legal costs or other fees (RCW 59.18.283).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the dwelling only as a private residence for the tenant and the following occupants:
+    ______________________________. The tenant keeps the dwelling in a clean and sanitary condition, does not
+    disturb other residents or neighbors and complies with the house rules given to the tenant in writing at
+    the start of the tenancy, insofar as they are reasonable and lawful.</p>
+  <p>Pets: ______________________________. An assistance animal that a person with a disability needs is not a
+    pet; a request for one is handled as a request for a reasonable accommodation.</p>
+  <p>Smoking policy for the dwelling and the common areas: ______________________________</p>
+  <p class="clause-ref" data-ref="fair-housing" th:if="${refs['fair-housing']}">Requests for reasonable
+    accommodations and modifications are dealt with in article
+    <span th:text="${refs['fair-housing']}"></span>.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may not assign this agreement or sublet the dwelling, in whole or in part, without the prior
+    written consent of the landlord, which the landlord will not unreasonably withhold. Any statutory right of
+    the tenant to sublet, to assign or to share the dwelling with additional occupants remains
+    unaffected.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">Where Civil Code &sect; 1947.12 applies, the tenant may not enter into a sublease
+      that results in a total rent for the dwelling higher than the rent that section allows (subdivision
+      (c)).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord delivers the dwelling and keeps it, and the common areas, in a fit and habitable condition
+    and in compliance with the applicable building, housing and health codes, and makes the repairs needed
+    for that purpose within a reasonable time after notice, except repairs of damage caused by the tenant,
+    the tenant&rsquo;s household or guests. Most states recognize this duty by statute or by an implied
+    warranty of habitability that the tenant cannot waive.</p>
+  <p>The tenant keeps the dwelling clean and safe, uses the fixtures and appliances properly, promptly reports
+    in writing any defect or condition that needs repair, and pays for the repair of damage caused by the
+    tenant, the tenant&rsquo;s household or guests beyond ordinary wear and tear.</p>
+  <p>The landlord may not retaliate against the tenant, for example by increasing the rent, reducing services
+    or threatening to end the tenancy, because the tenant has complained in good faith to the landlord or to
+    a public authority about the condition of the dwelling or has exercised a legal right; many states
+    expressly prohibit such retaliation.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'NY'}">In New York the landlord warrants that the dwelling and all areas used in
+      connection with it are fit for human habitation and for the uses reasonably intended by the parties and
+      that the occupants will not be subjected to conditions dangerous, hazardous or detrimental to their life,
+      health or safety; any agreement waiving or modifying this warranty is void (Real Property Law &sect;
+      235-b).</p>
+    <p th:if="${st == 'MN'}">In Minnesota the landlord covenants, among others, that the dwelling and all
+      common areas are fit for the use intended by the parties and will be kept in reasonable repair during the
+      tenancy, except where the disrepair has been caused by the willful, malicious or irresponsible conduct of
+      the tenant or a person under the tenant&rsquo;s direction or control (Minn. Stat. &sect; 504B.161).</p>
+    <p th:if="${st == 'WA'}">In Washington the landlord&rsquo;s duties to keep the dwelling fit for human
+      habitation, including the structural components, the facilities and appliances supplied, weathertightness,
+      locks and keys, heat and hot water and pest control, are set out in RCW 59.18.060.</p>
+    <th:block th:if="${st == 'MD'}">
+      <p>In Maryland: the landlord will make the dwelling available to the tenant in a condition permitting
+        habitation, with reasonable safety (Real Property &sect; 8-208, subsection (c)(1)).</p>
+      <p>Obligations as to heat, gas, electricity, water and repair of the dwelling (Real Property &sect; 8-208,
+        subsection (c)(2)): landlord: ______________________________; tenant:
+        ______________________________</p>
+    </th:block>
+    <p th:if="${st == 'CA'}">In California the conditions that make a dwelling untenantable are listed in Civil
+      Code &sect; 1941.1, and a waiver of the tenant&rsquo;s rights in this respect is void to the extent Civil
+      Code &sect; 1953 provides.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-entry" data-clause="entry">
+  <p>The landlord may enter the dwelling to make necessary or agreed repairs, provide agreed services, inspect
+    it or show it to prospective tenants, purchasers, lenders or contractors, after giving the tenant
+    reasonable advance notice and at reasonable times, and without notice only in an emergency, when the
+    tenant has abandoned or surrendered the dwelling, by court order or with the tenant&rsquo;s consent at the
+    time of entry. The landlord may not abuse the right of access or use it to harass the tenant.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California, except in an emergency or where the tenant has abandoned or
+      surrendered the dwelling, the landlord gives reasonable written notice stating the date, approximate
+      time and purpose of the entry, and enters only during normal business hours unless the tenant consents
+      at the time of entry; 24 hours is presumed reasonable notice, and a notice mailed at least 6 days before
+      the entry is presumed reasonable (Civil Code &sect; 1954).</p>
+    <p th:if="${st == 'MA'}">In Massachusetts the landlord may enter before the end of the tenancy only to
+      inspect the dwelling, make repairs or show it to a prospective tenant, purchaser, mortgagee or their
+      agents, and otherwise only under a court order, if the dwelling appears to have been abandoned, or to
+      inspect it for damage within the last 30 days of the tenancy or after a notice of termination has been
+      given (G.L. c. 186, &sect; 15B, subsection (1)(a)).</p>
+    <p th:if="${st == 'ME'}">In Maine, except in an emergency or where it is impracticable, the landlord gives
+      the tenant reasonable notice and enters only at reasonable times; 24 hours is presumed to be reasonable
+      notice in the absence of evidence to the contrary. The tenant may not change the lock without notice to
+      the landlord and giving the landlord a duplicate key within 48 hours, subject to the exception for a
+      victim of the conduct described in 14 M.R.S. &sect; 6025, and an agreement by the tenant to waive the
+      rights under that section is void.</p>
+    <p th:if="${st == 'MN'}">In Minnesota the landlord may enter only for a reasonable business purpose and
+      after a good faith effort to give the tenant reasonable notice of not less than 24 hours, specifying a
+      time or window of entry, and only between 8:00 a.m. and 8:00 p.m. unless the parties agree otherwise;
+      the exceptions of Minn. Stat. &sect; 504B.211, subdivision 4, apply to immediate entry, and the tenant
+      may not be required to waive the right to notice.</p>
+    <p th:if="${st == 'OR'}">In Oregon, except in the cases provided in ORS 90.322 (such as an emergency, or
+      repairs the tenant has requested in writing), the landlord gives the tenant at least 24 hours&rsquo;
+      actual notice of the intent to enter and enters only at reasonable times.</p>
+    <p th:if="${st == 'WA'}">In Washington, except in an emergency or where it is impracticable, the landlord
+      gives the tenant at least 2 days&rsquo; written notice stating the exact time and date or dates of entry,
+      or a period with the earliest and latest possible times, and a telephone number for objections or
+      rescheduling, and enters only at reasonable times; for showing the dwelling to prospective or actual
+      purchasers or tenants, at least 1 day&rsquo;s notice is sufficient (RCW 59.18.150, subsection
+      (6)).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-disclosures" data-clause="disclosures">
+  <p>Year in which the dwelling was built (or best knowledge of the landlord): ______________</p>
+  <p>Lead-based paint (42 U.S.C. &sect; 4852d and 40 CFR &sect; 745.113, subsection (b)): where the dwelling
+    was built before 1978, the landlord provides the tenant, before the tenant is obligated under this
+    agreement, with the EPA pamphlet &ldquo;Protect Your Family From Lead in Your Home&rdquo; (or an approved
+    equivalent) and with the following statement, unless the lease is exempt: a 0-bedroom dwelling or housing
+    for the elderly or persons with disabilities (unless a child under 6 years of age resides or is expected
+    to reside there), a lease of 100 days or less where no renewal or extension can occur, or a dwelling found
+    to be free of lead-based paint by a certified inspector.</p>
+  <p><strong>Lead Warning Statement.</strong> Housing built before 1978 may contain lead-based paint. Lead from
+    paint, paint chips, and dust can pose health hazards if not managed properly. Lead exposure is especially
+    harmful to young children and pregnant women. Before renting pre-1978 housing, lessors must disclose the
+    presence of known lead-based paint and/or lead-based paint hazards in the dwelling. Lessees must also
+    receive a federally approved pamphlet on lead poisoning prevention.</p>
+  <p>Landlord&rsquo;s disclosure: [ ] known lead-based paint and/or lead-based paint hazards are present in the
+    dwelling (explain): ______________________________; [ ] the landlord has no knowledge of lead-based paint
+    and/or lead-based paint hazards in the dwelling.</p>
+  <p>Records and reports: [ ] the landlord has provided the tenant with all available records and reports
+    pertaining to lead-based paint and/or lead-based paint hazards (list): ______________________________;
+    [ ] the landlord has no such records or reports.</p>
+  <p>Tenant&rsquo;s acknowledgment: the tenant has received copies of all information listed above and the
+    pamphlet &ldquo;Protect Your Family From Lead in Your Home&rdquo;. Initials of the tenant: __________.
+    The landlord, and any agent, keeps a copy of this disclosure for at least 3 years from the start of the
+    tenancy.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>California notices:</p>
+      <p>Notice: Pursuant to Section 290.46 of the Penal Code, information about specified registered sex
+        offenders is made available to the public via an Internet Web site maintained by the Department of
+        Justice at www.meganslaw.ca.gov. Depending on an offender&rsquo;s criminal history, this information
+        will include either the address at which the offender resides or the community of residence and ZIP
+        Code in which the offender resides. (Civil Code &sect; 2079.10a)</p>
+      <p>Flood hazard (Government Code &sect; 8589.45): [ ] to the owner&rsquo;s actual knowledge the dwelling
+        is located in a special flood hazard area or an area of potential flooding; [ ] the owner has no such
+        actual knowledge. The tenant may obtain information about hazards, including flood hazards, that may
+        affect the dwelling from the MyHazards tool on the Internet Web site of the California Office of
+        Emergency Services (myhazards.caloes.ca.gov). The owner&rsquo;s insurance does not cover the loss of the
+        tenant&rsquo;s personal possessions, and it is recommended that the tenant consider purchasing
+        renter&rsquo;s insurance and flood insurance to insure the tenant&rsquo;s possessions from loss due to
+        fire, flood or other risk of loss. The owner is not required to provide additional information
+        concerning the flood hazards to the property, and the information provided here is deemed adequate to
+        inform the tenant.</p>
+      <p>[ ] This dwelling is subject to Civil Code &sect;&sect; 1947.12 and 1946.2: California law limits the
+        amount your rent can be increased. See Section 1947.12 of the Civil Code for more information.
+        California law also provides that after all of the tenants have continuously and lawfully occupied the
+        property for 12 months or more or at least 1 of the tenants has continuously and lawfully occupied the
+        property for 24 months or more, a landlord must provide a statement of cause in any notice to
+        terminate a tenancy. See Section 1946.2 of the Civil Code for more information.</p>
+      <p>[ ] This dwelling is exempt under Civil Code &sect; 1947.12, subdivision (d)(5), and &sect; 1946.2,
+        subdivision (e)(8): This property is not subject to the rent limits imposed by Section 1947.12 of the
+        Civil Code and is not subject to the just cause requirements of Section 1946.2 of the Civil Code. This
+        property meets the requirements of Sections 1947.12 (d)(5) and 1946.2 (e)(8) of the Civil Code and the
+        owner is not any of the following: (1) a real estate investment trust, as defined by Section 856 of the
+        Internal Revenue Code; (2) a corporation; or (3) a limited liability company in which at least 1 member
+        is a corporation.</p>
+      <p>The landlord has given the tenant the written bed bug information required by Civil Code &sect;
+        1954.603, and discloses below any mold known to the landlord that requires disclosure under Health and
+        Safety Code &sect; 26147: ______________________________. Where the landlord is engaged in a trade or
+        business, this agreement is for a period longer than 1 month and it was negotiated primarily in Spanish,
+        Chinese, Tagalog, Vietnamese or Korean, the landlord must deliver a translation of every term in that
+        language before it is signed (Civil Code &sect; 1632, subdivision (b)(3)).</p>
+    </th:block>
+    <th:block th:if="${st == 'NY'}">
+      <p><strong>Sprinkler system (Real Property Law &sect; 231-a): [ ] there is / [ ] there is no maintained and
+        operative sprinkler system in the leased premises. If there is, the last date of maintenance and
+        inspection was: ______________</strong></p>
+      <p>Flood history and risk (Real Property Law &sect; 231-b): the dwelling [ ] is / [ ] is not located wholly
+        or partially in a FEMA-designated floodplain; [ ] is / [ ] is not wholly or partially in a Special
+        Flood Hazard Area (&ldquo;100-year floodplain&rdquo;); [ ] is / [ ] is not wholly or partially in a
+        Moderate Risk Flood Hazard Area (&ldquo;500-year floodplain&rdquo;), according to FEMA&rsquo;s current
+        flood insurance rate maps. Prior flood damage to the dwelling due to a natural flood event known to the
+        landlord: ______________________________. Flood insurance is available to renters through the Federal
+        Emergency Management Agency&rsquo;s (FEMA&rsquo;s) National Flood Insurance Program (NFIP) to cover
+        your personal property and contents in the event of a flood. A standard renter&rsquo;s insurance policy
+        does not typically cover flood damage. You are encouraged to examine your policy to determine whether
+        you are covered.</p>
+      <p>Local law, in particular in New York City, requires further notices and riders (for example for
+        rent-stabilized apartments), which are attached to this agreement where they apply.</p>
+    </th:block>
+    <p th:if="${st == 'MD'}">In Maryland the landlord attaches to this agreement a copy of the most current
+      version of the Maryland Tenants&rsquo; Bill of Rights published by the Office of Tenant and Landlord
+      Affairs of the Department of Housing and Community Development (Real Property &sect; 8-208, subsection
+      (c)(4)).</p>
+    <p th:if="${st == 'ME'}">In Maine the landlord provides, before the tenant enters into this agreement or pays
+      a deposit, the written radon notice in the form prescribed by the Department of Health and Human
+      Services, with the date and results of the most recent radon test of the building, whether mitigation has
+      been performed and the tenant&rsquo;s right to conduct a test (14 M.R.S. &sect; 6030-D, subsection
+      2).</p>
+    <p th:if="${st == 'MN'}">In Minnesota the landlord provides, before this agreement is signed or rent or a
+      deposit is paid, a copy of all outstanding inspection orders for which a citation has been issued for
+      code violations that threaten the health or safety of the tenant, and of all outstanding condemnation
+      orders and declarations that the premises are unfit for human habitation (Minn. Stat. &sect;
+      504B.195).</p>
+    <p th:if="${st == 'NJ'}">In New Jersey the landlord gives the tenant the Truth in Renting statement of the
+      Department of Community Affairs (not required for a building of 2 or fewer units or an owner-occupied
+      building of 3 or fewer units) and, before signing or renewal, notice if the dwelling is located in a flood
+      zone or area (not required for 1- and 2-unit buildings, an owner-occupied 3-family dwelling or transient
+      or seasonal housing) (N.J.S.A. 46:8-44 to 46:8-46 and 46:8-50).</p>
+    <p th:if="${st == 'OR'}">In Oregon: the dwelling [ ] is / [ ] is not located in a 100-year flood plain
+      (ORS 90.228). Where the dwelling contains a carbon monoxide source, or is connected to a room with one,
+      the landlord provides properly functioning carbon monoxide alarms, testing instructions and working
+      batteries as ORS 90.316 requires.</p>
+    <p th:if="${st == 'MA'}">In Massachusetts, whenever a child under 6 years of age resides in the dwelling and
+      paint, plaster or other accessible structural material in it contains dangerous levels of lead, the owner
+      must abate or contain it as G.L. c. 111, &sect; 197, requires; where the state lead regulations require a
+      lead law notification to be given to the tenant, the landlord gives it.</p>
+    <p th:unless="${{'CA','NY','MD','ME','MN','NJ','OR','MA'}.contains(st)}">Many states and cities require
+      further disclosures in or with a residential lease (for example on flood risk, mold, radon, bed bugs or
+      the identity of the owner and manager); the landlord attaches those that apply to the dwelling.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-safety" data-clause="safety">
+  <p>The landlord installs and maintains smoke alarms, carbon monoxide alarms and other safety devices as the
+    state and local codes require and delivers them in working order at the start of the tenancy. The tenant
+    tests them as instructed, replaces batteries where the law places that duty on the tenant, does not
+    disable or remove them and reports any defect to the landlord without delay.</p>
+  <p>The landlord&rsquo;s insurance does not cover the tenant&rsquo;s personal property or liability; the
+    tenant is advised to obtain renter&rsquo;s insurance. Renter&rsquo;s insurance required by this agreement,
+    if any: ______________________________</p>
+</div>
+
+<div th:fragment="clause-fair-housing" data-clause="fair-housing">
+  <p>The landlord does not discriminate on the basis of race, color, religion, sex, familial status, national
+    origin or disability (handicap), as the Fair Housing Act prohibits (42 U.S.C. &sect; 3604), nor on any
+    other basis that state or local law protects (which may include, for example, source of income, age,
+    sexual orientation or gender identity).</p>
+  <p>The landlord makes reasonable accommodations in rules, policies, practices or services when they may be
+    necessary to give a person with a disability equal opportunity to use and enjoy the dwelling (42 U.S.C.
+    &sect; 3604, subsection (f)(3)(B)), and permits, at the expense of the person with a disability,
+    reasonable modifications of the dwelling necessary for that person&rsquo;s full enjoyment of it; for a
+    rental, the landlord may, where reasonable, make permission conditional on the tenant agreeing to restore
+    the interior to its previous condition, reasonable wear and tear excepted (subsection (f)(3)(A)).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At the start of the tenancy the parties inspect the dwelling together and sign a written statement of its
+    condition, with photographs, listing any existing damage; the tenant may add any damage not listed within
+    the period that the law of the state allows or, if none, within 7 days. At the end of the tenancy the
+    tenant returns the dwelling in the same condition, except for ordinary wear and tear, and returns all
+    keys.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California, within a reasonable time after either party gives notice to end the
+      tenancy, the landlord notifies the tenant in writing of the right to request an initial inspection, no
+      earlier than 2 weeks before the end of the tenancy, at which the tenant may be present and after which
+      the tenant may remedy the deficiencies identified (Civil Code &sect; 1950.5, subdivision (f)). For a
+      tenancy that begins on or after 1 July 2025 the landlord photographs the dwelling immediately before, or
+      at the start of, the tenancy, and the landlord photographs it after the tenant returns possession and
+      before and after any repairs or cleaning to be deducted from the security (subdivision (g)).</p>
+    <p th:if="${st == 'NY'}">In New York the landlord offers the tenant the opportunity to inspect the dwelling
+      with the landlord before the tenant takes possession, and on request the parties sign a written
+      agreement on its condition; after a notice to end the tenancy, the landlord notifies the tenant of the
+      right to an inspection before vacating, held no earlier than 2 weeks and no later than 1 week before the
+      end of the tenancy, with at least 48 hours&rsquo; written notice (General Obligations Law &sect; 7-108,
+      subdivision 1-a, paragraphs (c) and (d)).</p>
+    <p th:if="${st == 'MA'}">In Massachusetts a landlord who accepts a security deposit gives the tenant, on
+      receipt of the deposit or within 10 days after the start of the tenancy, whichever is later, a separate
+      written statement of the present condition of the dwelling in the form and with the notice that G.L. c.
+      186, &sect; 15B, subsection (2)(c), prescribes; the tenant may return it with a separate signed list of
+      any further damage within 15 days after receiving it or after moving in, whichever is later.</p>
+    <p th:if="${st == 'WA'}">In Washington the written checklist or statement of the condition of the dwelling
+      at the start of the tenancy is signed and dated by both parties, the tenant receives a copy and may
+      request 1 free replacement copy (RCW 59.18.260).</p>
+    <p th:if="${st == 'MN'}">In Minnesota the landlord notifies the tenant, at the start of the tenancy or
+      within 14 days of occupancy, of the option to request an initial inspection, and, within a reasonable
+      time after a notice to end the tenancy, of the option to request a move-out inspection no earlier than
+      5 days before the end of the tenancy and of the right to be present (Minn. Stat. &sect; 504B.182).</p>
+    <p th:if="${st == 'MD'}">In Maryland the tenant may be present at the landlord&rsquo;s inspection of the
+      dwelling for damage if the tenant notifies the landlord by certified mail, at least 15 days before moving,
+      of the intention to move, the date of moving and the new address (Real Property &sect; 8-203, subsection
+      (f)).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${fixedTerm}">The fixed term ends on its end date unless the parties renew or extend it. Neither
+    party may end the fixed term early except as this agreement or the law allows; a tenant who leaves early
+    remains liable for the rent until the dwelling is re-let or the term ends, subject to the
+    landlord&rsquo;s duty under the law of many states to make reasonable efforts to re-let it.</p>
+  <p>A periodic (month-to-month) tenancy may be ended by written notice given at least
+    <strong th:text="${tenantNoticeDays}">30</strong> days in advance by the tenant and at least
+    <strong th:text="${landlordNoticeDays}">30</strong> days in advance by the landlord, effective at the end
+    of a rental period, or with any longer notice, and only on the grounds, that the law of the state
+    requires.</p>
+  <p>The landlord may recover possession of the dwelling only through the court procedure that the law of the
+    state provides. Changing the locks, removing the tenant&rsquo;s belongings or shutting off utilities to
+    force the tenant out is prohibited by the law of many states.</p>
+  <p>A tenant who is a servicemember may terminate this agreement where the conditions of the Servicemembers
+    Civil Relief Act are met (for example where this agreement was signed before the tenant entered military
+    service, or where the tenant, while in service, receives military orders for a permanent change of station
+    or to deploy for a period of not less than 90 days), by written notice with a copy of the orders; where rent is payable monthly, the termination takes effect 30 days after the first date on
+    which the next rental payment is due after the notice is delivered, and no early termination charge may be
+    imposed (50 U.S.C. &sect; 3955). Many states also allow victims of domestic violence and certain other
+    tenants to end a lease early under conditions set by state law.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>In California the owner must give at least 60 days&rsquo; notice to end a periodic tenancy, or at least
+        30 days&rsquo; notice where any tenant or resident has resided in the dwelling for less than 1 year or
+        in the sale case of Civil Code &sect; 1946.1, subdivision (d); the tenant must give notice of at least
+        the length of the rental period (Civil Code &sect; 1946.1).</p>
+      <p>Where Civil Code &sect; 1946.2 applies, after a tenant has continuously and lawfully occupied the
+        dwelling for 12 months (or, where an additional adult tenant was added before an existing tenant had
+        occupied it for 24 months, after all of the tenants have occupied it for 12 months or at least 1 of
+        them for 24 months), the owner may end the tenancy only for an at-fault
+        or no-fault just cause stated in the written notice; for a no-fault just cause the owner must provide
+        relocation assistance, or waive the final month&rsquo;s rent, equal to 1 month&rsquo;s rent
+        (subdivision (d)). That section does not apply to the dwellings listed in subdivision (e), and a local
+        just-cause ordinance may apply instead (subdivision (i)).</p>
+    </th:block>
+    <th:block th:if="${st == 'NY'}">
+      <p>In New York, if the landlord does not intend to renew the tenancy, the landlord gives written notice
+        at least 30, 60 or 90 days before, according to the length of occupancy or lease term as set out in Real
+        Property Law &sect; 226-c.</p>
+      <p>Where the dwelling is covered by the Good Cause Eviction Law (Real Property Law Article 6-A), the
+        landlord may not evict the tenant, or fail to renew the tenancy, except for good cause as defined in
+        Real Property Law &sect; 216, such as nonpayment of rent other than an unreasonable increase, a
+        substantial violation of the lease not cured after notice, a nuisance, or the landlord&rsquo;s good
+        faith intention to occupy, demolish or withdraw the dwelling from the market, each subject to the
+        conditions of that section.</p>
+    </th:block>
+    <p th:if="${st == 'MA'}">In Massachusetts a tenancy at will is ended by 3 months&rsquo; written notice or,
+      where rent is payable at shorter periods, by notice equal to the interval between the days of payment or
+      30 days, whichever is longer; for nonpayment of rent 14 days&rsquo; written notice to quit is sufficient,
+      but a tenant who has not received a similar notice in the preceding 12 months may prevent the termination
+      by paying the full rent due within 10 days after receiving it, and the notice must say so (G.L. c. 186,
+      &sect; 12).</p>
+    <p th:if="${st == 'ME'}">In Maine a tenancy at will is ended by either party by at least 30 days&rsquo;
+      written notice, except in the cases of shorter notice provided by 14 M.R.S. &sect; 6002; the
+      landlord&rsquo;s notice must advise the tenant of the right to contest the termination in court.</p>
+    <p th:if="${st == 'MN'}">In Minnesota a tenancy at will may be ended by either party by written notice at
+      least as long as the interval between the times rent is due or 3 months, whichever is less (Minn. Stat.
+      &sect; 504B.135).</p>
+    <p th:if="${st == 'OR'}">In Oregon the tenant may end a periodic (month-to-month) tenancy by at least 30 days&rsquo;
+      written notice. During the first year of occupancy the landlord may end it by at least 30 days&rsquo;
+      written notice; after the first year of occupancy the landlord may end it only for a tenant cause, or
+      for a qualifying landlord reason with at least 90 days&rsquo; written notice, as and under the
+      conditions that ORS 90.427 provides; a fixed term that ends after the first year of occupancy becomes a
+      periodic (month-to-month) tenancy unless that section provides otherwise.</p>
+    <p th:if="${st == 'WA'}">In Washington the landlord may not evict the tenant, refuse to continue the tenancy
+      or end a periodic tenancy except for the causes listed in RCW 59.18.650 and in the limited cases of
+      specified-period agreements that section allows with at least 60 days&rsquo; written notice; the tenant
+      may end a periodic (month-to-month) tenancy by written notice of 20 days or more before the end of a rental period
+      (RCW 59.18.200), and a tenancy for a specified time by written notice at least 20 days before its ending
+      date (RCW 59.18.650, subsection (1)(f)).</p>
+    <p th:if="${st == 'NJ'}">In New Jersey, where the Anti-Eviction Act applies (it applies to most residential
+      rentals, but may not apply to an owner-occupied building with 2 or fewer rental units), the landlord may
+      not evict the tenant or fail to renew the lease except for a good cause listed in N.J.S.A. 2A:18-61.1,
+      and, except for nonpayment of rent, only after a written notice to quit (N.J.S.A. 2A:18-61.2).</p>
+    <p th:if="${st == 'DC'}">In the District of Columbia no tenant may be evicted, notwithstanding the
+      expiration of the lease, so long as the tenant continues to pay the rent to which the housing provider is
+      entitled, except on the grounds and after the written notices provided by D.C. Code &sect; 42-3505.01;
+      nonpayment of a late fee is not a ground for eviction.</p>
+    <p th:if="${st == 'MD'}">In Maryland this agreement cannot provide for a landlord&rsquo;s notice to quit
+      shorter than the law requires (Real Property &sect; 8-208, subsection (d)(5)).</p>
+    <p th:unless="${{'CA','NY','MA','ME','MN','OR','WA','NJ','DC','MD'}.contains(st)}">Several states and cities
+      require a just cause to end or not renew a residential tenancy, or set notice periods longer than those
+      stated above; those rules apply to this tenancy.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this agreement are given in writing to the addresses stated in this agreement, or to an
+    address that a party later designates in writing, by personal delivery or by mail, or by email to the
+    following addresses if both parties agree: landlord ______________________________; tenant
+    ______________________________.</p>
+  <p>This agreement may be signed electronically; under the federal E-SIGN Act a contract or signature may not
+    be denied legal effect solely because it is in electronic form (15 U.S.C. &sect; 7001, subsection (a)).
+    Notices of default, eviction or the right to cure under this agreement are given in the form and manner
+    that the law of the state requires, since the federal rule does not apply to them (15 U.S.C. &sect; 7003,
+    subsection (b)(2)(B)).</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'MD'}">In Maryland the tenant may not be required to accept notice of rent increases by
+      electronic delivery (Real Property &sect; 8-208, subsection (d)(9)).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord uses the personal information of the tenant and the occupants only to enter into and
+    administer this agreement, to collect amounts due and to comply with the law, keeps it reasonably secure
+    and does not sell it. A consumer report used for tenant screening is obtained and used as the Fair Credit
+    Reporting Act and the law of the state permit. Where a state privacy law applies to the landlord, the
+    tenant has the rights that law gives.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by the law of the state in which the dwelling is located and by applicable
+    federal law. Any provision of this agreement by which the tenant waives a right or remedy that the law
+    gives the tenant and that cannot be waived is void, and the rest of the agreement remains in effect.</p>
+  <p>Where a party is entitled by law or by this agreement to recover attorney&rsquo;s fees, the party that
+    prevails in a dispute about this agreement recovers its reasonable attorney&rsquo;s fees and costs,
+    whichever party it is. Disputes may be brought before the court with jurisdiction where the dwelling is
+    located, including a small claims court within its limits.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California a provision by which the tenant agrees to modify or waive the rights
+      listed in Civil Code &sect; 1953 (including the rights under &sect;&sect; 1950.5 and 1954 and the right to a
+      notice or hearing required by law) is void, and an attorney&rsquo;s fees provision applies to both parties
+      (Civil Code &sect; 1717).</p>
+    <p th:if="${st == 'NY'}">In New York, where this agreement allows the landlord to recover attorney&rsquo;s
+      fees, a reciprocal covenant by the landlord to pay the tenant&rsquo;s reasonable attorney&rsquo;s fees is
+      implied, and the landlord may not recover attorney&rsquo;s fees on a default judgment (Real Property Law
+      &sect; 234).</p>
+    <p th:if="${st == 'MD'}">In Maryland this agreement may not contain a confession of judgment, a waiver of a
+      right or remedy provided by applicable law or a waiver of the right to a jury trial (Real Property
+      &sect; 8-208, subsection (d)).</p>
+  </th:block>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!--
+  legal-basis: United States commercial leases are governed by state contract and landlord-tenant law, with
+               broad freedom of contract; federal law adds the Americans with Disabilities Act. The state is
+               read from the contract region (2-letter state code, or a city or county form whose first 2
+               letters are the state). Mandatory state rules are set out only for California, the one state
+               of this pack with statutory requirements for the content of commercial leases that were
+               verified; for every other state a general text is printed.
+               Federal: Americans with Disabilities Act of 1990, Title III (42 U.S.C. § 12182) and 28 CFR
+               § 36.201(b) (landlord and tenant both subject; allocation of responsibility by lease; eCFR as
+               of 2026-09-01). E-SIGN Act, 15 U.S.C. § 7001(a).
+               California: Civil Code § 1938 (CASp statement on every commercial lease form executed on or
+               after 1 January 2017, (e) statutory text where no disability access inspection certificate has
+               been issued, (c) responsibility for corrections presumed to be the owner's unless agreed);
+               qualified commercial tenant rules added by SB 1103 (Stats. 2024, in force 1 January 2025):
+               Civil Code § 827(b) (30 / 90 days, (b)(7)(D) definition: microenterprise, restaurant with
+               fewer than 10 employees, nonprofit with fewer than 20 employees, written notice and
+               self-attestation), § 1946.1 (60 / 30 days for a periodic tenancy of a qualified commercial
+               tenant), § 1950.9 (building operating costs: allocation, 18 / 12 months, notice before
+               execution, documentation within 30 days, waiver void; applies to leases executed or renewed on
+               or after 1 January 2025, periodic tenancies, and earlier leases without a provision on building
+               operating costs), § 1632(b)(8) (translation for a qualified commercial tenant), § 1717
+               (reciprocal attorney's fees). Texts read on california.public.law (mirror of
+               leginfo.legislature.ca.gov, verified 28 September 2026).
+               Sources consulted 2026-10-04; rules stated only generally (holdover, mitigation, jury waiver
+               enforceability, taxes on rent, recording, subordination and estoppel practice) are listed as
+               unverified or customary in the pack report.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("30 days' notice", never "thirty days"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (United States); there is no translation. Draft text, not
+  vetted by legal counsel: a general form that does not claim to be valid in any state. Reflects the
+  commercial lease law of the United States (federal law and, where stated, California law), not the law of
+  any other country. Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded; they sit
+  outside the state branches so that they render for every state. Never hard-code article numbers of this
+  agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This commercial lease agreement is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant signing below, hereinafter &ldquo;the
+    tenant&rdquo;.</p>
+  <p>Tenant&rsquo;s legal form and state of organization: ______________________________; registered or
+    principal office: ______________________________; employer identification number (EIN):
+    ______________________________; person signing for the tenant and title:
+    ______________________________.</p>
+  <p>Landlord&rsquo;s legal form and state of organization, and person signing for the landlord and title:
+    ______________________________.</p>
+  <p>Each person signing for a party represents that they are authorized to sign this agreement for that
+    party. Where the tenant consists of several persons, each of them is jointly and severally liable for all
+    obligations of the tenant.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord leases to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>,
+    described as follows (suite or unit, floor, rentable and usable area and the method of measurement):
+    ______________________________, together with the non-exclusive right to use the common areas of the
+    building or project, hereinafter &ldquo;the premises&rdquo;. Parking and storage rights, if any:
+    ______________________________</p>
+  <p>This agreement is a general form. Commercial leases in the United States are governed mainly by the
+    contract and by the law of the state in which the premises are located, which gives the parties broad
+    freedom to agree their terms; where a statute or ordinance that cannot be varied by agreement conflicts
+    with this agreement, the statute or ordinance prevails.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The tenant uses the premises only for the following purpose: ______________________________, and for no
+    other purpose without the landlord&rsquo;s prior written consent. Trade name under which the tenant
+    operates: ______________________________. Operating hours, if any: ______________________________.</p>
+  <p>The tenant obtains, at its own cost and risk, all licenses and permits required for its business and
+    complies with all laws, ordinances, zoning rules, recorded restrictions and reasonable building rules that
+    apply to its use of the premises. The landlord makes no representation that the permitted use is allowed
+    under zoning or other law, except as follows: ______________________________. Exclusive use rights or
+    restrictions, if any: ______________________________</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease term starts on <strong th:text="${startDate}">start date</strong> (the commencement date).</p>
+  <p th:if="${fixedTerm}">The lease is for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>. It ends on that date without notice unless it is
+    renewed or extended in writing.</p>
+  <p th:if="${!fixedTerm}">The lease is a periodic (month-to-month) tenancy and continues until either party
+    ends it by written notice of at least ______ days, and not shorter than the law of the state requires,
+    effective at the end of a rental period.</p>
+  <p>Delivery of possession and rent commencement date, if different from the commencement date:
+    ______________________________</p>
+  <p class="clause-ref" data-ref="renewal-option" th:if="${refs['renewal-option']}">Any option to renew is
+    set out in article <span th:text="${refs['renewal-option']}"></span>.</p>
+</div>
+
+<div th:fragment="clause-renewal-option" data-clause="renewal-option">
+  <p>Provided that the tenant is not in default beyond any cure period when it exercises the option and when
+    the renewal term begins, the tenant has ______ option(s) to renew this lease for ______ year(s) each, by
+    written notice to the landlord given no earlier than ______ months and no later than ______ months before
+    the end of the then current term. The renewal is on the terms of this agreement, except that the base
+    rent for each renewal term is: ______________________________ (for example a fixed increase, or the fair
+    market rent determined as follows: ______________________________).</p>
+  <p>The option is personal to the tenant named in this agreement unless the landlord agrees otherwise in
+    writing. No statutory right of renewal of commercial leases is assumed by this agreement; where the law
+    of the state gives one, it applies.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The base rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span>.</p>
+  <p>Lease type: [ ] gross lease (the base rent includes the operating costs) / [ ] modified gross lease /
+    [ ] net lease (the tenant also pays some of the operating costs, taxes or insurance, as stated here:
+    ______________) / [ ] NNN
+    (net-net-net) lease, in which the tenant pays its share of all operating costs, taxes and insurance.</p>
+  <p>Percentage rent, if any: ______% of the tenant&rsquo;s gross sales from the premises above a breakpoint
+    of ______________ per lease year, payable ______________, with the sales reporting and audit rights
+    agreed here: ______________________________</p>
+  <p>Rent concessions or abatement, if any: ______________________________</p>
+  <p class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}">Operating costs are
+    payable as provided in article <span th:text="${refs['service-costs']}"></span>.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The base rent is
+    adjusted as provided in article <span th:text="${refs['rent-adjustment']}"></span>.</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The base rent is adjusted on each anniversary of the rent commencement date as follows (select 1):
+    [ ] by ______% of the base rent in effect immediately before the adjustment; [ ] by the percentage change
+    in the Consumer Price Index for All Urban Consumers (CPI-U) published by the U.S. Bureau of Labor
+    Statistics for ______________ over the preceding 12 months, with a minimum of ______% and a maximum of
+    ______%; [ ] according to this schedule: ______________________________. A decrease of the index does not
+    reduce the base rent below the base rent of the preceding year unless agreed here: ______________</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California, where the tenant is a qualified commercial tenant (a
+      microenterprise, a restaurant with fewer than 10 employees or a nonprofit organization with fewer than 20
+      employees that has given the landlord the written notice and self-attestation required by Civil Code
+      &sect; 827, subdivision (b)(7)(D)) and the tenancy is from week to week, month to month or another
+      period of less than 1 month, the landlord must give written notice of a rent increase at least 30 days
+      before it takes effect, or at least 90 days before where the increase, alone or with the other increases
+      of the preceding 12 months, exceeds 10%, and must include in the notice information on those rules
+      (Civil Code &sect; 827, subdivision (b)).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Where this lease is not a gross lease, the tenant pays, in addition to the base rent, its proportionate
+    share of ______% of the operating costs of the building or project, including common area maintenance
+    (CAM), real estate taxes and assessments, and the landlord&rsquo;s property insurance, excluding capital
+    expenditures except as agreed here: ______________________________, the landlord&rsquo;s financing costs,
+    and costs reimbursed to the landlord by insurance or by third parties. Management fee included in operating
+    costs, if any: ______% of ______________</p>
+  <p>The tenant pays monthly estimated instalments set by the landlord in advance for each calendar year. Within
+    ______ days after the end of each year the landlord delivers a statement of the actual operating costs with
+    the tenant&rsquo;s share, and the parties settle the difference within 30 days. The tenant may inspect the
+    landlord&rsquo;s records supporting the statement on written request within ______ days after receiving it.
+    Utilities serving the premises are paid by: ______________________________</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA'}">In California, where the tenant is a qualified commercial tenant, the landlord may
+      charge a fee to recover building operating costs only if they are allocated proportionately per tenant,
+      by square footage or by another method substantiated by supporting documentation, have been incurred
+      within the previous 18 months or are reasonably expected to be incurred within the next 12 months, do not
+      include expenses paid by a tenant directly to a third party or reimbursed to the landlord, the landlord
+      gave the tenant, before the execution of this lease, a notice that the tenant may inspect the supporting
+      documentation on written request, and the landlord provides that documentation within 30 days of a
+      written request; the landlord may not change the allocation method to increase the tenant&rsquo;s share
+      without written notice and documentation, and a waiver of these rights is void (Civil Code &sect;
+      1950.9). That section applies to leases executed or renewed on or after 1 January 2025, to tenancies
+      from week to week, from month to month or for another period of less than 1 month, and to earlier leases that contain no provision on building operating
+      costs.</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-sales-tax" data-clause="sales-tax">
+  <p>Where the law of the state, county or city imposes a sales, rental, privilege or similar tax on the rent
+    or on other amounts payable under this lease, the tenant pays the tax together with the amount on which it
+    is imposed, unless the law requires the landlord to bear it. The tenant pays all taxes on its own
+    trade fixtures, equipment, inventory and other personal property at the premises.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays the landlord a security deposit of
+    <strong th:text="${depositAmount}">amount</strong> on signing this lease.</p>
+  <p th:if="${depositAmount == null}">The tenant pays the landlord a security deposit of the amount agreed
+    between the parties: ______________________________, on signing this lease. Instead of cash the tenant may
+    provide an irrevocable standby letter of credit from a bank acceptable to the landlord, if agreed here:
+    ______________</p>
+  <p>The deposit secures the performance of the tenant&rsquo;s obligations. If the tenant is in default, the
+    landlord may apply the deposit to amounts due and the tenant restores it to its full amount within 10 days
+    after written demand. The deposit does not bear interest unless the law of the state requires it, and the
+    landlord may commingle it with other funds unless that law provides otherwise. The landlord returns the
+    deposit, less amounts lawfully applied, within ______ days after the end of the lease and the surrender of
+    the premises, or within any shorter period the law of the state requires.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the base rent and all additional rent <span th:text="${paymentFrequency}">monthly</span>
+    in advance, <span th:if="${paymentDueDay != null}">no later than day
+    <strong th:text="${paymentDueDay}">1</strong> of each month</span><span
+    th:if="${paymentDueDay == null}">on the payment day agreed between the parties</span>, without demand,
+    deduction or set-off except as this lease or the law provides, by transfer to the account that the landlord
+    designates in writing. Rent for a partial month is prorated.</p>
+  <p>Any amount not paid within ______ days after it is due bears a late charge of ______% of the overdue
+    amount and interest at ______% per year, but never more than the maximum rate permitted by the law of the
+    state. All amounts payable by the tenant under this lease other than base rent are additional rent.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord maintains and repairs the structure, roof, foundation and exterior walls of the building, the
+    common areas and the building systems serving more than the premises, except as allocated otherwise here:
+    ______________________________. The tenant maintains and repairs the interior of the premises, its doors and
+    windows, and the systems exclusively serving the premises, keeps them in good condition and complies with
+    the maintenance contracts required here: ______________________________. Each party repairs damage caused by
+    its own negligence or that of its employees, agents and invitees.</p>
+  <p>The landlord may enter the premises at reasonable times on reasonable prior notice, and at any time in an
+    emergency, to inspect, repair, show the premises to prospective purchasers, lenders or (during the last
+    ______ months of the term) tenants, and exercise its rights under this lease, with as little interference
+    with the tenant&rsquo;s business as reasonably possible.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant may not make alterations, additions or improvements to the premises without the
+    landlord&rsquo;s prior written consent, which the landlord will not unreasonably withhold for non-structural
+    alterations that do not affect the building systems or the exterior. Approved work is performed by licensed
+    and insured contractors, under the required permits and in a good and workmanlike manner; the tenant keeps
+    the premises free of mechanics&rsquo; liens arising from its work.</p>
+  <p>Initial improvements and tenant improvement allowance, if any: ______________________________. At the end
+    of the lease the tenant removes its trade fixtures and, if the landlord so required when consenting, the
+    alterations, and repairs the damage caused by removal; other alterations become the landlord&rsquo;s
+    property.</p>
+</div>
+
+<div th:fragment="clause-accessibility" data-clause="accessibility">
+  <p>Both the landlord who owns the building that houses a place of public accommodation and the tenant who
+    owns or operates it are subject to Title III of the Americans with Disabilities Act; as between the
+    parties, responsibility for compliance may be allocated by the lease (28 CFR &sect; 36.201, subsection
+    (b)). The parties allocate it as follows: the landlord is responsible for the common areas and the
+    structure and the tenant for the interior of the premises, its alterations and its operations, unless agreed
+    otherwise here: ______________________________</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>California (Civil Code &sect; 1938): the premises [ ] have / [ ] have not undergone inspection by a
+        Certified Access Specialist (CASp). Where they have, the landlord has provided before execution a copy
+        of the CASp report, which the tenant keeps confidential except as necessary for repairs the tenant agrees
+        to make, and corrections of the violations noted in it are presumed to be the landlord&rsquo;s
+        responsibility unless the parties agree otherwise; if the report was not provided at least 48 hours
+        before execution, the tenant may rescind this lease, based on the information in the report, for 72
+        hours after execution.</p>
+      <p>Where the premises have not been issued a disability access inspection certificate: A Certified Access
+        Specialist (CASp) can inspect the subject premises and determine whether the subject premises comply
+        with all of the applicable construction-related accessibility standards under state law. Although state
+        law does not require a CASp inspection of the subject premises, the commercial property owner or lessor
+        may not prohibit the lessee or tenant from obtaining a CASp inspection of the subject premises for the
+        occupancy or potential occupancy of the lessee or tenant, if requested by the lessee or tenant. The
+        parties shall mutually agree on the arrangements for the time and manner of the CASp inspection, the
+        payment of the fee for the CASp inspection, and the cost of making any repairs necessary to correct
+        violations of construction-related accessibility standards within the premises. Agreed arrangements:
+        ______________________________</p>
+    </th:block>
+  </th:block>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not assign this lease, sublet all or part of the premises, or allow any other person to
+    occupy them without the landlord&rsquo;s prior written consent, which the landlord will not unreasonably
+    withhold, condition or delay. A transfer of a controlling interest in the tenant is treated as an
+    assignment, except a transfer to an affiliate or to a successor by merger with a net worth not lower than
+    that of the tenant, of which the tenant notifies the landlord in writing. An assignment or sublease does
+    not release the tenant from its obligations unless the landlord releases it in writing.</p>
+  <p>The landlord may transfer its interest in the premises; the transferee assumes the landlord&rsquo;s
+    obligations arising after the transfer, including the return of the deposit received by it.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant maintains during the term, at its cost, commercial general liability insurance with limits of
+    at least ______________ per occurrence and ______________ in the aggregate, naming the landlord (and its
+    lender, if requested) as additional insured, property insurance on its trade fixtures, equipment,
+    inventory and improvements for their full replacement cost, business interruption insurance and the
+    workers&rsquo; compensation insurance required by law. The landlord maintains property insurance on the
+    building for its full replacement cost. Each party delivers certificates of insurance on request.</p>
+  <p>To the extent a loss is covered by property insurance that a party carries or is required to carry, each
+    party waives its claims against the other for that loss and the policies will include a waiver of
+    subrogation. Subject to that waiver, the tenant indemnifies the landlord against claims arising from the
+    tenant&rsquo;s use of the premises or the acts or omissions of the tenant and its employees, agents and
+    invitees, and the landlord indemnifies the tenant against claims arising from the negligence or wilful
+    misconduct of the landlord and its employees and agents, in each case to the extent the law of the state
+    permits such indemnities.</p>
+</div>
+
+<div th:fragment="clause-subordination" data-clause="subordination">
+  <p>This lease is subordinate to any existing or future mortgage or deed of trust on the property, provided
+    that the holder agrees in a subordination, non-disturbance and attornment agreement (SNDA) in its customary
+    form that, so long as the tenant is not in default beyond any cure period, the tenant&rsquo;s possession
+    and rights under this lease will not be disturbed. The tenant attorns to any purchaser at a foreclosure
+    sale or by deed in lieu of foreclosure.</p>
+  <p>Within ______ days after written request, each party delivers to the other, or to a lender or purchaser
+    named by it, an estoppel certificate stating whether this lease is in full force, the rent and the date to
+    which it is paid, the deposit held and whether, to its knowledge, any default exists.</p>
+</div>
+
+<div th:fragment="clause-holdover" data-clause="holdover">
+  <p>If the tenant remains in possession after the end of the lease without the landlord&rsquo;s written
+    consent, the tenant is a tenant at sufferance and pays, for each month of holdover, or part of it, a
+    base rent equal to ______% of the monthly base rent payable immediately before the end of the lease (the
+    parties often agree 150%), together with all additional rent, and is liable for the damages caused by the
+    holdover. Acceptance of holdover rent does not renew or extend this lease. The holdover rent is an agreed
+    amount; where the law of the state limits or re-characterizes such amounts, that law applies.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>On delivery of possession the parties inspect the premises and sign a written statement of their
+    condition, with photographs and a list of any defects that the landlord must correct, and of the work to be
+    performed by each party before the rent commencement date. At the end of the lease the tenant surrenders
+    the premises broom clean and in the condition required by this lease, ordinary wear and tear and damage by
+    casualty the tenant is not required to repair excepted, and returns all keys and access devices.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Each of the following is an event of default by the tenant: failure to pay rent or another amount when due
+    that continues for ______ days after written notice; failure to perform another obligation that continues
+    for 30 days after written notice (or a longer period reasonably needed to cure, if the tenant begins the cure
+    within 30 days and pursues it diligently); abandonment of the premises; and the tenant&rsquo;s insolvency,
+    assignment for the benefit of creditors or the filing of a bankruptcy petition by or against it that is not
+    dismissed within 60 days, to the extent the law permits treating such an event as a default.</p>
+  <p>On an event of default the landlord may, after any notice that the law of the state requires, terminate
+    this lease or the tenant&rsquo;s right of possession and recover possession only through the court
+    procedure that the law of the state provides, and recover the rent due, the damages caused by the default
+    and the reasonable costs of re-letting, subject to any duty of the landlord under the law of the state to
+    mitigate its damages. Rent for the remainder of the term may be recovered in advance only to the extent the
+    law of the state permits and after deducting the rent that the landlord could reasonably obtain by
+    re-letting. The landlord&rsquo;s remedies are cumulative.</p>
+  <p>If the landlord fails to perform an obligation for 30 days after written notice from the tenant (or a
+    longer period reasonably needed to cure), the tenant may exercise the remedies that the law gives it.
+    Casualty and condemnation: if the premises are substantially damaged or taken and cannot be restored within
+    ______ days, either party may terminate this lease by written notice, and rent abates in proportion to the
+    part of the premises that cannot be used.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <p th:if="${st == 'CA' and !fixedTerm}">In California, where the tenant is a qualified commercial tenant
+      (as defined in Civil Code &sect; 827, subdivision (b)(7)(D)) and the term is not specified, the landlord
+      must give at least 60 days&rsquo; written notice to end the tenancy, or at least 30 days&rsquo; notice where
+      the tenant has occupied the premises for less than 1 year, and the tenant must give notice of at least the
+      length of the rental period (Civil Code &sect; 1946.1).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this lease are given in writing to the addresses below, or to another address that a party
+    designates by notice, by personal delivery, by a nationally recognized overnight courier or by certified
+    mail with return receipt, and are effective on delivery or refusal; a copy by email is given for
+    information. Landlord: ______________________________; tenant: ______________________________; copy to:
+    ______________________________</p>
+  <p>This lease and any amendment may be signed electronically and in counterparts; under the federal E-SIGN
+    Act a contract or signature may not be denied legal effect solely because it is in electronic form (15
+    U.S.C. &sect; 7001, subsection (a)).</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>The performance of the tenant&rsquo;s obligations is guaranteed by ______________________________
+    (the guarantor), under a separate written guaranty signed together with this lease, [ ] unlimited / [ ]
+    limited to ______________ / [ ] limited to the first ______ months of the term. The guarantor&rsquo;s
+    liability is not released by an amendment, extension, assignment or sublease of this lease, unless the
+    guaranty or the law of the state provides otherwise.</p>
+</div>
+
+<div th:fragment="clause-recording" data-clause="recording">
+  <p>This lease is not recorded. At the request of either party, the parties sign, in recordable form, a short
+    memorandum of lease identifying the parties, the premises, the term and any options or exclusive rights,
+    which the requesting party may record in the land records of the county in which the premises are located,
+    at its cost; on the end of the lease the tenant signs a release of the memorandum on request. Recording
+    requirements, transfer or documentary taxes, if any, are those of the state and county.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party uses the personal information of the other party&rsquo;s representatives and contact persons
+    only to enter into and administer this lease and to comply with the law, keeps it reasonably secure and
+    complies with any state privacy law that applies to it.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by the law of the state in which the premises are located. The courts of the
+    county in which the premises are located have jurisdiction, without prejudice to any mandatory rule of
+    jurisdiction. The party that prevails in a dispute about this lease recovers its reasonable attorney&rsquo;s
+    fees and costs from the other party.</p>
+  <p>To the extent the law of the state permits a pre-dispute waiver of trial by jury, each party waives trial by
+    jury in any action arising out of this lease or the use of the premises. Where such a waiver is not
+    enforceable, the parties may agree here on another method of resolving disputes that the law of the state
+    permits: ______________________________</p>
+  <p>This lease, with its exhibits, is the entire agreement of the parties on its subject; it may be amended only
+    in writing signed by both parties. If a provision is invalid, the remaining provisions remain in effect.</p>
+  <th:block th:with="st=${countryCode == 'US' and regionCode != null ? #strings.substringBefore(regionCode + '-', '-') : ''}">
+    <th:block th:if="${st == 'CA'}">
+      <p>In California, California courts have held that a pre-dispute contractual waiver of the right to a jury
+        trial is not enforceable (an interpretation of case law), so the waiver in the preceding paragraph does
+        not apply to premises in California; the attorney&rsquo;s fees provision applies to the entire lease and
+        to both parties, and any waiver of it is void (Civil Code &sect; 1717).</p>
+      <p>Where this lease covers nonresidential-zoned commercial space, is entered into with a qualified
+        commercial tenant on or after 1 January 2025 and was negotiated primarily in Spanish, Chinese, Tagalog,
+        Vietnamese or Korean by a landlord engaged in a trade or business, the landlord must deliver a translation
+        of every term in that language before it is signed (Civil Code &sect; 1632, subdivision (b)(8)).</p>
+    </th:block>
+  </th:block>
+</div>
+
+</body>
+</html>
