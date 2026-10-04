@@ -69,7 +69,6 @@ class LeaseNumberWordsTest {
                   "once a year",
                   "once per month"),
               List.of(
-                  "a month",
                   "an agreement between the parties",
                   "no one may enter",
                   "the tenants shall assist one another",
@@ -173,7 +172,7 @@ class LeaseNumberWordsTest {
                   "dans un délai de 14 jours",
                   "dans un délai raisonnable",
                   "chacune des deux parties",
-                  "une année civile",
+                  "la fin d’une année civile",
                   "résilier pour un jour convenu")),
           c(
               "es",
@@ -218,7 +217,7 @@ class LeaseNumberWordsTest {
                   "5 por ciento",
                   "un plazo de 14 días",
                   "las dos partes",
-                  "un año natural",
+                  "terminar un año natural",
                   "por un día convenido")),
           c(
               "pt",
@@ -262,7 +261,7 @@ class LeaseNumberWordsTest {
                   "um dos contraentes",
                   "um prazo de 14 dias",
                   "as duas partes",
-                  "um ano civil",
+                  "o termo de um ano civil",
                   "por um dia convenido")),
           c(
               "it",
@@ -308,7 +307,7 @@ class LeaseNumberWordsTest {
                   "un giorno che cada di domenica",
                   "un termine di 14 giorni",
                   "ciascuna delle due parti",
-                  "un anno solare",
+                  "la fine di un anno solare",
                   "per un giorno convenuto")),
           c(
               "sv",
@@ -592,8 +591,112 @@ class LeaseNumberWordsTest {
                   "de regels in acht nemen",
                   "een termijn van 14 dagen")));
 
+  /** Fix round 1: compound duration words, English a/an, Finnish translative, period nouns. */
+  static final List<Case> MORE_CASES =
+      List.of(
+          c(
+              "en",
+              List.of(
+                  "a month",
+                  "a week",
+                  "a year",
+                  "an agreement of a year",
+                  "within a day",
+                  "after an day",
+                  "half a year",
+                  "half-yearly",
+                  "a fortnight",
+                  "double the net rent",
+                  "triple the rent",
+                  "treble damages"),
+              List.of("a day that falls on a Sunday", "a calendar year", "a monthly statement")),
+          c(
+              "de",
+              List.of(
+                  "eine dreimonatige Frist",
+                  "zweijährig",
+                  "vierzehntägig",
+                  "einwöchig",
+                  "zweimonatlich",
+                  "die Dreimonatsfrist",
+                  "Zweijahresfrist"),
+              List.of("jährlich", "monatliche Zahlung", "eine mehrjährige Laufzeit")),
+          c(
+              "fr",
+              List.of(
+                  "huitaine",
+                  "quinzaine",
+                  "triennale",
+                  "biennal",
+                  "à raison d'un jour par semaine",
+                  "à raison d’une journée",
+                  "plus d’un jour",
+                  "moins d'un jour",
+                  "pendant une année civile",
+                  "dans un délai de neuf mois"),
+              List.of(
+                  "après la fin d’une année civile",
+                  "au cours d’une année civile",
+                  "trimestriel",
+                  "à raison de 14 jours")),
+          c(
+              "es",
+              List.of(
+                  "quincena",
+                  "bienal",
+                  "quinquenal",
+                  "durante un año natural",
+                  "durante un año civil"),
+              List.of("después de terminar un año natural", "trimestral", "fin de un año civil")),
+          c(
+              "pt",
+              List.of("quinzena", "bienal", "trienal", "durante um ano civil"),
+              List.of("após o termo de um ano civil", "trimestral")),
+          c(
+              "it",
+              List.of(
+                  "quindicina",
+                  "triennale",
+                  "biennale",
+                  "bimestre",
+                  "per un anno solare",
+                  "durante un anno civile"),
+              List.of("dopo la fine di un anno solare", "trimestrale")),
+          c(
+              "sv",
+              List.of("tremånaders uppsägningstid", "tvåårig", "femårigt avtal", "tvåveckors"),
+              List.of("årlig", "månatlig avgift")),
+          c(
+              "da",
+              List.of("tremåneders", "toårig", "treårig", "tougers frist"),
+              List.of("årlig", "månedlig betaling")),
+          c(
+              "nb",
+              List.of("tremåneders", "toårig", "treårig", "toukers frist"),
+              List.of("årlig", "månedlig betaling")),
+          c(
+              "fi",
+              List.of(
+                  "kaksivuotinen",
+                  "kolmikuukautinen",
+                  "kahdeksi vuodeksi",
+                  "kolmeksi kuukaudeksi",
+                  "viideksi päiväksi",
+                  "kolmena päivänä",
+                  "yhdeksi vuodeksi"),
+              List.of("vuosittain", "kuukausittain", "toistaiseksi voimassa")),
+          c(
+              "el",
+              List.of("τρίμηνη", "διετής", "εξάμηνη", "τριετία", "δεκαπενθήμερο"),
+              List.of("ετήσια", "μηνιαία")),
+          c(
+              "pl",
+              List.of("trzymiesięczny", "dwuletni", "trzytygodniowy", "czternastodniowy"),
+              List.of("roczny", "miesięczna opłata", "wieloletni")),
+          c("nl", List.of("twee"), List.of("jaarlijks", "maandelijks")));
+
   static Stream<Case> cases() {
-    return CASES.stream();
+    return Stream.concat(CASES.stream(), MORE_CASES.stream());
   }
 
   private static String fragment(String text) {

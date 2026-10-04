@@ -37,11 +37,21 @@ import java.util.regex.Pattern;
  * are not in the lists.
  *
  * <p>Also exempt, because they are not quantities of the kind the digits convention covers: "the
- * two parties" (fr "des deux parties", es "las dos partes", ...: the count of contracting parties),
- * "calendar year" nouns (fr "une année civile", es "un año natural", pt "um ano civil", it "un anno
- * solare"), and a frequency word that follows a digit ("1 kerran vuodessa", "1 raz w roku": the
+ * two parties" (the count of contracting parties), "calendar year" only in the article contexts
+ * where it names a period boundary ("after the end of a calendar year": fr "fin d'une année
+ * civile", es "terminar un año natural", pt "o termo de um ano civil", it "la fine di un anno
+ * solare"), so a real duration ("pendant une année civile", "durante un año natural") is still
+ * flagged, and a frequency word that follows a digit ("1 kerran vuodessa", "1 raz w roku": the
  * digit is the quantity). "For a day agreed for the payment" is an article use: the prepositions fr
  * "pour", es/pt "por", it "per" are not quantity cues.
+ *
+ * <p>Compound duration words are flagged too (de dreimonatig/zweijährig/vierzehntägig/
+ * Dreimonatsfrist, pl trzymiesięczny/dwuletni, fi kaksivuotinen/kolmikuukautinen, el
+ * τρίμηνη/διετής, sv tremånaders/tvåårig, da/nb tremåneders/toårig), as are the lexical period
+ * nouns (fr huitaine/quinzaine/biennal, es quincena/bienal, pt quinzena, it quindicina/triennale,
+ * en fortnight/half-yearly), English "a/an month|week|year" and half/double/triple/treble, and the
+ * Finnish translative/essive (kahdeksi vuodeksi, kolmeksi kuukaudeksi, kolmena päivänä). Pure
+ * frequency adjectives (trimestral, jährlich, jaarlijks, årlig) are not flagged.
  *
  * <p>Known limits: ordinals are not linted (the citation convention covers paragraph numbers
  * separately), nor are digits-in-words written as compounds not listed here. Dutch keeps the
@@ -75,7 +85,10 @@ final class LeaseNumberWords {
               "two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen"
                   + "|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty"
                   + "|seventy|eighty|ninety|hundred|thousand",
-              "twice|thrice|twofold|threefold|two-fold|three-fold",
+              "twice|thrice|twofold|threefold|two-fold|three-fold|double|triple|treble|quadruple",
+              "half(?:-| )(?:a |an )?(?:month|week|year|day|hour)s?|half-?yearly|fortnight(?:ly)?",
+              "(?:a|an) (?:month|week|year|fortnight)",
+              "(?:within|after|before|per|least|most|than|until) (?:a|an) day",
               "(?:within|after|before|per|than|least|most|exactly|only|until) one(?! another|['’])",
               "one (?:(?:calendar|working|business|full|whole|additional|further|extra|single) )*"
                   + "(?:day|week|month|year|hour|instalment|installment|period)s?",
@@ -105,6 +118,12 @@ final class LeaseNumberWords {
                   + "(?:ein|eine|einen|einem|einer|eines) (?:tag|tages|werktag|werktages"
                   + "|kalendertag|kalendertages|arbeitstag|arbeitstages)",
               "halb(?:e|es|en|er|em)? (?:jahr|jahres|monat|monats)",
+              "(?:ein|zwei|drei|vier|f(?:ü|ue)nf|sechs|sieben|acht|neun|zehn|elf|zw(?:ö|oe)lf"
+                  + "|dreizehn|vierzehn|f(?:ü|ue)nfzehn|zwanzig|drei(?:ß|ss)ig|sechzig|neunzig)"
+                  + "(?:monat|jähr|jahr|wöch|woch|täg|tag)ig\\p{L}*",
+              "(?:zwei|drei|vier|sechs|zw(?:ö|oe)lf)(?:monat|jahr|woch)lich",
+              "(?:ein|zwei|drei|vier|f(?:ü|ue)nf|sechs|sieben|acht|neun|zehn|zw(?:ö|oe)lf"
+                  + "|vierzehn|zwanzig|drei(?:ß|ss)ig)(?:monats|jahres|wochen|tages)\\p{L}*",
               "einmal (?:jährlich|monatlich|wöchentlich|täglich|pro|je|im|innerhalb|alle)"),
           true);
 
@@ -112,7 +131,7 @@ final class LeaseNumberWords {
       new Rule(
           idiom(
               "(?:des|les|aux|ces) deux (?:parties|contractants|époux)"
-                  + "|une année (?:civile|calendaire)"),
+                  + "|(?:fin|terme|cours|expiration|clôture) d['’]une année (?:civile|calendaire)"),
           lint(
               "deux|trois|quatre|cinq|six|sept|huit|dix|onze|douze|treize|quatorze|quinze|seize"
                   + "|vingt|trente|quarante|cinquante|soixante|septante|huitante|octante|nonante"
@@ -120,8 +139,9 @@ final class LeaseNumberWords {
               "neuf (?:jours?|mois|semaines?|ans?|années?|fois|euros?|heures?|mensualités?)",
               "(?:un|une) (?:mois|an|année|semaine|trimestre|semestre)",
               "(?:dans|sous|après|apres|avant|pendant|durant|par|chaque|au plus|au moins"
-                  + "|à raison d['’]|tous les) (?:un|une) jour",
-              "(?:moins|plus) d['’](?:un|une) jour",
+                  + "|tous les) (?:un|une) jour",
+              "(?:moins|plus|à raison) d['’](?:un|une) jour(?:née)?",
+              "huitaine|quinzaine|biennal\\p{L}*|triennal\\p{L}*|quinquennal\\p{L}*|décennal\\p{L}*",
               "une fois (?:par|chaque|tous les|l['’]an|l['’]année)",
               "(?:le|au) (?:double|triple)|(?:double|triple) exemplaire",
               "et demie?|demi-(?:mois|an|année|journée|heure|semaine)"),
@@ -129,12 +149,15 @@ final class LeaseNumberWords {
 
   private static final Rule ES =
       new Rule(
-          idiom("(?:las|estas) dos partes|un año (?:natural|civil|calendario)"),
+          idiom(
+              "(?:las|estas) dos partes|(?:terminar|finalizar|terminado|finalizado|cerrar|cerrado"
+                  + "|fin de|final de|término de|cierre de) un año (?:natural|civil|calendario)"),
           lint(
               "dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince"
                   + "|dieci(?:s[eé]is|siete|ocho|nueve)|veinte|veinti\\p{L}+|treinta|cuarenta"
                   + "|cincuenta|sesenta|setenta|ochenta|noventa|(?<!por )cien(?:to)?|mil",
               "(?:un|una|uno) (?:mes|meses|semana|año|trimestre|semestre)",
+              "quincena|bienal|trienal|cuatrienal|quinquenal|decenal|bimestr\\p{L}*",
               "(?:en|dentro de|cada|al menos|como mínimo|como máximo|más de|menos de|durante"
                   + "|tras|después de|antes de|pasado) (?:un|una) d[ií]a",
               "una vez (?:al|por|cada|a la|en cada)",
@@ -145,13 +168,17 @@ final class LeaseNumberWords {
 
   private static final Rule PT =
       new Rule(
-          idiom("(?:as|das|às|estas) duas partes|um ano (?:civil|calendário)"),
+          idiom(
+              "(?:as|das|às|estas) duas partes"
+                  + "|(?:termo|fim|final|encerramento) de um ano (?:civil|calendário)"
+                  + "|(?:terminar|findar|terminado|findo) um ano (?:civil|calendário)"),
           lint(
               "dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|catorze"
                   + "|quatorze|quinze|dezasseis|dezesseis|dezassete|dezessete|dezoito|dezanove"
                   + "|dezenove|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa"
                   + "|cem|(?<!por )cento|mil",
               "(?:um|uma) (?:m[eê]s|ano|semana|trimestre|semestre)",
+              "quinzena|bienal|trienal|quinquenal|decenal|bimestre",
               "(?:no|dentro de|em|cada|durante|ap[oó]s|antes de|at[eé]|mais de|menos de"
                   + "|pelo menos|no m[aá]ximo|a cada) (?:um|uma) dia",
               "uma vez (?:por|ao|a cada|em cada|cada)",
@@ -162,7 +189,9 @@ final class LeaseNumberWords {
 
   private static final Rule IT =
       new Rule(
-          idiom("(?:le|delle|alle|queste) due parti|un anno (?:solare|civile)"),
+          idiom(
+              "(?:le|delle|alle|queste) due parti"
+                  + "|(?:fine|termine|chiusura|scadenza) di un anno (?:solare|civile)"),
           lint(
               "due|tre|quattro|cinque|sei|sette|otto|nove|dieci|undici|dodici|tredici|quattordici"
                   + "|quindici|sedici|diciassette|diciotto|diciannove"
@@ -172,6 +201,8 @@ final class LeaseNumberWords {
                   + "|(?:trent|quarant|cinquant|sessant|settant|ottant|novant)un[oa]?"
                   + "|(?<!per )cento|mille|mila",
               "(?:un|uno|una) (?:mese|anno|settimana|trimestre|semestre)",
+              "quindicina|biennal\\p{L}*|triennal\\p{L}*|quadriennal\\p{L}*|quinquennal\\p{L}*"
+                  + "|decennal\\p{L}*|bimestr\\p{L}*",
               "(?:entro|dopo|prima di|ogni|almeno|al massimo|più di|meno di|durante|oltre"
                   + "|trascorso) (?:un|uno) giorno",
               "una volta (?:all['’]anno|l['’]anno|al mese|ogni|per anno|alla settimana|il mese)",
@@ -192,7 +223,9 @@ final class LeaseNumberWords {
               "(?:inom|efter|före|under|per|varje|minst|högst|längst|senast|mer än|mindre än"
                   + "|längre än|kortare än) en dag",
               "en gång (?:per|om|varje|i|årligen|under)",
-              "(?:ett )?halv(?:t|a)? (?:år|månad)|halvår"),
+              "(?:ett )?halv(?:t|a)? (?:år|månad)|halvår",
+              "(?:två|tre|fyra|fem|sex|sju|åtta|nio|tio|tolv|fjorton|femton|tjugo|trettio)"
+                  + "(?:månaders|månads|års|årig|veckors|veckas|dagars|dygns)\\p{L}*"),
           true);
 
   private static final Rule DA =
@@ -208,7 +241,9 @@ final class LeaseNumberWords {
               "(?:inden for|inden|efter|før|pr\\.|per|hver|mindst|højst|længst|senest|mere end"
                   + "|mindre end|længere end|kortere end|i) en dag",
               "en gang (?:om|pr|per|hver|årligt|årlig|i)",
-              "(?:et )?halvt år|halvår"),
+              "(?:et )?halvt år|halvår",
+              "(?:to|tre|fire|fem|seks|syv|otte|ni|ti|tolv)(?:måneders|måneds|års|årig|ugers|dages)"
+                  + "\\p{L}*"),
           true);
 
   private static final Rule NB =
@@ -223,7 +258,9 @@ final class LeaseNumberWords {
               "(?:innen|etter|før|per|pr\\.|hver|minst|høyst|maksimalt|senest|mer enn|mindre enn"
                   + "|lenger enn|kortere enn) en dag",
               "en gang (?:i|per|pr|hver|om|årlig)",
-              "(?:et )?halvt år|halvår"),
+              "(?:et )?halvt år|halvår",
+              "(?:to|tre|fire|fem|seks|sju|syv|åtte|ni|ti|tolv)"
+                  + "(?:måneders|måneds|års|årig|ukers|dagers)\\p{L}*"),
           true);
 
   private static final String FI_STEMS =
@@ -251,7 +288,13 @@ final class LeaseNumberWords {
                   + "|vuoden|vuotta|vuosi|viikko\\p{L}*|viikon|päivä|päivän|päivää|päivänä"
                   + "|kalenteripäivän|arkipäivän)",
               "(?<!\\d )kerran (?:vuodessa|kuukaudessa|viikossa|vuosittain|kuukausittain|päivässä)",
-              "puoli (?:vuotta|vuosi|kuukautta|vuoden)|puolivuotis\\p{L}*|puolen vuoden"),
+              "puoli (?:vuotta|vuosi|kuukautta|vuoden)|puolivuotis\\p{L}*|puolen vuoden",
+              "(?:yksi|kaksi|kolmi|kolme|neli|neljä|viisi|kuusi|seitsemän|kahdeksan|yhdeksän)"
+                  + "(?:vuoti|kuukauti|viikkoi|päiväi|vuotis|kuukausi|viikko|päivä)\\p{L}*",
+              "kahdeksi|kahtena|kolmeksi|kolmena|neljäksi|neljänä|viideksi|viitenä|kuudeksi"
+                  + "|kuutena|seitsemäksi|seitsemänä|kahdeksaksi|kahdeksana|yhdeksäksi|yhdeksänä"
+                  + "|kymmeneksi|kymmenenä",
+              "yhdeksi (?:vuodeksi|kuukaudeksi|viikoksi|päiväksi)"),
           true);
 
   private static final Rule EL =
@@ -270,7 +313,10 @@ final class LeaseNumberWords {
                   + "|χρόνο|χρόνου|εβδομάδα|εβδομάδας|τρίμηνο|εξάμηνο)",
               "(?:εντός|μετά|πριν|ανά|κάθε|τουλάχιστον|έως|μέχρι|για) "
                   + "(?:μία|μια|μιας|μίας|μίαν|ένα|ενός) (?:ημέρα|ημέρας|ημέρες|ημέραν|μέρα|μέρας)",
-              "(?:μία|μια) φορά (?:το|τον|ανά|κάθε|στο|στον|την|τη)"),
+              "(?:μία|μια) φορά (?:το|τον|ανά|κάθε|στο|στον|την|τη)",
+              "τρ[ίι]μην\\p{L}*|εξ[άα]μην\\p{L}*|δ[ίι]μην\\p{L}*|δωδεκ[άα]μην\\p{L}*"
+                  + "|(?:δι|τρι|τετρα|πεντα|εξα|δεκα)ετ\\p{L}*|δεκαπενθ[ήη]μερ\\p{L}*"
+                  + "|δεκαήμερ\\p{L}*"),
           true);
 
   private static final Rule PL =
@@ -297,7 +343,11 @@ final class LeaseNumberWords {
               "(?:w ciągu|po|przed|co|na|przez|nie później niż|nie wcześniej niż|co najmniej"
                   + "|najwyżej|więcej niż|mniej niż|do|nie dłużej niż|nie krócej niż) "
                   + "(?:jeden|jednego|jednym) (?:dzień|dnia|dniu|dniem)",
-              "(?<!\\d )raz (?:w|na|do) (?:roku|rok|miesiącu|miesiąc|kwartale|tygodniu|tydzień)"),
+              "(?<!\\d )raz (?:w|na|do) (?:roku|rok|miesiącu|miesiąc|kwartale|tygodniu|tydzień)",
+              "(?:jedno|dwu|trzy|cztero|pięcio|sześcio|siedmio|ośmio|dziewięcio|dziesięcio"
+                  + "|jedenasto|dwunasto|trzynasto|czternasto|piętnasto|dwudziesto|trzydziesto"
+                  + "|sześćdziesięcio|dziewięćdziesięcio)"
+                  + "(?:miesięczn|letn|tygodniow|dniow|godzinn|kwartaln)\\p{L}*"),
           true);
 
   private static final Rule NL =

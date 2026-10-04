@@ -61,10 +61,14 @@ import org.springframework.core.io.ClassPathResource;
  * net rent", "2 Kaltmieten", "2 fois le loyer de base", never "twice" or "zweifach"). {@code
  * nl.html} is itself checked for Dutch number words (whitespace tolerant), as is the authoritative
  * document of every registry entry in its own language ({@link LeaseNumberWords}, one rule set per
- * language). For Dutch: the article "een" is allowed ("een dag die valt", "een termijn van 2 jaar")
- * but "een" before maand/week/jaar, or after a quantity cue ("binnen een dag", "per een termijn"),
- * is a quantity; "in acht" is allowed only in the idiom "in acht nemen" (also "in acht die ...",
- * "... in acht." at the end of a clause), so "in acht weken" still flags.
+ * language). Not quantities in this sense, and therefore allowed spelled out in the non-Dutch
+ * lints: the count of contracting parties ("the two parties", fr "les deux parties", es "las dos
+ * partes", ...) and a "calendar year" noun where it only names a period boundary ("after the end of
+ * a calendar year"); see {@link LeaseNumberWords} for the exact exemptions. For Dutch: the article
+ * "een" is allowed ("een dag die valt", "een termijn van 2 jaar") but "een" before maand/week/jaar,
+ * or after a quantity cue ("binnen een dag", "per een termijn"), is a quantity; "in acht" is
+ * allowed only in the idiom "in acht nemen" (also "in acht die ...", "... in acht." at the end of a
+ * clause), so "in acht weken" still flags.
  */
 @DisplayName("lease document fidelity")
 class LeaseDocumentFidelityTest {
@@ -80,7 +84,6 @@ class LeaseDocumentFidelityTest {
   private static final Pattern TAG =
       Pattern.compile("<(/?)([a-zA-Z][\\w:-]*)(?:\"[^\"]*\"|'[^']*'|[^>\"'])*>");
   private static final Pattern ENTITY = Pattern.compile("&[#a-zA-Z0-9]+;");
-  private static final Pattern CITATION = Pattern.compile("\\d+:\\d+[a-z]?");
   private static final Pattern NUMBER = Pattern.compile("\\d+");
   private static final Pattern HEADER_ANCHOR =
       Pattern.compile(
@@ -94,8 +97,20 @@ class LeaseDocumentFidelityTest {
   private static final Pattern LID_AFTER_CITATION =
       Pattern.compile("^(?:[\\s,]+[^\\s\\d,]+){0,3}?[\\s,]+(?<![\\d:])(\\d+)(?![\\d:])");
 
-  /** All violations of {@code other} against the {@code authoritative} document. */
+  /**
+   * All violations of {@code other} against the {@code authoritative} document, with the Dutch
+   * citation format.
+   */
   static List<String> violations(String authoritative, String other) {
+    return violations(authoritative, other, Optional.of(LeaseDocumentRegistry.DUTCH_CITATION));
+  }
+
+  /**
+   * All violations of {@code other} against the {@code authoritative} document. {@code citation} is
+   * the entry's statute-reference format ({@link LeaseDocumentRegistry.Entry#citationPattern});
+   * when absent no citation pairing is done and every digit sequence is compared per element.
+   */
+  static List<String> violations(String authoritative, String other, Optional<Pattern> citation) {
     List<String> problems = new ArrayList<>(headerViolations(authoritative, other));
 
     Map<String, String> nlFragments = fragments(authoritative);
@@ -113,8 +128,14 @@ class LeaseDocumentFidelityTest {
           String otherBody = otherFragments.get(name);
           compare(problems, "expressions", name, structure(nlBody), structure(otherBody));
           compare(problems, "skeleton", name, skeleton(nlBody), skeleton(otherBody));
-          compare(problems, "citations", name, citations(nlBody), citations(otherBody));
-          compare(problems, "numbers", name, numbers(nlBody), numbers(otherBody));
+          compare(
+              problems,
+              "citations",
+              name,
+              citations(nlBody, citation),
+              citations(otherBody, citation));
+          compare(
+              problems, "numbers", name, numbers(nlBody, citation), numbers(otherBody, citation));
         });
     return problems;
   }
@@ -278,13 +299,25 @@ class LeaseDocumentFidelityTest {
    * reference with its lid number, {@code index: 7:249} one without.
    */
   static List<String> citations(String fragment) {
+    return citations(fragment, Optional.of(LeaseDocumentRegistry.DUTCH_CITATION));
+  }
+
+  /**
+   * As {@link #citations(String)} for a country's citation format; empty (no pairing) when the
+   * format is absent. Whitespace inside a token is dropped so "§ 556" equals "§556".
+   */
+  static List<String> citations(String fragment, Optional<Pattern> citation) {
     List<String> result = new ArrayList<>();
+    if (citation.isEmpty()) {
+      return result;
+    }
+    Pattern pattern = citation.get();
     for (Element element : elements(fragment)) {
       String text = ENTITY.matcher(element.ownText()).replaceAll(" ");
-      Matcher m = CITATION.matcher(text);
+      Matcher m = pattern.matcher(text);
       while (m.find()) {
         String rest = text.substring(m.end());
-        Matcher next = CITATION.matcher(rest);
+        Matcher next = pattern.matcher(rest);
         if (next.find()) {
           rest = rest.substring(0, next.start());
         }
@@ -293,7 +326,11 @@ class LeaseDocumentFidelityTest {
           rest = rest.substring(0, end.start());
         }
         Matcher lid = LID_AFTER_CITATION.matcher(rest);
-        result.add(element.index() + ": " + m.group() + (lid.find() ? " " + lid.group(1) : ""));
+        result.add(
+            element.index()
+                + ": "
+                + m.group().replaceAll("\\s+", "")
+                + (lid.find() ? " " + lid.group(1) : ""));
       }
     }
     Collections.sort(result);
@@ -302,10 +339,16 @@ class LeaseDocumentFidelityTest {
 
   /** Sorted multiset of the remaining digit sequences, keyed by the element holding them. */
   static List<String> numbers(String fragment) {
+    return numbers(fragment, Optional.of(LeaseDocumentRegistry.DUTCH_CITATION));
+  }
+
+  /** As {@link #numbers(String)}; citation tokens are excluded only when a format is given. */
+  static List<String> numbers(String fragment, Optional<Pattern> citation) {
     List<String> result = new ArrayList<>();
     for (Element element : elements(fragment)) {
       String text = ENTITY.matcher(element.ownText()).replaceAll(" ");
-      Matcher m = NUMBER.matcher(CITATION.matcher(text).replaceAll(" "));
+      String withoutCitations = citation.map(p -> p.matcher(text).replaceAll(" ")).orElse(text);
+      Matcher m = NUMBER.matcher(withoutCitations);
       while (m.find()) {
         result.add(element.index() + ": " + m.group());
       }
@@ -330,7 +373,7 @@ class LeaseDocumentFidelityTest {
     for (LeaseDocumentRegistry.Entry entry : LeaseDocumentRegistry.ENTRIES) {
       String authoritative = read(entry, entry.authoritativeLanguage());
       for (String language : entry.translations()) {
-        assertThat(violations(authoritative, read(entry, language)))
+        assertThat(violations(authoritative, read(entry, language), entry.citationPattern()))
             .as("%s/%s fidelity against %s", entry.key(), language, entry.authoritativeLanguage())
             .isEmpty();
       }
@@ -603,5 +646,68 @@ class LeaseDocumentFidelityTest {
           .as(word)
           .isNotEmpty();
     }
+  }
+
+  // ---- citation pattern of a non-Dutch country (the registry supplies it per entry) ----
+
+  private static final Optional<Pattern> DE_CITATION =
+      Optional.of(Pattern.compile("§\\s*\\d+[a-z]?"));
+
+  private static final String DE_AUTH =
+      "<!-- legal-basis: BGB x reviewed-by: none translation: authoritative -->\n"
+          + "<div th:fragment=\"clause-a\"><p>Nach § 556 Abs. 2 und § 557 Abs. 3 BGB.</p>"
+          + "<p>Siehe § 558a.</p></div>";
+
+  private static String deTranslation(String body) {
+    return "<!-- legal-basis: BGB x reviewed-by: none translation: machine-drafted -->\n"
+        + "<div th:fragment=\"clause-a\">"
+        + body
+        + "</div>";
+  }
+
+  @Test
+  @DisplayName("a DE-style citation pattern pairs a section with its paragraph digit")
+  void customCitationPatternPairsParagraphs() {
+    String good =
+        deTranslation("<p>Under § 556 para. 2 and § 557 para. 3 BGB.</p><p>See § 558a.</p>");
+    assertThat(violations(DE_AUTH, good, DE_CITATION)).isEmpty();
+    assertThat(citations("<p>Nach § 556 Abs. 2 und § 557 Abs. 3</p>", DE_CITATION))
+        .hasSize(2)
+        .anyMatch(c -> c.endsWith("§556 2"))
+        .anyMatch(c -> c.endsWith("§557 3"));
+  }
+
+  @Test
+  @DisplayName("paragraph digits swapped between two citations of one sentence are caught")
+  void customCitationPatternCatchesSwappedParagraphs() {
+    String swapped =
+        deTranslation("<p>Under § 556 para. 3 and § 557 para. 2 BGB.</p><p>See § 558a.</p>");
+    assertThat(violations(DE_AUTH, swapped, DE_CITATION))
+        .anyMatch(v -> v.startsWith("citations differ in clause-a"));
+  }
+
+  @Test
+  @DisplayName("reordering two citations within one sentence is allowed, moving one is not")
+  void customCitationPatternAllowsReordering() {
+    String reordered =
+        deTranslation("<p>Under § 557 para. 3 and § 556 para. 2 BGB.</p><p>See § 558a.</p>");
+    assertThat(violations(DE_AUTH, reordered, DE_CITATION)).isEmpty();
+    String moved =
+        deTranslation("<p>Under § 556 para. 2 BGB.</p><p>See § 557 para. 3 and § 558a.</p>");
+    assertThat(violations(DE_AUTH, moved, DE_CITATION))
+        .anyMatch(v -> v.startsWith("citations differ in clause-a"));
+  }
+
+  @Test
+  @DisplayName("without a citation pattern the digits are still compared per element")
+  void withoutCitationPatternDigitsStillCompared() {
+    String swapped =
+        deTranslation("<p>Under § 556 para. 3 and § 557 para. 2 BGB.</p><p>See § 558a.</p>");
+    // same multiset of digits in the same element: reordered digits cannot be told apart
+    assertThat(violations(DE_AUTH, swapped, Optional.empty())).isEmpty();
+    String changed =
+        deTranslation("<p>Under § 556 para. 2 and § 557 para. 4 BGB.</p><p>See § 558a.</p>");
+    assertThat(violations(DE_AUTH, changed, Optional.empty()))
+        .anyMatch(v -> v.startsWith("numbers differ in clause-a"));
   }
 }
