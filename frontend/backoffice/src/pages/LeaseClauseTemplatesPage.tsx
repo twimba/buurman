@@ -83,8 +83,9 @@ const emptyForm = (
 });
 
 /**
- * Backoffice management of the lease clause template library (BUUR-105). The clause bodies
- * seeded with this feature are placeholder legal-boilerplate text, not vetted legal content — see
+ * Backoffice management of the lease clause template library (BUUR-105). Residential and
+ * commercial clause sets exist for every catalog country as drafts, not vetted by counsel;
+ * other kinds use placeholder text — see
  * the banner below, which is load-bearing per the feature's own design doc and must stay visible
  * and non-dismissible on this page.
  */

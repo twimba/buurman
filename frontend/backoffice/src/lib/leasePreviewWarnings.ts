@@ -49,7 +49,7 @@ export const deriveWarnings = (
       id: 'example-text',
       severity: 'warning',
       message:
-        'Showing placeholder text: this country has no country document yet.',
+        'Showing placeholder text: this country has no document for this lease kind yet (only residential and commercial are covered).',
     });
   } else if (response.kindUsed && response.kindUsed !== requested.kind) {
     warnings.push({

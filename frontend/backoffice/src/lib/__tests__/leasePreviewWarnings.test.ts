@@ -43,7 +43,7 @@ describe('deriveWarnings', () => {
     );
     expect(w.map((x) => x.id)).toContain('example-text');
     expect(w.find((x) => x.id === 'example-text')?.message).toMatch(
-      /no country document yet/
+      /no document for this lease kind yet/
     );
   });
 
