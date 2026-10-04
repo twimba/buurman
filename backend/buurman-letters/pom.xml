@@ -61,31 +61,22 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Real Flyway + Postgres for LeaseDocumentCatalogDatabaseIntegrationTest. Docker must be
+             running. Flyway, the Postgres driver, jOOQ and the migrations come from buurman-core. -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-jdbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Publishes ONLY the lease document registry (the list of shipped documents that every
-                 gate runs over) so buurman-app's database consistency test shares it. The rest of
-                 the test classes and the test fixtures (fake countries) stay out of the jar. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>test-jar</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>com/buurman/service/letters/LeaseDocumentRegistry.class</include>
-                                <include>com/buurman/service/letters/LeaseDocumentRegistry$*.class</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

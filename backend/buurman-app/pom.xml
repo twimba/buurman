@@ -58,13 +58,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.buurman</groupId>
-            <artifactId>buurman-letters</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-jdbc</artifactId>
             <scope>test</scope>

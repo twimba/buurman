@@ -13,9 +13,8 @@ import com.buurman.util.DocumentLanguages;
 /**
  * The single list of shipped lease documents that every gate runs over: {@code
  * LeaseDocumentCatalogTest}, {@code LeaseDocumentFidelityTest}, {@code
- * TranslatedResidentialLeaseRenderTest}, {@code LeaseDocumentRegistryTest} and (through the
- * published test-jar of this module) {@code LeaseDocumentCatalogDatabaseIntegrationTest} in {@code
- * buurman-app}.
+ * TranslatedResidentialLeaseRenderTest}, {@code LeaseDocumentRegistryTest} and {@code
+ * LeaseDocumentCatalogDatabaseIntegrationTest}.
  *
  * <h2>Adding a country</h2>
  *

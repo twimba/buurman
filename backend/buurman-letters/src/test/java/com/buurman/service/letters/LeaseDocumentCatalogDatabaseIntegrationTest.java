@@ -1,4 +1,4 @@
-package com.buurman;
+package com.buurman.service.letters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,23 +33,21 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import com.buurman.domain.LeaseKind;
-import com.buurman.service.letters.LeaseDocumentRegistry;
 import com.buurman.service.letters.LeaseDocumentRegistry.ClauseSpec;
 import com.buurman.service.letters.LeaseDocumentRegistry.Entry;
 import com.buurman.util.DocumentLanguages;
 
 /**
  * The shipped lease documents and the Flyway-seeded {@code lease_clause_templates} rows must agree,
- * for every entry of {@link LeaseDocumentRegistry} (the registry is shared with the letters module
- * through its test-jar; adding a country is a registry entry, no change here): every {@code
- * clause-<key>} fragment of every enforced language is an active row for the same country and kind
- * and vice versa, the rows match the registry's clause specs (required, pinned, order), pinned
- * clauses sort first, and every row's title/summary key exists in all 13 bundles.
+ * for every entry of {@link LeaseDocumentRegistry} (adding a country is a registry entry, no change
+ * here): every {@code clause-<key>} fragment of every enforced language is an active row for the
+ * same country and kind and vice versa, the rows match the registry's clause specs (required,
+ * pinned, order), pinned clauses sort first, and every row's title/summary key exists in all 13
+ * bundles.
  *
- * <p>Lives here rather than in {@code buurman-letters} because only this module has both the letter
- * templates and Testcontainers on its test classpath. Mirrors the container setup of {@code
- * AbstractRepositoryIntegrationTest} but does not truncate, since it asserts on the seed. Docker
- * must be running.
+ * <p>Mirrors the container setup of {@code AbstractRepositoryIntegrationTest} (buurman-core)
+ * without depending on it, and does not truncate, since it asserts on the seed. Docker must be
+ * running.
  */
 @DisplayName("lease documents agree with the seeded clause templates")
 class LeaseDocumentCatalogDatabaseIntegrationTest {

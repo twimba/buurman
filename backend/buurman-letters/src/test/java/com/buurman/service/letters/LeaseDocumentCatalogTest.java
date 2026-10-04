@@ -34,10 +34,10 @@ import com.buurman.util.DocumentLanguages;
  * LeaseDocumentRegistry} (adding a country is a registry entry, no change here).
  *
  * <p>The database side (every fragment key is an active {@code lease_clause_templates} row for the
- * same country and kind, and vice versa) needs Flyway + Testcontainers, which this module does not
- * carry: it lives in {@code buurman-app} as {@code LeaseDocumentCatalogDatabaseIntegrationTest},
- * driven by the same registry. Here the same catalog is checked against the clause table the seed
- * migrations implement (the registry's clause specs mirror them).
+ * same country and kind, and vice versa) needs Flyway + Testcontainers: it is {@code
+ * LeaseDocumentCatalogDatabaseIntegrationTest}, driven by the same registry. Here the same catalog
+ * is checked against the clause table the seed migrations implement (the registry's clause specs
+ * mirror them).
  */
 @DisplayName("lease document catalog")
 class LeaseDocumentCatalogTest {
