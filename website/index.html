@@ -12,8 +12,9 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buurman - The Landlord Dashboard You'll Actually Use</title>
-    <meta name="description" content="Property management built for landlords. Track properties, tenants, contracts, rent compliance, and finances from one dashboard. Free plan available.">
+    <title>Buurman — The Landlord Dashboard You'll Actually Use</title>
+    <meta name="description" content="Property management for landlords with 1 to 50 rentals. Properties, tenants, contracts, rent and costs in one dashboard, with a live demo you can open without signing up.">
+    <link rel="canonical" href="https://buurman.io/">
 
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="assets/logo/favicon.ico">
@@ -24,16 +25,136 @@
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://buurman.io">
-    <meta property="og:title" content="Buurman - Property Management Made Simple">
-    <meta property="og:description" content="Simple, affordable property management for small landlords. Manage properties, tenants, and finances in one place.">
+    <meta property="og:site_name" content="Buurman">
+    <meta property="og:title" content="Buurman — The Landlord Dashboard You'll Actually Use">
+    <meta property="og:description" content="Properties, tenants, contracts, rent and costs in one dashboard. Open the live demo without signing up.">
     <meta property="og:image" content="https://buurman.io/assets/logo/og-image.png">
+    <meta property="og:image:width" content="1155">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Buurman - Property Management Made Simple">
-    <meta name="twitter:description" content="Simple, affordable property management for small landlords.">
+    <meta name="twitter:title" content="Buurman — The Landlord Dashboard You'll Actually Use">
+    <meta name="twitter:description" content="Properties, tenants, contracts, rent and costs in one dashboard. Open the live demo without signing up.">
     <meta name="twitter:image" content="https://buurman.io/assets/logo/social-post.png">
 
+    <link rel="preload" href="assets/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/home.css">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://buurman.io/#organization",
+      "name": "Buurman",
+      "url": "https://buurman.io/",
+      "logo": "https://buurman.io/assets/logo/logo_square.png",
+      "email": "hello@buurman.io",
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "hello@buurman.io",
+          "availableLanguage": [
+            "en",
+            "nl",
+            "pt",
+            "es",
+            "fr",
+            "de",
+            "it",
+            "sv",
+            "fi",
+            "el",
+            "pl",
+            "da",
+            "no"
+          ]
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://buurman.io/#website",
+      "url": "https://buurman.io/",
+      "name": "Buurman",
+      "publisher": {
+        "@id": "https://buurman.io/#organization"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://buurman.io/#app",
+      "name": "Buurman",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "Property management software",
+      "operatingSystem": "Web browser",
+      "url": "https://buurman.io/",
+      "description": "Property management for landlords with 1 to 50 rentals: properties, tenants, contracts, rent compliance, payments, expenses and financial reports in one dashboard.",
+      "screenshot": "https://buurman.io/assets/screenshots/app-dashboard.jpg",
+      "publisher": {
+        "@id": "https://buurman.io/#organization"
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "url": "https://buurman.io/#pricing"
+        },
+        {
+          "@type": "Offer",
+          "name": "Basic",
+          "price": "1",
+          "priceCurrency": "EUR",
+          "url": "https://buurman.io/#pricing",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "1",
+            "priceCurrency": "EUR",
+            "billingDuration": 1,
+            "billingIncrement": 1,
+            "unitText": "MONTH"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Big",
+          "price": "10",
+          "priceCurrency": "EUR",
+          "url": "https://buurman.io/#pricing",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "10",
+            "priceCurrency": "EUR",
+            "billingDuration": 1,
+            "billingIncrement": 1,
+            "unitText": "MONTH"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Mega",
+          "price": "50",
+          "priceCurrency": "EUR",
+          "url": "https://buurman.io/#pricing",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "50",
+            "priceCurrency": "EUR",
+            "billingDuration": 1,
+            "billingIncrement": 1,
+            "unitText": "MONTH"
+          }
+        }
+      ]
+    }
+  ]
+}
+    </script>
 </head>
 <body>
 
@@ -41,15 +162,20 @@
 <header class="header" id="header">
     <div class="container-wide">
         <div class="header-inner">
-            <a href="#" class="logo-link">
-                <img src="assets/logo/logo_horizontal.png" alt="Buurman" />
+            <a href="/" class="logo-link" aria-label="Buurman home">
+                <img src="assets/logo/logo-wordmark.png" width="226" height="96" alt="Buurman" />
             </a>
 
-            <nav class="nav">
-                <a href="#features" class="nav-link">Features</a>
-                <a href="#pricing" class="nav-link">Pricing</a>
-                <a href="https://app.buurman.io/login" class="nav-link">Sign In</a>
-                <a href="https://app.buurman.io/register" class="btn btn-primary" style="margin-left: 0.5rem;">Get Started</a>
+            <nav class="nav" aria-label="Main">
+                <a href="/#features" class="nav-link">Features</a>
+                <a href="/#pricing" class="nav-link">Pricing</a>
+                <a href="/changelog" class="nav-link">What's new</a>
+                <a href="https://app.buurman.io/login" class="nav-link">Sign in</a>
+                <a href="https://app.buurman.io/login?demo=true" class="btn btn-demo" data-demo-cta="nav">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Live demo
+                </a>
+                <a href="https://app.buurman.io/register" class="btn btn-primary">Get started</a>
             </nav>
 
             <button class="menu-toggle" onclick="document.getElementById('header').classList.toggle('menu-open')" aria-label="Toggle menu">
@@ -59,6 +185,8 @@
     </div>
 </header>
 
+<main id="main">
+
 <!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero">
     <div class="hero-orb hero-orb-1"></div>
@@ -66,103 +194,106 @@
 
     <div class="container-wide">
         <div class="hero-grid">
-            <div class="hero-text">
-                <div class="hero-badge">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l2.12 4.3 4.74.69-3.43 3.34.81 4.72L8 11.77l-4.24 2.23.81-4.72L1.14 5.94l4.74-.69L8 1z" fill="var(--accent)"/></svg>
-                    Early Access — Landlords Are Getting In
-                </div>
+            <div class="hero-lede">
+                <a class="hero-badge" href="/changelog">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+                    Every change we ship, in public
+                </a>
                 <h1>
                     The Landlord Dashboard<br>
                     <span class="gradient-text">You'll Actually Use</span>
                 </h1>
+            </div>
+
+            <div class="hero-aside">
                 <p class="hero-description">
-                    Properties, tenants, contracts, rent compliance, and finances &mdash; all in one place. Built for landlords with 1 to 50 units who want clarity, not complexity.
+                    Your properties, tenants, contracts and money in one place. Built for landlords with 1 to 50 rentals, not for management companies.
                 </p>
                 <div class="hero-buttons">
-                    <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg">Get Started Free</a>
-                    <a href="#pricing" class="btn btn-secondary btn-lg">View Pricing</a>
+                    <a href="https://app.buurman.io/login?demo=true" class="btn btn-primary btn-lg" data-demo-cta="hero">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Open the live demo
+                    </a>
+                    <a href="https://app.buurman.io/register" class="btn btn-secondary btn-lg">Create a free account</a>
                 </div>
-                <p class="hero-note">Generous free plan. No credit card required.</p>
-            </div>
-
-            <div class="hero-visual">
-                <div class="dashboard-frame">
-                    <div class="dashboard-titlebar">
-                        <div class="titlebar-dot titlebar-dot-red"></div>
-                        <div class="titlebar-dot titlebar-dot-yellow"></div>
-                        <div class="titlebar-dot titlebar-dot-green"></div>
-                        <div class="titlebar-url">app.buurman.io</div>
-                    </div>
-                    <div class="dashboard-body">
-                        <div class="dash-sidebar">
-                            <div class="dash-sidebar-logo"></div>
-                            <div class="dash-sidebar-item active"></div>
-                            <div class="dash-sidebar-item"></div>
-                            <div class="dash-sidebar-item"></div>
-                            <div class="dash-sidebar-item"></div>
-                            <div class="dash-sidebar-item"></div>
-                        </div>
-                        <div class="dash-main">
-                            <div class="dash-topbar">
-                                <div>
-                                    <div class="dash-title"></div>
-                                    <div class="dash-breadcrumb"></div>
-                                </div>
-                                <div class="dash-add-btn"></div>
-                            </div>
-                            <div class="dash-stats">
-                                <div class="dash-stat">
-                                    <div class="dash-stat-icon dash-stat-icon-blue"></div>
-                                    <div class="dash-stat-val"></div>
-                                    <div class="dash-stat-label"></div>
-                                </div>
-                                <div class="dash-stat">
-                                    <div class="dash-stat-icon dash-stat-icon-green"></div>
-                                    <div class="dash-stat-val"></div>
-                                    <div class="dash-stat-label"></div>
-                                </div>
-                                <div class="dash-stat">
-                                    <div class="dash-stat-icon dash-stat-icon-amber"></div>
-                                    <div class="dash-stat-val"></div>
-                                    <div class="dash-stat-label"></div>
-                                </div>
-                            </div>
-                            <div class="dash-chart">
-                                <div class="dash-chart-head">
-                                    <div class="dash-chart-title"></div>
-                                    <div class="dash-chart-legend">
-                                        <div class="dash-chart-legend-item"></div>
-                                        <div class="dash-chart-legend-item"></div>
-                                    </div>
-                                </div>
-                                <div class="dash-chart-bars">
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                    <div class="dash-chart-bar bar-blue"></div>
-                                    <div class="dash-chart-bar bar-light"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="floating-card">
-                    <div class="floating-card-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                    </div>
-                    <div class="floating-card-label">Monthly Revenue</div>
-                    <div class="floating-card-value">&euro;12,450</div>
-                </div>
+                <p class="hero-note">One click, no sign-up. Or start your own portfolio in about a minute.</p>
             </div>
         </div>
+
+        <div class="hero-visual">
+            <a class="app-shot app-shot--hero" href="https://app.buurman.io/login?demo=true" data-demo-cta="hero-screenshot">
+                <span class="app-shot-bar" aria-hidden="true">
+                    <span class="app-shot-dot app-shot-dot-red"></span>
+                    <span class="app-shot-dot app-shot-dot-yellow"></span>
+                    <span class="app-shot-dot app-shot-dot-green"></span>
+                    <span class="app-shot-url">app.buurman.io/dashboard</span>
+                </span>
+                <picture>
+                    <source media="(max-width: 700px)" type="image/avif" srcset="assets/screenshots/app-dashboard-mobile.avif">
+                    <source media="(max-width: 700px)" type="image/jpeg" srcset="assets/screenshots/app-dashboard-mobile.jpg">
+                    <source type="image/avif" srcset="assets/screenshots/app-dashboard.avif">
+                    <img src="assets/screenshots/app-dashboard.jpg" width="1680" height="1020"
+                         alt="The Buurman dashboard: a &euro;3,262,375 portfolio with total equity, monthly cash flow, weighted cap rate and occupancy, above a twelve-month income, expense and mortgage chart."
+                         fetchpriority="high" decoding="async">
+                </picture>
+                <span class="app-shot-open">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Open this dashboard in the demo
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ TRUST STRIP ═══════════════ -->
+<section class="trust" aria-label="How Buurman handles your data">
+    <div class="container-wide">
+        <ul class="trust-list">
+            <li class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                <span>Your data sits on servers in the EU, encrypted in transit and at rest.</span>
+            </li>
+            <li class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                <span>Translated into 13 languages, including Dutch, Portuguese, Spanish and German.</span>
+            </li>
+            <li class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Everything exports to Excel, PDF or Google Sheets, so you can leave when you want.</span>
+            </li>
+            <li class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <span>Uptime is published on a <a href="https://status.buurman.io" target="_blank" rel="noopener">public status page</a>.</span>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="section how" id="how-it-works">
+    <div class="container">
+        <div class="section-header reveal">
+            <h2>Three screens and your portfolio is in</h2>
+            <p>Nobody from sales will ring you. You put the first property in yourself and it takes a few minutes.</p>
+        </div>
+
+        <ol class="how-steps">
+            <li class="how-step reveal">
+                <span class="how-step-num">1</span>
+                <h3>Add a property</h3>
+                <p>Address, photos, what you paid, what the mortgage costs. The investment numbers start filling in the moment you save.</p>
+            </li>
+            <li class="how-step reveal">
+                <span class="how-step-num">2</span>
+                <h3>Attach the contract</h3>
+                <p>Tenant, term, rent, indexation. Buurman schedules the rent from that and tells you before the contract runs out.</p>
+            </li>
+            <li class="how-step reveal">
+                <span class="how-step-num">3</span>
+                <h3>Mark rent paid</h3>
+                <p>One click. That&rsquo;s what feeds the cash flow chart, the occupancy figure, the overdue list, and the reports your accountant wants in January.</p>
+            </li>
+        </ol>
     </div>
 </section>
 
@@ -170,7 +301,7 @@
 <section class="section section-alt" id="features">
     <div class="container">
         <div class="section-header reveal">
-            <h2 class="section-heading--features">Everything You Need. <span class="gradient-text">Nothing You Don't.</span></h2>
+            <h2 class="section-heading--features">What&rsquo;s <span class="gradient-text">in it</span></h2>
             <p>Built for landlords who'd rather collect rent than wrestle software.</p>
         </div>
 
@@ -180,8 +311,8 @@
                 <div class="feature-icon-wrap icon-blue">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
-                <h3>Properties &amp; Portfolio</h3>
-                <p>Every property, one dashboard. Details, photos, documents, and a full investment view &mdash; ROI, cap rate, cash flow charts, and side-by-side comparison across your entire portfolio.</p>
+                <h3>Properties</h3>
+                <p>Photos, documents, and the numbers that tell you whether it was a good buy: ROI, cap rate, cash flow. A building can hold several units, each with its own tenant, rent and contract, and a shared cost like a roof repair splits across them. A chart ranks everything you own by what it returns, so the one dragging is obvious.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -221,8 +352,8 @@
                 <div class="feature-icon-wrap icon-blue">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 </div>
-                <h3>Contacts &amp; Relationships</h3>
-                <p>Tenants, contractors, service providers &mdash; everyone connected to your properties, in one place. Add notes with follow-up reminders, tag contacts, and track who's linked to whom.</p>
+                <h3>Contacts</h3>
+                <p>Tenants, the plumber, the accountant, whoever services the boiler. Keep notes on them, set a reminder to follow something up, and see which property each one is attached to. Give a tenant their own language and Buurman emails them in it.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -258,8 +389,8 @@
                 <div class="feature-icon-wrap icon-green">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>
                 </div>
-                <h3>Contracts &amp; Renewals</h3>
-                <p>The full contract lifecycle &mdash; create, renew, extend. Set automatic or manual renewals, track rent adjustments, and use advisory defaults for 7 European countries to speed up setup.</p>
+                <h3>Contracts</h3>
+                <p>Create a lease, renew it, extend it, end it. Buurman drafts the lease agreement for 21 countries in the local language &mdash; a starting point to take to your lawyer, not a replacement for one. Renewals run on their own or wait for your approval, rent adjustments are tracked, and every change to a contract lands on one timeline.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -315,8 +446,8 @@
                 <div class="feature-icon-wrap icon-blue">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                 </div>
-                <h3>Finances &amp; Reports</h3>
-                <p>Income, expenses, and payments &mdash; tracked and tidy. Export transaction data to Excel, CSV, Google Sheets, or PDF, and get notified when payments are overdue so nothing slips through.</p>
+                <h3>Money</h3>
+                <p>What came in, what went out, what&rsquo;s still owed. Any of it exports to Excel, CSV, Google Sheets or PDF. You get an email when rent is late.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -362,8 +493,8 @@
                 <div class="feature-icon-wrap icon-amber">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                 </div>
-                <h3>Rent Regulation</h3>
-                <p>Rent increase guidance for 20 countries. Built-in rate limits, a step-by-step adjustment wizard, and retroactive corrections &mdash; stay informed without needing a law degree.</p>
+                <h3>Rent rules</h3>
+                <p>Rent increase guidance for 20 countries, with the legal caps already in. There&rsquo;s a wizard for putting a rise through, and it&rsquo;ll correct one retroactively if you got it wrong.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -409,8 +540,8 @@
                 <div class="feature-icon-wrap icon-green">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                 </div>
-                <h3>Secure &amp; Private</h3>
-                <p>Your data belongs to you. Full stop. Export everything with Buurman Takeout, push your portfolio straight into Google Sheets, erase contact data for GDPR compliance, or download your records as PDF and Excel. No lock-in, ever.</p>
+                <h3>Your data</h3>
+                <p>The data is yours. Take all of it out at once with Buurman Takeout, push the portfolio into Google Sheets, or download PDFs and spreadsheets. When a tenant asks you to erase their details, you can do that properly.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -448,8 +579,8 @@
                 <div class="feature-icon-wrap icon-blue">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                 </div>
-                <h3>Notifications &amp; Reminders</h3>
-                <p>Overdue payments, expiring contracts, upcoming renewals &mdash; Buurman alerts you by email or SMS before things slip through the cracks. Smart digests bundle multiple alerts into one message, so your inbox stays clean.</p>
+                <h3>Reminders</h3>
+                <p>Email or SMS when rent goes overdue or a contract is about to expire. If several things happen at once they turn up as one message instead of six.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -484,8 +615,8 @@
                 <div class="feature-icon-wrap icon-amber">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 </div>
-                <h3>Documents &amp; Photos</h3>
-                <p>Contracts, invoices, inspection photos &mdash; securely stored and linked to the right property or contact. Access them from anywhere, and your whole team sees the same files automatically.</p>
+                <h3>Documents</h3>
+                <p>Leases, invoices, the photos from the last inspection. Each file is attached to a property or a person, and everyone on your team sees the same thing.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -525,8 +656,8 @@
                 <div class="feature-icon-wrap icon-gradient">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
-                <h3>Built to Evolve</h3>
-                <p>We ship improvements every week, shaped by what landlords actually ask for. Early access means your feedback directly influences what we build next.</p>
+                <h3>What comes next</h3>
+                <p>Buurman is early. Most of what gets built next comes out of emails from the landlords already using it, so if something you need is missing, tell us.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -557,26 +688,137 @@
     </div>
 </section>
 
-<!-- ═══════════════ DEMO BANNER ═══════════════ -->
-<section class="demo-banner">
-    <div class="demo-starburst">&#9734; As Seen on Your Screen! &#9734;</div>
-    <h2 class="demo-headline">See It in <em>Action</em></h2>
-    <p class="demo-subtext">
-        Don't just take our word for it &mdash; take it for a spin. Explore a fully loaded demo with real data and see how it works.
-    </p>
-    <a href="https://app.buurman.io/login?demo=true" class="demo-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Try the Live Demo &mdash; Free!
-    </a>
-    <p class="demo-fine-print">One click and you're in. No sign-up. No credit card. No commitment.</p>
+<!-- ═══════════════ SHOWCASE ═══════════════ -->
+<section class="section showcase" id="demo">
+    <div class="container-wide">
+        <div class="section-header reveal">
+            <h2>Have a look around</h2>
+            <p>Properties, contracts, rent and costs. These are the four you&rsquo;ll open most. Click any of them to land on the real thing.</p>
+        </div>
+
+        <div class="showcase-grid">
+            <figure class="showcase-card reveal">
+                <a class="app-shot app-shot--sm" href="https://app.buurman.io/login?demo=true" data-demo-cta="showcase-properties">
+                    <span class="app-shot-bar" aria-hidden="true">
+                        <span class="app-shot-dot app-shot-dot-red"></span>
+                        <span class="app-shot-dot app-shot-dot-yellow"></span>
+                        <span class="app-shot-dot app-shot-dot-green"></span>
+                        <span class="app-shot-url">app.buurman.io/properties</span>
+                    </span>
+                    <picture>
+                        <source type="image/avif" srcset="assets/screenshots/app-properties.avif" width="1240" height="800">
+                        <img src="assets/screenshots/app-properties.jpg" width="1240" height="800" loading="lazy" decoding="async"
+                             alt="The Buurman properties screen: a grid of property cards with photographs, occupancy badges, addresses in Milan, Haarlem, Porto, Valencia, Utrecht and Berlin, and bedroom, bathroom and floor-area figures.">
+                    </picture>
+                    <span class="app-shot-open">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Open in the demo
+                    </span>
+                </a>
+                <figcaption>
+                    <h3>Properties</h3>
+                    <p>Ten properties in five countries, each with its photos, floor area and its own set of numbers.</p>
+                </figcaption>
+            </figure>
+            <figure class="showcase-card reveal">
+                <a class="app-shot app-shot--sm" href="https://app.buurman.io/login?demo=true" data-demo-cta="showcase-payments">
+                    <span class="app-shot-bar" aria-hidden="true">
+                        <span class="app-shot-dot app-shot-dot-red"></span>
+                        <span class="app-shot-dot app-shot-dot-yellow"></span>
+                        <span class="app-shot-dot app-shot-dot-green"></span>
+                        <span class="app-shot-url">app.buurman.io/payments</span>
+                    </span>
+                    <picture>
+                        <source type="image/avif" srcset="assets/screenshots/app-payments.avif" width="1240" height="800">
+                        <img src="assets/screenshots/app-payments.jpg" width="1240" height="800" loading="lazy" decoding="async"
+                             alt="The Buurman payments screen: €43,845 pending and €5,270 overdue, above a table of rent payments with due dates, tenants, amounts and paid or overdue status.">
+                    </picture>
+                    <span class="app-shot-open">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Open in the demo
+                    </span>
+                </a>
+                <figcaption>
+                    <h3>Payments</h3>
+                    <p>What&rsquo;s pending and what&rsquo;s late sit at the top, every scheduled payment underneath. Mark one paid and the dashboard updates.</p>
+                </figcaption>
+            </figure>
+            <figure class="showcase-card reveal">
+                <a class="app-shot app-shot--sm" href="https://app.buurman.io/login?demo=true" data-demo-cta="showcase-contracts">
+                    <span class="app-shot-bar" aria-hidden="true">
+                        <span class="app-shot-dot app-shot-dot-red"></span>
+                        <span class="app-shot-dot app-shot-dot-yellow"></span>
+                        <span class="app-shot-dot app-shot-dot-green"></span>
+                        <span class="app-shot-url">app.buurman.io/contracts</span>
+                    </span>
+                    <picture>
+                        <source type="image/avif" srcset="assets/screenshots/app-contracts.avif" width="1240" height="800">
+                        <img src="assets/screenshots/app-contracts.jpg" width="1240" height="800" loading="lazy" decoding="async"
+                             alt="The Buurman contracts screen: twenty-one lease cards showing city, tenant, contract type, start and end dates, and monthly rent in euros.">
+                    </picture>
+                    <span class="app-shot-open">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Open in the demo
+                    </span>
+                </a>
+                <figcaption>
+                    <h3>Contracts</h3>
+                    <p>Fixed-term and open-ended leases, with the end date and the rent on the card. You get a warning before one expires.</p>
+                </figcaption>
+            </figure>
+            <figure class="showcase-card reveal">
+                <a class="app-shot app-shot--sm" href="https://app.buurman.io/login?demo=true" data-demo-cta="showcase-expenses">
+                    <span class="app-shot-bar" aria-hidden="true">
+                        <span class="app-shot-dot app-shot-dot-red"></span>
+                        <span class="app-shot-dot app-shot-dot-yellow"></span>
+                        <span class="app-shot-dot app-shot-dot-green"></span>
+                        <span class="app-shot-url">app.buurman.io/expenses</span>
+                    </span>
+                    <picture>
+                        <source type="image/avif" srcset="assets/screenshots/app-expenses.avif" width="1240" height="800">
+                        <img src="assets/screenshots/app-expenses.jpg" width="1240" height="800" loading="lazy" decoding="async"
+                             alt="The Buurman expenses screen: €243,480 of total expenses across ten categories, with insurance, property taxes and repairs broken out above an itemised expense table.">
+                    </picture>
+                    <span class="app-shot-open">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Open in the demo
+                    </span>
+                </a>
+                <figcaption>
+                    <h3>Expenses</h3>
+                    <p>Every cost filed against a property, so the year-end total is already sitting there.</p>
+                </figcaption>
+            </figure>
+        </div>
+
+        <div class="showcase-cta reveal">
+            <a href="https://app.buurman.io/login?demo=true" class="btn btn-primary btn-lg" data-demo-cta="showcase">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Open the live demo
+            </a>
+            <p>Takes one click.</p>
+        </div>
+    </div>
 </section>
 
 <!-- ═══════════════ PRICING ═══════════════ -->
+<!--
+  Plan limits below are stated in UNITS, matching the billing decision recorded in
+  docs/superpowers/specs/2026-09-26-units-multi-unit-buildings-design.md ("each unit
+  counts, implicit units included") and the billableUnitCount that TeamService exposes.
+
+  STILL OUT OF SYNC: frontend/app/src/components/settings/SubscriptionSection.tsx
+  says "1 Property" / "5 Properties" / "Unlimited Properties" and renders a
+  currentProperties/propertiesLimit progress bar. It is mock data today, but a
+  signed-in user reading it will see different limits from this page. Fixing it
+  properly also means the subscription.currentPlan.properties key across all 13
+  locales, which CI gates for parity.
+-->
 <section class="section" id="pricing">
     <div class="container-wide">
         <div class="section-header reveal">
-            <h2>Simple, Honest Pricing</h2>
-            <p>Start free. Upgrade when you're ready. No hidden fees.</p>
+            <h2>Pricing</h2>
+            <p>Start free and move up when you outgrow it. Plans count rentable units: a house or a flat is one unit, a building with five flats is five.</p>
         </div>
 
         <div class="pricing-toggle reveal">
@@ -595,8 +837,8 @@
                 <div class="pricing-price" data-annual="0" data-monthly="0">&euro;0 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Perfect to get started</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
-                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member <span style="display:inline-flex;align-items:center;gap:3px;margin-left:4px;background:linear-gradient(135deg,#fcc419,#f59f00);color:#fff;font-size:0.6875rem;font-weight:700;padding:1px 7px;border-radius:9px;letter-spacing:0.02em;white-space:nowrap;">that's you!</span></li>
+                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 unit</li>
+                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Community Support</li>
                     <li style="color: #e03131;"><span class="check-icon" style="background: rgba(224, 49, 49, 0.1); color: #e03131;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>No Documents or Photos</li>
@@ -611,7 +853,7 @@
                 <div class="pricing-price" data-annual="1" data-monthly="1.99">&euro;1 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;12</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 unit</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>200 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
@@ -628,12 +870,13 @@
                 <div class="pricing-price" data-annual="10" data-monthly="12.99">&euro;10 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;120</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 units</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Team Members</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1,000 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Excel</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Google Sheets</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>E&#8209;signature <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:0.625rem;font-weight:700;cursor:help;">&#9733;</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Coming soon<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>SMS Notifications <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:0.625rem;font-weight:700;cursor:help;">?</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Subject to fair usage policy<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Email Support</li>
                 </ul>
@@ -646,12 +889,13 @@
                 <div class="pricing-price" data-annual="50" data-monthly="65.99">&euro;50 <span class="period">/month</span></div>
                 <p class="pricing-subtitle pricing-billed">Billed annually at &euro;600</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited units</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Team Members</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5,000 Documents or Photos</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Advanced Reports <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:0.625rem;font-weight:700;cursor:help;">&#9733;</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Coming soon<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Excel</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Google Sheets</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>E&#8209;signature <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:0.625rem;font-weight:700;cursor:help;">&#9733;</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Coming soon<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>SMS Notifications <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:0.625rem;font-weight:700;cursor:help;">?</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#f5f5f4;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Subject to fair usage policy<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>API Access</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Email Support</li>
@@ -677,7 +921,7 @@
                 </div>
                 <div class="pricing-note-text">
                     <strong>Not the right fit? Money back.</strong>
-                    Full refund within 30 days, no questions asked. <a href="/refund.html" style="color: var(--primary); text-decoration: underline;">Refund policy</a>
+                    Full refund within 30 days, no questions asked. <a href="/refund" style="color: var(--primary); text-decoration: underline;">Refund policy</a>
                 </div>
             </div>
         </div>
@@ -689,14 +933,17 @@
     <div class="cta-orb cta-orb-1"></div>
     <div class="cta-orb cta-orb-2"></div>
     <div class="cta-content">
-        <h2>Spend Less Time Managing. More Time Growing.</h2>
-        <p>Join the landlords who got in early. Free account, under a minute.</p>
+        <h2>Put your first property in</h2>
+        <p>Or look around the demo first. Either way it&rsquo;s about a minute.</p>
         <div class="cta-buttons">
-            <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg">Get Started Free</a>
-            <a href="mailto:hello@buurman.io" class="btn btn-secondary btn-lg">Contact Us</a>
+            <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg">Create a free account</a>
+            <a href="https://app.buurman.io/login?demo=true" class="btn btn-secondary btn-lg" data-demo-cta="footer-cta">Open the live demo</a>
         </div>
+        <p class="cta-note">Questions first? <a href="/contact">Write to us</a>. A person answers.</p>
     </div>
 </section>
+
+</main>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
 <footer class="footer">
@@ -708,29 +955,30 @@
             </div>
 
             <div class="footer-col">
-                <h4>Product</h4>
+                <h3>Product</h3>
                 <ul class="footer-links">
                     <li><a href="/#features">Features</a></li>
                     <li><a href="/#pricing">Pricing</a></li>
-                    <li><a href="/changelog.html">What's New</a></li>
+                    <li><a href="https://app.buurman.io/login?demo=true" data-demo-cta="footer">Live demo</a></li>
+                    <li><a href="/changelog">What's new</a></li>
                     <li><a href="https://status.buurman.io" target="_blank" rel="noopener">Status</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h4>Legal</h4>
+                <h3>Legal</h3>
                 <ul class="footer-links">
-                    <li><a href="/terms.html">Terms &amp; Conditions</a></li>
-                    <li><a href="/privacy.html">Privacy Policy</a></li>
-                    <li><a href="/refund.html">Refund Policy</a></li>
+                    <li><a href="/terms">Terms &amp; Conditions</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/refund">Refund Policy</a></li>
                 </ul>
             </div>
 
             <div class="footer-col">
-                <h4>Reach Out</h4>
+                <h3>Get in touch</h3>
                 <ul class="footer-links">
-                    <li><a href="/contact.html">Contact</a></li>
-                    <li><a href="/support.html">Support</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/support">Support</a></li>
                     <li><a href="mailto:hello@buurman.io">hello@buurman.io</a></li>
                 </ul>
             </div>
@@ -738,7 +986,7 @@
 
         <div class="footer-bottom">
             <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
-            <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe></div>
+            <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" loading="lazy" title="Buurman service status" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe></div>
             <div class="footer-contact">
                 <a href="mailto:hello@buurman.io">hello@buurman.io</a>
             </div>
@@ -746,9 +994,9 @@
     </div>
 </footer>
 
-<script src="assets/js/main.js"></script>
-<script src="assets/js/pricing.js"></script>
-<script src="assets/js/konami.js"></script>
+<script src="assets/js/main.js" defer></script>
+<script src="assets/js/pricing.js" defer></script>
+<script src="assets/js/konami.js" defer></script>
 
     <script src="https://uptime.betterstack.com/widgets/announcement.js" data-id="238636" async="async" type="text/javascript"></script>
 </body>

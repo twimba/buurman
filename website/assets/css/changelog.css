@@ -545,7 +545,7 @@
 /* Inline links within cards */
 .feature-entry a,
 .compact-list a {
-    color: var(--primary);
+    color: var(--primary-dark);
     text-decoration: underline;
     text-decoration-color: rgba(2, 132, 199, 0.3);
     text-underline-offset: 2px;

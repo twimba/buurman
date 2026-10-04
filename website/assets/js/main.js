@@ -44,3 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     els.forEach(function (el) { observer.observe(el); });
 });
+
+/* Demo click attribution — which placement actually sends people into the
+   demo. Fires a GA4 event with the placement from data-demo-cta. */
+document.addEventListener('click', function (event) {
+    var link = event.target.closest ? event.target.closest('[data-demo-cta]') : null;
+    if (!link || typeof window.gtag !== 'function') { return; }
+
+    window.gtag('event', 'demo_open', {
+        placement: link.getAttribute('data-demo-cta'),
+        page: window.location.pathname
+    });
+});
