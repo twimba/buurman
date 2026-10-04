@@ -48,8 +48,6 @@ class LeaseDocumentCatalogTest {
   private static final Pattern CLAUSE_KEY = Pattern.compile("^[a-z0-9-]{1,64}$");
   private static final Pattern FILE =
       Pattern.compile(".*/lease-agreement/([A-Z]{2})/([a-z-]+)/([a-z]{2})\\.html$");
-  private static final List<String> HEADER_MARKERS =
-      List.of("legal-basis:", "reviewed-by:", "translation:");
 
   /** "NL/residential" -> language -> document resource; test fixtures are skipped. */
   private static Map<String, Map<String, Resource>> discover() throws IOException {
@@ -156,7 +154,7 @@ class LeaseDocumentCatalogTest {
             .as("%s/%s starts with a comment", entry.key(), language)
             .startsWith("<!--");
         String header = html.substring(0, html.indexOf("-->"));
-        for (String marker : HEADER_MARKERS) {
+        for (String marker : LeaseDocumentText.HEADER_MARKERS) {
           assertThat(header).as("%s/%s header", entry.key(), language).contains(marker);
         }
       }
@@ -171,16 +169,12 @@ class LeaseDocumentCatalogTest {
     Map<String, Map<String, Resource>> found = discover();
     for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
       for (String language : entry.enforcedLanguages()) {
-        String html = read(document(found, entry, language)).stripLeading();
-        String header = html.substring(0, html.indexOf("-->"));
-        String what = entry.key() + "/" + language + " header";
-        assertThat(header).as(what).containsPattern("reviewed-by:\\s*none");
-        if (language.equals(entry.authoritativeLanguage())) {
-          assertThat(header).as(what).containsPattern("translation:\\s*authoritative");
-        } else {
-          assertThat(header).as(what).containsPattern("translation:\\s*machine-drafted");
-          assertThat(header).as(what).doesNotContainPattern("translation:\\s*authoritative");
-        }
+        String header = LeaseDocumentText.header(read(document(found, entry, language)));
+        assertThat(
+                LeaseDocumentText.headerPolicyViolations(
+                    header, language.equals(entry.authoritativeLanguage())))
+            .as("%s/%s header policy", entry.key(), language)
+            .isEmpty();
       }
     }
   }

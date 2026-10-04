@@ -396,16 +396,14 @@ final class LeaseNumberWords {
                     new IllegalArgumentException(
                         "no number-word rules for language '" + language + "'"));
     List<String> problems = new ArrayList<>();
-    LeaseDocumentFidelityTest.fragments(html)
+    LeaseDocumentText.fragments(html)
         .forEach(
             (name, body) -> {
-              String prose = LeaseDocumentFidelityTest.prose(body);
+              String prose = LeaseDocumentText.prose(body);
               if (rule.normalize()) {
                 prose = prose.replaceAll("[\\s\\u00a0]+", " ");
               }
-              if (rule.idioms() != null) {
-                prose = rule.idioms().matcher(prose).replaceAll(" ");
-              }
+              prose = rule.idioms().matcher(prose).replaceAll(" ");
               Matcher m = rule.words().matcher(prose);
               while (m.find()) {
                 problems.add("number word in " + name + ": " + m.group());

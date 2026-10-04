@@ -250,7 +250,7 @@ public class LeaseAgreementExporter {
       LeaseRenderInput input,
       List<ResolvedLeaseClauseResponse> includedClauses,
       List<ResolvedLeaseClauseResponse> allClauses) {
-    Map<String, Object> variables = variables(input, plan.locale(), !plan.legacy(), plan.country());
+    Map<String, Object> variables = variables(input, plan.locale());
     if (plan.legacy()) {
       variables.put("clauses", legacyClauses(includedClauses));
       return new AssembledLease(
@@ -258,6 +258,15 @@ public class LeaseAgreementExporter {
     }
 
     LeaseDocumentLocator.LeaseDocument doc = plan.document().orElseThrow();
+    addTypedValues(
+        variables,
+        input,
+        plan.locale(),
+        plan.country()
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "country is required for a per-language lease document")));
     variables.put("clauses", shellClauses(includedClauses));
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
@@ -446,12 +455,11 @@ public class LeaseAgreementExporter {
   }
 
   /**
-   * The template variable map. {@code typed} adds the pre-formatted values the per-language clause
-   * fragments reference; the legacy {@code generic.html} path must not receive them. {@code
-   * country} is the effective country the document was located for.
+   * The template variable map every path receives. The pre-formatted values the per-language clause
+   * fragments reference are added by {@link #addTypedValues}; the legacy {@code generic.html} path
+   * must not receive them.
    */
-  Map<String, Object> variables(
-      LeaseRenderInput input, Locale locale, boolean typed, Optional<String> country) {
+  Map<String, Object> variables(LeaseRenderInput input, Locale locale) {
     DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     Map<String, Object> vars =
         LetterExporterHelper.headerVariables(input.contractIdentifier(), input.today(), dateFmt);
@@ -472,20 +480,16 @@ public class LeaseAgreementExporter {
                         "amount", formatMoney(c.amount(), locale)))
             .toList());
     vars.put("signatureBlocks", input.signatureBlocks());
-
-    if (typed) {
-      addTypedValues(vars, input, locale, dateFmt, country);
-    }
     return vars;
   }
 
-  /** Typed, pre-formatted values the per-language clause fragments may reference. */
+  /**
+   * Typed, pre-formatted values the per-language clause fragments may reference; {@code
+   * countryCode} is the effective country the document was located for.
+   */
   private void addTypedValues(
-      Map<String, Object> vars,
-      LeaseRenderInput input,
-      Locale locale,
-      DateTimeFormatter dateFmt,
-      Optional<String> country) {
+      Map<String, Object> vars, LeaseRenderInput input, Locale locale, String countryCode) {
+    DateTimeFormatter dateFmt = LetterExporterHelper.letterDateFormatter(locale);
     vars.put(
         "landlordName",
         input
@@ -523,12 +527,7 @@ public class LeaseAgreementExporter {
     // Lets a document branch on nation and region/state ({@code th:if="${regionCode == 'X'}"});
     // the region is null when the contract has none.
     vars.put("regionCode", input.regionCode().orElse(null));
-    vars.put(
-        "countryCode",
-        country.orElseThrow(
-            () ->
-                new IllegalStateException(
-                    "country is required for a per-language lease document")));
+    vars.put("countryCode", countryCode);
   }
 
   private static String formatMoney(MoneyAmount amount, Locale locale) {

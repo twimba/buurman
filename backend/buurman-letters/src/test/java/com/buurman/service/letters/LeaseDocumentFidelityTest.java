@@ -8,7 +8,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,8 +76,6 @@ class LeaseDocumentFidelityTest {
 
   private static final Set<String> VOID_TAGS =
       Set.of("br", "hr", "img", "input", "meta", "link", "wbr");
-  private static final Pattern FRAGMENT_START = Pattern.compile("th:fragment=\"([^\"]+)\"");
-  private static final Pattern COMMENT = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
   private static final Pattern STRUCTURE =
       Pattern.compile("</?th:[\\w-]+|(?:th:[\\w-]+|data-[\\w-]+)=\"[^\"]*\"");
   private static final Pattern TAG =
@@ -91,8 +88,6 @@ class LeaseDocumentFidelityTest {
               + "|\\d+:\\d+[a-z]?|§\\s*\\d+[a-z]?"
               + "|[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*\\.(?:nl|eu|de|fr|es|pt|it|se|dk|no|fi|gr|pl|at"
               + "|be|lu|ie|cz|ch|ca|us|uk|gov|int)\\b|BWBR\\d+|CELEX\\s+\\w+");
-  private static final Pattern TRANSLATION = Pattern.compile("translation:\\s*(\\S+)");
-  private static final Pattern REVIEWED_BY = Pattern.compile("reviewed-by:\\s*(\\S+)");
   private static final Pattern SENTENCE_END = Pattern.compile("[()\\[\\];:]|[.!?](?=\\s+\\D)");
   private static final Pattern LID_AFTER_CITATION =
       Pattern.compile("^(?:[\\s,]+[^\\s\\d,]+){0,3}?[\\s,]+(?<![\\d:])(\\d+)(?![\\d:])");
@@ -158,24 +153,9 @@ class LeaseDocumentFidelityTest {
   }
 
   private static List<String> headerViolations(String authoritative, String other) {
-    List<String> problems = new ArrayList<>();
     String header = header(other);
-    for (String marker : List.of("legal-basis:", "reviewed-by:", "translation:")) {
-      if (!header.contains(marker)) {
-        problems.add("header marker missing: " + marker);
-      }
-    }
-    Optional<String> translation = value(TRANSLATION, header);
-    Optional<String> reviewedBy = value(REVIEWED_BY, header);
-    if (translation.isPresent() && reviewedBy.isPresent()) {
-      boolean machine = translation.get().equals("machine-drafted");
-      if (machine != reviewedBy.get().equals("none")) {
-        problems.add("header rule: translation machine-drafted <=> reviewed-by none");
-      }
-      if (translation.get().equals("authoritative")) {
-        problems.add("header rule: a translation must not claim translation: authoritative");
-      }
-    }
+    List<String> problems =
+        new ArrayList<>(LeaseDocumentText.headerPolicyViolations(header, false));
     Matcher m = HEADER_ANCHOR.matcher(legalBasis(header(authoritative)));
     while (m.find()) {
       if (!header.contains(m.group())) {
@@ -185,17 +165,8 @@ class LeaseDocumentFidelityTest {
     return problems;
   }
 
-  private static Optional<String> value(Pattern pattern, String header) {
-    Matcher m = pattern.matcher(header);
-    return m.find() ? Optional.of(m.group(1)) : Optional.empty();
-  }
-
   private static String header(String html) {
-    String trimmed = html.stripLeading();
-    if (!trimmed.startsWith("<!--")) {
-      return "";
-    }
-    return trimmed.substring(0, Math.max(trimmed.indexOf("-->"), 0));
+    return LeaseDocumentText.header(html);
   }
 
   /** The legal-basis block: from its marker up to the reviewed-by marker. */
@@ -207,20 +178,7 @@ class LeaseDocumentFidelityTest {
 
   /** Fragment name to the markup from its opening tag up to the next fragment's opening tag. */
   static Map<String, String> fragments(String html) {
-    String body = COMMENT.matcher(html).replaceAll("");
-    Map<String, String> result = new LinkedHashMap<>();
-    Matcher m = FRAGMENT_START.matcher(body);
-    List<Integer> starts = new ArrayList<>();
-    List<String> names = new ArrayList<>();
-    while (m.find()) {
-      names.add(m.group(1));
-      starts.add(body.lastIndexOf('<', m.start()));
-    }
-    for (int i = 0; i < names.size(); i++) {
-      int end = i + 1 < names.size() ? starts.get(i + 1) : body.length();
-      result.put(names.get(i), body.substring(starts.get(i), end));
-    }
-    return result;
+    return LeaseDocumentText.fragments(html);
   }
 
   /** Ordered Thymeleaf tags and attributes, plus data-* markers, whitespace normalized. */
@@ -291,7 +249,7 @@ class LeaseDocumentFidelityTest {
   }
 
   static String prose(String fragment) {
-    return ENTITY.matcher(TAG.matcher(fragment).replaceAll(" ")).replaceAll(" ");
+    return LeaseDocumentText.prose(fragment);
   }
 
   /**
@@ -386,7 +344,9 @@ class LeaseDocumentFidelityTest {
   void authoritativeIsAuthoritativeAndDigitOnly() throws IOException {
     for (LeaseDocumentRegistry.Entry entry : LeaseDocumentRegistry.ENTRIES) {
       String authoritative = read(entry, entry.authoritativeLanguage());
-      assertThat(header(authoritative)).containsPattern("translation:\\s*authoritative");
+      assertThat(LeaseDocumentText.headerPolicyViolations(header(authoritative), true))
+          .as("%s/%s header", entry.key(), entry.authoritativeLanguage())
+          .isEmpty();
       assertThat(numberWordViolations(authoritative, entry.authoritativeLanguage()))
           .as("%s/%s number words", entry.key(), entry.authoritativeLanguage())
           .isEmpty();
@@ -589,7 +549,8 @@ class LeaseDocumentFidelityTest {
                 NL,
                 GOOD.replace("translation: machine-drafted", "translation: reviewed")
                     .replace("reviewed-by: none", "reviewed-by: counsel")))
-        .noneMatch(v -> v.startsWith("header rule"));
+        .as("strict policy: a translation is machine-drafted with reviewed-by none")
+        .anyMatch(v -> v.startsWith("header rule"));
     assertThat(violations(NL, GOOD.replace("translation: machine-drafted\n", "")))
         .contains("header marker missing: translation:");
     assertThat(violations(NL, GOOD.replace("reviewed-by: none\n", "")))
