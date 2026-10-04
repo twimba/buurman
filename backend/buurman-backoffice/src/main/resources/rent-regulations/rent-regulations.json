@@ -1,6 +1,6 @@
 {
-    "version": "2026.6",
-    "generatedAt": "2026-09-26",
+    "version": "2026.7",
+    "generatedAt": "2026-10-04",
     "description": "Canonical Buurman rent-regulation dataset. Source of truth for the reference data shipped with the app. Regenerate via the backoffice Export action; reload via the backoffice Reload action.",
     "countries": [
         {
@@ -4570,6 +4570,147 @@
                     "sourceUrl": "https://www.gov.wales/renting-homes",
                     "notes": "Welsh framework switched from ASTs to standard occupation contracts on 1-Dec-2022.",
                     "propertyType": "RESIDENTIAL"
+                }
+            ]
+        },
+        {
+            "countryCode": "GR",
+            "countryName": "Greece",
+            "hasRegionalRegulations": false,
+            "summary": "Residential rents are freely agreed: no statutory cap on the rent or its contractual adjustment (Civil Code arts. 574 ff.; \u03bd. 1703/1987 art. 2). Residential leases run for at least 3 years. Commercial leases under \u03c0.\u03b4. 34/1995 are capped at a 3% adjustment during 2026 (\u03bd. 5007/2022 art. 96, as amended by \u03bd. 5255/2025).",
+            "lastReviewedAt": "2026-10-04T00:00:00Z",
+            "lateFee": {
+                "policy": "ALLOWED",
+                "notes": "A contractual penalty (\u03c0\u03bf\u03b9\u03bd\u03b9\u03ba\u03ae \u03c1\u03ae\u03c4\u03c1\u03b1, Civil Code art. 404) for late payment is valid, but the court reduces a disproportionate penalty on the debtor's application and a contrary agreement is void (art. 409). Default interest runs under the general Civil Code rules. For arrears the landlord may terminate with at least 1 month's notice (leases of 1 year or more), which lapses if the arrears and costs are paid within the period (art. 597). The fast-track eviction order requires a written demand served by a court bailiff at least 15 days before the application; payment within those 15 days bars the order unless the tenant is repeatedly in arrears (Code of Civil Procedure art. 637). Advisory - verify locally."
+            },
+            "formalNoticeDays": 15,
+            "rules": [
+                {
+                    "year": 2026,
+                    "propertyCategory": "COMMERCIAL",
+                    "maxIncreasePercentage": 3,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "ANNUAL",
+                    "additionalConditions": "Commercial leases within the scope of \u03c0.\u03b4. 34/1995: any rent adjustment between 1 January and 31 December 2026 may not exceed 3% of the 2025 rent, whatever the lease's indexation clause provides (\u03bd. 5007/2022 art. 96 par. 1).",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/2025/5255/pdf",
+                    "notes": "\u03bd. 5255/2025 art. 59 par. 1 (\u03a6\u0395\u039a \u0391' 219/28.11.2025) replaced the 2025 period and base year in \u03bd. 5007/2022 art. 96 par. 1 with 1 January - 31 December 2026 and the 2025 rent. The cap lapses after 31 December 2026 unless extended again.",
+                    "regime": "STATUTORY_CAP",
+                    "propertyType": "COMMERCIAL"
+                },
+                {
+                    "year": 2025,
+                    "propertyCategory": "COMMERCIAL",
+                    "maxIncreasePercentage": 3,
+                    "maxIncreaseType": "STATUTORY_CAP",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "ANNUAL",
+                    "additionalConditions": "Commercial leases within the scope of \u03c0.\u03b4. 34/1995: any rent adjustment between 1 January and 31 December 2025 may not exceed 3% of the 2024 rent, whatever the lease's indexation clause provides (\u03bd. 5007/2022 art. 96 par. 1).",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/2025/5255/pdf",
+                    "notes": "Wording of \u03bd. 5007/2022 art. 96 par. 1 in force for 2025 (period 1 January - 31 December 2025, base = 2024 rent), as quoted in the amending provision of \u03bd. 5255/2025 art. 59 par. 1 (\u03a6\u0395\u039a \u0391' 219/28.11.2025).",
+                    "regime": "STATUTORY_CAP",
+                    "propertyType": "COMMERCIAL"
+                },
+                {
+                    "year": 2026,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "NEGOTIATED",
+                    "effectiveDate": "2026-01-01",
+                    "frequency": "ANNUAL",
+                    "additionalConditions": "No statutory cap. Rent and its adjustment are freely agreed in the lease (Civil Code arts. 574 ff.). Statutory default only where the agreed term is shorter than the 3-year minimum and no adjustment clause covers the remaining period: the rent rises annually by 75% of the cost-of-living index for the preceding 12 months (\u03bd. 1703/1987 art. 2 par. 1, as replaced by \u03bd. 2235/1994 art. 1 par. 5).",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/1994/2235/pdf",
+                    "notes": "Residential rent is not regulated: no statutory ceiling on the initial rent or on increases. The temporary 3% cap of \u03bd. 5007/2022 art. 96 applies only to commercial leases under \u03c0.\u03b4. 34/1995, not to dwellings.",
+                    "regime": "FREE_MARKET",
+                    "propertyType": "RESIDENTIAL"
+                },
+                {
+                    "year": 2025,
+                    "propertyCategory": "ALL",
+                    "maxIncreaseType": "NEGOTIATED",
+                    "effectiveDate": "2025-01-01",
+                    "frequency": "ANNUAL",
+                    "additionalConditions": "No statutory cap. Rent and its adjustment are freely agreed in the lease (Civil Code arts. 574 ff.). Statutory default only where the agreed term is shorter than the 3-year minimum and no adjustment clause covers the remaining period: the rent rises annually by 75% of the cost-of-living index for the preceding 12 months (\u03bd. 1703/1987 art. 2 par. 1, as replaced by \u03bd. 2235/1994 art. 1 par. 5).",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/1994/2235/pdf",
+                    "notes": "Residential rent is not regulated: no statutory ceiling on the initial rent or on increases. The temporary 3% cap of \u03bd. 5007/2022 art. 96 applies only to commercial leases under \u03c0.\u03b4. 34/1995, not to dwellings.",
+                    "regime": "FREE_MARKET",
+                    "propertyType": "RESIDENTIAL"
+                }
+            ],
+            "tenancyRules": [
+                {
+                    "topic": "TENANCY_DURATION",
+                    "label": "Minimum term of a residential lease",
+                    "value": "3 years",
+                    "effectiveFrom": "1994-09-01",
+                    "legalBasis": "\u03bd. 1703/1987 art. 2 par. 1, as replaced by \u03bd. 2235/1994 art. 1 par. 5 (\u03a6\u0395\u039a \u0391' 145/1.9.1994)",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/1994/2235/pdf",
+                    "notes": "Applies even if a shorter or an indefinite term was agreed, and binds both parties. The 3 years may be shortened only by a later agreement made at least 6 months after the lease was concluded and evidenced by a notarial deed. \u03bd. 1703/1987 covers leases for the tenant's main residence (art. 1 par. 1)."
+                },
+                {
+                    "topic": "TENANCY_DURATION",
+                    "label": "Minimum term of a commercial lease (\u03c0.\u03b4. 34/1995)",
+                    "value": "3 years",
+                    "effectiveFrom": "2014-02-28",
+                    "legalBasis": "\u03bd. 4242/2014 art. 13 par. 1 (\u03a6\u0395\u039a \u0391' 50/28.2.2014)",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/2014/4242/pdf",
+                    "notes": "For leases within \u03c0.\u03b4. 34/1995 concluded from 28 February 2014: valid for 3 years even if a shorter or indefinite term was agreed; they may be ended by a later agreement evidenced by a document of certain date. A notice of termination is given in writing and takes effect 3 months after it is served."
+                },
+                {
+                    "topic": "DEPOSIT",
+                    "label": "Security deposit and advance rent (residential)",
+                    "value": "At most 2 months' rent; advance rent only for the current month",
+                    "legalBasis": "\u03bd. 1703/1987 art. 2 par. 2 (\u03a6\u0395\u039a \u0391' 78/27.5.1987)",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/1987/1703/pdf",
+                    "notes": "The statute forbids a security deposit (\u03b5\u03b3\u03b3\u03c5\u03bf\u03b4\u03bf\u03c3\u03af\u03b1) above 2 months' rent and any advance payment beyond the current rental month. Consolidated legal databases list the paragraph as in force, but whether it outlived the 30 June 1997 expiry of the rest of \u03bd. 1703/1987 (\u03bd. 2235/1994 art. 1 par. 1) is debated - verify before relying on it."
+                },
+                {
+                    "topic": "REGISTRATION",
+                    "label": "Lease declaration to the tax authority (AADE)",
+                    "value": "Mandatory, electronic: by the end of the month after the lease starts, is amended or ends",
+                    "legalBasis": "\u03a0\u039f\u039b 1162/2018 (\u03a6\u0395\u039a \u0392' 3579/2018), as amended; \u03bd. 5104/2024 (Tax Procedure Code) arts. 83 par. 12 and 84 par. 4",
+                    "sourceUrl": "https://mitos.gov.gr/index.php/%CE%94%CE%94:%CE%94%CE%AE%CE%BB%CF%89%CF%83%CE%B7_%CF%80%CE%BB%CE%B7%CF%81%CE%BF%CF%86%CE%BF%CF%81%CE%B9%CE%B1%CE%BA%CF%8E%CE%BD_%CF%83%CF%84%CE%BF%CE%B9%CF%87%CE%B5%CE%AF%CF%89%CE%BD_%CE%BC%CE%AF%CF%83%CE%B8%CF%89%CF%83%CE%B7%CF%82_%CE%B1%CE%BA%CE%AF%CE%BD%CE%B7%CF%84%CE%B7%CF%82_%CF%80%CE%B5%CF%81%CE%B9%CE%BF%CF%85%CF%83%CE%AF%CE%B1%CF%82",
+                    "notes": "The landlord (or sub-landlord) files the \u0394\u03ae\u03bb\u03c9\u03c3\u03b7 \u03a0\u03bb\u03b7\u03c1\u03bf\u03c6\u03bf\u03c1\u03b9\u03b1\u03ba\u03ce\u03bd \u03a3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03c9\u03bd \u039c\u03af\u03c3\u03b8\u03c9\u03c3\u03b7\u03c2 \u0391\u03ba\u03af\u03bd\u03b7\u03c4\u03b7\u03c2 \u03a0\u03b5\u03c1\u03b9\u03bf\u03c5\u03c3\u03af\u03b1\u03c2 via myAADE/Taxisnet. Each tenant, and each co-owner, accepts or rejects it within 30 days of the notification; silence counts as acceptance. Non-filing or late filing is fined."
+                },
+                {
+                    "topic": "NOTICE_PERIOD",
+                    "label": "Landlord's termination for rent arrears",
+                    "value": "At least 1 month (leases agreed for 1 year or more); 10 days otherwise",
+                    "legalBasis": "Civil Code art. 597",
+                    "sourceUrl": "https://www.lawspot.gr/nomothesia/astikos-kodikas/arthro-597-astikos-kodikas/",
+                    "notes": "The termination has no effect if, before the period expires, the tenant pays the arrears together with the costs of the termination. The landlord may also claim damages for the early end of the lease."
+                },
+                {
+                    "topic": "NOTICE_PERIOD",
+                    "label": "Indefinite-term lease with monthly rent",
+                    "value": "At least 15 days, effective at the end of a calendar month",
+                    "legalBasis": "Civil Code arts. 608 and 609",
+                    "sourceUrl": "https://www.lawspot.gr/nomothesia/astikos-kodikas/arthro-609-astikos-kodikas-lixi-se-periptosi-aoristis/",
+                    "notes": "Statutory default where nothing else was agreed. For a residential lease the 3-year minimum term still applies. A fixed-term lease ends when its term expires (art. 608) and is deemed renewed for an indefinite term if the tenant stays on with the landlord's knowledge and without objection (art. 611)."
+                },
+                {
+                    "topic": "OTHER",
+                    "label": "Eviction order (\u03b4\u03b9\u03b1\u03c4\u03b1\u03b3\u03ae \u03b1\u03c0\u03cc\u03b4\u03bf\u03c3\u03b7\u03c2 \u03c7\u03c1\u03ae\u03c3\u03b7\u03c2 \u03bc\u03b9\u03c3\u03b8\u03af\u03bf\u03c5)",
+                    "value": "Arrears: bailiff-served written demand at least 15 days before the application. Expired term: out-of-court notice at least 3 months before expiry",
+                    "effectiveFrom": "2026-01-01",
+                    "legalBasis": "Code of Civil Procedure art. 637, as amended by \u03bd. 5221/2025 art. 72 (\u03a6\u0395\u039a \u0391' 133/28.7.2025; in force 1 January 2026 under art. 168 par. 3)",
+                    "sourceUrl": "https://api.et.gr/apiLAW/1/2025/5221/pdf",
+                    "notes": "Fast-track order without a hearing. Requires the start (or end) of the lease to be proven in writing. For arrears the demand is needed only the first time and payment within the 15 days bars the order unless the tenant is repeatedly in arrears. Since 2026 it also covers the expiry of a fixed term; for a lease that became indefinite after expiry the notice must precede service of the order by at least 3 months, and enforcement may start 2 months after service."
+                },
+                {
+                    "topic": "OTHER",
+                    "label": "Energy performance certificate (\u03a0\u0395\u0391)",
+                    "value": "Required when letting to a new tenant; shown and handed over to the tenant; its number entered in the AADE lease declaration",
+                    "legalBasis": "\u03bd. 4122/2013 art. 12 par. 1(\u03b4), 2 and 4; \u03bd. 4342/2015 art. 58 par. 3",
+                    "sourceUrl": "https://www.taxheaven.gr/law/4122/2013/arthro/12",
+                    "notes": "Applies to long-term and short-term lettings and subletting, until the Building Identity (\u03bd. 4495/2017) is activated. Any offer to let must state the energy class. The AADE procedure requires the certificate number for declarations filed after 9 November 2015."
+                },
+                {
+                    "topic": "OTHER",
+                    "label": "Short-term rentals via digital platforms",
+                    "value": "Registration in AADE's Short-Term Residence Property Register; the registration number (\u0391\u039c\u0391) must accompany every listing",
+                    "legalBasis": "\u03bd. 4446/2016 art. 111 par. 2, as amended",
+                    "sourceUrl": "https://www.lawspot.gr/nomothesia/n-4446-2016/arthro-111-nomos-4446-2016-rythmiseis-gia-ti-vrahyhronia/",
+                    "notes": "Context only: short-term rentals are a separate regime, not a residential lease under \u03bd. 1703/1987. Registration is per property; holders of a tourism operating licence (\u0395\u03a3\u039b) display that number instead."
                 }
             ]
         },

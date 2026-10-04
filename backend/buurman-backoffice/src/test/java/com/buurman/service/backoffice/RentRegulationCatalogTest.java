@@ -13,6 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.buurman.domain.LateFeePolicy;
+import com.buurman.domain.MaxIncreaseType;
+import com.buurman.domain.TenancyRuleTopic;
 import com.buurman.domain.regulation.CatalogCountry;
 import com.buurman.domain.regulation.CatalogRegion;
 import com.buurman.domain.regulation.CatalogRule;
@@ -181,6 +183,81 @@ class RentRegulationCatalogTest {
   }
 
   @Test
+  @DisplayName("Greece: free residential rents, 3-year minimum term, 2026 commercial 3% cap")
+  void greece_recordsKeyFacts() {
+    CatalogCountry greece = country("GR");
+
+    assertThat(greece.countryName()).isEqualTo("Greece");
+    assertThat(greece.hasRegionalRegulations()).isFalse();
+    assertThat(greece.lateFee().policy()).isEqualTo(LateFeePolicy.ALLOWED);
+    // Code of Civil Procedure art. 637: bailiff-served demand 15 days before the application.
+    assertThat(greece.formalNoticeDays()).isEqualTo(15);
+
+    // ν. 5007/2022 art. 96 par. 1 as amended by ν. 5255/2025 art. 59: commercial leases only.
+    assertThat(safe(greece.rules()))
+        .anySatisfy(
+            rule -> {
+              assertThat(rule.year()).isEqualTo(2026);
+              assertThat(rule.propertyType()).isEqualTo("COMMERCIAL");
+              assertThat(rule.maxIncreaseType()).isEqualTo(MaxIncreaseType.STATUTORY_CAP);
+              assertThat(rule.maxIncreasePercentage()).isEqualByComparingTo("3");
+            });
+    assertThat(safe(greece.rules()))
+        .filteredOn(rule -> "RESIDENTIAL".equals(rule.propertyType()))
+        .isNotEmpty()
+        .allSatisfy(
+            rule -> {
+              assertThat(rule.maxIncreaseType()).isEqualTo(MaxIncreaseType.NEGOTIATED);
+              assertThat(rule.maxIncreasePercentage()).isNull();
+            });
+
+    // ν. 1703/1987 art. 2 par. 1 as replaced by ν. 2235/1994 art. 1 par. 5.
+    assertThat(safe(greece.tenancyRules()))
+        .anySatisfy(
+            rule -> {
+              assertThat(rule.topic()).isEqualTo(TenancyRuleTopic.TENANCY_DURATION);
+              assertThat(rule.label()).containsIgnoringCase("residential");
+              assertThat(rule.value()).isEqualTo("3 years");
+              assertThat(rule.legalBasis()).contains("1703/1987").contains("2235/1994");
+            });
+    assertThat(safe(greece.tenancyRules()))
+        .extracting(CatalogTenancyRule::topic)
+        .contains(
+            TenancyRuleTopic.TENANCY_DURATION,
+            TenancyRuleTopic.DEPOSIT,
+            TenancyRuleTopic.REGISTRATION,
+            TenancyRuleTopic.NOTICE_PERIOD);
+  }
+
+  @Test
+  @DisplayName("Greece: every rule and tenancy fact carries a legal basis and an official source")
+  void greece_everyFactIsSourced() {
+    CatalogCountry greece = country("GR");
+
+    assertThat(greece.lastReviewedAt()).startsWith("2026-10-04");
+    assertThat(greece.summary()).isNotBlank();
+    assertThat(greece.lateFee().notes()).isNotBlank();
+    assertThat(safe(greece.rules()))
+        .isNotEmpty()
+        .allSatisfy(
+            rule -> {
+              assertThat(rule.sourceUrl()).startsWith("https://");
+              assertThat(rule.notes()).isNotBlank();
+              assertThat(rule.effectiveDate()).matches("\\d{4}-\\d{2}-\\d{2}");
+            });
+    assertThat(safe(greece.tenancyRules()))
+        .isNotEmpty()
+        .allSatisfy(
+            rule -> {
+              assertThat(rule.legalBasis()).as("legalBasis of '%s'", rule.label()).isNotBlank();
+              assertThat(rule.sourceUrl())
+                  .as("sourceUrl of '%s'", rule.label())
+                  .startsWith("https://");
+              assertThat(rule.regionCode()).as("GR has no regions").isNull();
+            });
+  }
+
+  @Test
   @DisplayName("a country with no tenancy rules loads cleanly")
   void tenancyRules_areOptional() {
     RentRegulationCatalog catalog = loader.load();
@@ -202,6 +279,13 @@ class RentRegulationCatalogTest {
 
     assertThatThrownBy(() -> new ObjectMapper().readValue(json, RentRegulationCatalog.class))
         .isInstanceOf(com.fasterxml.jackson.databind.exc.InvalidFormatException.class);
+  }
+
+  private CatalogCountry country(String code) {
+    return loader.load().countries().stream()
+        .filter(c -> code.equals(c.countryCode()))
+        .findFirst()
+        .orElseThrow(() -> new AssertionError("catalog has no country " + code));
   }
 
   private static <T> List<T> safe(List<T> list) {
