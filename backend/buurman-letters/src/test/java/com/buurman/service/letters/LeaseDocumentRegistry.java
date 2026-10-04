@@ -1455,6 +1455,97 @@ public final class LeaseDocumentRegistry {
   // ===== PL entries (country pack) =====
   // Constants, citation pattern and foreign markers for PL go here, only inside these markers.
 
+  /**
+   * The Polish statute citation format. Two kinds of token, each WITH its letter or superscript
+   * suffix, so "art. 6b" vs "Article 6c", "688¹" vs "688²", "8a" vs "8" or "ust. 1b" vs "paragraph
+   * 1" differ:
+   *
+   * <ul>
+   *   <li>the article after "art." / "article(s)": {@code art. 688¹ § 1 k.c.} / {@code Article 688¹
+   *       § 1 of the Civil Code} give "688¹ 1"; {@code art. 6 ust. 1 u.o.p.l.} / {@code Article 6,
+   *       paragraph 1, of the Tenant Protection Act} give "6 1"; {@code art. 8a ust. 4} / {@code
+   *       Article 8a, paragraph 4} give "8a 4" (the plain paragraph digit after "§" / "ust." /
+   *       "paragraph" is paired by the gate);
+   *   <li>a paragraph that carries a letter, after "ust." / "paragraph(s)": {@code art. 9 ust. 1b}
+   *       / {@code Article 9, paragraph 1b} give "9" and "1b" (a plain paragraph digit is not a
+   *       token of its own, it stays paired with its article).
+   * </ul>
+   *
+   * The superscript is written as "¹" / "²" / "³" in every language, never "^1" or "(1)". "art." /
+   * "Article" is repeated before every article number in both languages ("art. 19a i art. 19f" /
+   * "Article 19a and Article 19f").
+   */
+  public static final Pattern POLISH_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|articles?)\\s{1,20})\\d+[a-z]*[¹²³]?"
+              + "|(?<=\\b(?:ust\\.|paragraphs?)\\s{1,20})\\d+[a-z]+",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Polish marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> POLISH_MARKERS =
+      List.of("wynajmujący", "najemca", "najemcy", "zgodnie z", "zob. artykuł", "niniejsza umowa");
+
+  /** Mirror of V107__seed_pl_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry PL_RESIDENTIAL =
+      new Entry(
+          "PL",
+          LeaseKind.RESIDENTIAL,
+          "pl",
+          List.of("pl", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("handover-inspection", false, false, 13),
+              new ClauseSpec("succession", false, false, 14),
+              new ClauseSpec("termination", true, false, 15),
+              new ClauseSpec("notices", false, false, 16),
+              new ClauseSpec("data-protection", false, false, 17),
+              new ClauseSpec("disputes", false, false, 18)),
+          POLISH_MARKERS,
+          Optional.of(POLISH_CITATION));
+
+  /** Mirror of V107__seed_pl_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry PL_COMMERCIAL =
+      new Entry(
+          "PL",
+          LeaseKind.COMMERCIAL,
+          "pl",
+          List.of("pl", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("enforcement-submission", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("notices", false, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          POLISH_MARKERS,
+          Optional.of(POLISH_CITATION));
+
   // ===== end PL =====
 
   // ===== SE entries (country pack) =====
@@ -1559,6 +1650,8 @@ public final class LeaseDocumentRegistry {
     // ===== end NO ENTRIES =====
 
     // ===== PL ENTRIES (country pack) =====
+    entries.add(PL_RESIDENTIAL);
+    entries.add(PL_COMMERCIAL);
 
     // ===== end PL ENTRIES =====
 

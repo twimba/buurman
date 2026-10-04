@@ -1,0 +1,331 @@
+<!--
+  legal-basis: Kodeks cywilny (ustawa z dnia 23 kwietnia 1964 r.), consolidated text Dz.U. z 2026 r. poz. 795
+               (obwieszczenie Marszalka Sejmu z 27 maja 2026 r.; the later amendments Dz.U. 2026 poz. 184 and poz. 507
+               do not touch the lease articles), read on api.sejm.gov.pl (ELI DU/2026/795, PDF): art. 58 § 1 and
+               § 3, 77 § 2, 81 § 2, 358^1 § 2 and § 3, 481 § 1 and § 2, 659, 660, 661 § 1 and § 2, 662, 663, 664
+               § 2 and § 3, 666, 667, 668, 669 § 1, 672, 673, 674, 675, 676, 677, 678, 680, 681, 682, 684, 685,
+               685^1, 687, 688, 688^2.
+               The ustawa o ochronie praw lokatorow (u.o.p.l., Dz.U. z 2023 r. poz. 725) does not govern this lease:
+               its "lokal" is a dwelling or an artist's studio (art. 2 ust. 1 pkt 4 u.o.p.l.).
+               Ustawa z dnia 11 marca 2004 r. o podatku od towarow i uslug, consolidated text Dz.U. z 2026 r. poz.
+               1263 (ELI DU/2004/535): art. 41 ust. 1, 43 ust. 1 pkt 36, 113, 146ef ust. 1 pkt 1 (23 % from
+               2024-01-01 until the end of the year in which the defence-spending condition of art. 146ef is met).
+               Ustawa z dnia 8 marca 2013 r. o przeciwdzialaniu nadmiernym opoznieniom w transakcjach handlowych
+               (Dz.U. z 2023 r. poz. 1790): cited generally.
+               Ustawa z dnia 29 sierpnia 2014 r. o charakterystyce energetycznej budynkow, consolidated text Dz.U.
+               z 2024 r. poz. 101 (ELI DU/2014/1200): art. 3 ust. 1 pkt 3 and ust. 4, 11 ust. 1 pkt 2, ust. 4 and
+               ust. 5, 14 ust. 1 and 2.
+               Kodeks postepowania cywilnego, consolidated text Dz.U. z 2026 r. poz. 468: art. 37, 777 § 1 pkt 4
+               and pkt 5.
+               RODO: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); ustawa z dnia 10 maja 2018 r.
+               o ochronie danych osobowych (ELI DU/2018/1000).
+               No statute specific to commercial leases exists; the Civil Code rules on najem and najem lokalu
+               apply, largely by freedom of contract.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against api.sejm.gov.pl (ISAP/ELI consolidated texts).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in pl.html, never spelled out (pl "3-miesieczny okres wypowiedzenia" is "a 3-month notice period" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of pl.html; the Polish text is authoritative. It states Polish law (Kodeks cywilny,
+  najem lokalu) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from pl.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Landlord: <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the Landlord&rdquo; (wynajmujący),</p>
+  <p>registered office and address, KRS number or CEIDG entry, NIP and REGON of the Landlord: ______________________________</p>
+  <p>represented by: ______________________________, on the basis of: ______________________________,</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Tenant: <strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    &ldquo;the Tenant&rdquo; (najemca),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">The tenant signing at the end of this agreement, hereinafter &ldquo;the Tenant&rdquo; (najemca),</p>
+  <p>registered office and address, KRS number or CEIDG entry, NIP and REGON of the Tenant: ______________________________</p>
+  <p>represented by: ______________________________, on the basis of: ______________________________,</p>
+  <p>conclude this lease of commercial premises (umowa najmu lokalu użytkowego), governed by the lease provisions of
+    the Act of 23 April 1964 &ndash; Civil Code (Kodeks cywilny; consolidated text: Journal of Laws (Dziennik Ustaw)
+    2026, item 795; hereinafter the &ldquo;Civil Code&rdquo;), in particular Articles
+    659&ndash;679 and Articles 680&ndash;688² of the Civil Code. The agreement is concluded in writing; a lease of premises
+    for longer than a year that is concluded without written form is deemed to be concluded for an indefinite term
+    (Article 660 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The Landlord lets to the Tenant for use the commercial premises (lokal użytkowy) located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the Premises&rdquo;.</p>
+  <p>area of the Premises: ________ m²</p>
+  <p>rooms, common parts and parking spaces the Tenant may use: ______________________________</p>
+  <p>legal title of the Landlord to the Premises and land and mortgage register number (księga wieczysta), if one
+    has been opened: ______________________________</p>
+  <p>The Landlord hands over the Premises in a condition fit for the agreed use (Article 662 § 1 of the Civil
+    Code). The Premises are not intended to meet housing needs; the rules on the lease of dwellings do not apply to
+    this agreement.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The condition of the Premises at handover is recorded in the report
+    provided for in this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The Tenant uses the Premises exclusively for carrying on the following business: ______________________________</p>
+  <p>The Tenant uses the Premises in the manner specified in the agreement or, where the agreement does not specify
+    the manner of use, in a manner corresponding to the properties and purpose of the Premises (Article 666 § 1 of
+    the Civil Code). Without the Landlord&rsquo;s consent the Tenant may not make changes to the Premises contrary to
+    the agreement or to the purpose of the Premises (Article 667 § 1 of the Civil Code).</p>
+  <p>The parties stipulate that the Tenant obtains, at its own expense, the permits, consents and registrations
+    required to carry on its business in the Premises and complies with the house rules of the building (Article 683
+    of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease begins on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The agreement is concluded for a fixed term<span th:if="${endDate != null}">, until
+    <strong th:text="${endDate}">end date</strong></span>. Duration of the lease, if it does not follow from the
+    end date: ______________________________. A lease concluded between entrepreneurs for longer than 30 years is
+    deemed, after that period has expired, to be concluded for an indefinite term; in other cases this applies to a
+    lease concluded for longer than 10 years (Article 661 § 1 and § 2 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">If, after the term stated in the agreement has expired, the Tenant continues to use the
+    Premises with the Landlord&rsquo;s consent, the lease is deemed, in case of doubt, to have been extended for an
+    indefinite term (Article 674 of the Civil Code).</p>
+  <p th:if="${!fixedTerm}">The agreement is concluded for an indefinite term (Article 659 § 1 of the Civil
+    Code).</p>
+  <p>If the Premises are transferred during the lease, the acquirer enters into the lease in place of the
+    transferor; the acquirer may, however, terminate the lease with the statutory notice periods, unless the lease
+    was concluded for a fixed term in written form and with a certain date (data pewna) and the Premises have been
+    handed over to the Tenant (Article 678 § 1 and § 2 of the Civil Code). A legal act has a certain date in
+    particular from the date of an annotation made on the document by a notary (Article 81 § 2 point 2 of the Civil
+    Code).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Termination of the agreement is
+    governed by this agreement (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent agreed by the parties is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span> (Article 659 § 1 of the Civil Code).<span class="clause-ref"
+    data-ref="vat" th:if="${refs['vat']}"> Value added tax is governed by this agreement (see article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition to the rent the Tenant
+    bears the charges set out in this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes in the amount of the
+    rent are governed by this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The parties stipulate that the amount of the rent will be determined by a measure of value other than money
+    (Article 358¹ § 2 of the Civil Code): the rent changes annually, starting from ____________________, by the
+    percentage change of the average annual index of prices of consumer goods and services overall for the previous
+    calendar year, announced by the President of Statistics Poland (Prezes Głównego Urzędu Statystycznego) (the index
+    minus 100), or by the following measure:
+    ______________________________. The indexation takes effect on the basis of the Landlord&rsquo;s written
+    notification and does not require an amendment of the agreement.</p>
+  <p>The landlord of premises may increase the rent by giving notice of the current amount of the rent at the
+    latest 1 month in advance, for the end of a calendar month (Article 685¹ of the Civil Code). Stipulations of the
+    parties on rent increases by this procedure or on exclusion of this procedure, if any: ______________________________</p>
+  <p>In the event of a material change in the purchasing power of money after the obligation arose, the court may,
+    having considered the interests of the parties and in accordance with the principles of community life, change
+    the amount or the manner of performance of the monetary obligation, even if they were fixed in the agreement
+    (Article 358¹ § 3 of the Civil Code); a party running an enterprise may not make that request if the performance
+    is connected with running that enterprise (Article 358¹ § 4 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent the Tenant bears the following charges, in particular for the utilities supplied to
+    the Premises and a share of the costs of maintaining the common parts of the property: ______________________________</p>
+  <p>Method of determining and settling the charges (advance payments, settlement period, allocation key) and the
+    utilities for which the Tenant concludes contracts directly with the providers: ______________________________</p>
+  <p>The parties stipulate that the Landlord presents to the Tenant a settlement of the advance payments for each
+    settlement period together with the documents supporting their amount, and that any overpayment or underpayment
+    resulting from the settlement is set off against the next payments or refunded or paid within
+    ____________________.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The rent and the charges set out in the agreement are net amounts to which value added tax (podatek od towarów
+    i usług) is added at the rate in force on the day the tax obligation arises; the standard rate is 23 % (Article 41,
+    paragraph 1, in conjunction with Article 146ef, paragraph 1, point 1, of the Act of 11 March 2004 on the tax on goods and
+    services). The exemption in Article
+    43, paragraph 1, point 36, of that Act covers only the letting of residential property on one&rsquo;s own account
+    exclusively for housing purposes and does not apply to this lease.</p>
+  <p>The provision on adding the tax does not apply if the Landlord benefits from the subjective exemption (Article
+    113 of the Act on the tax on goods and services). The Landlord issues invoices in the manner provided for in the
+    legislation on the tax on goods and services. VAT status of the Landlord: ______________________________</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On conclusion of the agreement the Tenant pays the Landlord a security
+    deposit (kaucja) securing the Landlord&rsquo;s claims under the agreement in the amount of
+    <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The parties do not provide for a security deposit. Security deposit or other
+    security (bank or insurance guarantee, surety) agreed by the parties, if any: ______________________________</p>
+  <p>The Civil Code does not set the amount of a security deposit in a lease of commercial premises; its amount, its
+    use and the time limit for its repayment are agreed by the parties. The parties stipulate that the Landlord may
+    satisfy claims under the agreement that are due from the security deposit, and that the Tenant tops up the
+    security deposit within ____________________ of being requested to do so.</p>
+  <p>The parties stipulate that the security deposit is repaid within ____________________ of the day the Premises
+    are returned, after deduction of the Landlord&rsquo;s claims under the agreement.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the Premises is governed by
+    this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The Tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the charges set out in the agreement</span>
+    <span th:text="${paymentFrequency}">monthly</span>, in advance,
+    <span th:if="${paymentDueDay != null}">by day <strong th:text="${paymentDueDay}">1</strong> of each
+      month</span><span th:if="${paymentDueDay == null}">by the date agreed by the parties</span>, by bank transfer
+    to the Landlord&rsquo;s bank account no.: ______________________________ (Article 669 § 1 of the Civil Code).</p>
+  <p>In the event of late payment the Landlord may claim statutory interest for late payment (Article 481 § 1 and §
+    2 of the Civil Code) and, if the agreement is a commercial transaction within the meaning of the Act of 8 March
+    2013 on counteracting excessive delays in commercial transactions, interest and compensation for the costs of
+    recovering the amounts due on the terms laid down in that Act.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The Landlord keeps the Premises in a condition fit for the agreed use throughout the lease (Article 662 § 1 of
+    the Civil Code). Minor outlays connected with the ordinary use of the Premises are borne by the Tenant, in
+    particular minor repairs of floors, doors and windows, painting of walls, floors and the inside of the entrance
+    doors, as well as minor repairs of the installations and technical equipment providing light, heating of the
+    Premises and water supply and drainage (Article 662 § 2 and Article 681 of the Civil Code).</p>
+  <p>Allocation between the parties of the obligations for repairs, maintenance and technical inspections differing
+    from the Civil Code, if the parties have agreed one: ______________________________</p>
+  <p>If the need for repairs borne by the Landlord arises during the lease, the Tenant notifies the Landlord without
+    delay (Article 666 § 2 of the Civil Code); if the Landlord does not carry out, within an appropriate time limit
+    set by the Tenant, repairs without which the Premises are not fit for the agreed use, the Tenant may, after that
+    time limit has expired without effect, carry out the necessary repairs at the Landlord&rsquo;s expense (Article
+    663 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The Tenant may carry out fit-out works, improvements and other works in the Premises only with the
+    Landlord&rsquo;s prior written consent, at its own expense and in accordance with building law; scope of the
+    agreed fit-out works: ______________________________</p>
+  <p>The Tenant may install electric lighting, gas, telephone, radio and other similar equipment in the Premises,
+    unless the manner of their installation is contrary to the regulations in force or endangers the safety of the
+    property (Article 684 of the Civil Code).</p>
+  <p>If the Tenant has improved the Premises, the Landlord may, in the absence of a different agreement, at its
+    choice either keep the improvements against payment of a sum corresponding to their value at the time of return
+    or demand that the previous condition be restored (Article 676 of the Civil Code). Different stipulations of the
+    parties on the settlement of improvements, if any: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Without the Landlord&rsquo;s consent the Tenant may not give the Premises or part of them to another person for
+    use free of charge or sublet them (Article 688² of the Civil Code). The parties stipulate that the
+    Landlord&rsquo;s consent must be given in writing and that a transfer of the Tenant&rsquo;s rights and
+    obligations under the agreement to a third party requires the Landlord&rsquo;s consent.</p>
+  <p>Where the Premises are given to a third party, both the Tenant and that person are liable to the Landlord for
+    the Premises being used in accordance with the obligations arising from the agreement; a sublease or a loan for
+    use ends at the latest when the lease ends (Article 668 § 1 and § 2 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The parties stipulate that the Landlord insures the building and that the Tenant maintains at its own expense,
+    throughout the lease, third-party liability insurance for its business and insurance of the property brought into
+    the Premises, and presents proof of the insurance at the Landlord&rsquo;s request. Minimum sum insured:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The owner of a let building or part of a building ensures that an energy performance certificate (świadectwo
+    charakterystyki energetycznej) is drawn up, except for the buildings listed in Article 3, paragraph 4, of the Act
+    of 29 August 2014 on the energy performance of buildings (Article 3, paragraph 1, point 3, of that Act).</p>
+  <p>On conclusion of the agreement the Landlord hands over to the Tenant a copy of the energy performance
+    certificate concerning the Premises, if it was delivered on paper, or a printout of the certificate, if it was
+    delivered electronically; the Tenant may not waive the right to receive it (Article 11, paragraph 1, point 2,
+    paragraph 4 and paragraph 5, of the Act on the energy performance of buildings).</p>
+  <p>Number of the certificate and date on which it was drawn up: ______________________________. The certificate
+    is valid for 10 years from the date on which it was drawn up, unless it ceased to be valid earlier because the
+    energy performance of the building or part of the building changed as a result of construction or installation
+    works carried out (Article 14, paragraphs 1 and 2, of the Act on the energy performance of buildings).</p>
+</div>
+
+<div th:fragment="clause-enforcement-submission" data-clause="enforcement-submission">
+  <p>Within ____________________ of the conclusion of the agreement the Tenant makes a statement in the form of a
+    notarial deed submitting to enforcement (oświadczenie o poddaniu się egzekucji) with respect to the obligation to
+    pay the rent and other amounts due under the agreement up to ______________________________ and with respect to
+    the obligation to surrender the Premises, stating the event on which performance of the obligation depends and
+    the time limit by which the Landlord may apply for an enforcement clause to be granted to the deed (Article 777 §
+    1 points 4 and 5 of the Act of 17 November 1964 &ndash; Code of Civil Procedure).</p>
+  <p>The costs of drawing up the notarial deed are borne by: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The parties stipulate that, on handover and on return of the Premises, they draw up a handover report
+    (protokół zdawczo-odbiorczy) recording the condition of the Premises, their fittings, the meter readings and the
+    number of keys, which is annexed to the agreement. The Premises are presumed to have been handed over to the
+    Tenant in good condition and fit for the agreed use (Article 675 § 3 of the Civil Code).</p>
+  <p>When the lease ends the Tenant returns the Premises in an undeteriorated condition, but is not liable for wear
+    resulting from proper use (Article 675 § 1 of the Civil Code). The Landlord&rsquo;s claims for damages for damage
+    to or deterioration of the Premises, as well as the Tenant&rsquo;s claims for reimbursement of outlays on the
+    Premises or of overpaid rent, become time-barred upon the expiry of a year from the day the Premises are
+    returned (Article 677 of the Civil Code).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">
+    The repayment of the security deposit is governed by this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${fixedTerm}">The parties may terminate an agreement concluded for a fixed term in the cases specified
+    in the agreement (Article 673 § 3 of the Civil Code). Cases and notice periods agreed by the parties:
+    ______________________________</p>
+  <p th:if="${!fixedTerm}">Either party may terminate an agreement concluded for an indefinite term with the agreed
+    notice period or, failing one, where the rent is payable monthly, at the latest 3 months in advance for the end
+    of a calendar month, and where the rent is payable at intervals longer than a month, at the latest 3 months in
+    advance for the end of a calendar quarter (Article 673 § 1 and § 2 and Article 688 of the Civil Code). Notice
+    period agreed by the parties, if any: ______________________________</p>
+  <p>If the Tenant is in default with payment of the rent for at least 2 full payment periods, the Landlord may
+    terminate the lease without notice (Article 672 of the Civil Code); before such termination the Landlord warns
+    the Tenant in writing, granting an additional 1-month period to pay the rent in arrears (Article 687 of the Civil
+    Code).</p>
+  <p>The Landlord may also terminate the lease without notice if the Tenant uses the Premises in a manner contrary
+    to the agreement or to the purpose of the Premises and, despite a warning, does not stop using them in that way,
+    or neglects the Premises to such an extent that they are exposed to loss or damage (Article 667 § 2 of the Civil
+    Code), and if the Tenant flagrantly or persistently breaches the house rules in force or by improper conduct makes
+    the use of other premises in the building burdensome (Article 685 of the Civil Code).</p>
+  <p>The Tenant may terminate the lease without notice if, at the time of handover, the Premises had defects that
+    prevent the use provided for in the agreement, or if such defects arose later and the Landlord, despite having
+    been notified, did not remedy them within an appropriate time, or if the defects cannot be remedied; the Tenant
+    does not have this right if the Tenant knew of the defects when the agreement was concluded (Article 664 § 2 and
+    § 3 of the Civil Code). If the defects of the Premises are such that they endanger the health of the Tenant, of
+    the members of the Tenant&rsquo;s household or of persons employed by the Tenant, the Tenant may terminate the
+    lease without notice even if the Tenant knew of the defects when the agreement was concluded (Article 682 of the
+    Civil Code).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the Premises is governed by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>The parties reserve written form for notice of termination of the agreement and other declarations concerning
+    its termination (Article 77 § 2 of the Civil Code) and for notice of the amount of the rent and notifications of
+    rent indexation.</p>
+  <p>Address of the Landlord for service: ______________________________. Address of the Tenant for service:
+    ______________________________. E-mail addresses of the parties for day-to-day correspondence:
+    ______________________________</p>
+  <p>The parties stipulate that they inform each other in writing of any change of their address for service, and
+    that correspondence sent by registered letter to the last address given and not collected is deemed to have been
+    delivered.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the persons representing the other party and of its employees or
+    collaborators designated as contacts only to the extent necessary to conclude and perform the agreement and to
+    comply with its legal obligations, in accordance with Regulation (EU) 2016/679 of the European Parliament and of
+    the Council (GDPR, RODO) and the Act of 10 May 2018 on the protection of personal data.</p>
+  <p>The data subjects may exercise the rights conferred on them by the GDPR, in particular the rights of access to,
+    rectification and erasure of the data, and may lodge a complaint with the President of the Personal Data
+    Protection Office (Prezes Urzędu Ochrony Danych Osobowych).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>The agreement is governed by Polish law, in particular by the lease provisions of the Civil Code. Disputes
+    arising from the agreement are decided by the common court having jurisdiction under the Act of 17 November 1964
+    &ndash; Code of Civil Procedure (Kodeks postępowania cywilnego; hereinafter the &ldquo;Code of Civil
+    Procedure&rdquo;); an action for a claim arising from the lease of immovable property may also be brought before
+    the court of the place where the property is located (Article 37 of the Code of Civil Procedure).</p>
+  <p>Provisions of the agreement that are contrary to statute are void, unless the relevant provision provides for
+    a different effect, in particular that the corresponding statutory provisions take their place; the invalidity of
+    part of the agreement does not affect the remaining provisions, unless the circumstances show that the agreement
+    would not have been concluded without the provisions affected by invalidity (Article 58 § 1 and § 3 of the Civil
+    Code).</p>
+</div>
+
+</body>
+</html>
