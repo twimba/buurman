@@ -589,6 +589,80 @@ public final class LeaseDocumentRegistry {
   // ===== CH entries (country pack) =====
   // Constants, citation pattern and foreign markers for CH go here, only inside these markers.
 
+  /**
+   * The Swiss statute citation format in the 4 languages of the CH documents: the article number
+   * with its letter suffix after "Art."/"art."/"Artikel"/"article(s)"/"articolo/i": de "Art. 271a
+   * Abs. 1 OR", fr "art. 271a, al. 1, CO", it "art. 271a cpv. 1 CO", en "Article 271a paragraph 1
+   * CO". The suffix letter belongs to the token (257a, 266l, 19a), so "Art. 257" and "Art. 257a"
+   * never pair alike; the Abs./al./cpv./paragraph digit after it is the digit the gate pairs.
+   */
+  public static final Pattern SWISS_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|artikel|articles?|articol[oi])\\s{1,20})\\d+[a-z]?(?![\\da-z])",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Swiss German marker words that must not leak into the fr, it and en translations. */
+  private static final List<String> SWISS_GERMAN_MARKERS =
+      List.of(
+          "der Vermieter", "der Mieter", "Mietverhältnis", "Mietzins", "siehe Artikel", "gemäss");
+
+  /** Mirror of V110__seed_ch_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry CH_RESIDENTIAL =
+      new Entry(
+          "CH",
+          LeaseKind.RESIDENTIAL,
+          "de",
+          List.of("de", "fr", "it", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("handover-inspection", false, false, 12),
+              new ClauseSpec("termination", true, false, 13),
+              new ClauseSpec("data-protection", false, false, 14),
+              new ClauseSpec("disputes", false, false, 15)),
+          SWISS_GERMAN_MARKERS,
+          Optional.of(SWISS_CITATION));
+
+  /** Mirror of V110__seed_ch_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry CH_COMMERCIAL =
+      new Entry(
+          "CH",
+          LeaseKind.COMMERCIAL,
+          "de",
+          List.of("de", "fr", "it", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("subletting", false, false, 13),
+              new ClauseSpec("assignment", false, false, 14),
+              new ClauseSpec("retention-right", false, false, 15),
+              new ClauseSpec("insurance", false, false, 16),
+              new ClauseSpec("handover-inspection", false, false, 17),
+              new ClauseSpec("termination", true, false, 18),
+              new ClauseSpec("data-protection", false, false, 19),
+              new ClauseSpec("disputes", false, false, 20)),
+          SWISS_GERMAN_MARKERS,
+          Optional.of(SWISS_CITATION));
+
   // ===== end CH =====
 
   // ===== CZ entries (country pack) =====
@@ -685,6 +759,8 @@ public final class LeaseDocumentRegistry {
     // ===== end CA ENTRIES =====
 
     // ===== CH ENTRIES (country pack) =====
+    entries.add(CH_RESIDENTIAL);
+    entries.add(CH_COMMERCIAL);
 
     // ===== end CH ENTRIES =====
 

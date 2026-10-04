@@ -1,0 +1,342 @@
+<!--
+  legal-basis: Obligationenrecht (OR, SR 220), Achter Titel "Die Miete", Art. 253-273c (Art. 274-274g repealed since
+               01.01.2011 by the ZPO), consolidated version in force 01.10.2026 (fedlex.admin.ch,
+               eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
+               01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 253b,
+               255, 256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260,
+               260a, 261, 262, 264, 265, 266, 266a, 266c, 266g, 266i, 266l, 266m, 266n, 266o, 267, 267a, 269, 269a,
+               269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
+               Recent change: BG vom 29.09.2023 (Mietrecht: Formvorschriften), AS 2025 197, in force 01.10.2025
+               (Art. 269d Abs. 4 and 5 OR). The two other OR amendments of 29.09.2023 (subletting, Art. 262; termination
+               for own use, Art. 261 and 271a) went to the referendum vote of 24.11.2024 and are NOT in the consolidated
+               text of 01.10.2026: Art. 261, 262 and 271a are unchanged.
+               Verordnung ueber die Miete und Pacht von Wohn- und Geschaeftsraeumen (VMWG, SR 221.213.11), Stand
+               01.10.2025 (V vom 21.03.2025, AS 2025 191: Art. 19 Abs. 2 and 3, Art. 19a): Art. 2, 4, 12a, 13, 17, 18,
+               19, 19a.
+               Formularpflicht for the initial rent (Art. 270 Abs. 2 OR): BWO "Verzeichnis fuer das Jahr 2026" of
+               16.09.2026 (www.bwo.admin.ch/de/formularpflicht, read 2026-10-04): canton-wide in BS, BE, FR, GE, LU, ZG
+               and ZH; in part of the canton in NE and VD; none in VS; other cantons not listed. regionCode branch in
+               clause-rent (countryCode CH and the canton code); re-verify every year (vacancy rate per 1 June, changes
+               usually in force from 1 November or 1 January).
+               Zivilprozessordnung (ZPO, SR 272), Stand 01.07.2026: Art. 33, 35, 113, 197, 200.
+               Datenschutzgesetz (DSG, SR 235.1), Stand 07.07.2025: Art. 19, 25, 32, 49.
+               Verified 2026-10-04 against fedlex.admin.ch (consolidated texts) and bwo.admin.ch.
+               Pending: none identified for the tenancy title (consolidation of 01.07.2027 unchanged).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "3 Monatszinse" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Italian translation of de.html (the authoritative German text).
+  Draft text, not vetted by legal counsel. Reflects Swiss federal tenancy law (OR, VMWG) and the cantonal initial-rent
+  form rules listed above. Each clause-<key> fragment holds only the clause body; the shell supplies article numbers
+  and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article
+  numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tra</p>
+  <p><strong th:text="${landlordName}">Locatore</strong>, di seguito &laquo;il locatore&raquo;, e</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Conduttore</strong>, di seguito
+    (congiuntamente) &laquo;il conduttore&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">il conduttore o i conduttori sottoscritti, di seguito
+    (congiuntamente) &laquo;il conduttore&raquo;,</p>
+  <p>è concluso il seguente contratto di locazione di locali d'abitazione. Se più persone sono conduttori, esse
+    rispondono solidalmente di tutti gli obblighi derivanti dal presente contratto.</p>
+  <p>L'abitazione serve al conduttore e al suo coniuge o al suo partner registrato da abitazione familiare:
+    sì / no (indicare ciò che fa al caso). Nome del coniuge o del partner registrato:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Il locatore dà in locazione al conduttore, a scopo d'abitazione, l'abitazione sita in
+    <strong th:text="${propertyAddress}">Indirizzo</strong>, composta di ________ locali, piano ________,
+    con i seguenti locali accessori e impianti (cantina, solaio, posteggi, mobilio):
+    ______________________________, di seguito &laquo;l'ente locato&raquo;. Le disposizioni concernenti la locazione
+    di locali d'abitazione si applicano anche alle cose il cui uso è ceduto insieme con l'abitazione
+    (art. 253a cpv. 1 CO).</p>
+  <p>Al presente contratto si applicano le disposizioni del Codice delle obbligazioni sulla locazione
+    (art. 253 segg. CO) e l'ordinanza concernente la locazione e l'affitto di locali d'abitazione o commerciali
+    (OLAL). Nella misura in cui un accordo derogatorio è nullo secondo tali disposizioni, queste prevalgono sulle
+    clausole derogatorie del presente contratto.</p>
+  <p>Le disposizioni sulla protezione dalle pigioni abusive non si applicano alla locazione di abitazioni e case
+    unifamiliari di lusso con 6 o più locali, esclusa la cucina (art. 253b cpv. 2 CO,
+    art. 2 cpv. 1 OLAL). Le disposizioni concernenti la locazione di locali d'abitazione non si applicano agli
+    appartamenti di vacanza locati per 3 mesi al massimo (art. 253a cpv. 2 CO).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>La locazione inizia il <strong th:text="${startDate}">Inizio della locazione</strong>.</p>
+  <p th:if="${!fixedTerm}">La locazione è di durata indeterminata e può essere disdetta da ciascuna delle parti
+    secondo le disposizioni del presente contratto e della legge (art. 255 cpv. 1 CO, art. 266a cpv. 1 CO).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>La locazione è di durata determinata<span th:if="${endDate != null}"> e termina senza disdetta il
+      <strong th:text="${endDate}">Fine della locazione</strong></span>. Una locazione di durata determinata termina
+      senza disdetta alla scadenza della durata convenuta (art. 255 cpv. 2 CO, art. 266 cpv. 1 CO).</p>
+    <p>Se le parti continuano tacitamente la locazione dopo la scadenza della durata convenuta, essa è considerata
+      di durata indeterminata (art. 266 cpv. 2 CO).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>La pigione netta ammonta a <strong th:text="${rentAmount}">Importo</strong>
+    <span th:text="${paymentFrequency}">al mese</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Vi si aggiungono le spese accessorie (vedi l'articolo <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>La pigione si basa su un tasso ipotecario di riferimento del ________ per cento (art. 12a OLAL) e sull'indice
+    nazionale dei prezzi al consumo a ________ punti (base ________). Eventuali riserve per un adeguamento della
+    pigione non interamente fatto valere (art. 18 OLAL): ______________________________.</p>
+  <p>Il conduttore può contestare innanzi l'autorità di conciliazione, entro 30 giorni dalla consegna della cosa, la
+    pigione iniziale come abusiva e domandarne la riduzione se è stato costretto a concludere il contratto per
+    necessità personale o familiare oppure a causa della situazione del mercato locale di abitazioni e di locali
+    commerciali, o se il locatore ha aumentato in modo rilevante la pigione iniziale rispetto a quella precedente per
+    la stessa cosa (art. 270 cpv. 1 CO). Il conduttore può chiedere che gli sia comunicato l'ammontare della pigione
+    del precedente rapporto di locazione (art. 256a cpv. 2 CO).</p>
+  <p th:if="${countryCode == 'CH' and (regionCode == 'BS' or regionCode == 'BE' or regionCode == 'FR' or regionCode == 'GE' or regionCode == 'LU' or regionCode == 'ZG' or regionCode == 'ZH')}">Nel
+    Cantone <strong th:text="${regionCode}">Cantone</strong>, secondo l'elenco dell'Ufficio federale delle abitazioni
+    (UFAB) per l'anno 2026, l'obbligo di usare il modulo di cui all'art. 270 cpv. 2 CO per la conclusione di un nuovo
+    contratto di locazione di locali d'abitazione vale sull'intero territorio cantonale (obbligo del modulo). Il
+    locatore comunica pertanto la pigione iniziale al conduttore mediante il modulo approvato dal Cantone. Tale
+    modulo indica in particolare lo stato del tasso di riferimento e dell'indice nazionale dei prezzi al consumo
+    applicabili alla pigione precedente (art. 19 cpv. 3 OLAL). L'obbligo dipende dalla quota di abitazioni vuote e può
+    cambiare; è determinante il diritto cantonale vigente al momento della conclusione del contratto.</p>
+  <p th:if="${countryCode == 'CH' and (regionCode == 'NE' or regionCode == 'VD')}">Nel Cantone
+    <strong th:text="${regionCode}">Cantone</strong>, secondo l'elenco dell'Ufficio federale delle abitazioni (UFAB)
+    per l'anno 2026, l'obbligo di usare il modulo di cui all'art. 270 cpv. 2 CO per la conclusione di un nuovo
+    contratto di locazione di locali d'abitazione (obbligo del modulo) vale soltanto in una parte del territorio
+    cantonale, ossia in determinati distretti o comuni e, se del caso, soltanto per determinate dimensioni di
+    abitazione. Se l'abitazione si trova in tale territorio, il locatore comunica la pigione iniziale al conduttore
+    mediante il modulo approvato dal Cantone. Tale modulo indica in particolare lo stato del tasso di riferimento e
+    dell'indice nazionale dei prezzi al consumo applicabili alla pigione precedente (art. 19 cpv. 3 OLAL). L'obbligo
+    dipende dalla quota di abitazioni vuote e può cambiare; è determinante il diritto cantonale vigente al momento
+    della conclusione del contratto.</p>
+  <p th:unless="${countryCode == 'CH' and (regionCode == 'BS' or regionCode == 'BE' or regionCode == 'FR' or regionCode == 'GE' or regionCode == 'LU' or regionCode == 'ZG' or regionCode == 'ZH' or regionCode == 'NE' or regionCode == 'VD')}">In
+    caso di penuria di abitazioni, i Cantoni possono dichiarare obbligatorio, in tutto o parte del loro territorio,
+    l'uso del modulo ufficiale per la conclusione di un nuovo contratto di locazione (art. 270 cpv. 2 CO). Se nel
+    luogo dell'abitazione vige tale obbligo, il locatore comunica la pigione iniziale al conduttore mediante il
+    modulo approvato dal Cantone. Tale modulo indica in particolare lo stato del tasso di riferimento e dell'indice
+    nazionale dei prezzi al consumo applicabili alla pigione precedente (art. 19 cpv. 3 OLAL). È determinante il
+    diritto cantonale vigente al momento della conclusione del contratto.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Per le modifiche della pigione vale quanto stabilito nel presente contratto (vedi l'articolo <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Il locatore può aumentare in qualsiasi momento la pigione per la prossima scadenza di disdetta. Deve comunicare,
+    motivandolo, l'aumento al conduttore almeno 10 giorni prima dell'inizio del termine di preavviso su un modulo
+    approvato dal Cantone (art. 269d cpv. 1 CO). L'aumento è nullo se il locatore non lo comunica mediante il modulo
+    prescritto, non lo motiva o lo comunica con la minaccia di disdetta o dando la disdetta (art. 269d cpv. 2 CO).
+    Lo stesso vale se il locatore intende in altro modo modificare unilateralmente il contratto a svantaggio del
+    conduttore, segnatamente diminuendo le sue prestazioni o introducendo nuove spese accessorie
+    (art. 269d cpv. 3 CO).</p>
+  <p>Le pigioni sono abusive se procurano al locatore un reddito sproporzionato o se sono fondate su un prezzo
+    d'acquisto manifestamente eccessivo (art. 269 CO); le eccezioni sono rette dall'art. 269a CO e, per le
+    variazioni del tasso ipotecario di riferimento, dall'art. 12a OLAL e dall'art. 13 OLAL. Il conduttore può
+    contestare come abusivo un aumento della pigione innanzi l'autorità di conciliazione entro 30 giorni dalla sua
+    comunicazione (art. 270b cpv. 1 CO).</p>
+  <p>Se il conduttore ha motivo di ritenere che il locatore, in seguito a una modificazione essenziale delle basi di
+    calcolo, segnatamente a una diminuzione dei costi, ottenga un reddito sproporzionato dalla cosa locata, può
+    domandare la riduzione della pigione per la prossima scadenza di disdetta (art. 270a cpv. 1 CO). Presenta la
+    domanda di riduzione per scritto al locatore, che deve pronunciarsi entro 30 giorni; se il locatore non accoglie
+    la domanda, o la accoglie solo in parte, o non risponde tempestivamente, il conduttore può adire l'autorità di
+    conciliazione entro 30 giorni (art. 270a cpv. 2 CO).</p>
+  <p>Indicizzazione o scaglionamento della pigione pattuiti: ______________________________ (nessuno, se nulla è
+    indicato).</p>
+  <p>La pattuizione di pigioni soggette all'adeguamento a un indice è valida soltanto se la locazione è conclusa per
+    5 anni almeno e l'indice cui è fatto riferimento è quello nazionale dei prezzi al consumo (art. 269b CO); la
+    locazione è conclusa per 5 anni se il locatore non può disdirla per almeno 5 anni (art. 17 cpv. 4 OLAL). Per
+    un'abitazione, ogni aumento non può superare l'aumento dell'indice nazionale e, in caso di diminuzione
+    dell'indice, la pigione deve essere adeguata di conseguenza (art. 17 cpv. 1 e 2 OLAL). L'aumento può essere
+    annunciato con un preavviso di almeno 30 giorni per la fine di un mese (art. 17 cpv. 3 OLAL); è comunicato
+    mediante il modulo ufficiale, al più presto dopo la pubblicazione del nuovo indice (art. 19 cpv. 2 OLAL).</p>
+  <p>La pattuizione di pigioni soggette a un determinato aumento periodico è valida soltanto se la locazione è
+    conclusa per 3 anni almeno, se la pigione è aumentata al massimo 1 volta all'anno e se l'aumento è fissato in
+    franchi (art. 269c CO). Per la comunicazione di un tale aumento basta la forma scritta (art. 269d cpv. 5 CO); essa
+    può avvenire al più presto 4 mesi prima che l'aumento prenda effetto (art. 19a OLAL). Riservata la contestazione
+    della pigione iniziale, il conduttore non può contestare le pigioni scalari (art. 270d CO).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Il conduttore deve pagare le spese accessorie soltanto se ciò è stato convenuto in modo speciale
+    (art. 257a cpv. 2 CO). Le parti convengono che il conduttore sostiene le seguenti spese accessorie:
+    ______________________________. Il conduttore non sostiene altre spese accessorie oltre a quelle qui
+    indicate.</p>
+  <p>Le spese accessorie sono le spese effettive del locatore per prestazioni connesse con l'uso della cosa, come le
+    spese di riscaldamento, d'acqua calda e simili spese d'esercizio, nonché per tributi pubblici derivanti dall'uso
+    della cosa (art. 257b cpv. 1 CO). Il conduttore versa a tale titolo acconti di ________ franchi al mese; se il
+    locatore riscuote le spese accessorie in base a un conteggio, lo allestisce almeno 1 volta all'anno e lo
+    presenta al conduttore (art. 4 cpv. 1 OLAL). Se le riscuote forfettariamente, si basa sui valori medi di
+    3 anni (art. 4 cpv. 2 OLAL).</p>
+  <p>Il locatore consente al conduttore, a sua richiesta, di consultare i documenti giustificativi
+    (art. 257b cpv. 2 CO).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Il conduttore presta al locatore, a garanzia dei suoi obblighi, una garanzia
+    (deposito di garanzia) di <strong th:text="${depositAmount}">Importo</strong>.</p>
+  <p th:if="${depositAmount == null}">Il conduttore presta al locatore, a garanzia dei suoi obblighi, una garanzia
+    (deposito di garanzia) nell'importo convenuto per scritto tra le parti.</p>
+  <p>Per la locazione di locali d'abitazione, il locatore non può pretendere una garanzia che superi l'equivalente di
+    3 pigioni mensili (art. 257e cpv. 2 CO). Le parti ritengono che la parte della garanzia convenuta eccedente tale
+    importo massimo non sia dovuta.</p>
+  <p>Se il conduttore presta la garanzia in denaro o in cartevalori, il locatore la deposita presso una banca, su un
+    conto di risparmio o di deposito intestato al conduttore (art. 257e cpv. 1 CO). La banca può devolvere la
+    garanzia soltanto con il consenso di entrambe le parti o sulla base di un precetto esecutivo o di una sentenza
+    passati in giudicato. Se entro 1 anno dalla fine della locazione il locatore non ha fatto valere giuridicamente
+    alcun diritto contro il conduttore, questi può pretendere dalla banca che la garanzia gli sia devoluta
+    (art. 257e cpv. 3 CO). Sono fatte salve le disposizioni complementari del Cantone (art. 257e cpv. 4 CO).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Gli eventuali difetti sono accertati alla restituzione dell'ente locato
+    (vedi l'articolo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Il conduttore paga la pigione<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (vedi l'articolo <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> e le spese accessorie</span>
+    <span th:text="${paymentFrequency}">al mese</span>,
+    <span th:if="${paymentDueDay != null}">al più tardi il giorno <strong th:text="${paymentDueDay}">1</strong>
+      di ciascun periodo di pagamento</span><span th:if="${paymentDueDay == null}">anticipatamente per il 1° giorno
+      di ciascun periodo di pagamento</span>, sul conto indicato per scritto dal locatore. Tale accordo prevale sulla
+    regola legale secondo cui la pigione deve essere pagata alla fine di ogni mese (art. 257c CO).</p>
+  <p>Alla scadenza del termine di pagamento convenuto il conduttore è in mora senza diffida (art. 102 cpv. 2 CO) e
+    deve interessi moratori del 5 per cento all'anno (art. 104 cpv. 1 CO).</p>
+  <p>Quando, dopo la consegna della cosa, il conduttore sia in mora al pagamento della pigione o delle spese
+    accessorie scadute, il locatore può fissargli per scritto un termine di pagamento di almeno 30 giorni e
+    avvertirlo che, scaduto infruttuosamente questo termine, il rapporto di locazione sarà disdetto; se il conduttore
+    non paga entro il termine fissato, il locatore può disdire con preavviso di almeno 30 giorni per la fine di un
+    mese (art. 257d cpv. 1 e 2 CO). Nessuna delle parti può rinunciare preventivamente al diritto di compensare
+    crediti e debiti derivanti dal rapporto di locazione (art. 265 CO).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>L'ente locato può essere usato soltanto a scopo d'abitazione. Il conduttore deve usare la cosa con la dovuta
+    diligenza e usare riguardo verso le persone che abitano nella casa e verso i vicini
+    (art. 257f cpv. 1 e 2 CO). Un eventuale regolamento della casa fa parte del presente contratto, nella misura in
+    cui non sia in contrasto con esso.</p>
+  <p>Il conduttore deve permettere al locatore di ispezionare la cosa nella misura necessaria per la manutenzione, la
+    vendita o una nuova locazione; il locatore annuncia tempestivamente le ispezioni e tiene conto degli interessi
+    del conduttore (art. 257h cpv. 2 e 3 CO).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Il conduttore può sublocare in tutto o in parte l'ente locato con il consenso del locatore
+    (art. 262 cpv. 1 CO). Chiede il consenso del locatore per scritto e gli comunica in tale occasione le condizioni
+    della sublocazione.</p>
+  <p>Il locatore può negare il consenso soltanto se il conduttore rifiuta di comunicargli le condizioni della
+    sublocazione, se le condizioni della sublocazione, comparate con quelle del contratto principale di locazione,
+    sono abusive o se la sublocazione causa al locatore un pregiudizio essenziale (art. 262 cpv. 2 CO).</p>
+  <p>Il conduttore è responsabile verso il locatore se il subconduttore usa della cosa in modo diverso da quello
+    permesso al conduttore; a tale effetto il locatore può rivolgersi direttamente al subconduttore
+    (art. 262 cpv. 3 CO). La sublocazione può essere protratta soltanto per la durata della locazione principale
+    (art. 273b cpv. 1 CO).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Il locatore consegna la cosa alla data convenuta in uno stato idoneo all'uso cui è destinata e la mantiene in
+    tale stato (art. 256 cpv. 1 CO); gli accordi derogatori a pregiudizio del conduttore sono nulli nei contratti di
+    locazione di locali d'abitazione (art. 256 cpv. 2 CO). Il conduttore elimina a proprie spese, secondo gli usi
+    locali, i difetti rimediabili mediante piccoli lavori di pulitura o di riparazione necessari all'ordinaria
+    manutenzione della cosa (art. 259 CO).</p>
+  <p>Il conduttore notifica al locatore i difetti che non è tenuto a eliminare egli stesso; se omette la
+    notificazione, risponde del danno che ne deriva al locatore (art. 257g CO). Se sopravvengono difetti che il
+    conduttore non deve né imputarsi né eliminare a proprie spese, o se il conduttore è turbato nell'uso convenuto
+    della cosa, egli può far valere i diritti previsti dall'art. 259a CO, segnatamente l'eliminazione del difetto e
+    una riduzione proporzionale della pigione dal momento in cui il locatore ha avuto conoscenza del difetto fino
+    all'eliminazione dello stesso (art. 259d CO).</p>
+  <p>Il conduttore che esige l'eliminazione di un difetto deve fissare per scritto al locatore un congruo termine e
+    può avvertirlo che, scaduto infruttuosamente il termine, depositerà presso un ufficio designato dal Cantone le
+    pigioni che giungeranno a scadenza; deve avvisare per scritto il locatore del deposito (art. 259g cpv. 1 CO). Le
+    pigioni depositate spettano al locatore se il conduttore non fa valere le sue pretese innanzi l'autorità di
+    conciliazione entro 30 giorni dalla scadenza della prima pigione depositata (art. 259h cpv. 1 CO).</p>
+  <p>Il conduttore tollera i lavori necessari per eliminare difetti o per riparare o prevenire danni; il locatore li
+    annuncia tempestivamente (art. 257h cpv. 1 e 3 CO). Il locatore può rinnovare o modificare la cosa soltanto se i
+    lavori sono ragionevolmente esigibili dal conduttore e se la locazione non è stata disdetta
+    (art. 260 cpv. 1 CO). Il conduttore può rinnovare o modificare la cosa soltanto con il consenso scritto del
+    locatore (art. 260a cpv. 1 CO); per il ripristino e un'eventuale indennità vale l'art. 260a cpv. 2 e 3 CO.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Alla consegna dell'ente locato le parti redigono congiuntamente un verbale di consegna sullo stato dell'ente
+    locato, sulle letture dei contatori e sulle chiavi consegnate; entrambe le parti lo firmano e ne ricevono un
+    esemplare ciascuna. I difetti non indicati nel verbale possono essere notificati per scritto dal conduttore al
+    locatore entro 14 giorni dalla consegna. Se alla fine della locazione precedente è stato steso un processo verbale
+    sullo stato della cosa, il locatore ne dà visione al conduttore, a sua domanda, al momento della consegna
+    (art. 256a cpv. 1 CO).</p>
+  <p>Alla fine della locazione il conduttore restituisce la cosa nello stato risultante da un uso conforme al
+    contratto (art. 267 cpv. 1 CO). Sono nulli gli accordi con cui il conduttore si obbliga anticipatamente a
+    versare, alla fine della locazione, un'indennità che copra altro che i danni eventuali (art. 267 cpv. 2 CO).</p>
+  <p>Al momento della restituzione il locatore verifica lo stato della cosa e dà subito notizia al conduttore dei
+    difetti di cui questi deve rispondere; diversamente il conduttore è liberato dalla sua responsabilità, salvo che
+    si tratti di difetti irriconoscibili mediante l'ordinaria verifica, e il locatore dà subito notizia di tali
+    difetti al conduttore non appena li scopre (art. 267a cpv. 1 a 3 CO).<span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> Per la restituzione del deposito di garanzia vale quanto stabilito nel presente
+    contratto (vedi l'articolo <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Il locatore e il conduttore devono dare la disdetta per scritto. Il locatore deve dare la disdetta mediante un
+    modulo approvato dal Cantone, sul quale sia indicata al conduttore la procedura per contestare la disdetta o per
+    domandare una protrazione della locazione (art. 266l cpv. 1 e 2 CO).</p>
+  <p th:if="${!fixedTerm}">Ciascuna parte può disdire la locazione di durata indeterminata con un preavviso di almeno
+    3 mesi per le seguenti scadenze: ______________________________. In mancanza di indicazione, la disdetta può
+    essere data per la scadenza determinata dall'uso locale o, in mancanza di tale uso, per la fine di un trimestre
+    di locazione di 3 mesi (art. 266c CO). Se il termine o la scadenza di disdetta non è osservato, la disdetta vale
+    per la scadenza successiva possibile (art. 266a cpv. 2 CO).</p>
+  <p th:if="${fixedTerm}">La locazione di durata determinata<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (vedi l'articolo <span th:text="${refs['term']}"></span>)</span> termina senza disdetta
+    alla scadenza della durata convenuta; una disdetta ordinaria prima di tale data è possibile soltanto se le parti
+    l'hanno pattuita. Sono fatti salvi i diritti di disdetta straordinaria.</p>
+  <p>Se l'abitazione serve da abitazione familiare, un coniuge può disdire il contratto soltanto con il consenso
+    esplicito dell'altro (art. 266m cpv. 1 CO), e il locatore notifica la disdetta e la fissazione di un termine di
+    pagamento con comminatoria di disdetta separatamente al conduttore e al suo coniuge o al suo partner registrato
+    (art. 266n CO); tali regole si applicano per analogia alle unioni domestiche registrate (art. 266m cpv. 3 CO).
+    La disdetta che non adempie tali requisiti di forma è nulla (art. 266o CO).</p>
+  <p>La disdetta può essere contestata se contraria alle regole della buona fede e deve essere motivata a richiesta
+    dell'altra parte (art. 271 cpv. 1 e 2 CO); la disdetta da parte del locatore è contestabile segnatamente nei casi
+    previsti dall'art. 271a CO. La parte che intende contestare la disdetta deve presentare la richiesta
+    all'autorità di conciliazione entro 30 giorni dal ricevimento della disdetta (art. 273 cpv. 1 CO).</p>
+  <p>Il conduttore può domandare la protrazione della locazione se la cessazione del rapporto avrebbe per lui o per
+    la sua famiglia conseguenze gravose che non si giustificano tenuto conto degli interessi del locatore
+    (art. 272 cpv. 1 CO); la protrazione è esclusa nei casi previsti dall'art. 272a CO. La locazione di abitazioni può
+    essere protratta per 4 anni al massimo; entro questo limite possono essere accordate 1 o 2 protrazioni
+    (art. 272b cpv. 1 CO). La richiesta deve essere presentata all'autorità di conciliazione, per le locazioni a tempo
+    indeterminato, entro 30 giorni dal ricevimento della disdetta e, per le locazioni a tempo determinato, al più
+    tardi 60 giorni prima della scadenza del contratto (art. 273 cpv. 2 CO).</p>
+  <p>Le disdette straordinarie sono rette dalla legge, segnatamente in caso di mora del conduttore (art. 257d CO), di
+    grave violazione dell'obbligo di diligenza e di riguardo del conduttore (art. 257f cpv. 3 e 4 CO), per motivi
+    gravi che rendono incomportabile per una parte l'adempimento del contratto (art. 266g CO) e, in caso di morte del
+    conduttore, da parte dei suoi eredi (art. 266i CO). Se il locatore aliena la cosa, la locazione passa
+    all'acquirente; questi può disdirla con il preavviso legale per la prossima scadenza legale se fa valere un
+    urgente bisogno per sé o per i suoi stretti congiunti o affini (art. 261 cpv. 1 e 2 CO).</p>
+  <p>Il conduttore che restituisce la cosa senza osservare i termini di preavviso o le scadenze è liberato dai suoi
+    obblighi verso il locatore soltanto se gli propone un nuovo conduttore solvibile, che non possa essere
+    ragionevolmente rifiutato dal locatore e che sia disposto a riprendere il contratto alle medesime condizioni
+    (art. 264 cpv. 1 CO). Il conduttore può rinunciare ai diritti conferitigli dalle disposizioni sulla protezione
+    dalla disdetta soltanto se queste lo prevedono espressamente (art. 273c cpv. 1 CO).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Per la restituzione vale quanto stabilito nel presente contratto (vedi l'articolo <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Il locatore tratta i dati personali del conduttore, secondo la legge federale sulla protezione dei dati (LPD),
+    soltanto nella misura necessaria alla conclusione e all'esecuzione del presente contratto e all'adempimento di
+    obblighi legali, e non li conserva più a lungo di quanto a tal fine necessario. Informa il conduttore in merito
+    alla raccolta di dati personali (art. 19 LPD).</p>
+  <p>Il conduttore può chiedere al locatore se sono trattati dati personali che lo concernono (art. 25 cpv. 1 LPD) e
+    chiedere la rettifica dei dati personali inesatti (art. 32 cpv. 1 LPD). Può denunciare una violazione delle
+    disposizioni sulla protezione dei dati all'Incaricato federale della protezione dei dati e della trasparenza
+    (IFPDT) (art. 49 cpv. 1 LPD).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Il presente contratto è retto dal diritto svizzero.</p>
+  <p>Nelle controversie derivanti dal presente rapporto di locazione, la procedura decisionale è preceduta da un
+    tentativo di conciliazione davanti all'autorità di conciliazione (art. 197 CPC); questa si compone di un
+    presidente e di una rappresentanza paritetica (art. 200 cpv. 1 CPC). Nella procedura di conciliazione non sono
+    addossate spese processuali nelle controversie derivanti dalla locazione di locali d'abitazione
+    (art. 113 cpv. 2 lett. c CPC).</p>
+  <p>Per le azioni derivanti dal presente rapporto di locazione è competente il giudice del luogo di situazione della
+    cosa (art. 33 CPC); il conduttore non può rinunciare a questo foro né preventivamente né mediante costituzione in
+    giudizio (art. 35 cpv. 1 lett. b CPC). Se una disposizione del presente contratto è nulla, la validità delle
+    altre disposizioni non ne è pregiudicata; ad essa subentra la disciplina legale.</p>
+</div>
+
+</body>
+</html>

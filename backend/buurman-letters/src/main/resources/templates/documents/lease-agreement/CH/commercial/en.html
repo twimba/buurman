@@ -1,0 +1,355 @@
+<!--
+  legal-basis: Obligationenrecht (OR, SR 220), Achter Titel "Die Miete", Art. 253-273c (Art. 274-274g repealed since
+               01.01.2011 by the ZPO), consolidated version in force 01.10.2026 (fedlex.admin.ch,
+               eli/cc/27/317_321_377/20261001, German, French and Italian texts read 2026-10-04; the consolidation of
+               01.07.2027 listed on fedlex has an identical tenancy title). Articles used: 102, 104, 253, 253a, 255,
+               256, 256a, 257, 257a, 257b, 257c, 257d, 257e, 257f, 257g, 257h, 259, 259a, 259d, 259g, 259h, 260, 260a,
+               261, 262, 263, 264, 265, 266, 266a, 266d, 266g, 266h, 266l, 266o, 267, 267a, 268, 268a, 268b, 269, 269a,
+               269b, 269c, 269d, 270, 270a, 270b, 270c, 270d, 271, 271a, 272, 272a, 272b, 273, 273b, 273c.
+               The provisions on abusive rents (Art. 269-270e) and on protection against termination (Art. 271-273c)
+               apply to leases of residential AND commercial premises (titles of the second and third sections); the
+               deposit cap of Art. 257e Abs. 2 applies to residential premises only.
+               Recent change: BG vom 29.09.2023 (Mietrecht: Formvorschriften), AS 2025 197, in force 01.10.2025
+               (Art. 269d Abs. 4 and 5 OR). The two other OR amendments of 29.09.2023 (subletting, Art. 262; termination
+               for own use, Art. 261 and 271a) went to the referendum vote of 24.11.2024 and are NOT in the consolidated
+               text of 01.10.2026: Art. 261, 262 and 271a are unchanged.
+               Verordnung ueber die Miete und Pacht von Wohn- und Geschaeftsraeumen (VMWG, SR 221.213.11), Stand
+               01.10.2025 (V vom 21.03.2025, AS 2025 191): Art. 4, 12a, 17, 18, 19, 19a.
+               Initial-rent form (Art. 270 Abs. 2 OR): whether a cantonal obligation also covers commercial premises
+               depends on the cantonal text (BWO "Verzeichnis fuer das Jahr 2026" of 16.09.2026,
+               www.bwo.admin.ch/de/formularpflicht); stated generally, no regionCode branch.
+               Mehrwertsteuergesetz (MWSTG, SR 641.20), Stand 31.03.2025: Art. 21 Abs. 2 Ziff. 21, Art. 22.
+               Zivilprozessordnung (ZPO, SR 272), Stand 01.07.2026: Art. 33, 35, 113, 197, 200.
+               Datenschutzgesetz (DSG, SR 235.1), Stand 07.07.2025: Art. 19, 25, 32, 49.
+               Verified 2026-10-04 against fedlex.admin.ch (consolidated texts) and bwo.admin.ch.
+               Pending: none identified for the tenancy title (consolidation of 01.07.2027 unchanged).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "6 Monaten" is "6 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English translation of de.html (the authoritative German text).
+  Draft text, not vetted by legal counsel. Reflects Swiss federal tenancy law (OR, VMWG) for commercial premises
+  (Geschaeftsraeume). Each clause-<key> fragment holds only the clause body; the shell supplies article numbers and
+  titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers
+  of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between</p>
+  <p><strong th:text="${landlordName}">Landlord</strong>, hereinafter &ldquo;the Landlord&rdquo;,</p>
+  <p>Business identification number (UID) and commercial register: ______________________________</p>
+  <p>VAT number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Tenant</strong>, hereinafter
+    (jointly) &ldquo;the Tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the undersigned tenant or tenants, hereinafter
+    (jointly) &ldquo;the Tenant&rdquo;,</p>
+  <p>Business identification number (UID) and commercial register: ______________________________</p>
+  <p>VAT number: ______________________________</p>
+  <p>represented by: ______________________________,</p>
+  <p>the following lease of commercial premises (Geschäftsräume) is concluded. Where several persons are tenants,
+    they are jointly and severally liable for all obligations under this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The Landlord lets to the Tenant the commercial premises at <strong th:text="${propertyAddress}">Address</strong>,
+    floor ________, with an area of approximately ________ m², together with the following ancillary areas, parking
+    spaces and facilities: ______________________________, hereinafter &ldquo;the Premises&rdquo;. The provisions on
+    the lease of commercial premises also apply to the items that the Landlord lets for use together with those
+    premises (Article 253a paragraph 1 CO).</p>
+  <p>This agreement is governed by the provisions of the Swiss Code of Obligations on leases (Article 253 et seq. CO,
+    Obligationenrecht) and by the Ordinance on the Lease of Residential and Commercial Premises (VMWG). The
+    provisions on protection against abusive rents and on protection against termination also apply to commercial
+    premises. Where those provisions render a deviating agreement void, they prevail over the deviating provisions
+    of this agreement.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The Premises are let exclusively for the following purpose: ______________________________ (permitted use).
+    Any change of the permitted use requires the Landlord's prior written consent.</p>
+  <p>The Landlord hands over the Premises in a condition fit for the agreed permitted use
+    (Article 256 paragraph 1 CO). The Tenant obtains at the Tenant's own expense the official permits relating to
+    the Tenant's business; permits relating to the characteristics of the Premises are the Landlord's
+    responsibility, unless the parties agree otherwise in writing.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease begins on <strong th:text="${startDate}">Start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite period and may be terminated by either party in
+    accordance with this agreement and the law (Article 255 paragraph 1 CO, Article 266a paragraph 1 CO).</p>
+  <th:block th:if="${fixedTerm}">
+    <p>The lease is concluded for a fixed term<span th:if="${endDate != null}"> and ends without notice on
+      <strong th:text="${endDate}">End date</strong></span>. A fixed-term lease ends without notice when the agreed
+      term expires (Article 255 paragraph 2 CO, Article 266 paragraph 1 CO); if the parties tacitly continue it, it is
+      deemed a lease for an indefinite period (Article 266 paragraph 2 CO).</p>
+    <p>Tenant's option to extend (duration, number, deadline for exercise): ______________________________ (none if
+      nothing is stated).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The net rent (Nettomietzins) amounts to <strong th:text="${rentAmount}">Amount</strong>
+    <span th:text="${paymentFrequency}">per month</span>.<span class="clause-ref" data-ref="vat"
+    th:if="${refs['vat']}"> VAT is payable in addition where applicable (see article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Ancillary costs are payable in
+    addition (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent is based on a mortgage reference interest rate (hypothekarischer Referenzzinssatz) of ________ per cent
+    (Article 12a VMWG) and on the Swiss consumer price index at ________ points (base ________). Any reservation for a
+    rent adjustment not claimed in full (Article 18 VMWG): ______________________________.</p>
+  <p>The Tenant may challenge the initial rent as abusive before the conciliation authority (Schlichtungsbehörde)
+    within 30 days after taking over the Premises and request its reduction if the Tenant felt compelled to conclude
+    the lease because of personal or family hardship or because of the conditions on the local market for
+    residential and commercial premises, or if the Landlord has considerably increased the initial rent compared with
+    the previous rent for the same premises (Article 270 paragraph 1 CO). Whether a cantonal obligation to use the
+    form when concluding a new lease (Article 270 paragraph 2 CO) also covers commercial premises depends on cantonal
+    law; if it does, the Landlord notifies the Tenant of the initial rent on the form approved by the canton.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are governed by the provisions of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Agreed indexation or graduated increases of the rent: ______________________________ (none if nothing is
+    stated).</p>
+  <p>An agreement that the rent follows an index is valid only if the lease is concluded for at least 5 years and the
+    index used is the Swiss consumer price index (Article 269b CO); the lease is concluded for 5 years if the Landlord
+    cannot terminate it for at least 5 years (Article 17 paragraph 4 VMWG). The adjustment may be announced with at
+    least 30 days' notice to the end of a month (Article 17 paragraph 3 VMWG); it is notified on the official form, at
+    the earliest after the new index figure has been published (Article 19 paragraph 2 VMWG). Subject to a challenge
+    of the initial rent, a party may argue before the conciliation authority only that the increase or reduction
+    requested is not justified by a corresponding change in the index (Article 270c CO).</p>
+  <p>An agreement that the rent increases periodically by a fixed amount (graduated rent) is valid only if the lease
+    is concluded for at least 3 years, the rent is increased no more than 1 time per year and the amount of the
+    increase is fixed in Swiss francs (Article 269c CO). Written form suffices for notifying such an increase
+    (Article 269d paragraph 5 CO); the notification may be made at the earliest 4 months before the increase takes
+    effect (Article 19a VMWG). Subject to a challenge of the initial rent, the Tenant cannot challenge graduated
+    rents (Article 270d CO).</p>
+  <p>Otherwise, the Landlord may increase the rent with effect from the next possible termination date; the Landlord
+    must notify the Tenant of the rent increase, with reasons, at least 10 days before the notice period begins, on a
+    form approved by the canton (Article 269d paragraph 1 CO), failing which the increase is void
+    (Article 269d paragraph 2 CO). The Tenant may challenge a rent increase as abusive before the conciliation
+    authority within 30 days after being notified of it (Article 270b paragraph 1 CO) and request a reduction of the
+    rent under the conditions of Article 270a CO.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The Tenant must pay ancillary costs (Nebenkosten) only if this has been specifically agreed with the Landlord
+    (Article 257a paragraph 2 CO). The parties agree that the Tenant bears the following ancillary costs:
+    ______________________________. The Tenant does not bear any ancillary costs other than those listed
+    here.</p>
+  <p>Ancillary costs are the Landlord's actual expenses for services connected with the use of the Premises, such as
+    heating, hot water and similar operating costs, and for public charges arising from the use of the Premises
+    (Article 257b paragraph 1 CO). The Tenant makes advance payments on account of ________ Swiss francs per month;
+    if the Landlord charges the ancillary costs on the basis of a statement, the Landlord prepares it at least 1 time
+    per year and presents it to the Tenant (Article 4 paragraph 1 VMWG). If the Landlord charges them as a flat rate,
+    the Landlord bases it on average figures over 3 years (Article 4 paragraph 2 VMWG).</p>
+  <p>On request, the Landlord allows the Tenant to inspect the supporting documents
+    (Article 257b paragraph 2 CO).</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The provision of immovable property and parts of immovable property for use or enjoyment is excluded from VAT
+    (Article 21 paragraph 2 number 21 MWSTG, VAT Act). A Landlord registered for VAT may opt to tax this supply by
+    showing the tax openly or by declaring it in the VAT return (option, Article 22 paragraph 1 MWSTG); the option is
+    excluded if the Tenant uses or intends to use the Premises exclusively for residential purposes
+    (Article 22 paragraph 2 letter b MWSTG).</p>
+  <p>The Landlord opts to tax the rent and the ancillary costs: yes / no (please indicate as applicable). If the
+    Landlord opts, the Tenant pays VAT in addition at the rate applicable from time to time; the Landlord shows it
+    openly on the invoices. The Tenant informs the Landlord in writing without delay of any change in use that
+    affects the option.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The Tenant provides the Landlord with security for the Tenant's obligations
+    (rent deposit, Mietkaution) of <strong th:text="${depositAmount}">Amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The Tenant provides the Landlord with security for the Tenant's obligations
+    (rent deposit, Mietkaution) in the amount agreed in writing between the parties.</p>
+  <p>The statutory maximum of 3 months' rent applies only to the lease of residential premises
+    (Article 257e paragraph 2 CO); the law sets no maximum for commercial premises. Instead of a deposit, the Tenant
+    may, with the Landlord's consent, provide an irrevocable guarantee from a bank licensed in Switzerland.</p>
+  <p>If the Tenant provides the security in cash or in securities, the Landlord deposits it with a bank in a savings
+    account or a custody account in the Tenant's name (Article 257e paragraph 1 CO). The bank may release the
+    security only with the consent of both parties or on the basis of a final order to pay (Zahlungsbefehl) or a
+    final court judgment. If, within 1 year after the end of the lease, the Landlord has not asserted a claim against
+    the Tenant by legal means, the Tenant may request the bank to refund the security
+    (Article 257e paragraph 3 CO).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Any defects are established when the
+    Premises are returned (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The Tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the ancillary costs</span>
+    <span th:text="${paymentFrequency}">per month</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      payment period</span><span th:if="${paymentDueDay == null}">in advance for the 1st day of each payment
+      period</span>, into the account designated in writing by the Landlord. This arrangement takes precedence over
+    the statutory rule that the rent is payable at the end of each month (Article 257c CO).</p>
+  <p>When the agreed payment date has passed, the Tenant is in default without a reminder
+    (Article 102 paragraph 2 CO) and owes default interest of 5 per cent per year (Article 104 paragraph 1 CO).</p>
+  <p>If, after taking over the Premises, the Tenant is in arrears with rent or ancillary costs that have fallen due,
+    the Landlord may set the Tenant a payment deadline of at least 30 days in writing and warn that the lease will be
+    terminated if the deadline expires unused; if the Tenant does not pay within that deadline, the Landlord may
+    terminate the lease with at least 30 days' notice to the end of a month (Article 257d paragraphs 1 and 2 CO).
+    Neither party may waive in advance the right to set off claims and debts arising from the lease
+    (Article 265 CO).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The Landlord hands over the Premises on the agreed date in a condition fit for the intended use and maintains
+    them in that condition (Article 256 paragraph 1 CO); agreements deviating from this to the detriment of the Tenant
+    are void in leases of commercial premises (Article 256 paragraph 2 CO). The Tenant remedies at the Tenant's own
+    expense, in accordance with local custom, defects that can be remedied by minor cleaning or repairs required for
+    ordinary maintenance (Article 259 CO).</p>
+  <p>The Tenant reports to the Landlord any defects that the Tenant is not required to remedy; if the Tenant fails to
+    report them, the Tenant is liable for the resulting damage to the Landlord (Article 257g CO). If defects arise for
+    which the Tenant is neither responsible nor required to remedy at the Tenant's own expense, or if the Tenant is
+    disturbed in the contractual use of the Premises, the Tenant may assert the rights under Article 259a CO, in
+    particular the remedying of the defect and a proportionate reduction of the rent from the time the Landlord
+    became aware of the defect until it is remedied (Article 259d CO); the deposit of rent with a cantonal office is
+    governed by Article 259g CO and Article 259h CO.</p>
+  <p>The Tenant tolerates work on the Premises where it is necessary to remedy defects or to repair or prevent
+    damage, and allows the Landlord to inspect the Premises to the extent necessary for maintenance, sale or
+    re-letting; the Landlord announces work and inspections in good time and takes into account the interests of the
+    Tenant and the Tenant's business (Article 257h paragraphs 1 to 3 CO). The Landlord may carry out renovations and
+    alterations only if they are reasonable for the Tenant and the lease has not been terminated
+    (Article 260 paragraph 1 CO).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The Tenant may carry out renovations and alterations to the Premises, including fittings and advertising signs
+    on the façade, only with the Landlord's written consent (Article 260a paragraph 1 CO). The Tenant bears the costs
+    and obtains the required official permits.</p>
+  <p>Where the Landlord has consented, the Landlord may require restoration of the previous condition only if this
+    has been agreed in writing (Article 260a paragraph 2 CO); the parties record such an agreement in each written
+    consent. If, at the end of the lease, the Premises show a considerable increase in value as a result of a
+    renovation or alteration to which the Landlord consented, the Tenant may claim corresponding compensation
+    (Article 260a paragraph 3 CO).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The Tenant may sublet all or part of the Premises with the Landlord's consent (Article 262 paragraph 1 CO). The
+    Tenant requests the Landlord's consent in writing and discloses the terms of the sublease at the same
+    time.</p>
+  <p>The Landlord may refuse consent only if the Tenant refuses to disclose the terms of the sublease, if the terms
+    of the sublease are abusive compared with those of the main lease, or if the sublease would cause the Landlord
+    substantial disadvantages (Article 262 paragraph 2 CO).</p>
+  <p>The Tenant is liable to the Landlord for ensuring that the subtenant does not use the Premises in any way other
+    than that permitted to the Tenant; the Landlord may require the subtenant directly to comply
+    (Article 262 paragraph 3 CO). A sublease may be extended only for the duration of the main lease
+    (Article 273b paragraph 1 CO).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The Tenant may transfer the lease to a third party with the Landlord's written consent
+    (Article 263 paragraph 1 CO). The Landlord may refuse consent only for good cause
+    (Article 263 paragraph 2 CO).</p>
+  <p>If the Landlord consents, the third party takes the Tenant's place in the lease (Article 263 paragraph 3 CO). The
+    Tenant is released from the Tenant's obligations towards the Landlord, but remains jointly and severally liable
+    with the third party until the time at which the lease ends or could be terminated under the agreement or the
+    law, and in any event for no more than 2 years (Article 263 paragraph 4 CO).</p>
+</div>
+
+<div th:fragment="clause-retention-right" data-clause="retention-right">
+  <p>For a year's rent that has fallen due and for the current half-year's rent, the Landlord has a right of
+    retention (Retentionsrecht) over the movable items located in the leased premises that serve to furnish or use
+    them (Article 268 paragraph 1 CO). It extends to items brought in by a subtenant to the extent that the subtenant
+    has not paid the rent (Article 268 paragraph 2 CO); items that the Tenant's creditors could not seize are excluded
+    (Article 268 paragraph 3 CO).</p>
+  <p>Third-party rights in items that the Landlord knew or should have known did not belong to the Tenant take
+    precedence over the right of retention (Article 268a paragraph 1 CO). If the Tenant intends to move out or to
+    remove the items located in the leased premises, the Landlord may, with the assistance of the competent
+    authority, retain as many items as are necessary to cover the Landlord's claim (Article 268b paragraph 1 CO).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The Landlord insures the building to the customary extent. The Tenant insures the Tenant's equipment, goods and
+    fittings at the Tenant's own expense and maintains business liability insurance of an appropriate amount for the
+    duration of the lease; the Tenant provides evidence of cover on request.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>When the Premises are handed over, the parties jointly draw up a handover report recording the condition of the
+    Premises, the meter readings and the keys handed over; both parties sign it and each receives a copy. The Tenant
+    may report to the Landlord in writing, within 14 days after the handover, defects not listed in the report. If a
+    return report was drawn up at the end of the previous lease, the Landlord shows it to the Tenant on request at the
+    handover (Article 256a paragraph 1 CO).</p>
+  <p>At the end of the lease, the Tenant returns the Premises cleared and in the condition resulting from
+    contractual use (Article 267 paragraph 1 CO). Agreements by which the Tenant undertakes in advance to pay, at the
+    end of the lease, compensation covering anything other than any damage are void
+    (Article 267 paragraph 2 CO).</p>
+  <p>On the return, the Landlord inspects the condition of the Premises and immediately notifies the Tenant of
+    defects for which the Tenant is responsible; if the Landlord fails to do so, the Landlord loses the claims,
+    except for defects that could not be detected by a customary inspection, and the Landlord notifies the Tenant of
+    such defects immediately upon discovering them (Article 267a paragraphs 1 to 3 CO).<span class="clause-ref" data-ref="alterations"
+    th:if="${refs['alterations']}"> The Tenant's renovations and alterations are governed by the provisions of this
+    agreement (see article <span th:text="${refs['alterations']}"></span>).</span><span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> The refund of the rent deposit is governed by the provisions of this agreement (see
+    article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The Landlord and the Tenant must give notice of termination in writing. The Landlord must give notice using a
+    form approved by the canton that states how the Tenant must proceed to challenge the termination or to request an
+    extension of the lease (Article 266l paragraphs 1 and 2 CO). A notice of termination that does not meet these
+    formal requirements is void (Article 266o CO).</p>
+  <p th:if="${!fixedTerm}">Either party may terminate the lease for an indefinite period with at least 6 months'
+    notice to the following termination dates: ______________________________. If none are stated, notice may be
+    given to a termination date customary in the locality or, if there is no local custom, to the end of a 3-month
+    lease period (Article 266d CO). If a party does not observe the notice period or the termination date, the
+    notice takes effect on the next possible termination date (Article 266a paragraph 2 CO).</p>
+  <p th:if="${fixedTerm}">The fixed-term lease<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span> ends without notice when
+    the agreed term expires; ordinary termination before that date is possible only if the parties have agreed it.
+    The rights of extraordinary termination are reserved.</p>
+  <p>The termination may be challenged if it breaches the principle of good faith, and reasons must be given on
+    request (Article 271 paragraphs 1 and 2 CO); termination by the Landlord may be challenged in particular in the
+    cases set out in Article 271a CO. A party wishing to challenge the termination must file the request with the
+    conciliation authority within 30 days after receiving the notice (Article 273 paragraph 1 CO).</p>
+  <p>The Tenant may request an extension of the lease (Erstreckung) if ending the lease would cause hardship for the
+    Tenant or the Tenant's family that cannot be justified by the Landlord's interests
+    (Article 272 paragraph 1 CO); extension is excluded in the cases set out in Article 272a CO. A lease of
+    commercial premises may be extended by at most 6 years; within this maximum, 1 or 2 extensions may be granted
+    (Article 272b paragraph 1 CO). The request must be filed with the conciliation authority within 30 days after
+    receipt of the notice for a lease for an indefinite period, and at the latest 60 days before the term expires for
+    a fixed-term lease (Article 273 paragraph 2 CO).</p>
+  <p>Extraordinary termination is governed by the law, in particular in the event of the Tenant's payment arrears
+    (Article 257d CO), a serious breach of the duty of care and consideration (Article 257f paragraphs 3 and 4 CO),
+    for good cause making performance of the agreement unreasonable for a party (Article 266g CO) and on the Tenant's
+    bankruptcy (Article 266h CO). If the Landlord sells the Premises, the lease passes to the acquirer, who may
+    terminate it with the statutory notice period to the next statutory termination date if the acquirer claims an
+    urgent need for personal use by the acquirer, close relatives or relatives by marriage
+    (Article 261 paragraphs 1 and 2 CO).</p>
+  <p>If the Tenant returns the Premises without observing the notice period or termination date, the Tenant is
+    released from the Tenant's obligations towards the Landlord only by proposing a new tenant who is reasonably
+    acceptable to the Landlord, solvent and willing to take over the lease on the same terms
+    (Article 264 paragraph 1 CO). The Tenant may waive rights under the provisions on protection against termination
+    only where those provisions expressly allow it (Article 273c paragraph 1 CO).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the Premises is governed by the provisions of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes personal data of the other party, its representatives and contact persons under the
+    Federal Act on Data Protection (FADP, DSG) only to the extent necessary for concluding and performing this
+    agreement and for complying with legal obligations, and does not keep them longer than necessary for those
+    purposes. It informs the data subjects about the collection of personal data (Article 19 DSG).</p>
+  <p>The data subjects may ask whether personal data concerning them are being processed
+    (Article 25 paragraph 1 DSG) and request the correction of inaccurate personal data
+    (Article 32 paragraph 1 DSG). They may report a breach of the data protection provisions to the Federal Data
+    Protection and Information Commissioner (EDÖB) (Article 49 paragraph 1 DSG).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Swiss law.</p>
+  <p>In disputes arising from this lease, the court proceedings are preceded by an attempt at conciliation before the
+    conciliation authority (Article 197 ZPO, Civil Procedure Code); that authority consists of a chairperson and
+    equal representation of both sides (Article 200 paragraph 1 ZPO). In the conciliation proceedings, no court costs
+    are charged in disputes arising from the lease of commercial premises (Article 113 paragraph 2 letter c ZPO).</p>
+  <p>Actions arising from this lease fall within the jurisdiction of the court at the place where the property is
+    located (Article 33 ZPO); the Tenant cannot waive this place of jurisdiction in advance or by entering an
+    appearance (Article 35 paragraph 1 letter b ZPO). If a provision of this agreement is void, the validity of the
+    other provisions is not affected; the statutory rule takes its place.</p>
+</div>
+
+</body>
+</html>
