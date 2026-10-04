@@ -122,7 +122,7 @@
       prorogé que 1 fois, uniquement par écrit et aux mêmes conditions, sans que la durée totale de location puisse
       excéder 3 ans, et il prend fin si l'une des parties a donné congé au moins 3 mois avant l'expiration de la
       durée convenue. À défaut de congé donné à temps, ou si le preneur continue d'occuper le bien sans opposition du
-      bailleur, il est réputé conclu pour 9 ans à compter de la date de prise de cours du premier bail de courte
+      bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il est réputé conclu pour 9 ans à compter de la date de prise de cours du premier bail de courte
       durée, au même loyer et aux mêmes conditions, sous réserve de l'indexation et de la révision (article 21,
       § 1er, du décret flamand sur la location d'habitations). Le bail peut également être conclu par écrit pour plus
       de 9 ans ou pour la vie du preneur (articles 22 et 23 du décret flamand sur la location d'habitations).</p>
@@ -138,7 +138,7 @@
       notifié par l'une ou l'autre des parties au moins 3 mois avant l'expiration de la durée convenue&nbsp;; si le
       bail a été conclu pour une durée inférieure ou égale à 3 mois, le congé est réputé notifié par la signature du
       bail ou de sa prorogation. À défaut de congé notifié à temps, ou si le preneur continue d'occuper les lieux sans
-      opposition du bailleur, il est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au
+      opposition du bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au
       même loyer et aux mêmes conditions, sans préjudice de l'indexation et de la révision (article 55, § 6, du
       décret wallon relatif au bail d'habitation). Le bail peut également être conclu par écrit pour plus de 9 ans ou
       pour la vie du preneur (article 55, § 7, du décret wallon relatif au bail d'habitation).</p>
@@ -154,9 +154,8 @@
       location puisse excéder 3 ans. Sauf prorogation, le bail d'une durée inférieure à 6 mois prend fin à
       l'expiration de la durée convenue&nbsp;; le bail d'une durée égale ou supérieure à 6 mois prend fin moyennant
       un congé notifié par l'une ou l'autre des parties au moins 3 mois avant l'expiration de la durée convenue. À
-      défaut de congé notifié à temps, ou si le preneur continue d'occuper le logement sans opposition du bailleur, il
-      est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au même loyer et aux mêmes
-      conditions (article 238 du Code bruxellois du Logement). Le bail peut également être conclu par écrit pour plus
+      défaut de congé notifié à temps, ou si le preneur continue d'occuper le logement sans opposition du bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il
+      est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au même loyer et aux mêmes conditions, sans préjudice de l'application de l'article 224 du Code bruxellois du Logement (article 238 du Code bruxellois du Logement). Le bail peut également être conclu par écrit pour plus
       de 9 ans ou pour la vie du preneur (article 239 du Code bruxellois du Logement).</p>
   </th:block>
   <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Dans
@@ -195,7 +194,7 @@
     l'indice santé. Adaptation exclue&nbsp;: oui / non (biffer la mention inutile). Indice de départ (mois et année
     de base)&nbsp;: ______________________________</p>
   <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
-    <p>L'adaptation a lieu 1 fois par année de location, à la date anniversaire de l'entrée en vigueur du bail,
+    <p>Si le bail a été conclu par écrit, l'adaptation a lieu 1 fois par année de location, à la date anniversaire de l'entrée en vigueur du bail,
       uniquement si la partie intéressée en fait la demande écrite, et n'a d'effet rétroactif que pour les 3 mois
       précédant le mois de la demande. Le loyer adapté ne peut dépasser&nbsp;: loyer de base x nouvel indice / indice
       de départ&nbsp;; le nouvel indice est l'indice santé du mois précédant celui de l'anniversaire, l'indice de
@@ -291,9 +290,8 @@
       compte individualisé à son nom auprès d'une institution financière, une sûreté réelle auprès d'une institution
       financière à son nom, ou une garantie bancaire résultant d'un contrat-type entre un CPAS (OCMW) et une
       institution financière&nbsp;; avec l'accord du bailleur, la garantie peut aussi être fournie par un
-      cautionnement. Les intérêts produits sont capitalisés au profit du preneur (article 37, § 1er, du décret flamand
-      sur la location d'habitations). Dans la mesure où le montant mentionné ci-dessus excède 3 mois de loyer, la
-      partie excédentaire ne peut être exigée à titre de garantie locative.</p>
+      cautionnement. Si le preneur opte pour un compte individualisé ou une sûreté réelle, les intérêts produits sont capitalisés au profit du preneur (article 37, § 1er, du décret flamand
+      sur la location d'habitations). Dans la mesure où le montant mentionné ci-dessus excède 3 mois de loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
     <p>Il ne peut être disposé de la garantie qu'au profit de l'une ou l'autre des parties, moyennant production soit
       d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision judiciaire (article 37,
       § 3, du décret flamand sur la location d'habitations). Le bailleur qui détient la garantie et s'abstient de la
@@ -306,7 +304,7 @@
       de 3 ans, ou une garantie bancaire résultant d'un contrat-type entre un CPAS et une institution financière. En
       cas de compte individualisé, les intérêts produits sont capitalisés au profit du preneur (article 62, § 1er, du
       décret wallon relatif au bail d'habitation). Dans la mesure où le montant mentionné ci-dessus excède 2 mois de
-      loyer, la partie excédentaire ne peut être exigée à titre de garantie locative.</p>
+      loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
     <p>Il ne peut être disposé du compte ou de la garantie bancaire qu'au profit de l'une ou l'autre des parties,
       moyennant production soit d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision
       judiciaire (article 62, § 3, du décret wallon relatif au bail d'habitation). Le bailleur qui détient la garantie
@@ -318,8 +316,7 @@
       FSMA, une garantie bancaire résultant d'un contrat-type entre un CPAS et une institution financière, une
       garantie bancaire qu'il constitue progressivement, une sûreté réelle à son nom auprès d'une institution
       financière ou une caution personnelle (article 248 du Code bruxellois du Logement). Dans la mesure où le montant
-      mentionné ci-dessus excède 2 mois de loyer, la partie excédentaire ne peut être exigée à titre de garantie
-      locative.</p>
+      mentionné ci-dessus excède 2 mois de loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
     <p>Il ne peut être disposé de la garantie qu'au profit de l'une ou l'autre des parties, moyennant production soit
       d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision judiciaire. Sous réserve
       d'une procédure contentieuse, la garantie est libérée dans un délai maximal de 2 mois à compter de la remise des
@@ -478,8 +475,7 @@
   <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le bailleur enregistre gratuitement le bail dans les
     2 mois de sa signature dans le registre électronique du service régional de l'enregistrement des baux, en
     téléversant le bail signé par les deux parties, ses annexes et l'état des lieux d'entrée. Après ce délai et aussi
-    longtemps que le bail n'est pas enregistré, les délais de congé, les indemnités dues par le preneur et les
-    modalités de révision du loyer ne s'appliquent pas (article 228/5 du Code bruxellois du Logement). Ceci ne
+    longtemps que le bail n'est pas enregistré, les délais de congé et les indemnités dues par le preneur et les modalités de révision du loyer visés aux articles 237, § 5, 238, 240 et 256 du Code bruxellois du Logement ne s'appliquent pas (article 228/5 du Code bruxellois du Logement). Ceci ne
     préjudicie pas aux obligations imposées par la législation fiscale.</p>
   <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
     bailleur fait enregistrer le bail et l'état des lieux dans les 2 mois de la signature, selon les règles de la
@@ -488,28 +484,35 @@
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
-  <p>Les parties dressent contradictoirement et à frais communs un état des lieux d'entrée détaillé, soit au cours
-    de la période où les lieux sont inoccupés, soit au cours du premier mois pendant lequel le preneur peut disposer
-    du logement&nbsp;; il est annexé au bail et enregistré. À défaut d'accord, le juge de paix désigne un expert sur
-    requête.</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">À la demande de l'une des parties, un état des lieux de
+  <p>Les parties dressent contradictoirement un état des lieux d'entrée détaillé, soit au cours de la période où les
+    lieux sont inoccupés, soit au cours du premier mois pendant lequel le preneur peut disposer du logement&nbsp;; il
+    est annexé au bail et enregistré.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">L'état des lieux d'entrée est dressé à frais
+    communs&nbsp;; à défaut d'accord, le juge de paix désigne un expert sur requête introduite avant l'expiration du
+    délai de 1 mois. À la demande de l'une des parties, un état des lieux de
     sortie est dressé contradictoirement et à frais communs à la fin du bail, au plus tard au moment de la remise et
     de l'acceptation des clés. Si un état des lieux détaillé a été dressé au début du bail, le preneur rend le
     logement tel qu'il l'a reçu suivant cet état, excepté ce qui a péri ou a été dégradé par vétusté ou force
     majeure et les réparations à charge du bailleur (articles 9 et 39 du décret flamand sur la location
     d'habitations).</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Chaque partie peut requérir l'établissement d'un état des
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">En cas de désignation conjointe d'un expert, l'état des
+    lieux d'entrée s'établit à frais communs et à part égale&nbsp;; en cas de désignation d'un expert par une seule
+    partie, celle-ci en assume les frais. À défaut d'accord, le juge de paix désigne un expert sur requête introduite
+    dans les 15 jours suivant l'expiration du délai de 1 mois (article 27, § 1er, du décret wallon relatif au bail
+    d'habitation). Chaque partie peut requérir l'établissement d'un état des
     lieux de sortie contradictoire et à frais partagés&nbsp;; il est établi après la libération des lieux par le
     preneur et avant la remise des clés (article 27 du décret wallon relatif au bail d'habitation). S'il a été fait
     un état des lieux détaillé, le preneur rend le logement tel qu'il l'a reçu, excepté ce qui a péri ou a été
     dégradé par vétusté ou force majeure (article 28 du décret wallon relatif au bail d'habitation).</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Les états des lieux d'entrée et de sortie comprennent le
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">L'état des lieux d'entrée est dressé à frais
+    communs&nbsp;; à défaut d'accord, le juge de paix désigne un expert sur requête (article 1730 de l'ancien Code
+    civil). Les états des lieux d'entrée et de sortie comprennent le
     relevé des index, les numéros de compteurs et les codes EAN. Chaque partie peut requérir l'établissement d'un état
     des lieux de sortie contradictoire et à frais partagés&nbsp;; il est établi après la libération des lieux par le
     preneur et avant la remise des clés, et au plus tard dans le mois de la libération des lieux (article 220 du Code
     bruxellois du Logement).</p>
-  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Les
-    règles relatives à l'état des lieux de sortie sont fixées par la Région où le logement est situé. S'il n'a pas
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">La répartition des frais, le délai pour faire désigner un expert par le juge de paix et les règles relatives
+    à l'état des lieux de sortie sont fixés par la Région où le logement est situé. S'il n'a pas
     été fait d'état des lieux d'entrée détaillé, le preneur est présumé avoir reçu le logement dans l'état où il se
     trouve à la fin du bail, sauf preuve contraire.</p>
   <p class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">La libération de la garantie locative suit

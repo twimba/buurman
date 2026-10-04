@@ -120,7 +120,7 @@
     <p>By way of derogation, the lease may be concluded in writing for a term of 3 years or less. It may be extended
       only 1 time, only in writing and on the same terms, without the total term of the lease exceeding 3 years, and
       it ends if either party has given notice at least 3 months before the agreed term expires. Failing timely
-      notice, or if the tenant continues to occupy the property without objection from the landlord, it is deemed to
+      notice, or if the tenant continues to occupy the property without objection from the landlord, and even if a new agreement is concluded between the same parties, it is deemed to
       be concluded for 9 years from the start date of the first short-term lease, at the same rent and on the same
       terms, subject to indexation and review (article 21, § 1, of the Flemish Residential Lease Decree). The lease
       may also be concluded in writing for more than 9 years or for the tenant's lifetime (articles 22 and 23 of the
@@ -136,7 +136,7 @@
       total term of the lease exceeding 3 years. It ends upon notice given by either party at least 3 months before the
       agreed term expires; for a term of 3 months or less, notice is deemed given by signing the lease or its
       extension. Failing timely notice, or if the tenant continues to occupy the dwelling without objection from the
-      landlord, it is deemed to be concluded for 9 years from the entry into force of the initial lease, at the same
+      landlord, and even if a new agreement is concluded between the same parties, it is deemed to be concluded for 9 years from the entry into force of the initial lease, at the same
       rent and on the same terms, without prejudice to indexation and review (article 55, § 6, of the Walloon
       Residential Lease Decree). The lease may also be concluded in writing for more than 9 years or for the tenant's
       lifetime (article 55, § 7, of the Walloon Residential Lease Decree).</p>
@@ -150,9 +150,8 @@
       without prejudice to indexation upon renewal, without the total term of the lease exceeding 3 years. Unless
       extended, a lease of less than 6 months ends when the agreed term expires; a lease of 6 months or more ends upon
       notice given by either party at least 3 months before the agreed term expires. Failing timely notice, or if the
-      tenant continues to occupy the dwelling without objection from the landlord, it is deemed to be concluded for
-      9 years from the entry into force of the initial lease, at the same rent and on the same terms (article 238 of
-      the Brussels Housing Code). The lease may also be concluded in writing for more than 9 years or for the tenant's
+      tenant continues to occupy the dwelling without objection from the landlord, and even if a new agreement is concluded between the same parties, it is deemed to be concluded for
+      9 years from the entry into force of the initial lease, at the same rent and on the same terms, without prejudice to the application of article 224 of the Brussels Housing Code (article 238 of the Brussels Housing Code). The lease may also be concluded in writing for more than 9 years or for the tenant's
       lifetime (article 239 of the Brussels Housing Code).</p>
   </th:block>
   <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
@@ -191,7 +190,7 @@
     health index (gezondheidsindex / indice santé). Adjustment excluded: yes / no (delete as appropriate). Base index
     (month and base year): ______________________________</p>
   <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
-    <p>The adjustment takes place 1 time per lease year on the anniversary of the lease's entry into force, only if
+    <p>If the lease was concluded in writing, the adjustment takes place 1 time per lease year on the anniversary of the lease's entry into force, only if
       the interested party requests it in writing, and has retroactive effect only for the 3 months preceding the
       month of the request. The adjusted rent may not exceed: base rent x new index / base index; the new index is the
       health index of the month preceding the anniversary month, the base index that of the month preceding the month
@@ -284,9 +283,8 @@
       individualised account in the tenant's name with a financial institution, a security interest with a financial
       institution in the tenant's name, or a bank guarantee under a standard contract between a public social welfare
       centre (OCMW) and a financial institution; with the landlord's agreement, the guarantee may also be provided by a
-      personal surety. The interest earned is capitalised for the benefit of the tenant (article 37, § 1, of the
-      Flemish Residential Lease Decree). To the extent that the amount stated above exceeds 3 months' rent, the excess
-      cannot be required as a rental guarantee.</p>
+      personal surety. If the tenant chooses an individualised account or a security interest, the interest earned is capitalised for the benefit of the tenant (article 37, § 1, of the
+      Flemish Residential Lease Decree). To the extent that the amount stated above exceeds 3 months' rent, the excess is not owed as a rental guarantee.</p>
     <p>The guarantee may only be released for the benefit of either party on production of a written agreement drawn
       up no earlier than at the end of the lease, or of a copy of a court decision (article 37, § 3, of the Flemish
       Residential Lease Decree). A landlord who holds the guarantee and fails to place it in an individualised account
@@ -299,7 +297,7 @@
       3 years, or a bank guarantee under a standard contract between a public social welfare centre (CPAS) and a
       financial institution. With an individualised account, the interest earned is capitalised for the benefit of the
       tenant (article 62, § 1, of the Walloon Residential Lease Decree). To the extent that the amount stated above
-      exceeds 2 months' rent, the excess cannot be required as a rental guarantee.</p>
+      exceeds 2 months' rent, the excess is not owed as a rental guarantee.</p>
     <p>The account or the bank guarantee may only be released for the benefit of either party on production of a
       written agreement drawn up no earlier than at the end of the lease, or of a copy of a court decision (article 62,
       § 3, of the Walloon Residential Lease Decree). A landlord who holds the guarantee and fails to place it owes
@@ -311,7 +309,7 @@
       a bank guarantee under a standard contract between a public social welfare centre (CPAS) and a financial
       institution, a bank guarantee that the tenant builds up gradually, a security interest in the tenant's name with
       a financial institution, or a personal surety (article 248 of the Brussels Housing Code). To the extent that the
-      amount stated above exceeds 2 months' rent, the excess cannot be required as a rental guarantee.</p>
+      amount stated above exceeds 2 months' rent, the excess is not owed as a rental guarantee.</p>
     <p>The guarantee may only be released for the benefit of either party on production of a written agreement drawn
       up no earlier than at the end of the lease, or of a copy of a court decision. Save for contentious proceedings,
       the guarantee is released within 2 months at the latest after the keys are returned; otherwise the amount owed
@@ -464,8 +462,7 @@
   <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The landlord registers the lease free of charge within
     2 months of signature in the electronic register of the regional lease registration service, by uploading the
     lease signed by both parties, its annexes and the move-in inventory of condition. After that period and as long as
-    the lease has not been registered, the notice periods, the compensation payable by the tenant and the rules for
-    reviewing the rent do not apply (article 228/5 of the Brussels Housing Code). This is without prejudice to the
+    the lease has not been registered, the notice periods and the compensation payable by the tenant and the rules for reviewing the rent referred to in articles 237, § 5, 238, 240 and 256 of the Brussels Housing Code do not apply (article 228/5 of the Brussels Housing Code). This is without prejudice to the
     obligations imposed by tax law.</p>
   <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
     landlord has the lease and the inventory of condition registered within 2 months of signature, in accordance with
@@ -474,27 +471,36 @@
 </div>
 
 <div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
-  <p>The parties draw up, jointly and at shared cost, a detailed move-in inventory of condition (plaatsbeschrijving /
-    état des lieux), either while the premises are unoccupied or during the first month in which the tenant can use
-    the dwelling; it is annexed to the lease and registered. Failing agreement, the justice of the peace
-    (vrederechter / juge de paix) appoints an expert on application.</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">At the request of either party, a move-out inventory of
+  <p>The parties jointly draw up a detailed move-in inventory of condition (plaatsbeschrijving / état des lieux),
+    either while the premises are unoccupied or during the first month in which the tenant can use the dwelling; it
+    is annexed to the lease and registered.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">The move-in inventory is drawn up at shared cost;
+    failing agreement, the justice of the peace (vrederechter / juge de paix) appoints an expert on an application
+    filed before the 1-month period expires. At the request of either party, a move-out inventory of
     condition is drawn up jointly and at shared cost at the end of the lease, no later than when the keys are returned
     and accepted. If a detailed inventory was drawn up at the start, the tenant returns the dwelling as received
     according to that inventory, except for what has perished or deteriorated through age or force majeure and for
     repairs payable by the landlord (articles 9 and 39 of the Flemish Residential Lease Decree).</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Either party may require a joint move-out inventory of
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">If the parties appoint an expert jointly, the move-in
+    inventory is drawn up at shared cost in equal parts; if only one party appoints an expert, that party bears the
+    cost. Failing agreement, the justice of the peace (juge de paix) appoints an expert on an application filed within
+    15 days after the 1-month period expires (article 27, § 1, of the Walloon Residential Lease Decree). Either party
+    may require a joint move-out inventory of
     condition at shared cost; it is drawn up after the tenant has vacated the premises and before the keys are returned
     (article 27 of the Walloon Residential Lease Decree). If a detailed inventory was drawn up, the tenant returns the
     dwelling as received, except for what has perished or deteriorated through age or force majeure (article 28 of the
     Walloon Residential Lease Decree).</p>
-  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The move-in and move-out inventories record the meter
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">The move-in inventory is drawn up at shared cost;
+    failing agreement, the justice of the peace (juge de paix / vrederechter) appoints an expert on application
+    (article 1730 of the former Civil Code). The move-in and move-out inventories record the meter
     readings, the meter numbers and the EAN codes. Either party may require a joint move-out inventory of condition at
     shared cost; it is drawn up after the tenant has vacated the premises and before the keys are returned, and no
     later than within the month after the tenant has vacated the premises (article 220 of the Brussels Housing
     Code).</p>
   <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">The
-    rules on the move-out inventory of condition are laid down by the region where the dwelling lies. If no detailed
+    allocation of costs, the time limit for having the justice of the peace (vrederechter / juge de paix) appoint an
+    expert and the rules on the move-out inventory of condition are laid down by the region where the dwelling
+    lies. If no detailed
     move-in inventory was drawn up, the tenant is presumed to have received the dwelling in the condition in which it
     is at the end of the lease, unless proven otherwise.</p>
   <p class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">Release of the rental guarantee follows the

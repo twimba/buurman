@@ -87,6 +87,16 @@ class BeLeaseRegionRenderTest {
 
   private String render(
       String kind, String clauseKey, String language, String countryCode, String regionCode) {
+    return render(kind, clauseKey, language, countryCode, regionCode, Map.of());
+  }
+
+  private String render(
+      String kind,
+      String clauseKey,
+      String language,
+      String countryCode,
+      String regionCode,
+      Map<String, Object> overrides) {
     Map<String, Object> clause = new HashMap<>();
     clause.put("clauseKey", clauseKey);
     clause.put("title", "TITLE-" + clauseKey);
@@ -110,6 +120,7 @@ class BeLeaseRegionRenderTest {
     vars.put("regionCode", regionCode);
     vars.put("clauses", List.of(clause));
     vars.put("refs", Map.of(clauseKey, 1));
+    vars.putAll(overrides);
     Context ctx = new Context(Locale.forLanguageTag(language));
     ctx.setVariables(vars);
     return engine.process("lease-agreement/_shell", ctx).replaceAll("\\s+", " ");
@@ -193,5 +204,122 @@ class BeLeaseRegionRenderTest {
     String html = render("commercial", "term", language, country, region);
     assertThat(html).contains("data-clause=\"term\"");
     assertOnlyBranch(html, MUTUAL_TERMINATION, branch, language);
+  }
+
+  /** Residential term clause: the regional basic rule, one phrase per branch and language. */
+  private static final Map<String, Map<String, String>> TERM =
+      Map.of(
+          "VLG",
+          Map.of(
+              "nl", "artikel 16 van het Vlaams Woninghuurdecreet",
+              "fr", "article 16 du décret flamand sur la location d'habitations",
+              "en", "article 16 of the Flemish Residential Lease Decree"),
+          "WAL",
+          Map.of(
+              "nl", "artikel 55, § 1, van het Waals decreet",
+              "fr", "article 55, § 1er, du décret wallon",
+              "en", "article 55, § 1, of the Walloon Residential Lease Decree"),
+          "BRU",
+          Map.of(
+              "nl", "artikel 237, § 1, van de Brusselse Huisvestingscode",
+              "fr", "article 237, § 1er, du Code bruxellois du Logement",
+              "en", "article 237, § 1, of the Brussels Housing Code"),
+          "GENERAL",
+          Map.of(
+              "nl", "Het aantal toegelaten verlengingen van een huurovereenkomst van korte duur",
+              "fr", "Le nombre de prorogations autorisées d'un bail de courte durée",
+              "en", "The number of permitted extensions of a short-term lease"));
+
+  private static final Map<String, String> FIXED_TERM =
+      Map.of(
+          "nl", "De partijen komen een bepaalde duur overeen",
+          "fr", "Les parties conviennent d'une durée déterminée",
+          "en", "The parties agree a fixed term");
+
+  @ParameterizedTest(name = "residential fixed term {0} {1} -> {2}")
+  @CsvSource(
+      value = {
+        "nl, VLG, VLG", "fr, VLG, VLG", "en, VLG, VLG",
+        "nl, WAL, WAL", "fr, WAL, WAL", "en, WAL, WAL",
+        "nl, BRU, BRU", "fr, BRU, BRU", "en, BRU, BRU",
+        "nl, NULL, GENERAL", "fr, NULL, GENERAL", "en, NULL, GENERAL"
+      },
+      nullValues = "NULL")
+  @DisplayName("residential term with a fixed term: end date and the regional branch")
+  void residentialFixedTermPerRegion(String language, String region, String branch) {
+    Map<String, Object> fixed = new HashMap<>();
+    fixed.put("fixedTerm", true);
+    fixed.put("endDate", "31 October 2029");
+    String html = render("residential", "term", language, "BE", region, fixed);
+    assertThat(html).contains(FIXED_TERM.get(language)).contains("31 October 2029");
+    assertOnlyBranch(html, TERM, branch, language);
+  }
+
+  /** Commercial renewal clause: the form of an agreement on a different renewal term. */
+  private static final Map<String, Map<String, String>> RENEWAL =
+      Map.of(
+          "WAL",
+          Map.of(
+              "nl", "zoals van toepassing in het Waalse Gewest",
+              "fr", "tel qu'applicable en Région wallonne",
+              "en", "as applicable in the Walloon Region"),
+          "FEDERAL",
+          Map.of(
+              "nl",
+                  "uit een authentieke akte of uit een voor de rechter afgelegde verklaring"
+                      + " (artikel 13",
+              "fr", "par acte authentique ou par une déclaration faite devant le juge (article 13",
+              "en",
+                  "recorded in a notarial deed or in a declaration made before the court (article"
+                      + " 13"),
+          "GENERAL",
+          Map.of(
+              "nl", "in de vorm die het gewest voorschrijft",
+              "fr", "dans la forme prescrite par la Région",
+              "en", "in the form the region prescribes"));
+
+  private static final Map<String, String> WALLOON_PARTNERSHIP =
+      Map.of(
+          "nl", "commerciële samenwerkingsovereenkomst",
+          "fr", "accord de partenariat commercial",
+          "en", "commercial partnership agreement");
+
+  @ParameterizedTest(name = "commercial renewal {0} {1}/{2} -> {3}")
+  @CsvSource(
+      value = {
+        "nl, BE, WAL, WAL", "fr, BE, WAL, WAL", "en, BE, WAL, WAL",
+        "nl, BE, VLG, FEDERAL", "fr, BE, BRU, FEDERAL", "en, BE, BRU, FEDERAL",
+        "nl, BE, NULL, GENERAL", "fr, BE, NULL, GENERAL", "en, GB, WAL, GENERAL"
+      },
+      nullValues = "NULL")
+  @DisplayName("commercial renewal: Walloon form of an agreement on a different term")
+  void commercialRenewalBranch(String language, String country, String region, String branch) {
+    String html = render("commercial", "renewal", language, country, region);
+    assertThat(html).contains("data-clause=\"renewal\"");
+    assertOnlyBranch(html, RENEWAL, branch, language);
+  }
+
+  @ParameterizedTest(name = "commercial permitted use {0} {1}/{2} walloon={3}")
+  @CsvSource(
+      value = {
+        "nl, BE, WAL, true",
+        "fr, BE, WAL, true",
+        "en, BE, WAL, true",
+        "nl, BE, VLG, false",
+        "fr, BE, BRU, false",
+        "en, BE, NULL, false",
+        "en, CA, WAL, false"
+      },
+      nullValues = "NULL")
+  @DisplayName(
+      "commercial permitted use: Walloon commercial-partnership paragraph only in Wallonia")
+  void commercialPermittedUseWalloonParagraph(
+      String language, String country, String region, boolean walloon) {
+    String html = render("commercial", "permitted-use", language, country, region);
+    if (walloon) {
+      assertThat(html).contains(WALLOON_PARTNERSHIP.get(language));
+    } else {
+      assertThat(html).doesNotContain(WALLOON_PARTNERSHIP.get(language));
+    }
   }
 }

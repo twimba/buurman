@@ -586,11 +586,18 @@ public final class LeaseDocumentRegistry {
    * written "§ n" after the reference in every language (nl "artikel 37, § 1", fr "article 37, §
    * 1er", en "article 37, § 1"); the gate pairs that digit (the "er" of the French "1er" is not a
    * digit). Paragraph numbers spelled as ordinals ("eerste lid") are not used in the documents.
+   * After the plural ("artikelen" / "articles") the second number of a two-item list joined by
+   * en/et/and or tot (en met)/à/to is a token too ("artikelen 224 en 224/1", "articles 17 à 19",
+   * "articles 3 to 4bis"); longer comma lists keep their later numbers in the per-element digit
+   * check.
    */
   public static final Pattern BELGIAN_CITATION =
       Pattern.compile(
-          "(?<=\\b(?:art\\.|artikel|artikelen|articles?)\\s{1,20})\\d+(?:/\\d+)?"
-              + "(?:bis|ter|quater|quinquies)?",
+          "(?:(?<=\\b(?:art\\.|artikel|artikelen|articles?)\\s{1,20})"
+              + "|(?<=\\b(?:artikelen|articles)\\s{1,20}\\d{1,5}(?:/\\d{1,3})?"
+              + "(?:bis|ter|quater|quinquies)?(?:\\s{0,3},\\s{0,3}§\\s{0,3}\\d{1,3}(?:er)?,?)?"
+              + "\\s{1,5}(?:tot\\s{1,3}en\\s{1,3}met|tot|en|et|and|à|to)\\s{1,5}))"
+              + "\\d+(?:/\\d+)?(?:bis|ter|quater|quinquies)?",
           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
   /** Dutch marker words that must not leak into the fr/en translations outside glosses. */

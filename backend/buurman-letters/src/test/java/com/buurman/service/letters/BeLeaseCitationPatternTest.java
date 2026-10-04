@@ -89,4 +89,41 @@ class BeLeaseCitationPatternTest {
     assertThat(LeaseDocumentFidelityTest.violations(NL, EN.replace("1728bis", "1728ter"), BE))
         .anyMatch(v -> v.startsWith("citations differ in clause-a"));
   }
+
+  private static final String NL_LIST =
+      doc(
+          "authoritative",
+          "Zie de artikelen 17 tot en met 19 van het Vlaams Woninghuurdecreet.",
+          "Zie de artikelen 224 en 224/1 en de artikelen 237, § 5, en 239 van de Code.");
+
+  private static final String FR_LIST =
+      doc(
+          "machine-drafted",
+          "Voir les articles 17 à 19 du décret flamand sur la location d'habitations.",
+          "Voir les articles 224 et 224/1 et les articles 237, § 5, et 239 du Code.");
+
+  private static final String EN_LIST =
+      doc(
+          "machine-drafted",
+          "See articles 17 to 19 of the Flemish Residential Lease Decree.",
+          "See articles 224 and 224/1 and articles 237, § 5, and 239 of the Code.");
+
+  @Test
+  @DisplayName("the second number of a two-item article list is a token in nl, fr and en")
+  void secondListNumberIsToken() {
+    String nl = LeaseDocumentText.fragments(NL_LIST).get("clause-a");
+    assertThat(LeaseDocumentFidelityTest.citations(nl, BE))
+        .anyMatch(t -> t.endsWith(": 19"))
+        .anyMatch(t -> t.endsWith(": 224/1"))
+        .anyMatch(t -> t.endsWith(": 237 5"))
+        .anyMatch(t -> t.endsWith(": 239"));
+    assertThat(LeaseDocumentFidelityTest.violations(NL_LIST, FR_LIST, BE)).isEmpty();
+    assertThat(LeaseDocumentFidelityTest.violations(NL_LIST, EN_LIST, BE)).isEmpty();
+    assertThat(LeaseDocumentFidelityTest.violations(NL_LIST, FR_LIST.replace("à 19", "à 18"), BE))
+        .anyMatch(v -> v.startsWith("citations differ in clause-a"));
+    assertThat(
+            LeaseDocumentFidelityTest.violations(
+                NL_LIST, EN_LIST.replace("and 239", "and 238"), BE))
+        .anyMatch(v -> v.startsWith("citations differ in clause-a"));
+  }
 }
