@@ -14,10 +14,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.jooq.exception.IntegrityConstraintViolationException;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Team;
@@ -28,8 +31,10 @@ import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 @SuppressWarnings({
   "StringConcatToTextBlock",
@@ -37,6 +42,9 @@ import lombok.RequiredArgsConstructor;
   "DuplicateBranches"
 }) // Error Prone 2.47.0 bug crashes on this file
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
+
+  private static final String STALE_SUBJECT_MESSAGE =
+      "Token subject does not match the account registered for this identity; sign in again";
 
   private final UserRepository userRepository;
   private final TeamMemberRepository teamMemberRepository;
@@ -167,6 +175,15 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
   }
 
   private User createUserFromJwt(String keycloakId, String email, String name) {
+    // The email already belongs to an account linked to a different identity (e.g. the Keycloak
+    // user was deleted and recreated, leaving this token's subject stale). Never relink by email:
+    // that would let any identity claiming the address take over the account.
+    if (userRepository.findByEmail(email).isPresent()) {
+      log.warn(
+          "Rejecting token: subject {} unknown but its email is already registered", keycloakId);
+      throw new InvalidBearerTokenException(STALE_SUBJECT_MESSAGE);
+    }
+
     User user = new User();
     user.setKeycloakId(keycloakId);
     user.setEmail(email);
@@ -176,6 +193,13 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");
     user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
 
-    return userRepository.save(user);
+    try {
+      return userRepository.save(user);
+    } catch (DataIntegrityViolationException | IntegrityConstraintViolationException e) {
+      // A concurrent request for the same subject may have inserted the user first.
+      return userRepository
+          .findByKeycloakId(keycloakId)
+          .orElseThrow(() -> new InvalidBearerTokenException(STALE_SUBJECT_MESSAGE, e));
+    }
   }
 }
