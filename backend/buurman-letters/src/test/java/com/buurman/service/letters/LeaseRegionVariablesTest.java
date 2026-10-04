@@ -174,6 +174,46 @@ class LeaseRegionVariablesTest {
   }
 
   @Test
+  @DisplayName("a lower-case region code is upper-cased: 'x' gets the X branch")
+  void lowerCaseRegionIsNormalised() {
+    var assembled = assemble("ZZ", Optional.of("x"));
+
+    assertThat(assembled.variables()).containsEntry("regionCode", "X");
+    assertThat(render(assembled)).contains("REGION-X-RULES").doesNotContain("GENERAL-RULES");
+  }
+
+  @Test
+  @DisplayName("a lower-case Canadian province 'on' gets the Ontario branch of the real document")
+  void lowerCaseOntarioGetsOntarioBranch() {
+    exporter =
+        new LeaseAgreementExporter(
+            mock(ContractRepository.class),
+            mock(PropertyRepository.class),
+            mock(ContractRentComponentRepository.class),
+            mock(ContractRentPeriodRepository.class),
+            resolver,
+            mock(LeaseKindResolver.class),
+            new LeaseDocumentLocator(Map.of("CA", List.of("en"))),
+            mock(TeamRepository.class),
+            mock(LetterExporterHelper.class),
+            mock(LetterTemplateService.class),
+            messageSource,
+            CLOCK);
+    when(resolver.templatesFor(Optional.of("CA"), LeaseKind.RESIDENTIAL))
+        .thenReturn(List.of(template("CA", "premises")));
+    var plan = exporter.plan(Optional.of("CA"), LeaseKind.RESIDENTIAL, "en");
+    var assembled =
+        exporter.assembleResolved(
+            plan,
+            input(Optional.of("on")),
+            List.of(resolved("premises")),
+            List.of(resolved("premises")));
+
+    assertThat(assembled.variables()).containsEntry("regionCode", "ON");
+    assertThat(render(assembled)).contains("THIS DOCUMENT IS NOT THE STANDARD FORM OF LEASE");
+  }
+
+  @Test
   @DisplayName("a document can print the country it is rendered for")
   void documentSeesCountryCode() {
     assertThat(render(assemble("ZZ", Optional.empty())))
@@ -200,9 +240,10 @@ class LeaseRegionVariablesTest {
   @Test
   @DisplayName("the legacy example-text path does not receive the per-language variables")
   void legacyPathUnchanged() {
-    when(resolver.templatesFor(Optional.of("BE"), LeaseKind.RESIDENTIAL))
+    // BE has RESIDENTIAL documents since V097; MIXED_USE has none and takes the legacy path
+    when(resolver.templatesFor(Optional.of("BE"), LeaseKind.MIXED_USE))
         .thenReturn(List.of(template("BE", "rent")));
-    var plan = exporter.plan(Optional.of("BE"), LeaseKind.RESIDENTIAL, "en");
+    var plan = exporter.plan(Optional.of("BE"), LeaseKind.MIXED_USE, "en");
 
     var assembled =
         exporter.assembleResolved(

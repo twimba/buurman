@@ -1,0 +1,345 @@
+<!--
+  legal-basis: Laki asuinhuoneiston vuokrauksesta (AHVL, 481/1995; Swedish: lag om hyra av bostadslägenhet),
+               consolidated text including the amending Act 531/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260531 and
+               swe@20260531): sections 2, 3, 4, 5, 5 a, 8, 11, 13, 13 a, 16, 17, 17 a, 18, 19, 20, 21, 22, 23, 24,
+               25, 26, 26 a, 27, 27 a, 29, 34, 35, 36, 37, 44, 45, 51, 52, 53, 54, 55, 56, 58, 61, 62, 63, 66, 68,
+               68 a, 69. Transitional rule of Act 531/2026: leases concluded before 01.10.2026 keep the former
+               4 (2), 8 (1) and (2), 27, 32 (2), 52 (2) and (4) and 68 unless otherwise agreed after that date; this
+               document is drafted for leases concluded on or after 01.10.2026.
+               Act 790/2020 (water metering, transitional rule). Laki rakennuksen energiatodistuksesta (50/2013),
+               consolidated with Act 1010/2024, sections 3 and 6 (finlex.fi). Korkolaki (633/1982).
+               Laki kuluttajariitalautakunnasta (8/2007), consolidated with Act 1495/2025, section 2.
+               Oikeudenkaymiskaari (4/1734), chapter 10 and chapter 6 a (added by Act 398/2026, in force
+               01.09.2026). Tietosuojalaki (1050/2018); GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
+               32016R0679). Aland: Hyreslag (1999:19) for landskapet Aland (regeringen.ax) applies instead of the
+               AHVL in the Aland Islands; not covered by this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukauden vuokra" is "3 months' rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Swedish courtesy translation of fi.html; the Finnish text is authoritative. It states the law of mainland
+  Finland (AHVL, whose official Swedish version is lagen om hyra av bostadslägenhet) in Swedish, using the
+  Finland-Swedish statutory terms, and is not the law of Sweden or of any other country. Draft text, not vetted by
+  legal counsel. Only prose differs from fi.html: fragments, th: expressions and attributes are identical (enforced
+  by LeaseDocumentFidelityTest). Citations are written "(AHVL 52 § 2 mom.)" as in fi.html. Each clause-<key>
+  fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references use
+  refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Detta hyresavtal för en bostadslägenhet har ingåtts mellan följande parter:</p>
+  <p><strong th:text="${landlordName}">hyresvärd</strong>, nedan &rdquo;hyresvärden&rdquo;, och</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">hyresgäst</strong>, nedan
+    (gemensamt) &rdquo;hyresgästen&rdquo;.</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">den eller de undertecknade hyresgästerna, nedan (gemensamt)
+    &rdquo;hyresgästen&rdquo;.</p>
+  <p>Parternas kontaktuppgifter: ______________________________</p>
+  <p>Om det finns flera hyresgäster svarar de solidariskt för alla hyresgästens förpliktelser enligt detta avtal.
+    Makar och personer som lever under äktenskapsliknande förhållanden svarar solidariskt för de förpliktelser som
+    följer av hyresavtalet, om de bor tillsammans i en lägenhet som de har hyrt eller som den ena maken har hyrt
+    (AHVL 11 §).</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Hyresvärden hyr ut till hyresgästen, för boende, den lägenhet som är belägen på adressen
+    <strong th:text="${propertyAddress}">adress</strong>, nedan &rdquo;lägenheten&rdquo;. Lägenhetens typ och
+    yta: ______________________________. Utrymmen som hör till lägenheten (till exempel förråd eller bilplats):
+    ______________________________.</p>
+  <p>Hyresvärdens rätt att hyra ut lägenheten grundar sig på följande (till exempel äganderätt eller aktier som
+    berättigar till besittning av lägenheten): ______________________________. Hyresvärden är skyldig att meddela
+    hyresgästen vad hyresvärdens rätt att hyra ut lägenheten grundar sig på eller vad som begränsar denna rätt
+    (AHVL 37 §).</p>
+  <p>På detta avtal tillämpas lagen om hyra av bostadslägenhet (481/1995, nedan AHVL). Avtal om avvikelse från
+    lagens bestämmelser kan ingås endast om inte något annat stadgas i lagen och avvikelsen inte annars ska anses
+    vara förbjuden (AHVL 3 §). Lagen tillämpas inte på avtal genom vilka en lägenhet hyrs ut för kortvarigt och
+    tillfälligt boende (AHVL 2 § 1 mom.).</p>
+  <p>Detta dokument har upprättats enligt lagstiftningen i Fastlandsfinland. På en lägenhet som är belägen i
+    landskapet Åland tillämpas landskapets egen hyreslagstiftning (Hyreslag för landskapet Åland, 1999:19), enligt
+    vilken detta dokument inte har upprättats.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Hyresförhållandet börjar den <strong th:text="${startDate}">begynnelsedag</strong>.</p>
+  <p th:if="${!fixedTerm}">Hyresavtalet gäller tills vidare.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Hyresavtalet är tidsbestämt<span th:if="${endDate != null}"> och upphör den
+      <strong th:text="${endDate}">slutdag</strong></span>. Ett tidsbestämt hyresavtal upphör vid utgången av
+      avtalets giltighetstid (AHVL 4 § 2 mom.). Ett tidsbestämt hyresavtal upphör till följd av uppsägning endast
+      i de fall som anges i lag (AHVL 51 § 2 mom.).</p>
+    <p>Om hyresavtal ingås fler gånger än 2 i följd med samma hyresgäst för en bestämd tid på högst 3 månader, är
+      hyresavtalet trots villkoret om den bestämda tiden i kraft tills vidare (AHVL 4 § 1 mom.).</p>
+    <p>Om hyresgästen minst 3 månader innan den bestämda tiden löper ut meddelar hyresvärden att hyresgästen vill
+      fortsätta hyresförhållandet och hyresvärden vägrar utan en orsak som kan godtas i hyresförhållanden, har
+      hyresgästen rätt till ersättning för de reparations- och ändringsarbeten som hyresgästen utfört och som höjt
+      lägenhetens värde, enligt deras värde vid hyresförhållandets upphörande, om hyresgästen enligt lag har haft
+      rätt att utföra arbetena och de inte redan har ersatts (AHVL 58 §).</p>
+  </th:block>
+  <p>Hyresavtalet och ändringar i det ska ingås skriftligen. Om hyresavtalet inte har ingåtts skriftligen, anses
+    det vara i kraft tills vidare (AHVL 5 § 1 mom.). Som skriftligt avtal betraktas också ett elektroniskt avtal i
+    en form som allmänt kan lagras och återges under en tid som är lämplig med hänsyn till dess syfte
+    (AHVL 5 a §).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Hyran är <strong th:text="${rentAmount}">belopp</strong> <span th:text="${paymentFrequency}">månatligen</span>.<span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> Dessutom betalar hyresgästen de
+    avtalade användningsavgifterna (se artikel <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Hyran bestäms enligt vad som har avtalats, om inte något annat följer av lag (AHVL 27 § 1 mom.). Hyresvärden
+    eller hyresgästen kan medan hyresförhållandet består föra frågan om skäligheten av hyran eller av ett villkor
+    om hur den bestäms till domstol för prövning (AHVL 29 § 1 mom.). Hyresvärden får inte säga upp hyresavtalet
+    medan hyrans skälighet på yrkande av hyresgästen prövas av tingsrätten (AHVL 29 § 2 mom.).</p>
+  <p>Detta dokument har inte upprättats för lägenheter vars hyra omfattas av bestämmelserna om bestämmande av
+    hyran i aravabegränsningslagen eller i räntestödslagstiftningen (AHVL 27 § 4 mom.).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Justeringen av hyran regleras i detta avtal (se artikel <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Hyran justeras årligen från och med ______________ enligt följande grund:
+    ______________________________ (till exempel förändringen i det levnadskostnadsindex som Statistikcentralen
+    publicerar eller en fast procentuell höjning).</p>
+  <p>Ett villkor enligt vilket hyresvärden under hyresförhållandet ensidigt får bestämma tidpunkten för en
+    hyreshöjning eller dess belopp är ogiltigt, om det inte också har avtalats om den grund enligt vilken hyran får
+    höjas (AHVL 27 § 2 mom.).</p>
+  <p>Hyresvärden ska lämna hyresgästen ett skriftligt meddelande om höjningen, den nya hyran och tidpunkten då
+    höjningen träder i kraft. Den höjda hyran träder i kraft tidigast 1 månad efter ingången av den
+    hyresbetalningsperiod som följer närmast efter meddelandet, och den får inte tas ut retroaktivt. Hyresvärden
+    ska på hyresgästens begäran avgiftsfritt och utan dröjsmål lämna uppgifter om grunden för höjningen och om hur
+    den nya hyran beräknas (AHVL 27 § 2 mom.).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Utöver hyran betalar hyresgästen följande användningsavgifter till hyresvärden: vatten ______________,
+    elektricitet ______________, bilplats ______________, övrigt ______________.</p>
+  <p>Bestämmelserna om hyreshöjning tillämpas inte på ersättning för vatten, elektricitet eller någon annan
+    användningsbaserad ersättning i anslutning till hyresförhållandet, om det har avtalats om ersättningen och om
+    hur den bestäms. Om ersättningen bestäms på basis av förbrukning eller användning, ska hyresvärden i samband med
+    uttaget av ersättningen lämna hyresgästen uppgifter om förbrukningen eller användningen samt i möjligaste mån
+    om andra grunder för ersättningen, och utan dröjsmål underrätta hyresgästen om att grunden för bestämmandet av
+    ersättningen har ändrats (AHVL 27 § 3 mom.).</p>
+  <p>Om lägenhetsspecifika vattenmätare har installerats i byggnaden för kostnadsfördelning, ska ersättningen för
+    vatten grunda sig på tillförlitligt uppmätt faktisk förbrukning, hyresgästen ska varje månad få uppgifter om
+    vattenförbrukningen, och ingen separat avgift får tas ut för uppgifterna (AHVL 27 a §). Detta tillämpas inte
+    om vattenmätarna har installerats med stöd av ett bygglov som sökts före 23.11.2020 (lag 790/2020).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Hyresgästen ställer säkerhet till hyresvärden för fullgörandet av
+    hyresgästens förpliktelser. Säkerhetens belopp är <strong th:text="${depositAmount}">belopp</strong>.</p>
+  <p th:if="${depositAmount == null}">Hyresgästen ställer säkerhet till hyresvärden för fullgörandet av
+    hyresgästens förpliktelser. Säkerhetens belopp är det som parterna har avtalat skriftligen.</p>
+  <p>Säkerhetens form (till exempel kontant säkerhet, hyresgarantikonto eller bankgaranti) och tidpunkt för när den
+    ska ställas: ______________________________. Säkerheten täcker alla förpliktelser som följer av
+    hyresförhållandet, om inte något annat har avtalats. Om säkerhet inte ställs inom avtalad tid, har hyresvärden
+    rätt att häva avtalet, förutom om säkerheten har ställts före delfåendet av meddelandet om hävning
+    (AHVL 8 § 1 mom.).</p>
+  <p>Ett villkor enligt vilket säkerheten är större än 3 månaders hyra är ogiltigt (AHVL 8 § 5 mom.).
+    Hyresgästen är således inte skyldig att ställa säkerhet som överstiger detta belopp.</p>
+  <p>Säkerheten ska återställas eller frigöras eller ett skriftligt meddelande om att den innehålls ska lämnas utan
+    dröjsmål och senast inom en tidsfrist på 14 dagar från det att hyresavtalet upphörde eller från det att
+    besittningen därefter överläts; om det av grundad anledning finns ett hinder, ska åtgärden vidtas utan dröjsmål
+    och senast inom en tidsfrist på 14 dagar från det att hindret undanröjdes. Av meddelandet ska framgå grunden
+    för den fordran som täcks med säkerheten samt en sådan uppskattning av dess belopp som skäligen kan krävas
+    (AHVL 8 § 2 mom.).</p>
+  <p>Den andel av säkerheten som innehålls får motsvara högst beloppet av fordran eller den meddelade
+    uppskattningen av dess belopp; en säkerhet som har satts in på ett hyresgarantikonto får dock innehållas i sin
+    helhet till dess att fordrans belopp har klarlagts (AHVL 8 § 3 mom.). Den som ställt säkerheten har rätt till
+    ersättning för skada som orsakats av att säkerheten utan grund innehålls eller inte frigörs, förutom om
+    hyresvärden visar att detta inte beror på en orsak, försummelse eller annan vårdslöshet som ska räknas
+    hyresvärden till last (AHVL 8 § 4 mom.).<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Lägenhetens skick konstateras när den överlämnas (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Hyresgästen betalar hyran<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (se artikel <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> och användningsavgifterna</span>
+    <span th:text="${paymentFrequency}">månatligen</span>
+    <span th:if="${paymentDueDay != null}">senast dag
+      <strong th:text="${paymentDueDay}">1</strong> i varje hyresbetalningsperiod</span><span
+    th:if="${paymentDueDay == null}">senast dag 2 i varje hyresbetalningsperiod (AHVL 34 § 1 mom.)</span>
+    till det bankkonto som hyresvärden har angett ______________________________.</p>
+  <p>Hyra i pengar får betalas via en bank eller en annan betaltjänstleverantör; ett annat avtalsvillkor är
+    ogiltigt (AHVL 35 § 1 mom.).</p>
+  <p>Att hyran ska betalas i förskott för flera hyresbetalningsperioder kan avtalas när hyresavtalet ingås endast
+    av särskilda skäl (AHVL 36 § 1 mom.). Ett villkor enligt vilket hyran ska betalas i förskott för en längre tid
+    än 3 månader eller, om hyresbetalningsperioden är längre än så, för mer än 1 hyresbetalningsperiod är ogiltigt
+    (AHVL 36 § 2 mom.).</p>
+  <p>Vid försenad betalning är hyresgästen skyldig att betala dröjsmålsränta enligt räntelagen (633/1982).
+    Underlåtenhet att betala hyran inom stadgad eller avtalad tid kan ge hyresvärden rätt att häva hyresavtalet
+    (AHVL 61 § 1 mom. 1 punkten).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Lägenheten får användas endast för boende. Hyresgästen får använda lägenheten som sin egen bostad eller som
+    gemensam bostad för sig och sin make och de barn som hör till familjen (AHVL 17 § 1 mom.).</p>
+  <p>Om hyresgästen använder lägenheten tillsammans med andra personer, ska hyresgästen skriftligen anmäla till
+    hyresvärden antalet boende och grunden för deras rätt att bo i lägenheten samt namn, födelsedatum och
+    kontaktinformation för de myndiga boende. Om anmälan inte lämnas när hyresavtalet ingås, ska den lämnas utan
+    dröjsmål efter det att hyresgästen har fått lägenheten i sin besittning och därefter alltid när en ny boende
+    flyttar in; också att en anmäld boende flyttar bort ska utan dröjsmål anmälas skriftligen (AHVL 17 a §).</p>
+  <p>Hyresgästen ska vårda lägenheten omsorgsfullt (AHVL 25 § 1 mom.), och hyresgästen ska iaktta
+    husbolagets ordningsregler.</p>
+  <p>Det är förbjudet att använda tobaksprodukter avsedda för rökning eller annan upphettning, och motsvarande
+    produkter som avses i tobakslagen, inomhus i lägenheten, på balkongen som hör till lägenheten och i något annat
+    privat utrymme inomhus eller utomhus i anslutning till lägenheten. Hyresvärden kan ge tillstånd till att de
+    används, förutsatt att annan lagstiftning, myndighetsföreskrifter eller en bestämmelse i bolagsordningen inte
+    förbjuder eller hindrar det (AHVL 26 a §). Hyresvärdens tillstånd: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Om hyresvärden inte vållas avsevärd olägenhet eller störning, får hyresgästen använda lägenheten som gemensam
+    bostad också för sin eller sin makes nära släkting eller genom underuthyrning eller annars upplåta högst
+    hälften av lägenheten för att användas av någon annan för boende (AHVL 17 § 1 mom.). I andra fall får
+    lägenheten eller en del av den upplåtas för att användas av någon annan endast med samtycke i hyresavtalet eller
+    särskilt samtycke av hyresvärden (AHVL 17 § 2 mom.).</p>
+  <p>Hyresgästen får för högst 2 år upplåta hela lägenheten för att användas av någon annan för boende, om
+    hyresgästen på grund av sitt arbete, sina studier, sjukdom eller någon annan motsvarande orsak tillfälligt
+    vistas på en annan ort eller det finns något annat särskilt skäl till upplåtelsen och hyresvärden inte har
+    grundad anledning att motsätta sig den. Hyresgästen ska senast 1 månad före upplåtelsen skriftligen meddela
+    hyresvärden upplåtelsen, dess längd och till vem lägenheten upplåts; en hyresvärd som inte godkänner
+    upplåtelsen ska inom 14 dagar från det att hyresvärden fick meddelandet föra frågan om grunden för sin vägran
+    till domstol för prövning (AHVL 18 §).</p>
+  <p>Om inte något annat avtalas, svarar hyresgästen fortfarande för hyresgästens skyldigheter och för skada som den
+    som fått använda lägenheten är skyldig att ersätta hyresvärden (AHVL 19 §). Hyresgästen får inte utan
+    tillstånd i hyresavtalet eller särskilt tillstånd av hyresvärden överlåta sin hyresrätt, om inte något annat
+    föreskrivs i lag, såsom för överlåtelse av hyresrätten till en familjemedlem (AHVL 44 § 1 mom., 45 §).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Lägenheten ska när hyresförhållandet börjar och medan det består vara i ett sådant skick som hyresgästen med
+    beaktande av lägenhetens ålder, områdets lägenhetsbestånd och övriga lokala förhållanden skäligen kan kräva,
+    om inte något annat har avtalats om skicket (AHVL 20 § 1 mom.). Hyresvärden svarar för underhållet av
+    lägenheten, om inte något annat avtalas i detta avtal. Underhållsuppgifter som hyresgästen ansvarar för:
+    ______________________________.</p>
+  <p>Hyresgästen ska utan dröjsmål underrätta hyresvärden om skada på lägenheten eller om en brist som hyresvärden
+    ansvarar för att avhjälpa, och genast, om reparationen måste utföras utan dröjsmål för att förhindra att skadan
+    ökar (AHVL 24 § 1 mom.). Hyresgästen är inte ansvarig för sedvanligt slitage, om hyresvärden svarar för
+    lägenhetens skick och underhåll, men ersätter skada som hyresgästen eller en person som vistas i lägenheten med
+    hyresgästens tillstånd uppsåtligen eller genom försummelse eller annan vårdslöshet vållar lägenheten
+    (AHVL 25 §).</p>
+  <p>Hyresgästen har rätt att befrias från att betala hyra eller att få hyran skäligt nedsatt för den tid då
+    lägenheten inte har kunnat användas eller inte har varit i det skick som krävs eller avtalats, utom om det
+    bristfälliga skicket beror på hyresgästens försummelse eller annan vårdslöshet eller reparations- eller
+    ändringsarbetet har utförts på grund av en skada som hyresgästen ansvarar för; rätten gäller inte tiden innan
+    hyresvärden fick kännedom om bristen (AHVL 23 § 2 mom.).</p>
+  <p>Hyresgästen har inte rätt att utan hyresvärdens tillstånd utföra andra reparations- eller ändringsarbeten i
+    lägenheten än för att avhjälpa en brist som hyresvärden har underlåtit att avhjälpa, men hyresgästen får alltid
+    vidta åtgärder för att förhindra eller begränsa en omedelbar skada (AHVL 21 § 1 mom.). Hyresvärden får
+    omedelbart utföra arbete som inte kan skjutas upp utan att skada uppstår, och arbete som inte medför väsentlig
+    olägenhet efter att ha meddelat hyresgästen minst 14 dagar innan arbetet inleds (AHVL 21 § 2 mom.). Om andra
+    reparations- eller ändringsarbeten ska hyresvärden meddela minst 6 månader innan arbetet inleds, och
+    hyresgästen har rätt att inom 14 dagar från det att meddelandet togs emot häva avtalet så att det upphör när
+    arbetet tidigast får inledas (AHVL 21 § 3 mom.).</p>
+  <p>Hyresvärden och hyresvärdens företrädare har rätt att få tillträde till lägenheten när det är nödvändigt för
+    tillsyn över lägenhetens skick och skötsel eller för reparations- och ändringsarbeten eller skötselåtgärder,
+    samt att visa lägenheten om den ska säljas eller kan hyras ut på nytt; besöket ordnas vid en tidpunkt som passar
+    parterna, om inte ärendets brådskande natur eller art hindrar det (AHVL 22 §). Ett villkor som begränsar
+    hyresgästens lagstadgade rättigheter i fråga om lägenhetens skick eller gör hyresgästens ansvar strängare än
+    vad som föreskrivs i lag är ogiltigt (AHVL 26 §).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Hyresvärden har hållit ett giltigt energicertifikat för byggnaden eller en del av den tillgängligt för
+    hyresgästen vid visningen och överlämnar det till hyresgästen i original eller som kopia (lagen om
+    energicertifikat för byggnader 50/2013, 6 § 1 mom.).</p>
+  <p>Energicertifikatet behöver inte hållas tillgängligt eller överlämnas, om uthyrningen gäller tidsbestämd
+    uthyrning för högst 1 år, om det är fråga om underuthyrning eller uthyrning mellan sammanslutningar inom samma
+    koncern (lag 50/2013, 6 § 2 mom.) eller om byggnaden har undantagits från lagens tillämpningsområde
+    (lag 50/2013, 3 §).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Hyresvärden ska hålla lägenheten tillgänglig för hyresgästen den dag då hyresgästen har rätt att få den i
+    sin besittning (AHVL 16 § 1 mom.). Parterna besiktar lägenheten gemensamt innan den överlämnas och antecknar
+    dess skick, de överlämnade nycklarna och mätarställningarna i ett besiktningsprotokoll, som båda parterna
+    undertecknar och av vilket båda får ett exemplar.</p>
+  <p>Flyttningsdagen är den dag då hyresavtalet upphör (AHVL 68 §). Hyresgästen återlämnar lägenheten och alla
+    nycklar till hyresvärden senast den dagen, och parterna besiktar lägenheten gemensamt. I ett hyresförhållande
+    som gäller tills vidare kan domstolen under de förutsättningar som anges i lag skjuta fram flyttningsdagen
+    (AHVL 69 §).</p>
+  <p>Egendom som har blivit kvar i lägenheten efter att hyresförhållandet upphört övergår vederlagsfritt till
+    hyresvärden under de förutsättningar och inom de tidsfrister som anges i lag (AHVL 68 a §).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Återställandet av säkerheten regleras i detta avtal (se artikel <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Uppsägningstiden för ett hyresavtal som gäller tills vidare börjar löpa från den sista dagen i den
+    kalendermånad under vilken uppsägningen har skett (AHVL 52 § 1 mom.). Hyresvärdens uppsägningstid är
+    4 månader, om hyresförhållandet omedelbart före uppsägningen har fortgått minst 2 år utan avbrott, och i annat
+    fall 3 månader (AHVL 52 § 2 mom.). Hyresgästens uppsägningstid är 1 månad (AHVL 52 § 3 mom.).</p>
+  <p>Ett villkor som förkortar hyresvärdens eller förlänger hyresgästens uppsägningstid är ogiltigt, liksom ett
+    villkor enligt vilket uppsägningstiden kan börja första gången först efter en viss tid från det att
+    hyresförhållandet började (AHVL 52 § 4 mom.).</p>
+  <p>Hyresvärdens uppsägningsmeddelande ska lämnas skriftligen, och i det ska anges den tidpunkt då
+    hyresförhållandet upphör och grunden för uppsägningen (AHVL 54 § 1 mom.). Hyresgästens uppsägningsmeddelande
+    lämnas skriftligen till hyresvärden eller till den som hyresvärden har gett i uppdrag att uppbära hyran, dock
+    inte till en penninginrättning (AHVL 54 § 2 mom.). Uppsägningsmeddelandet ska delges bevisligen
+    (AHVL 13 a § 1 mom.), och en uppsägning som har verkställts på annat sätt är utan verkan (AHVL 54 § 5 och 6 mom.).</p>
+  <p>När makar bor i lägenheten som sitt gemensamma hem, får en make inte säga upp hyresavtalet utan den andra
+    makens samtycke, om inte samtycket är svårt att få (AHVL 53 § 1 mom.).</p>
+  <p>Domstolen ska på yrkande av hyresgästen förklara att en uppsägning som hyresvärden verkställt är utan verkan i
+    de fall som anges i lag (AHVL 56 § 1 mom.). Yrkandet ska framställas medan hyresförhållandet består och senast
+    inom 3 månader från delfåendet av uppsägningen (AHVL 56 § 2 mom.).</p>
+  <p th:if="${fixedTerm}">Ett tidsbestämt hyresavtal<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (se artikel <span th:text="${refs['term']}"></span>)</span> kan inte sägas upp annat
+    än i de fall som anges i lag; domstolen kan på en särskild grund som anges i lag berättiga hyresgästen eller
+    hyresvärden att säga upp hyresavtalet (AHVL 55 § 1 mom.).</p>
+  <p>Hyresvärden har rätt att häva hyresavtalet på de grunder som anges i lag, till exempel om hyresgästen
+    underlåter att betala hyran inom stadgad eller avtalad tid (AHVL 61 § 1 mom.); rätt till hävning föreligger
+    inte om det förfarande som utgör hävningsgrund är av ringa betydelse (AHVL 61 § 3 mom.). På vissa grunder
+    förutsätter hävning att hyresgästen först har fått en skriftlig varning (AHVL 62 §). Hyresgästen har rätt att
+    häva hyresavtalet på de grunder som anges i lag, till exempel om användningen av lägenheten för det ändamål som
+    förutsätts i avtalet medför uppenbar fara för hälsan för hyresgästen eller någon som hör till hyresgästens
+    hushåll (AHVL 63 § 1 mom.). Meddelandet om hävning ska lämnas skriftligen, och i det ska hävningsgrunden anges
+    (AHVL 66 § 1 mom.).</p>
+  <p>Parterna kan alltid avtala om att hyresförhållandet upphör.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> Återlämnandet av lägenheten regleras i detta avtal (se artikel <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Meddelanden kan delges per post genom brev till den postadress som mottagaren vanligen använder
+    (AHVL 13 § 1 mom.).</p>
+  <p>Meddelanden kan delges också genom en elektronisk kommunikationskanal endast om parterna individuellt och
+    skriftligen har avtalat om det genom att fylla i följande punkt: ______________________________ (avtalad kanal,
+    till exempel en e-postadress). Om punkten inte har fyllts i, har ingen elektronisk kanal avtalats. När den
+    avtalade kanalen används sänds meddelandet till
+    den senaste kontaktinformation som mottagaren uppgett, förutsatt att avsändaren inte visste och inte heller
+    borde ha vetat att mottagaren på grund av åldrande, funktionsnedsättning eller någon annan motsvarande orsak är
+    förhindrad att använda den överenskomna kanalen (AHVL 13 § 2 mom.).</p>
+  <p>Om brevet inte returneras till avsändaren och det inte i samband med att det elektroniska meddelandet sänds är
+    uppenbart att mottagaren inte har fått det, anses delfåendet, om inte något annat visas, ha skett dag 7 efter
+    det att meddelandet postades och, vid användning av den elektroniska kanalen, dag 3 efter det att meddelandet
+    sändes (AHVL 13 § 4 mom.). Parterna ska utan dröjsmål meddela ändringar i sin postadress och elektroniska
+    kontaktinformation (AHVL 13 § 3 mom.).</p>
+  <p>Meddelanden om uppsägning och hävning samt varningen före hävning ska delges bevisligen; ett villkor enligt
+    vilket de kan delges på något annat sätt än vad som föreskrivs i lag är ogiltigt (AHVL 13 a § 4 mom.).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Hyresvärden behandlar personuppgifter om hyresgästen och om de personer som bor i lägenheten endast i den mån
+    det är nödvändigt för att ingå och fullgöra detta avtal och för att uppfylla lagstadgade förpliktelser, i
+    enlighet med EU:s allmänna dataskyddsförordning (förordning (EU) 2016/679) och dataskyddslagen (1050/2018).
+    Uppgifterna bevaras endast så länge det är nödvändigt för dessa ändamål.</p>
+  <p>Hyresgästen har de rättigheter som följer av dataskyddsförordningen, särskilt rätt till tillgång till
+    uppgifterna samt rätt till rättelse och radering, och rätt att lämna in klagomål till dataombudsmannen.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>På detta avtal tillämpas finsk lag.</p>
+  <p>Parterna strävar efter att i första hand lösa meningsskiljaktigheter genom förhandlingar. En hyresgäst som är
+    konsument eller en hyresvärd som är privatperson kan föra en meningsskiljaktighet som gäller hyra av
+    bostadslägenhet till konsumenttvistenämnden för behandling, och nämnden ger en rekommendation i ärendet (lagen
+    om konsumenttvistenämnden 8/2007, 2 § 1 mom. 4 punkten).</p>
+  <p>Tvister avgörs av behörig tingsrätt enligt bestämmelserna om forum i 10 kap. i rättegångsbalken. Ett tvistemål
+    som grundar sig på ett hyresförhållande som gäller en bostadslägenhet kan behandlas i förfarandet för små
+    tvistemål enligt 6 a kap. i rättegångsbalken. Om ett villkor i detta avtal är ogiltigt, gäller avtalet i övrigt,
+    och lagen tillämpas i stället för det ogiltiga villkoret.</p>
+</div>
+
+</body>
+</html>

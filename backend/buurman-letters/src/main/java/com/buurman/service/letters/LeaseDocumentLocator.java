@@ -73,8 +73,18 @@ public class LeaseDocumentLocator {
    * @param languageUsed the language of the document actually found
    * @param authoritative whether {@code languageUsed} is the first national language of the country
    *     (else the document is a courtesy translation)
+   * @param noNationalVersion whether the country has no national document language at all (CZ): the
+   *     document then shows the no-national-version notice instead of the courtesy notice, which
+   *     would point to a national version that does not exist
    */
-  public record LeaseDocument(String templatePath, String languageUsed, boolean authoritative) {}
+  public record LeaseDocument(
+      String templatePath, String languageUsed, boolean authoritative, boolean noNationalVersion) {
+
+    /** A document of a country that has a national document language. */
+    public LeaseDocument(String templatePath, String languageUsed, boolean authoritative) {
+      this(templatePath, languageUsed, authoritative, false);
+    }
+  }
 
   public Optional<LeaseDocument> locate(String countryCode, LeaseKind kind, String requestedLang) {
     if (kind == null || countryCode == null || !COUNTRY_PATTERN.matcher(countryCode).matches()) {
@@ -92,7 +102,8 @@ public class LeaseDocumentLocator {
                             new LeaseDocument(
                                 path(countryCode, k, lang),
                                 lang,
-                                isAuthoritative(countryCode, lang))))
+                                isAuthoritative(countryCode, lang),
+                                nationalLanguages(countryCode).isEmpty())))
         .findFirst();
   }
 

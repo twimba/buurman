@@ -1,0 +1,721 @@
+<!--
+  legal-basis: Belgian residential lease law is regional since the sixth state reform (bijzondere wet van 8 augustus
+               1980, art. 6, § 1, IV, 2°; transfer in force 01/07/2014). Region branches on countryCode == 'BE' and the
+               catalog region codes VLG / WAL / BRU (rent-regulations.json); general text for any other or unknown region.
+               Flanders: Vlaams Woninghuurdecreet (decreet van 9 november 2018, BS 07/12/2018, in force 01/01/2019),
+               consolidated text codex.vlaanderen.be (document 1029963, last amendments 2023): art. 3, 5, 6, 7, 8, 9,
+               10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 34, 35, 36,
+               37, 38, 39, 40, 43, 44, 51, 52. Vlaamse Codex Wonen van 2021 (conformity, via art. 12). Energiedecreet
+               van 8 mei 2009 (EPC, cited generally).
+               Wallonia: decret wallon du 15 mars 2018 relatif au bail d'habitation (MB 28/03/2018, in force
+               01/09/2018), consolidated text wallex.wallonie.be (version in force from 01/07/2024): art. 3, 6, 7, 8,
+               9, 14, 15, 17, 21, 24, 25/1, 26, 27, 28, 30, 37, 47, 49, 51/1, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62,
+               63; art. 62, § 1 guarantee capped at 2 months (decret du 19 mai 2023). Code wallon de l'habitation
+               durable art. 3 to 4bis (via art. 9). Decret du 28 novembre 2013 relatif a la performance energetique des
+               batiments (via art. 3, § 1, 12°).
+               Brussels: Code bruxellois du Logement / Brusselse Huisvestingscode (ordonnance du 17 juillet 2003,
+               version 2013), title XI, consolidated text www.ejustice.just.fgov.be (Justel 2003071790, updated to
+               26-06-2026): art. 215, 216, 217, 218, 218/1, 219, 220, 220/1, 221, 223, 224, 224/1, 224/2, 224/3,
+               225/1, 225/2, 226, 228, 228/1 to 228/5 (regional registration, in force 01-01-2025), 229, 230, 230/1,
+               231, 233, 234, 237, 238, 239, 240, 242, 247/1, 248, 249, 250 (ordonnance du 4 avril 2024, in force
+               01-11-2024; art. 224/1 in force 01-05-2025).
+               Federal residual law: oud Burgerlijk Wetboek, boek III, titel VIII, hoofdstuk II, afdeling I, art. 1728bis,
+               1730, 1731 (Justel PDF 1804032154, updated to 28-05-2024). Registration: Wetboek der registratie-,
+               hypotheek- en griffierechten art. 32, 5° (as cited by the regional texts). GDPR: Verordening (EU)
+               2016/679 (eur-lex.europa.eu CELEX 32016R0679); wet van 30 juli 2018 (cited generally).
+               Verified 2026-10-04 against codex.vlaanderen.be, wallex.wallonie.be and www.ejustice.just.fgov.be.
+               Pending: Walloon proposition de decret (Parlement de Wallonie, February 2026) limiting indexation by PEB
+               class (not adopted on 2026-10-04); re-verify the rent-adjustment clause if it is adopted.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 maanden huur" is "3 months' rent" in English, "3 mois de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Belgian law in Dutch: the regional law of the region where the
+  dwelling lies (Flanders, Wallonia or Brussels-Capital) for a dwelling let as the tenant's main residence. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles. Cross-references
+  use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Tussen</p>
+  <p><strong th:text="${landlordName}">verhuurder</strong>, hierna &ldquo;de verhuurder&rdquo;,</p>
+  <p>voor een natuurlijke persoon: naam, eerste 2 voornamen, woonplaats en rijksregisternummer of, bij gebrek
+    daaraan, geboortedatum en geboorteplaats; voor een rechtspersoon: naam, maatschappelijke zetel en
+    ondernemingsnummer: ______________________________, en</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">huurder</strong>, hierna
+    (samen) &ldquo;de huurder&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">de ondergetekende huurder(s), hierna (samen) &ldquo;de
+    huurder&rdquo;,</p>
+  <p>voor elke huurder: naam, eerste 2 voornamen, woonplaats en rijksregisternummer of, bij gebrek daaraan,
+    geboortedatum en geboorteplaats: ______________________________,</p>
+  <p>wordt deze huurovereenkomst gesloten voor een woning die de huurder, met toestemming van de verhuurder,
+    vanaf de ingenottreding tot zijn hoofdverblijfplaats bestemt. Zijn er meerdere huurders, dan zijn zij
+    hoofdelijk en ondeelbaar gehouden tot alle verplichtingen uit deze overeenkomst.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De woning ligt in het Vlaamse Gewest. Op deze
+    overeenkomst is titel II van het Vlaams Woninghuurdecreet (decreet van 9 november 2018) van toepassing; de
+    bepalingen van die titel zijn van dwingend recht, behalve als ze er anders over beschikken (artikel 6 van het
+    Vlaams Woninghuurdecreet). Voor wat het decreet niet regelt, gelden de algemene regels van het oud Burgerlijk
+    Wetboek over de huur van goederen.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De woning ligt in het Waalse Gewest. Op deze
+    overeenkomst is het Waals decreet betreffende de woninghuurovereenkomst (decreet van 15 maart 2018) van
+    toepassing, in het bijzonder hoofdstuk III over de huurovereenkomsten met betrekking tot de hoofdverblijfplaats
+    van de huurder; tenzij ze er anders over beschikken, zijn de regels van dat hoofdstuk dwingend (artikel 52,
+    § 5, van het Waals decreet betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De woning ligt in het Brussels Hoofdstedelijk Gewest.
+    Op deze overeenkomst is titel XI van de Brusselse Huisvestingscode (ordonnantie van 17 juli 2003) van
+    toepassing, in het bijzonder hoofdstuk III over de huurovereenkomsten met betrekking tot de hoofdverblijfplaats
+    van de huurder; tenzij ze er anders over beschikken, zijn de regels van die titel dwingend (artikel 216 van de
+    Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    woninghuur wordt geregeld door het gewest waar de woning ligt: het Vlaams Woninghuurdecreet in het Vlaamse
+    Gewest, het Waals decreet betreffende de woninghuurovereenkomst in het Waalse Gewest en titel XI van de
+    Brusselse Huisvestingscode in het Brussels Hoofdstedelijk Gewest. De dwingende regels van het gewest waar de
+    woning ligt, gaan voor op elk strijdig beding van deze overeenkomst; gewestelijke regels kunnen dus van
+    toepassing zijn.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>De verhuurder verhuurt aan de huurder, die aanvaardt, de woning gelegen te
+    <strong th:text="${propertyAddress}">adres</strong>, hierna &ldquo;de woning&rdquo;.</p>
+  <p>Aanwijzing van alle ruimtes en gedeelten van het gebouw die het voorwerp van de verhuur zijn (met inbegrip
+    van kelder, zolder, garage, tuin en gemeenschappelijke delen): ______________________________</p>
+  <p>Bewoonbare oppervlakte: ________ m²; aantal slaapkamers: ________; individuele of collectieve meters voor
+    water, gas en elektriciteit, met meternummers en EAN-codes: ______________________________</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De verhuurder levert de woning in alle opzichten in
+    goede staat van onderhoud; ze moet beantwoorden aan de vereiste van conformiteit van de Vlaamse Codex Wonen van
+    2021. Een huurovereenkomst voor een woning die niet aan die vereiste voldoet, is nietig, behalve bij een
+    renovatiehuurovereenkomst onder de voorwaarden van artikel 13 van het Vlaams Woninghuurdecreet; de nietigheid
+    moet door de rechter worden vastgesteld (artikel 12, § 2, van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Behalve bij een renovatiehuurovereenkomst beantwoordt
+    de woning aan de vereisten inzake veiligheid, gezondheid en bewoonbaarheid van de artikelen 3 tot 4bis van de
+    Waalse Code voor duurzaam wonen (artikel 9, § 1, van het Waals decreet betreffende de woninghuurovereenkomst).
+    Voldoet de woning daar niet aan en voert de verhuurder, na ingebrekestelling, de nodige werken niet uit, dan kan
+    de huurder, als de niet-conformiteit hem niet kan worden toegerekend, de uitvoering van de werken of de
+    ontbinding van de overeenkomst met schadevergoeding vorderen; in afwachting van de werken kan de rechter een
+    huurvermindering toestaan.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De verhuurder levert de woning in goede staat van
+    herstellingen van elke soort; ze moet beantwoorden aan de elementaire vereisten inzake veiligheid, gezondheid en
+    uitrusting van de woningen die op grond van de Brusselse Huisvestingscode zijn vastgesteld (artikel 219, § 2,
+    van de Brusselse Huisvestingscode). Is daar niet aan voldaan en kan de niet-conformiteit de huurder niet worden
+    toegerekend, dan kan de huurder de uitvoering van de werken of de ontbinding van de overeenkomst met
+    schadevergoeding vorderen.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    verhuurder levert de woning in goede staat van onderhoud; ze moet voldoen aan de normen inzake veiligheid,
+    gezondheid en bewoonbaarheid of uitrusting van het gewest waar ze ligt.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>De huurovereenkomst neemt een aanvang op <strong th:text="${startDate}">aanvangsdatum</strong>.</p>
+  <p th:if="${fixedTerm}">De partijen komen een bepaalde duur overeen<span th:if="${endDate != null}">, die
+    eindigt op <strong th:text="${endDate}">einddatum</strong></span>. Bedraagt die duur ten hoogste 3 jaar, dan
+    gelden de regels voor een huurovereenkomst van korte duur; bedraagt hij meer dan 9 jaar, dan gelden de regels
+    voor een huurovereenkomst van lange duur; in de andere gevallen wordt de overeenkomst geacht te zijn gesloten
+    voor 9 jaar.</p>
+  <p th:if="${!fixedTerm}">De partijen komen geen afwijkende duur overeen: de huurovereenkomst wordt geacht te zijn
+    gesloten voor 9 jaar.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Elke huurovereenkomst voor een hoofdverblijfplaats wordt geacht te zijn aangegaan voor 9 jaar. Ze eindigt na
+      9 jaar als de verhuurder ten minste 6 maanden vóór de vervaldag een opzegging heeft gedaan; anders wordt ze
+      telkens onder dezelfde voorwaarden met 3 jaar verlengd (artikel 16 van het Vlaams Woninghuurdecreet).</p>
+    <p>In afwijking daarvan kan de huurovereenkomst schriftelijk worden gesloten voor een duur van ten hoogste
+      3 jaar. Ze kan maar 1 keer en alleen schriftelijk en onder dezelfde voorwaarden worden verlengd, zonder dat de
+      totale duur van de huur langer dan 3 jaar mag zijn, en ze eindigt als een van de partijen ten minste
+      3 maanden vóór het verstrijken van de overeengekomen duur een opzegging heeft gedaan. Bij gebrek aan een
+      tijdige opzegging, of als de huurder het goed blijft bewonen zonder verzet van de verhuurder, en zelfs als tussen dezelfde partijen een nieuwe overeenkomst wordt gesloten, wordt ze geacht
+      te zijn aangegaan voor 9 jaar vanaf de aanvangsdatum van de eerste huurovereenkomst van korte duur, met
+      dezelfde huurprijs en dezelfde voorwaarden, behoudens indexatie en herziening (artikel 21, § 1, van het Vlaams
+      Woninghuurdecreet). De huurovereenkomst kan ook schriftelijk worden gesloten voor meer dan 9 jaar of voor het
+      leven van de huurder (artikelen 22 en 23 van het Vlaams Woninghuurdecreet).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Elke huurovereenkomst voor een hoofdverblijfplaats wordt geacht te zijn gesloten voor 9 jaar. Ze eindigt na
+      9 jaar met een opzegging door de verhuurder ten minste 6 maanden en door de huurder ten minste 3 maanden vóór
+      de vervaldag; anders wordt ze telkens onder dezelfde voorwaarden met 3 jaar verlengd (artikel 55, § 1, van het
+      Waals decreet betreffende de woninghuurovereenkomst).</p>
+    <p>In afwijking daarvan kan een huurovereenkomst worden gesloten voor een duur van ten hoogste 3 jaar. Ze kan
+      maar 2 keer worden verlengd, alleen schriftelijk en onder dezelfde voorwaarden, onverminderd de indexatie van
+      de huurprijs bij de verlenging, zonder dat de totale huurduur 3 jaar mag overschrijden. Ze eindigt met een
+      opzegging door een van de partijen ten minste 3 maanden vóór het verstrijken van de overeengekomen duur; bij
+      een duur van ten hoogste 3 maanden wordt de opzegging geacht te zijn gedaan door de ondertekening van de
+      overeenkomst of van de verlenging. Bij gebrek aan een tijdige opzegging, of als de huurder de woning blijft
+      betrekken zonder verzet van de verhuurder, en zelfs als tussen dezelfde partijen een nieuwe overeenkomst wordt gesloten, wordt ze geacht te zijn gesloten voor 9 jaar vanaf de
+      inwerkingtreding van de oorspronkelijke overeenkomst, met dezelfde huurprijs en dezelfde voorwaarden,
+      onverminderd de indexatie en de herziening (artikel 55, § 6, van het Waals decreet betreffende de
+      woninghuurovereenkomst). De huurovereenkomst kan ook schriftelijk worden gesloten voor meer dan 9 jaar of
+      voor het leven van de huurder (artikel 55, § 7, van het Waals decreet betreffende de
+      woninghuurovereenkomst).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Elke huurovereenkomst voor een hoofdverblijfplaats wordt geacht te zijn gesloten voor 9 jaar. Ze eindigt na
+      9 jaar met een opzegging door een van de partijen ten minste 6 maanden vóór de vervaldag; anders wordt ze
+      telkens onder dezelfde voorwaarden met 3 jaar verlengd (artikel 237, § 1, van de Brusselse
+      Huisvestingscode).</p>
+    <p>In afwijking daarvan kan een huurovereenkomst schriftelijk worden gesloten voor een duur van ten hoogste
+      3 jaar. Ze kan maar 1 keer worden verlengd, alleen bij een geschrift in de overeenkomst, een aanhangsel of een
+      later geschrift en onder dezelfde voorwaarden, onverminderd de indexatie bij de hernieuwing, zonder dat de
+      totale huurduur 3 jaar mag overschrijden. Behoudens verlenging eindigt een overeenkomst van minder dan
+      6 maanden bij het verstrijken van de overeengekomen duur; een overeenkomst van ten minste 6 maanden eindigt
+      met een opzegging door een van de partijen ten minste 3 maanden vóór het verstrijken van de overeengekomen
+      duur. Bij gebrek aan een tijdige opzegging, of als de huurder de woning blijft betrekken zonder verzet van de
+      verhuurder, en zelfs als tussen dezelfde partijen een nieuwe overeenkomst wordt gesloten, wordt ze geacht te zijn gesloten voor 9 jaar vanaf de inwerkingtreding van de oorspronkelijke
+      overeenkomst, met dezelfde huurprijs en dezelfde voorwaarden, onverminderd de toepassing van artikel 224 van de Brusselse Huisvestingscode (artikel 238 van de Brusselse Huisvestingscode).
+      De huurovereenkomst kan ook schriftelijk worden gesloten voor meer dan 9 jaar of voor het leven van de huurder
+      (artikel 239 van de Brusselse Huisvestingscode).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    elk gewest wordt een huurovereenkomst voor een hoofdverblijfplaats in beginsel geacht te zijn gesloten voor
+    9 jaar en wordt ze bij gebrek aan opzegging telkens met 3 jaar verlengd; een huurovereenkomst van korte duur
+    van ten hoogste 3 jaar en een huurovereenkomst van meer dan 9 jaar moeten schriftelijk worden gesloten. Het
+    aantal toegelaten verlengingen van een huurovereenkomst van korte duur en de opzeggingstermijnen bij het
+    verstrijken verschillen per gewest; de regels van het gewest waar de woning ligt, zijn van toepassing.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>De huurprijs, zonder kosten en lasten, bedraagt <strong th:text="${rentAmount}">bedrag</strong>
+    (<span th:text="${paymentFrequency}">per maand</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Daarnaast betaalt de huurder de kosten en lasten (zie artikel
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>De partijen bepalen de huurprijs vrij, met inachtneming van de dwingende regels van het gewest waar de
+    woning ligt.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Referentiehuurprijs van de woning, of het interval rond die referentiehuurprijs, volgens het indicatieve
+      rooster van de huurprijzen (artikel 218, § 1, van de Brusselse Huisvestingscode): ________ euro per
+      maand.</p>
+    <p>De verhuurder mag geen onrechtmatige huurprijs voorstellen. Een huurprijs wordt vermoed onrechtmatig te zijn
+      als hij de referentiehuurprijs met meer dan 20 % overschrijdt, tenzij het verschil wordt verantwoord door
+      substantiële comfortelementen van de woning of haar omgeving, of als hij de referentiehuurprijs niet met meer
+      dan 20 % overschrijdt maar de woning of haar omgeving substantiële kwaliteitsgebreken vertoont; de huurder kan
+      dan een herziening van de huurprijs vragen (artikelen 224 en 224/1 van de Brusselse Huisvestingscode).</p>
+    <p>Voor een huurovereenkomst van korte duur: bedrag en datum van betaling van de laatste huurprijs die aan de
+      vorige huurder werd aangerekend, vooraf meegedeeld door de verhuurder (artikel 217, § 1, van de Brusselse
+      Huisvestingscode): ______________________________</p>
+  </th:block>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Voor de indexatie en de
+    herziening van de huurprijs geldt het daarover in deze overeenkomst bepaalde (zie artikel
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>De huurprijs wordt, tenzij de partijen dat hieronder uitdrukkelijk uitsluiten, aangepast aan de kosten van
+    levensonderhoud op basis van het gezondheidsindexcijfer. Aanpassing uitgesloten: ja / nee (doorhalen wat niet
+    past). Aanvangsindexcijfer (maand en basisjaar): ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Als de huurovereenkomst schriftelijk is gesloten, gebeurt de aanpassing 1 keer per huurjaar op de verjaardag van de inwerkingtreding van de huurovereenkomst,
+      alleen als de belanghebbende partij daar schriftelijk om verzoekt, en werkt slechts terug tot 3 maanden
+      voorafgaand aan de maand van het verzoek. De aangepaste huurprijs mag niet hoger zijn dan: basishuurprijs x
+      nieuw indexcijfer / aanvangsindexcijfer; het nieuwe indexcijfer is het gezondheidsindexcijfer van de maand
+      voorafgaand aan die van de verjaardag, het aanvangsindexcijfer dat van de maand die voorafgaat aan de maand
+      waarin de huurovereenkomst of de huurprijsherziening in werking is getreden (artikel 34 van het Vlaams
+      Woninghuurdecreet).</p>
+    <p>De partijen kunnen tussen de negende en de zesde maand vóór het verstrijken van elke driejarige periode een
+      herziening van de huurprijs overeenkomen. Bij gebrek aan akkoord kan de rechter de huurprijs herzien als de
+      normale huurwaarde ten gevolge van nieuwe omstandigheden ten minste 20 % hoger of lager is dan de eisbare
+      huurprijs, of de huurprijs verhogen als de normale huurwaarde met ten minste 10 % is gestegen door werken op
+      kosten van de verhuurder, met uitzondering van werken die nodig waren om de woning conform te maken; de
+      vordering kan alleen tussen de zesde en de derde maand vóór het verstrijken van de driejarige periode worden
+      ingesteld. De partijen kunnen ook te allen tijde een herziening overeenkomen wegens energiebesparende
+      investeringen (artikel 35 van het Vlaams Woninghuurdecreet).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>De aanpassing is 1 keer per huurjaar verschuldigd op de verjaardag van de inwerkingtreding van de
+      huurovereenkomst, alleen na een schriftelijk verzoek van de belanghebbende partij, en werkt slechts terug tot
+      de 3 maanden die voorafgaan aan de maand van het verzoek. Een aanpassing die de huurprijs verhoogt, is alleen
+      verschuldigd als de huurovereenkomst schriftelijk is gesloten en, voor een onroerend goed, geregistreerd is
+      (artikel 57 van het Waals decreet betreffende de woninghuurovereenkomst). De aangepaste huurprijs mag niet
+      hoger zijn dan: basishuurprijs x nieuw indexcijfer / aanvangsindexcijfer; het nieuwe indexcijfer is het
+      gezondheidsindexcijfer van de maand voorafgaand aan die van de verjaardag, het aanvangsindexcijfer dat van de
+      maand voorafgaand aan de maand waarin de overeenkomst werd gesloten (artikel 26 van het Waals decreet
+      betreffende de woninghuurovereenkomst).</p>
+    <p>De partijen kunnen tussen de negende en de zesde maand vóór het verstrijken van elke driejarige periode een
+      herziening van de huurprijs overeenkomen. Bij gebrek aan akkoord kan de rechter de huurprijs herzien als de
+      normale huurwaarde door nieuwe omstandigheden ten minste 20 % hoger of lager is dan de eisbare huurprijs, of
+      de huurprijs verhogen als de normale huurwaarde met ten minste 10 % is gestegen door werken op kosten van de
+      verhuurder, met uitzondering van conformiteitswerken; een verhoging is alleen verschuldigd als de schriftelijke
+      overeenkomst geregistreerd is, en de vordering kan alleen tussen de zesde en de derde maand vóór het
+      verstrijken van de driejarige periode worden ingesteld (artikel 58, § 1, van het Waals decreet betreffende de
+      woninghuurovereenkomst).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Op voorwaarde dat de huurovereenkomst schriftelijk is gesloten, is de aanpassing 1 keer per huurjaar
+      verschuldigd op de verjaardag van de inwerkingtreding van de huurovereenkomst, onder de voorwaarden van
+      artikel 1728bis van het oud Burgerlijk Wetboek; ze gebeurt alleen na een schriftelijk verzoek van de
+      belanghebbende partij en werkt slechts terug tot de 3 maanden die voorafgaan aan de maand van het verzoek. Een
+      aanpassing die de huurprijs verhoogt, is alleen verschuldigd als de schriftelijke huurovereenkomst
+      geregistreerd is en het EPB-certificaat aan de huurder is bezorgd (artikel 224/2 van de Brusselse
+      Huisvestingscode).</p>
+    <p>De partijen kunnen tussen de negende en de zesde maand vóór het verstrijken van elke driejarige periode een
+      herziening van de huurprijs overeenkomen en daarvoor de paritaire huurcommissie om advies vragen. Bij gebrek
+      aan akkoord kan de rechter de huurprijs herzien als door nieuwe omstandigheden de referentiehuurprijs ten
+      minste 20 % hoger ligt dan de eisbare huurprijs en de woning geen substantiële kwaliteitsgebreken vertoont die
+      dat verschil verantwoorden, of de huurprijs verhogen als de referentiehuurprijs ten minste 10 % hoger ligt door
+      werken op kosten van de verhuurder, met uitzondering van conformiteitswerken; een verhoging is alleen
+      verschuldigd als de huurovereenkomst geregistreerd is, en de vordering kan alleen tussen de zesde en de derde
+      maand vóór het verstrijken van de driejarige periode worden ingesteld (artikel 240 van de Brusselse
+      Huisvestingscode).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    elk gewest gebeurt de indexatie ten hoogste 1 keer per huurjaar, op de verjaardag van de inwerkingtreding van de
+    huurovereenkomst, op schriftelijk verzoek en met een beperkte terugwerkende kracht, volgens de formule
+    basishuurprijs x nieuw gezondheidsindexcijfer / aanvangsindexcijfer. De voorwaarden voor een verhoging (zoals
+    een schriftelijke en geregistreerde overeenkomst of de mededeling van het energieprestatiecertificaat) en de
+    gronden voor een herziening van de huurprijs bij het verstrijken van elke driejarige periode verschillen per
+    gewest; de regels van het gewest waar de woning ligt, zijn van toepassing.</p>
+  <p>Contractuele bepalingen die verder reiken dan de wettelijke aanpassing, kunnen tot die aanpassing worden
+    ingekort.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Naast de huurprijs draagt de huurder de kosten en lasten die met het gebruik van de woning te maken hebben;
+    de kosten en lasten die verband houden met de uitoefening van zakelijke rechten op de woning blijven ten laste
+    van de verhuurder. De onroerende voorheffing kan niet ten laste van de huurder worden gelegd.</p>
+  <p>Aard, berekeningswijze en verdeelsleutel van de kosten en lasten, met vermelding of ze forfaitair of als
+    provisie worden aangerekend: ______________________________; bedrag van het forfait of van de provisie:
+    ________ euro per maand.</p>
+  <p>Tenzij uitdrukkelijk een forfaitair bedrag is overeengekomen, moeten de kosten en lasten met de werkelijke
+    uitgaven overeenkomen; ze worden in een afzonderlijke rekening opgenomen en de bewijsstukken worden aan de
+    huurder voorgelegd. Elke partij kan de rechter te allen tijde vragen een forfait te herzien of in werkelijke
+    kosten en lasten om te zetten.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Zo bepaalt artikel 36 van het Vlaams
+    Woninghuurdecreet; de Vlaamse Regering stelt een niet-limitatieve lijst vast van kosten die aan de huurder of
+    aan de verhuurder mogen worden aangerekend.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Zo bepalen artikel 24 en artikel 59 van het Waals
+    decreet betreffende de woninghuurovereenkomst; de overeenkomst vermeldt het bedrag en de aard van de kosten en
+    hun forfaitair of provisioneel karakter (artikel 3, § 1, van het Waals decreet betreffende de
+    woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Zijn ze niet forfaitair, dan zijn alleen de kosten
+    verschuldigd voor posten die uitdrukkelijk en limitatief in deze overeenkomst zijn opgesomd, behalve
+    uitzonderlijke of nieuwe kosten die met werkelijke uitgaven overeenkomen; de verhuurder bezorgt de huurder elk
+    jaar binnen 12 maanden na de verjaardag van de inwerkingtreding een afzonderlijke afrekening (artikel 224/3 van
+    de Brusselse Huisvestingscode). De onroerende voorheffing blijft ten laste van de verhuurder (artikel 226 van de
+    Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    nadere regels over de afrekening en de bewijsstukken verschillen per gewest; de regels van het gewest waar de
+    woning ligt, zijn van toepassing.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Tot waarborg van de nakoming van zijn verplichtingen stelt de huurder een
+    huurwaarborg van <strong th:text="${depositAmount}">bedrag</strong>.</p>
+  <p th:if="${depositAmount == null}">Tot waarborg van de nakoming van zijn verplichtingen stelt de huurder een
+    huurwaarborg ten bedrage dat de partijen schriftelijk overeenkomen.</p>
+  <p>Vorm van de huurwaarborg gekozen door de huurder: ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>De huurwaarborg mag niet meer bedragen dan 3 maanden huur. De huurder kiest 1 van de volgende vormen: een
+      geïndividualiseerde rekening op zijn naam bij een financiële instelling, een zakelijke zekerheidstelling bij
+      een financiële instelling op zijn naam, of een bankwaarborg ten gevolge van een standaardcontract tussen een
+      OCMW en een financiële instelling; met het akkoord van de verhuurder kan de waarborg ook door een borgstelling
+      worden geleverd. Kiest de huurder een geïndividualiseerde rekening of een zakelijke zekerheidstelling, dan wordt de opgebrachte rente gekapitaliseerd ten bate van de huurder (artikel 37, § 1, van het
+      Vlaams Woninghuurdecreet). Voor zover het hierboven vermelde bedrag 3 maanden huur overschrijdt, is het meerdere niet als huurwaarborg verschuldigd.</p>
+    <p>Er mag niet over de waarborg worden beschikt dan ten voordele van een van beide partijen, op voorlegging van
+      een schriftelijk akkoord dat ten vroegste bij het beëindigen van de huurovereenkomst is opgesteld, of van een
+      kopie van een rechterlijke beslissing (artikel 37, § 3, van het Vlaams Woninghuurdecreet). De verhuurder die de
+      waarborg in zijn bezit heeft en nalaat die op een geïndividualiseerde rekening te plaatsen, is rente
+      verschuldigd tegen de gemiddelde rentevoet van de financiële markt.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>De huurwaarborg mag niet meer bedragen dan een bedrag gelijk aan 2 maanden huur. De huurder kiest 1 van de
+      volgende vormen: een geïndividualiseerde rekening op zijn naam bij een financiële instelling, een bankwaarborg
+      die hij met constante maandelijkse afbetalingen over de duur van de overeenkomst, met een maximum van 3 jaar,
+      geleidelijk samenstelt, of een bankwaarborg ten gevolge van een standaardcontract tussen een OCMW en een
+      financiële instelling. Bij een geïndividualiseerde rekening wordt de opgebrachte rente gekapitaliseerd ten bate
+      van de huurder (artikel 62, § 1, van het Waals decreet betreffende de woninghuurovereenkomst). Voor zover het
+      hierboven vermelde bedrag 2 maanden huur overschrijdt, is het meerdere niet als huurwaarborg verschuldigd.</p>
+    <p>Er mag niet over de rekening of de bankwaarborg worden beschikt dan ten voordele van een van beide partijen,
+      op voorlegging van een schriftelijk akkoord dat ten vroegste aan het einde van de huurovereenkomst is
+      opgesteld, of van een kopie van een rechterlijke beslissing (artikel 62, § 3, van het Waals decreet betreffende
+      de woninghuurovereenkomst). De verhuurder die de waarborg in zijn bezit heeft en nalaat die te plaatsen, is
+      rente verschuldigd tegen de gemiddelde rentevoet van de financiële markt.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>De huurwaarborg mag niet meer bedragen dan een bedrag gelijk aan 2 maanden huur. De huurder kiest 1 van de
+      volgende vormen: een geïndividualiseerde rekening op zijn naam bij een door de FSMA erkende financiële
+      instelling, een bankwaarborg ten gevolge van een standaardcontract tussen een OCMW en een financiële
+      instelling, een bankwaarborg die hij geleidelijk samenstelt, een zakelijke zekerheid op zijn naam bij een
+      financiële instelling of een persoonlijke borgstelling (artikel 248 van de Brusselse Huisvestingscode). Voor
+      zover het hierboven vermelde bedrag 2 maanden huur overschrijdt, is het meerdere niet als huurwaarborg verschuldigd.</p>
+    <p>Er mag niet over de waarborg worden beschikt dan ten voordele van een van beide partijen, op voorlegging van
+      een schriftelijk akkoord dat ten vroegste aan het einde van de huurovereenkomst is opgesteld, of van een kopie
+      van een rechterlijke beslissing. Behoudens een gerechtelijke procedure wordt de waarborg vrijgegeven binnen
+      ten hoogste 2 maanden na de teruggave van de sleutels; anders wordt het verschuldigde bedrag verhoogd met
+      10 % van de maandelijkse huurprijs per begonnen maand (artikel 249, § 2, van de Brusselse
+      Huisvestingscode).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Het
+    maximumbedrag van de huurwaarborg en de toegelaten vormen verschillen per gewest (ten hoogste 3 maanden huur in
+    het Vlaamse Gewest, ten hoogste 2 maanden huur in het Waalse Gewest en in het Brussels Hoofdstedelijk Gewest);
+    over de waarborg mag alleen worden beschikt met een schriftelijk akkoord van beide partijen, opgesteld ten
+    vroegste bij het einde van de huurovereenkomst, of op grond van een rechterlijke beslissing.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>De huurder betaalt de huurprijs<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (zie artikel
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> en de kosten en
+    lasten</span> per termijn (<span th:text="${paymentFrequency}">per maand</span>),
+    <span th:if="${paymentDueDay != null}">uiterlijk op dag <strong th:text="${paymentDueDay}">1</strong> van elke
+      betalingsperiode</span><span th:if="${paymentDueDay == null}">op de dag die de partijen overeenkomen</span>,
+    door overschrijving op de bankrekening van de verhuurder met nummer (IBAN): ______________________________</p>
+  <p>Bij laattijdige betaling is de huurder, na ingebrekestelling, de wettelijke interest verschuldigd op de
+    achterstallige bedragen.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De betaling van de huurprijs en de kosten mag alleen
+    worden gevraagd op een bankrekening die in deze overeenkomst is vermeld; onverminderd de wettelijke interest is
+    elk schadebeding wegens laattijdige betaling van de huurprijs verboden (artikelen 225/1 en 225/2 van de
+    Brusselse Huisvestingscode).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>De huurder gebruikt de woning als een goed huisvader en volgens haar bestemming als hoofdverblijfplaats. Hij
+    brengt de verhuurder op de hoogte van de herstellingen die nodig zijn en ten laste van de verhuurder vallen. De
+    verhuurder verzekert de huurder het rustig genot van de woning; hij mag de woning alleen op met de huurder
+    afgesproken tijdstippen betreden.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Gebruikt de huurder de woning niet volgens haar
+    bestemming of geeft hij haar een bestemming die nadelig is voor de verhuurder, dan kan de verhuurder, naargelang
+    van de omstandigheden, de ontbinding van de huur vorderen (artikel 28 van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Gebruikt de huurder de woning voor een ander doel dan
+    waarvoor ze bestemd is, of op een wijze die de verhuurder schade kan berokkenen, dan kan de verhuurder,
+    naargelang van de omstandigheden, de ontbinding van de huur vorderen (artikel 11 van het Waals decreet
+    betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De verhuurder mag de huurder niet verbieden zijn
+    woonplaats in de woning te vestigen (artikel 218, § 6, van de Brusselse Huisvestingscode). Een beding dat het
+    houden van een gezelschapsdier zonder meer verbiedt, wordt voor niet geschreven gehouden; het houden van
+    gezelschapsdieren kan wel afhankelijk worden gesteld van de afwezigheid van overlast, en het aantal of de soorten
+    kunnen om redelijke motieven worden beperkt (artikel 218/1 van de Brusselse Huisvestingscode).</p>
+  <p>Regels over huisdieren, het reglement van inwendige orde van het gebouw en andere afspraken over het gebruik:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>De huurder mag de huurovereenkomst niet overdragen zonder schriftelijke en voorafgaande toestemming van de
+    verhuurder; na een toegestane overdracht is de overdrager ontheven van elke toekomstige verplichting, tenzij de
+    overeenkomst tot overdracht anders bepaalt. De huurder die de woning tot zijn hoofdverblijfplaats bestemt, mag
+    de woning niet volledig onderverhuren; met de instemming van de verhuurder mag hij een gedeelte onderverhuren,
+    op voorwaarde dat het resterende gedeelte zijn hoofdverblijfplaats blijft. De duur van de onderverhuring mag de
+    resterende duur van de hoofdhuurovereenkomst niet overschrijden en de huurder licht de onderhuurder vooraf in
+    over zijn hoedanigheid en de omvang van diens rechten.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Zo bepalen artikel 31 en artikel 32 van het Vlaams
+    Woninghuurdecreet.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Zo bepalen artikel 47, artikel 49 en artikel 60 van het
+    Waals decreet betreffende de woninghuurovereenkomst.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Het ontwerp van overdracht wordt de verhuurder bij
+    aangetekende brief betekend; de verhuurder deelt zijn akkoord of weigering mee binnen 30 dagen na ontvangst,
+    zo niet wordt de overdracht geacht te zijn aanvaard (artikel 230 van de Brusselse Huisvestingscode). Het
+    ontwerp van onderverhuring wordt de verhuurder ten minste 15 dagen vóór de sluiting ervan bij aangetekende brief
+    betekend (artikel 230/1 van de Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    vormvereisten en termijnen voor de overdracht en de onderverhuring verschillen per gewest; de regels van het
+    gewest waar de woning ligt, zijn van toepassing.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>De verhuurder onderhoudt de woning zodat ze kan dienen tot het gebruik waarvoor ze verhuurd is, en doet alle
+    herstellingen die nodig zijn, behalve de herstellingen ten laste van de huurder. De huurder draagt de kleine
+    herstellingen of huurherstellingen; herstellingen die alleen nodig zijn door ouderdom of overmacht, blijven ten
+    laste van de verhuurder.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De huurder staat daarnaast in voor de herstellingen die
+    nodig zijn door een gebruik in strijd met de bestemming of met een gebruik als een goed huisvader en door een
+    tekortkoming aan zijn meldingsplicht; de Vlaamse Regering stelt een lijst van kleine herstellingen vast
+    (artikelen 25 en 26 van het Vlaams Woninghuurdecreet). De huurder gedoogt dringende herstellingen die niet tot
+    na het einde van de huur kunnen worden uitgesteld; duren ze langer dan 30 dagen, dan wordt de huurprijs
+    verminderd naar evenredigheid van de tijd en van het gedeelte van de woning waarvan hij het genot heeft moeten
+    derven, en maken ze de normale bewoning onmogelijk, dan kan hij de huur doen ontbinden (artikel 27 van het
+    Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Huurherstellingen of klein onderhoud zijn herstellingen
+    van gering belang die te wijten zijn aan het normale gebruik van de woning; de Waalse Regering stelt een
+    niet-limitatieve lijst vast (artikelen 8 en 15 van het Waals decreet betreffende de woninghuurovereenkomst). De
+    huurder gedoogt dringende herstellingen en de door de Regering bepaalde energiebesparende werken; duren ze langer
+    dan 40 dagen, dan wordt de huurprijs verminderd naar evenredigheid van de tijd en van het gedeelte van de woning
+    waarvan hij het genot heeft moeten derven (artikel 21 van het Waals decreet betreffende de
+    woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De huurder is gehouden tot de huurherstellingen, behalve
+    die welke door ouderdom of overmacht zijn veroorzaakt, en tot het klein onderhoud; de verhuurder is gehouden tot
+    alle andere herstellingen, en de Regering stelt een niet-limitatieve lijst vast (artikel 223 van de Brusselse
+    Huisvestingscode). Werken ter verbetering van de energieprestatie of ter aanpassing aan een handicap van de
+    huurder kunnen in de loop van de huur worden uitgevoerd onder de voorwaarden van artikel 221 van de Brusselse
+    Huisvestingscode.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    lijst van herstellingen ten laste van de huurder en de regels over dringende herstellingen tijdens de huur
+    worden door het gewest waar de woning ligt bepaald.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De huurder is aansprakelijk voor brand en waterschade,
+    tenzij hij bewijst dat de brand buiten zijn schuld is ontstaan, en verzekert die aansprakelijkheid met een
+    verzekering waarvan de werking niet is geschorst; ook de verhuurder verzekert zijn aansprakelijkheid voor brand
+    en waterschade (artikel 29 van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De huurder is aansprakelijk voor brand, tenzij hij
+    bewijst dat die zonder zijn schuld is ontstaan; die aansprakelijkheid wordt door een verzekering gedekt die de
+    huurder, tenzij de partijen anders overeenkomen, vóór de ingenottreding sluit. Hij levert jaarlijks het bewijs van
+    betaling van de premies; doet hij dat niet binnen de maand na de ingenottreding of na de verjaardag ervan, dan kan
+    de verhuurder zijn eigen woningverzekeraar vragen een clausule van afstand van verhaal ten gunste van de huurder
+    toe te voegen en de kosten daarvan aan de huurder doorrekenen (artikel 17 van het Waals decreet betreffende de
+    woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De huurder is aansprakelijk voor brand en waterschade,
+    tenzij hij bewijst dat die zonder zijn schuld zijn ontstaan; die aansprakelijkheid wordt gedekt door een
+    verzekering die de huurder, tenzij de partijen anders overeenkomen, vóór de ingenottreding sluit. Hij levert
+    jaarlijks het bewijs van betaling van de premies; doet hij dat niet binnen de maand na de ingenottreding of na
+    het verzoek van de verhuurder, dan kan de verhuurder zijn eigen woningverzekeraar vragen een clausule van afstand
+    van verhaal ten gunste van de huurder toe te voegen en de kosten daarvan aan de huurder doorrekenen
+    (artikel 220/1 van de Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    huurder is aansprakelijk voor brand en verzekert die aansprakelijkheid; de nadere regels (waterschade, bewijs van
+    de verzekering, verzekering door de verhuurder) worden door het gewest waar de woning ligt bepaald.</p>
+  <p>Verzekeraar en polisnummer van de huurder: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De verhuurder beschikt over het
+    energieprestatiecertificaat (EPC) dat voor de woning vereist is volgens het Energiedecreet van 8 mei 2009 en
+    zijn uitvoeringsbesluiten, en bezorgt de huurder een kopie.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De overeenkomst vermeldt de datum van het laatste
+    EPB-certificaat, wanneer dat vereist is door het Waals decreet van 28 november 2013 betreffende de
+    energieprestatie van gebouwen, en de aan de woning toegekende prestatie-index (artikel 3, § 1, van het Waals
+    decreet betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De verhuurder deelt de huurder vóór de sluiting van de
+    overeenkomst het energieprestatiecertificaat (EPB-certificaat) mee (artikel 217, § 1, van de Brusselse
+    Huisvestingscode); zonder dat certificaat is een indexatie die de huurprijs verhoogt, niet verschuldigd.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    verhuurder bezorgt de huurder het energieprestatiecertificaat dat volgens de regelgeving van het gewest waar de
+    woning ligt vereist is.</p>
+  <p>Nummer, datum en energieklasse of prestatie-index van het certificaat: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De verplichting tot registratie van de
+    huurovereenkomst en van de plaatsbeschrijving rust op de verhuurder; de kosten van een laattijdige registratie
+    zijn volledig te zijnen laste (artikel 11 van het Vlaams Woninghuurdecreet). Zolang de huurovereenkomst na de
+    termijn van 2 maanden van artikel 32, 5°, van het Wetboek der registratie-, hypotheek- en griffierechten niet
+    geregistreerd is, gelden de opzeggingstermijn en de vergoeding ten laste van de huurder niet (artikel 20, § 1,
+    van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De verplichting tot registratie van de
+    huurovereenkomst rust op de verhuurder; de kosten van een laattijdige registratie zijn volledig te zijnen laste
+    (artikel 53 van het Waals decreet betreffende de woninghuurovereenkomst). Na de termijn van 2 maanden van
+    artikel 32, 5°, van het Wetboek der registratie-, hypotheek- en griffierechten en zolang de overeenkomst niet
+    geregistreerd is, gelden de opzeggingstermijn en de vergoeding ten laste van de huurder niet, voor zover een
+    ingebrekestelling van de huurder om de overeenkomst te registreren gedurende 1 maand zonder gevolg is gebleven
+    (artikel 54 van het Waals decreet betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De verhuurder registreert de huurovereenkomst
+    kosteloos binnen 2 maanden na de ondertekening in het elektronisch register van de gewestelijke dienst voor de
+    registratie van de huurovereenkomsten, door de door beide partijen ondertekende overeenkomst, de bijlagen en de
+    plaatsbeschrijving bij intrede op te laden. Na die termijn en zolang de overeenkomst niet geregistreerd is,
+    gelden de opzeggingstermijnen en de vergoedingen ten laste van de huurder en de regels voor de herziening van de huurprijs, bedoeld in de artikelen 237, § 5, 238, 240 en 256 van de Brusselse Huisvestingscode, niet (artikel 228/5 van de Brusselse Huisvestingscode). Dit doet geen afbreuk aan de verplichtingen
+    die de fiscale wetgeving oplegt.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    verhuurder laat de huurovereenkomst en de plaatsbeschrijving binnen 2 maanden na de ondertekening registreren,
+    volgens de regels van het gewest waar de woning ligt; zolang de overeenkomst niet geregistreerd is, kan de
+    huurder in de door het gewest bepaalde gevallen zonder opzeggingstermijn of vergoeding opzeggen.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>De partijen stellen op tegenspraak een omstandige plaatsbeschrijving bij intrede op, ofwel tijdens de periode
+    dat de ruimtes onbewoond zijn, ofwel tijdens de eerste maand waarin de huurder over de woning kan beschikken; ze
+    wordt bij de huurovereenkomst gevoegd en geregistreerd.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">De plaatsbeschrijving bij intrede wordt voor gezamenlijke
+    rekening opgesteld; bereiken de partijen geen akkoord, dan wijst de vrederechter een deskundige aan op een
+    verzoekschrift dat vóór het verstrijken van de termijn van 1 maand is ingediend. Op verzoek van een van de
+    partijen wordt bij het einde
+    van de huur, uiterlijk op het moment van de teruggave en aanvaarding van de sleutels, op tegenspraak en voor
+    gezamenlijke rekening een plaatsbeschrijving bij uittrede opgesteld. Is bij de aanvang een omstandige
+    plaatsbeschrijving opgemaakt, dan geeft de huurder de woning terug zoals hij ze volgens die beschrijving heeft
+    ontvangen, met uitzondering van wat door ouderdom of overmacht is tenietgegaan of beschadigd en van de
+    herstellingen ten laste van de verhuurder (artikelen 9 en 39 van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Wijzen de partijen samen een deskundige aan, dan wordt de
+    plaatsbeschrijving bij intrede voor gezamenlijke rekening en bij helften opgesteld; wijst een enkele partij een
+    deskundige aan, dan draagt die partij de kosten. Bij gebrek aan akkoord wijst de vrederechter een deskundige aan
+    op een verzoekschrift dat binnen 15 dagen na het verstrijken van de termijn van 1 maand is ingediend (artikel 27,
+    § 1, van het Waals decreet betreffende de woninghuurovereenkomst). Elke partij kan een plaatsbeschrijving bij
+    uittrede op
+    tegenspraak en met gedeelde kosten vorderen; ze wordt opgesteld nadat de huurder de woning heeft verlaten en vóór
+    de teruggave van de sleutels (artikel 27 van het Waals decreet betreffende de woninghuurovereenkomst). Is een
+    omstandige plaatsbeschrijving opgemaakt, dan geeft de huurder de woning terug zoals hij ze heeft ontvangen,
+    behalve wat door ouderdom of overmacht is tenietgegaan of beschadigd (artikel 28 van het Waals decreet
+    betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De plaatsbeschrijving bij intrede wordt voor
+    gezamenlijke rekening opgesteld; bereiken de partijen geen akkoord, dan wijst de vrederechter op verzoek een
+    deskundige aan (artikel 1730 van het oud Burgerlijk Wetboek). De plaatsbeschrijvingen bij intrede en bij uittrede
+    vermelden de meterstanden, de meternummers en de EAN-codes. Elke partij kan een plaatsbeschrijving bij uittrede
+    op tegenspraak en met gedeelde kosten vorderen; ze wordt opgesteld nadat de huurder de woning heeft verlaten en
+    vóór de teruggave van de sleutels, en uiterlijk binnen de maand nadat de huurder de woning heeft verlaten
+    (artikel 220 van de Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">De
+    kostenverdeling, de termijn om de vrederechter een deskundige te laten aanwijzen en de regels over de
+    plaatsbeschrijving bij uittrede worden door het gewest waar de woning ligt bepaald. Is geen
+    omstandige plaatsbeschrijving bij intrede opgemaakt, dan wordt vermoed dat de huurder de woning heeft ontvangen in
+    de staat waarin ze zich op het einde van de huurovereenkomst bevindt, behoudens tegenbewijs.</p>
+  <p class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">De vrijgave van de huurwaarborg volgt de
+    plaatsbeschrijving bij uittrede (zie artikel <span th:text="${refs['deposit']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Vóór de overdracht van een zakelijk recht op de woning
+    licht de verhuurder de kandidaat-verkrijger in over het bestaan en het type van de huurovereenkomst. De verkrijger
+    treedt in alle rechten en verplichtingen van de verhuurder op de datum van de authentieke akte of, als die later
+    valt, op de datum van de uitwerking van de overdracht, zelfs als de huurovereenkomst het recht van uitzetting in
+    geval van vervreemding bedingt (artikel 38 van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Heeft de huurovereenkomst een vaste datum vóór de
+    vervreemding van de woning, dan treedt de verkrijger in de rechten en verplichtingen van de verhuurder op de
+    datum van de authentieke akte, zelfs als de overeenkomst de mogelijkheid van uitzetting bij vervreemding
+    voorbehoudt. Heeft ze geen vaste datum maar betrekt de huurder de woning sinds ten minste 6 maanden, dan geldt
+    hetzelfde, maar kan de verkrijger de overeenkomst om de redenen en onder de voorwaarden van de opzegging door de
+    verhuurder beëindigen met een opzegging van 3 maanden, die op straffe van verval wordt gedaan binnen 3 maanden
+    na de authentieke akte (artikel 63 van het Waals decreet betreffende de woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Vóór de vervreemding licht de verhuurder de
+    kandidaat-verkrijger in over het bestaan van de huurovereenkomst en bezorgt hij hem een kopie ervan; de nieuwe
+    houder van het zakelijk recht treedt voor de toekomst in de rechten en verplichtingen van de verhuurder, en elk
+    beding dat de uitzetting bij vervreemding voorbehoudt, wordt voor niet geschreven gehouden (artikel 229 van de
+    Brusselse Huisvestingscode). Bij een verkoop uit de hand betekent de verhuurder de huurder zijn voornemen om te
+    verkopen vóór elke openbare mededeling (artikel 242 van de Brusselse Huisvestingscode), en de huurder van een
+    hoofdverblijfplaats geniet een recht van voorkeur onder de voorwaarden en met de uitzonderingen van
+    artikel 247/1 van de Brusselse Huisvestingscode.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Bij
+    de vervreemding van de woning treedt de verkrijger in beginsel in de rechten en verplichtingen van de verhuurder;
+    de voorwaarden, de informatieplichten en een eventueel recht van voorkeur van de huurder worden door het gewest
+    waar de woning ligt bepaald.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>In alle gevallen waarin een opzegging te allen tijde kan worden gedaan, neemt de opzeggingstermijn een aanvang
+    op de eerste dag van de maand die volgt op de maand waarin de opzegging wordt gedaan. De opzegging gebeurt bij
+    aangetekende brief, bij gerechtsdeurwaardersexploot of bij afgifte tegen ontvangstbewijs.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Bij een huurovereenkomst van 9 jaar kan de verhuurder de huurovereenkomst beëindigen: te allen tijde met een
+      opzeggingstermijn van 6 maanden om de woning persoonlijk en werkelijk te betrekken of door de in artikel 17
+      van het Vlaams Woninghuurdecreet vermelde verwanten te laten betrekken, onder alle voorwaarden van dat
+      artikel; te allen tijde met een opzeggingstermijn van 6 maanden wegens grondige renovatiewerken onder alle
+      voorwaarden van artikel 18 van het Vlaams Woninghuurdecreet; en bij het verstrijken van de eerste of de tweede
+      driejarige periode zonder motief met een opzeggingstermijn van 6 maanden, mits betaling van een vergoeding van
+      9 of 6 maanden huur (artikel 19 van het Vlaams Woninghuurdecreet). De partijen kunnen die mogelijkheden van
+      vroegtijdige beëindiging uitsluiten of beperken.</p>
+    <p>De huurder kan de huurovereenkomst op ieder tijdstip beëindigen met een opzeggingstermijn van 3 maanden; eindigt
+      ze daardoor tijdens de eerste driejarige periode, dan heeft de verhuurder recht op een vergoeding van 3, 2 of
+      1 maand huur naargelang ze eindigt tijdens het eerste, het tweede of het derde jaar. Beëindigt de verhuurder de
+      huurovereenkomst op grond van de artikelen 17 tot en met 19, dan kan de huurder op zijn beurt te allen tijde
+      opzeggen met een opzeggingstermijn van 1 maand, zonder vergoeding (artikel 20 van het Vlaams
+      Woninghuurdecreet).</p>
+    <p>Bij een huurovereenkomst van korte duur kan de verhuurder niet vroegtijdig opzeggen; de huurder kan op ieder
+      tijdstip opzeggen met een opzeggingstermijn van 3 maanden, mits een vergoeding van 1,5 maand, 1 maand of
+      0,5 maand huur naargelang de huurovereenkomst eindigt tijdens het eerste, het tweede of het derde jaar,
+      gerekend vanaf de aanvangsdatum van de eerste huurovereenkomst (artikel 21, § 2, van het Vlaams
+      Woninghuurdecreet). De huurder die buitengewone omstandigheden bewijst, kan een verlenging vragen (artikel 24
+      van het Vlaams Woninghuurdecreet).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Bij een huurovereenkomst van 9 jaar kan de verhuurder de huurovereenkomst beëindigen: te allen tijde met een
+      opzegging van 6 maanden om de woning persoonlijk en werkelijk te betrekken of door de in artikel 55, § 2, van
+      het Waals decreet betreffende de woninghuurovereenkomst vermelde verwanten te laten betrekken, onder alle
+      voorwaarden van die paragraaf; bij het verstrijken van de eerste of de tweede driejarige periode met een
+      opzegging van 6 maanden om het gebouw weder op te bouwen, te verbouwen of te renoveren, onder alle voorwaarden
+      van artikel 55, § 3, van het Waals decreet betreffende de woninghuurovereenkomst; en bij het verstrijken van de
+      eerste of de tweede driejarige periode zonder motief met een opzegging van 6 maanden, mits betaling van een
+      vergoeding van 9 of 6 maanden huur (artikel 55, § 4, van het Waals decreet betreffende de
+      woninghuurovereenkomst). De partijen kunnen die mogelijkheden van vroegtijdige beëindiging uitsluiten of
+      beperken.</p>
+    <p>De huurder kan te allen tijde opzeggen met een opzegging van 3 maanden; eindigt de huurovereenkomst tijdens de
+      eerste driejarige periode, dan heeft de verhuurder recht op een vergoeding van 3, 2 of 1 maand huur
+      naargelang ze eindigt tijdens het eerste, het tweede of het derde jaar. Beëindigt de verhuurder de
+      overeenkomst op grond van de paragrafen 2 tot 4, dan kan de huurder te allen tijde opzeggen met een opzegging
+      van 1 maand, zonder vergoeding (artikel 55, § 5, van het Waals decreet betreffende de
+      woninghuurovereenkomst).</p>
+    <p>Bij een huurovereenkomst van korte duur kan de huurder te allen tijde opzeggen met een opzegging van
+      3 maanden, mits een vergoeding van 1 maand huur; de verhuurder kan pas na het eerste huurjaar vroegtijdig
+      opzeggen, om de woning persoonlijk en werkelijk te betrekken of te laten betrekken onder de voorwaarden van
+      artikel 55, § 2, met een opzegging van 3 maanden en een vergoeding van 1 maand huur (artikel 55, § 6, van het
+      Waals decreet betreffende de woninghuurovereenkomst). Een uitdrukkelijk ontbindend beding wordt voor niet
+      geschreven gehouden (artikel 37 van het Waals decreet betreffende de woninghuurovereenkomst). De huurder die
+      buitengewone omstandigheden bewijst, kan een verlenging vragen (artikel 56 van het Waals decreet betreffende de
+      woninghuurovereenkomst).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Bij een huurovereenkomst van 9 jaar kan de verhuurder de huurovereenkomst beëindigen: te allen tijde met een
+      opzegging van 6 maanden om de woning persoonlijk en werkelijk te betrekken of door de in artikel 237, § 2, van
+      de Brusselse Huisvestingscode vermelde verwanten te laten betrekken, onder alle voorwaarden van die paragraaf;
+      bij het verstrijken van de eerste of de tweede driejarige periode met een opzegging van 6 maanden om het gebouw
+      weder op te bouwen, te verbouwen of te renoveren, onder alle voorwaarden van artikel 237, § 3, van de Brusselse
+      Huisvestingscode; en bij het verstrijken van de eerste of de tweede driejarige periode zonder motief met een
+      opzegging van 6 maanden, mits betaling van een vergoeding van 9 of 6 maanden huur (artikel 237, § 4, van de
+      Brusselse Huisvestingscode). De partijen kunnen die mogelijkheden van vroegtijdige beëindiging uitsluiten of
+      beperken.</p>
+    <p>De huurder kan te allen tijde opzeggen met een opzegging van 3 maanden; eindigt de huurovereenkomst tijdens de
+      eerste driejarige periode, dan heeft de verhuurder recht op een vergoeding van 3, 2 of 1 maand huur
+      naargelang ze eindigt tijdens het eerste, het tweede of het derde jaar. Beëindigt de verhuurder de
+      overeenkomst op grond van de paragrafen 2 tot 4, dan kan de huurder te allen tijde opzeggen met een opzegging
+      van 1 maand, zonder vergoeding, en blijft de verhuurder gehouden het motief van zijn opzegging uit te voeren
+      (artikel 237, § 5, van de Brusselse Huisvestingscode).</p>
+    <p>Bij een huurovereenkomst van korte duur kan de huurder te allen tijde opzeggen met een opzegging van
+      3 maanden, mits een vergoeding van 1 maand huur; de verhuurder kan pas na het eerste huurjaar vroegtijdig
+      opzeggen, onder de voorwaarden van artikel 237, § 2, met een opzegging van 3 maanden en een vergoeding van
+      1 maand huur, en de huurder kan dan op zijn beurt te allen tijde opzeggen met een opzegging van 1 maand,
+      zonder vergoeding (artikel 238 van de Brusselse Huisvestingscode). De huurder die buitengewone omstandigheden
+      bewijst, kan een verlenging vragen (artikel 250 van de Brusselse Huisvestingscode).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">In
+    elk gewest kan de huurder van een huurovereenkomst van 9 jaar te allen tijde opzeggen met een opzegging van
+    3 maanden, met een vergoeding van 3, 2 of 1 maand huur als de overeenkomst eindigt tijdens het eerste, het
+    tweede of het derde jaar, en kan de verhuurder alleen opzeggen om de wettelijk bepaalde redenen (persoonlijke
+    betrekking, renovatiewerken of, met vergoeding, zonder motief bij het verstrijken van een driejarige periode),
+    onder de voorwaarden van het gewest waar de woning ligt. De regels voor de vroegtijdige beëindiging van een
+    huurovereenkomst van korte duur verschillen per gewest.</p>
+  <p>De partijen kunnen de huurovereenkomst te allen tijde in onderling akkoord beëindigen. Komt een partij haar
+    verplichtingen niet na, dan kan de andere partij de ontbinding van de huurovereenkomst vorderen bij de
+    rechter.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Bij het
+    einde van de huur wordt een plaatsbeschrijving bij uittrede opgesteld (zie artikel
+    <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-annexes" data-clause="annexes">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Deze huurovereenkomst verwijst naar de vulgariserende
+    toelichting die de Vlaamse Regering heeft opgesteld over onder meer de normen van gezondheid, veiligheid en
+    bewoonbaarheid, de registratie, de duur, de indexatie, de huurherstellingen, de brandverzekering en de
+    beëindiging van de huurovereenkomst (artikelen 8 en 10 van het Vlaams Woninghuurdecreet); de huurder verklaart
+    daarvan kennis te hebben kunnen nemen. De plaatsbeschrijving bij intrede wordt bij deze overeenkomst
+    gevoegd.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Bij deze huurovereenkomst wordt verplicht de door de
+    Waalse Regering opgestelde bijlage gevoegd met een beknopte en pedagogische uitleg van de wettelijke bepalingen
+    over onder meer de normen van gezondheid, veiligheid en bewoonbaarheid, de registratie en de kosteloosheid
+    ervan, de duur, de herziening en de indexatie van de huurprijs, de huurherstellingen en de beëindiging
+    (artikel 3, § 2, van het Waals decreet betreffende de woninghuurovereenkomst). De plaatsbeschrijving bij
+    intrede wordt bij deze overeenkomst gevoegd.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Bij deze huurovereenkomst wordt verplicht de door de
+    Brusselse Hoofdstedelijke Regering opgestelde bijlage gevoegd met een uitleg van de wettelijke bepalingen over
+    onder meer de normen van gezondheid, veiligheid en uitrusting, de registratie en de kosteloosheid ervan, de
+    duur, het indicatieve rooster van de huurprijzen, de herziening, de indexatie, de kosten, de huurherstellingen,
+    de beëindiging en de gezelschapsdieren (artikel 218, § 5, van de Brusselse Huisvestingscode). De
+    plaatsbeschrijving bij intrede wordt bij deze overeenkomst gevoegd.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Bij
+    deze huurovereenkomst worden de door het gewest waar de woning ligt voorgeschreven verklarende bijlage of
+    toelichting en de plaatsbeschrijving bij intrede gevoegd.</p>
+  <p>Andere bijlagen: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>De verhuurder verwerkt de persoonsgegevens van de huurder alleen voor zover dat nodig is voor het sluiten en
+    het uitvoeren van deze huurovereenkomst en het nakomen van zijn wettelijke verplichtingen, overeenkomstig de
+    algemene verordening gegevensbescherming (AVG, Verordening (EU) 2016/679) en de Belgische wetgeving ter
+    uitvoering ervan. Van kandidaat-huurders vraagt hij alleen de gegevens en documenten die de regels van het gewest
+    waar de woning ligt toelaten. Hij bewaart de gegevens niet langer dan nodig.</p>
+  <p>De huurder kan bij de verhuurder de rechten uitoefenen die de AVG hem verleent, onder meer het recht op inzage,
+    rectificatie en wissing, en kan een klacht indienen bij de Gegevensbeschermingsautoriteit.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Op deze huurovereenkomst is het Belgisch recht van toepassing. Geschillen over deze huurovereenkomst behoren,
+    ongeacht het bedrag van de vordering, tot de bevoegdheid van de vrederechter van de plaats waar de woning ligt.
+    De partijen kunnen hun geschil ook in der minne regelen, onder meer door bemiddeling.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Elke arbitrageovereenkomst die vóór het ontstaan van
+    het geschil is gesloten, is van rechtswege nietig (artikel 44 van het Vlaams Woninghuurdecreet).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">De partijen kunnen hun geschil pas na het ontstaan
+    ervan aan een scheidsrechter voorleggen; elk arbitragebeding dat vóór het ontstaan van het geschil is
+    overeengekomen, wordt voor niet geschreven gehouden (artikel 51/1 van het Waals decreet betreffende de
+    woninghuurovereenkomst).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">De partijen kunnen hun geschil pas na het ontstaan
+    ervan aan een scheidsrechter voorleggen; elk arbitragebeding dat vóór het ontstaan van het geschil is
+    overeengekomen, wordt voor niet geschreven gehouden (artikel 233 van de Brusselse Huisvestingscode).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Een
+    arbitragebeding dat vóór het ontstaan van het geschil is gesloten, is volgens de regels van elk gewest zonder
+    gevolg.</p>
+  <p>De bedingen van deze overeenkomst die strijdig zijn met de dwingende regels van het toepasselijke gewestelijke
+    recht, hebben geen gevolg; de wettelijke regels gelden in hun plaats.</p>
+</div>
+
+</body>
+</html>

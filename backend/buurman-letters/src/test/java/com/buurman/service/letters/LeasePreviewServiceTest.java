@@ -638,6 +638,17 @@ class LeasePreviewServiceTest {
   }
 
   @Test
+  @DisplayName("omitted clauses (null) behave like an empty list: every template keeps its default")
+  void nullClausesKeepTemplateDefaults() {
+    LeaseAgreementPreviewResponse withNull =
+        service.preview(request("NL", LeaseKind.RESIDENTIAL, "nl", null));
+    LeaseAgreementPreviewResponse withEmpty = service.preview(nl());
+
+    assertThat(withNull.availability()).isEqualTo(LeaseAvailability.AVAILABLE_DOCUMENT);
+    assertThat(withNull.clauses()).isNotEmpty().isEqualTo(withEmpty.clauses());
+  }
+
+  @Test
   @DisplayName("a furnished request falls back to the residential templates")
   void furnishedFallsBackToResidential() {
     LeaseAgreementPreviewResponse r =
@@ -648,10 +659,11 @@ class LeasePreviewServiceTest {
   }
 
   @Test
-  @DisplayName("BE has only the placeholder example text")
+  @DisplayName("BE has only the placeholder example text for a kind without documents")
   void beIsExampleText() {
+    // BE has RESIDENTIAL/COMMERCIAL documents since V097; MIXED_USE still falls back to LEGACY
     LeaseAgreementPreviewResponse r =
-        service.preview(request("BE", LeaseKind.RESIDENTIAL, "en", List.of()));
+        service.preview(request("BE", LeaseKind.MIXED_USE, "en", List.of()));
 
     assertThat(r.availability()).isEqualTo(LeaseAvailability.AVAILABLE_EXAMPLE_TEXT);
     assertThat(r.source()).isEqualTo(LeaseAgreementPreviewResponse.Source.EXAMPLE_TEXT);
@@ -881,11 +893,7 @@ class LeasePreviewServiceTest {
   void legacyEscaped() {
     LeaseAgreementPreviewRequest request =
         new LeaseAgreementPreviewRequest(
-            "BE",
-            LeaseKind.RESIDENTIAL,
-            "en",
-            copySample(sample(), "<script>x</script>"),
-            List.of());
+            "BE", LeaseKind.MIXED_USE, "en", copySample(sample(), "<script>x</script>"), List.of());
 
     String html = service.preview(request).html();
 

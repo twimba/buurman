@@ -1,0 +1,333 @@
+<!--
+  legal-basis: Mietrechtsgesetz (MRG, BGBl. Nr. 520/1981, zuletzt geaendert durch BGBl. I Nr. 114/2025, 5. Mietrechtliches
+               Inflationslinderungsgesetz) as consolidated on ris.bka.gv.at (Gesetzesnummer 10002531):
+               § 1 (Abs. 1, Abs. 2, Abs. 4), § 2, § 3, § 8, § 9, § 10, § 11, § 15, § 16 (version in force 01.01.2026),
+               § 16b, § 17, § 21, § 27, § 29 (version in force 01.01.2026: minimum term 5 years, 3 years if the
+               landlord is not an Unternehmer within the meaning of the KSchG; applies to leases concluded or renewed
+               after 31.12.2025, § 49k Abs. 4), § 30, § 33, § 37, § 39, § 49k.
+               Allgemeines buergerliches Gesetzbuch (ABGB, Gesetzesnummer 10001622): § 1000, § 1096, § 1097, § 1098,
+               § 1099, § 1100, § 1109, § 1111, § 1113, § 1114, § 1115, § 1117, § 1118, § 1333.
+               Mieten-Wertsicherungsgesetz (MieWeG, BGBl. I Nr. 114/2025, in force 01.01.2026, Gesetzesnummer
+               20013068): § 1 Abs. 1 to 6, § 2, § 4.
+               Zivilprozessordnung (ZPO) § 560; Jurisdiktionsnorm (JN) § 49 and § 83; Energieausweis-Vorlage-Gesetz 2012
+               (EAVG 2012, as amended by BGBl. I Nr. 38/2026, in force 01.07.2026: Vorlage und Aushaendigung now § 4,
+               exemptions § 5) § 4, § 6, § 7, § 8; Heiz- und Kaeltekostenabrechnungsgesetz (HeizKG, BGBl. I Nr.
+               101/2021) § 3 and § 10; Meldegesetz 1991 (MeldeG) § 3; Gebuehrengesetz 1957 (GebG) § 33 TP 5 Abs. 4
+               (residential leases exempt); Datenschutzgesetz (DSG) § 18 (Datenschutzbehoerde, ris.bka.gv.at Gesetzesnummer 10001597); DSGVO: Verordnung (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679).
+               Verified 2026-10-04 against ris.bka.gv.at (section texts of the tagesaktuelle Fassung read on that date).
+               The MRG regime (Vollanwendung, Teilanwendung under § 1 Abs. 4, Vollausnahme under § 1 Abs. 2) is not
+               known to the system: the parties tick it in the premises clause and every regime-dependent rule is
+               stated conditionally. No regionCode branch: tenancy law is federal; the Richtwerte differ per
+               Bundesland but are not stated as amounts.
+               Pending: valorisation of Richtwerte and Kategoriebetraege on 01.04.2027 capped at 2 percent (already
+               enacted); no pending MRG bill found on 2026-10-04.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in de.html, never spelled out (de "3 Monate" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: authoritative
+  Draft text, not vetted by legal counsel. Reflects Austrian law (MRG, ABGB). Each clause-<key> fragment holds only
+  the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and disappear
+  when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Zwischen</p>
+  <p><strong th:text="${landlordName}">Vermieter</strong>, nachfolgend &bdquo;der Vermieter&ldquo;, und</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">Mieter</strong>, nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">dem oder den unten unterzeichnenden Mieter(n), nachfolgend
+    (gemeinsam) &bdquo;der Mieter&ldquo;,</p>
+  <p>wird der folgende Mietvertrag über eine Wohnung geschlossen. Sind mehrere Personen Mieter, so haften sie für
+    alle Verpflichtungen aus diesem Vertrag zur ungeteilten Hand.</p>
+  <p>Der Vermieter ist bei Abschluss dieses Vertrags (zutreffendes ankreuzen): [ ] Unternehmer im Sinne des
+    Konsumentenschutzgesetzes (KSchG) &nbsp; [ ] kein Unternehmer im Sinne des KSchG.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Der Vermieter vermietet dem Mieter zu Wohnzwecken die Wohnung in
+    <strong th:text="${propertyAddress}">Anschrift</strong> mit einer Nutzfläche von etwa ________ m² samt den in
+    diesem Vertrag bezeichneten mitvermieteten Teilen der Liegenschaft, nachfolgend &bdquo;der Mietgegenstand&ldquo;.</p>
+  <p>Auf diesen Vertrag sind die Bestimmungen des Allgemeinen bürgerlichen Gesetzbuchs über den Bestandvertrag
+    (§§ 1090 ff. ABGB) und, soweit es anzuwenden ist, das Mietrechtsgesetz (MRG) anzuwenden. Der
+    Anwendungsbereich des MRG hängt insbesondere von der Art und dem Errichtungszeitpunkt des Gebäudes ab. Die
+    Parteien halten fest (zutreffendes ankreuzen):</p>
+  <p>[ ] Vollanwendung des MRG &nbsp; [ ] Teilanwendung des MRG nach § 1 Abs. 4 MRG (es gelten die §§ 14, 16b,
+    29 bis 36, 45, 46 und 49 MRG, nicht jedoch die übrigen Bestimmungen des I. und II. Hauptstückes) &nbsp;
+    [ ] Vollausnahme vom MRG nach § 1 Abs. 2 MRG.</p>
+  <p>Soweit zwingende Bestimmungen des MRG oder des KSchG anzuwenden sind, gehen sie abweichenden Bestimmungen
+    dieses Vertrags vor. Bestimmungen, die nur in einem dieser Anwendungsbereiche gelten, sind in diesem Vertrag als
+    solche bezeichnet.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Das Mietverhältnis beginnt am <strong th:text="${startDate}">Mietbeginn</strong>.</p>
+  <p th:if="${!fixedTerm}">Das Mietverhältnis wird auf unbestimmte Zeit geschlossen.</p>
+  <th:block th:if="${fixedTerm}">
+    <p>Das Mietverhältnis wird auf bestimmte Zeit geschlossen<span th:if="${endDate != null}"> und endet mit
+      Ablauf des <strong th:text="${endDate}">Mietende</strong></span>. Die Parteien vereinbaren schriftlich, dass
+      der Mietvertrag durch den Ablauf der bedungenen Zeit erlischt, ohne dass es einer Kündigung bedarf.</p>
+    <p>Im Voll- und im Teilanwendungsbereich des MRG ist der Ablauf nur durchsetzbar, wenn die ursprünglich
+      vereinbarte Vertragsdauer oder die Verlängerung jeweils mindestens 5 Jahre oder, sofern der Vermieter zum
+      Zeitpunkt der Befristung kein Unternehmer im Sinne des KSchG war, mindestens 3 Jahre beträgt
+      (§ 29 Abs. 1 Z 3 MRG); anderenfalls gilt der Vertrag als auf unbestimmte Zeit abgeschlossen
+      (§ 29 Abs. 3 lit. a MRG). Der Vertrag kann schriftlich beliebig oft um jeweils mindestens 5 Jahre oder,
+      sofern der Vermieter kein Unternehmer im Sinne des KSchG ist, um jeweils mindestens 3 Jahre erneuert werden
+      (§ 29 Abs. 4 MRG). Wird er nach Ablauf der wirksam vereinbarten oder verlängerten Vertragsdauer weder
+      vertraglich verlängert noch aufgelöst, so gilt er einmalig als auf 5 Jahre oder, sofern der Vermieter kein
+      Unternehmer im Sinne des KSchG ist, als auf 3 Jahre erneuert; wird er danach ein weiteres Mal nicht
+      aufgelöst, so gilt er als auf unbestimmte Zeit erneuert (§ 29 Abs. 3 lit. b MRG).</p>
+    <p>Im Vollausnahmebereich des MRG gelten diese Beschränkungen nicht; der Vertrag erlischt durch den Ablauf der
+      vereinbarten Zeit (§ 1113 ABGB). Setzt der Mieter nach Ablauf den Gebrauch fort und lässt es der Vermieter
+      dabei bewenden, so wird der Vertrag stillschweigend erneuert (§ 1114 ABGB, § 1115 ABGB).</p>
+    <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Das Kündigungsrecht des Mieters
+      während der Befristung richtet sich nach dem in diesem Vertrag Bestimmten (siehe Punkt <span th:text="${refs['termination']}"></span>).</p>
+  </th:block>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Der Hauptmietzins beträgt <strong th:text="${rentAmount}">Betrag</strong>
+    <span th:text="${paymentFrequency}">monatlich</span>.<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Hinzu kommt der Anteil an den Betriebskosten und den laufenden öffentlichen
+    Abgaben (siehe Punkt <span th:text="${refs['service-costs']}"></span>).</span> Ist der Vermieter
+    umsatzsteuerpflichtig, so kommt die gesetzliche Umsatzsteuer hinzu.</p>
+  <p>Im Vollanwendungsbereich des MRG darf der vereinbarte Hauptmietzins den nach § 16 MRG zulässigen Betrag nicht
+    übersteigen. Liegen die Voraussetzungen des § 16 Abs. 1 MRG für einen angemessenen Hauptmietzins nicht vor, so
+    ist der Hauptmietzins für eine Wohnung der Ausstattungskategorie A, B oder C mit dem angemessenen, vom Richtwert
+    ausgehend berechneten Betrag (§ 16 Abs. 2 MRG) und für eine Wohnung der Ausstattungskategorie D mit den
+    Beträgen nach § 16 Abs. 5 MRG begrenzt. Ein Lagezuschlag ist nur zulässig, wenn die Liegenschaft eine bessere
+    als die durchschnittliche Lage aufweist und die für den Lagezuschlag maßgebenden Umstände dem Mieter in
+    Schriftform spätestens bei Zustandekommen des Mietvertrags ausdrücklich bekanntgegeben worden sind
+    (§ 16 Abs. 4 MRG).</p>
+  <p>Im Vollanwendungsbereich des MRG sind Mietzinsvereinbarungen insoweit unwirksam, als der vereinbarte Hauptmietzins den zulässigen Höchstbetrag
+    überschreitet; die Unwirksamkeit ist binnen 3 Jahren gerichtlich oder bei der Gemeinde geltend zu machen, bei
+    befristeten Hauptmietverhältnissen endet diese Frist frühestens 6 Monate nach Auflösung des Mietverhältnisses
+    oder nach seiner Umwandlung in ein unbefristetes Mietverhältnis, und die Verjährungsfrist beträgt dann 10 Jahre
+    (§ 16 Abs. 8 MRG).<span
+    th:if="${fixedTerm}"> Bei einem befristeten Hauptmietvertrag vermindert sich der nach § 16 Abs. 1 bis 6 MRG
+    höchstzulässige Hauptmietzins um 25 Prozent (§ 16 Abs. 7 MRG).</span></p>
+  <p>Im Teilanwendungsbereich und im Vollausnahmebereich des MRG ist die Höhe des Hauptmietzinses frei vereinbart.
+    Im Vollanwendungsbereich sind die in § 27 Abs. 1 MRG genannten Vereinbarungen, insbesondere über Leistungen
+    ohne gleichwertige Gegenleistung (Ablösen), ungültig und verboten.</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Für die Wertsicherung des Hauptmietzinses gilt das in diesem Vertrag Bestimmte (siehe Punkt <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Der Hauptmietzins ist wertgesichert gemäß § 1 Abs. 2 des Mieten-Wertsicherungsgesetzes (MieWeG). Er erhöht
+    oder vermindert sich danach am 1. April des vollen Kalenderjahrs nach Vertragsabschluss und in der Folge
+    jährlich am 1. April in dem Maß, das der durchschnittlichen Veränderung des Verbraucherpreisindex 2020 oder des
+    an seine Stelle tretenden Index im vorangegangenen Kalenderjahr entspricht; übersteigt diese Veränderung
+    3 Prozent, so ist der 3 Prozentpunkte übersteigende Teil nur zur Hälfte zu berücksichtigen. Bei der ersten
+    Valorisierung wird die Veränderung nur im Verhältnis der vollen, nach Vertragsabschluss verstrichenen Monate des
+    vorangegangenen Kalenderjahres zu 12 Monaten berücksichtigt (§ 1 Abs. 2 Z 1 und 2 MieWeG).</p>
+  <p>Unterliegt das Mietverhältnis den Mietzinsbeschränkungen des MRG, so ist die durchschnittliche Veränderung des
+    Verbraucherpreisindex für das Jahr 2025 mit höchstens 1 Prozent und für das Jahr 2026 mit höchstens 2 Prozent
+    zu berücksichtigen (§ 1 Abs. 3 MieWeG). Ergibt sich durch die Wertsicherung ein höherer als der nach
+    § 16 Abs. 1 bis 7 MRG zulässige Hauptmietzins, so ist der übersteigende Teil unwirksam; der erhöhte
+    Hauptmietzins ist ab dem auf das Wirksamwerden der Indexveränderung folgenden Zinstermin zu entrichten, wenn der
+    Vermieter sein Erhöhungsbegehren in einem nach dem Wirksamwerden der Indexveränderung ergehenden Schreiben,
+    spätestens jedoch 14 Tage vor dem Termin, bekanntgibt (§ 16 Abs. 9 MRG).</p>
+  <p>Im Vollausnahmebereich des MRG gilt das MieWeG nicht kraft Gesetzes; die Parteien vereinbaren die vorstehende
+    Wertsicherung auch für diesen Fall (§ 2 MieWeG). Die Wertsicherung wirkt nach oben wie nach unten.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Der Mieter trägt den auf den Mietgegenstand entfallenden Anteil an den Betriebskosten und den laufenden
+    öffentlichen Abgaben der Liegenschaft und leistet darauf mit dem Hauptmietzins monatliche Teilbeträge in der in
+    diesem Vertrag ausgewiesenen Höhe.</p>
+  <p>Im Vollanwendungsbereich des MRG sind nur die in den §§ 21 bis 24 MRG genannten Kosten verrechenbar; der Anteil
+    bestimmt sich grundsätzlich nach dem Verhältnis der Nutzfläche des Mietgegenstandes zur Nutzfläche aller
+    Mietgegenstände des Hauses (§ 17 Abs. 1 MRG). Der Vermieter darf zu jedem Zinstermin einen gleichbleibenden
+    Teilbetrag verrechnen, der vom Gesamtbetrag des vorausgegangenen Kalenderjahres zu errechnen ist und im Fall
+    einer zwischenzeitlichen Erhöhung um höchstens 10 Prozent überschritten werden darf; er rechnet spätestens zum
+    30. Juni des folgenden Kalenderjahres ab und gewährt Einsicht in die Belege. Ein Überschuss ist zum
+    übernächsten Zinstermin zurückzuerstatten, ein Fehlbetrag zum übernächsten Zinstermin zu entrichten
+    (§ 21 Abs. 3 MRG).</p>
+  <p>Im Teilanwendungsbereich und im Vollausnahmebereich des MRG trägt der Mieter die folgenden Kosten:
+    ______________________________. Der Vermieter rechnet über die Teilbeträge jährlich ab und gewährt Einsicht in
+    die Belege. Soweit nichts vereinbart ist, trägt alle Lasten und Abgaben der Vermieter (§ 1099 ABGB).</p>
+  <p>Wird das Gebäude mit mindestens 4 Nutzungsobjekten durch eine gemeinsame Versorgungsanlage mit Wärme,
+    Warmwasser oder Kälte versorgt und ist es mit Vorrichtungen zur Ermittlung der Verbrauchsanteile ausgestattet
+    oder auszustatten (§ 3 Abs. 1 HeizKG), so werden die Energiekosten für Heizung und Warmwasser zu mindestens
+    55 und höchstens 85 Prozent und die Energiekosten für Kälte zu mindestens 80 Prozent nach den
+    Verbrauchsanteilen und der jeweilige Rest nach der versorgbaren Nutzfläche aufgeteilt
+    (§ 10 Abs. 1 HeizKG).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Der Mieter übergibt dem Vermieter zur Sicherstellung der künftigen
+    Ansprüche des Vermieters aus diesem Mietvertrag eine Kaution in Höhe von
+    <strong th:text="${depositAmount}">Betrag</strong>.</p>
+  <p th:if="${depositAmount == null}">Der Mieter übergibt dem Vermieter zur Sicherstellung der künftigen
+    Ansprüche des Vermieters aus diesem Mietvertrag eine Kaution in der zwischen den Parteien schriftlich
+    vereinbarten Höhe.</p>
+  <p>Eine gesetzliche Obergrenze für die Höhe der Kaution besteht nicht. Wird die Kaution als Geldbetrag
+    übergeben, so legt der Vermieter sie auf einem Sparbuch fruchtbringend an und informiert den Mieter darüber auf
+    Verlangen schriftlich; eine andere Veranlagung ist zulässig, wenn sie eine gleich gute Verzinsung und eine gleich
+    hohe Sicherheit wie eine Spareinlage bietet und eine eindeutige Abgrenzung vom Vermögen des Vermieters und bei
+    dessen Insolvenz eine Absonderung ermöglicht (§ 16b Abs. 1 MRG).</p>
+  <p>Nach Ende des Mietvertrags stellt der Vermieter dem Mieter die Kaution samt den aus ihrer Veranlagung
+    erzielten Zinsen unverzüglich zurück, soweit sie nicht zur Tilgung von berechtigten Forderungen des Vermieters
+    aus dem Mietverhältnis herangezogen wird (§ 16b Abs. 2 MRG). § 16b MRG gilt im Voll- und im
+    Teilanwendungsbereich des MRG; im Vollausnahmebereich vereinbaren die Parteien dieselben Regeln.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Schäden werden bei der
+    Rückstellung des Mietgegenstandes festgestellt (siehe Punkt <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Der Mieter zahlt den Mietzins<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (siehe
+    Punkt <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> samt den
+    Teilbeträgen auf die Betriebskosten</span> <span th:text="${paymentFrequency}">monatlich</span> im Vorhinein,
+    <span th:if="${paymentDueDay != null}">spätestens am <strong th:text="${paymentDueDay}">5</strong>. Tag des
+      jeweiligen Zahlungszeitraums</span><span th:if="${paymentDueDay == null}">spätestens am 5. Tag des jeweiligen
+      Zahlungszeitraums</span>, durch Überweisung auf ein vom Vermieter bekanntgegebenes Bankkonto.</p>
+  <p>Im Vollanwendungsbereich des MRG ist der Mietzins am 5. eines jeden Kalendermonats im Vorhinein zu entrichten,
+    sofern kein späterer Zahlungstermin vereinbart ist (§ 15 Abs. 3 MRG). Bei der Raummiete ist der Zins, soweit
+    nichts anderes vereinbart oder ortsüblich ist, monatlich am 5. des Monats zu entrichten (§ 1100 ABGB).</p>
+  <p>Bei Zahlungsverzug schuldet der Mieter Verzugszinsen von 4 Prozent pro Jahr (§ 1000 Abs. 1 ABGB,
+    § 1333 Abs. 1 ABGB) sowie den Ersatz der notwendigen Kosten zweckentsprechender außergerichtlicher Betreibungs-
+    oder Einbringungsmaßnahmen, soweit er sie verschuldet hat und sie in einem angemessenen Verhältnis zur
+    betriebenen Forderung stehen (§ 1333 Abs. 2 ABGB).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Der Mietgegenstand darf nur zu Wohnzwecken verwendet werden. Der Mieter behandelt ihn pfleglich und nimmt auf
+    die übrigen Hausbewohner Rücksicht; eine etwaige Hausordnung ist Bestandteil dieses Vertrags, soweit sie ihm
+    nicht widerspricht.</p>
+  <p>Der Mieter gestattet dem Vermieter oder den von diesem beauftragten Personen das Betreten des
+    Mietgegenstandes aus wichtigen Gründen nach rechtzeitiger Ankündigung, wobei die berechtigten Interessen des
+    Mieters nach Maßgabe der Wichtigkeit des Grundes angemessen berücksichtigt werden; im Vollanwendungsbereich des
+    MRG gilt hierfür § 8 Abs. 2 MRG.</p>
+  <p>Wesentliche Veränderungen des Mietgegenstandes nimmt der Mieter nur mit vorheriger schriftlicher Zustimmung des
+    Vermieters vor. Im Vollanwendungsbereich des MRG zeigt der Mieter eine beabsichtigte wesentliche Veränderung dem
+    Vermieter an; lehnt der Vermieter sie nicht innerhalb von 2 Monaten nach Zugang der Anzeige ab, so gilt seine
+    Zustimmung als erteilt, und unter den Voraussetzungen des § 9 Abs. 1 MRG kann er sie nicht verweigern. Für den
+    Ersatz von Aufwendungen bei Beendigung des Mietverhältnisses gilt dort § 10 MRG.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Die gänzliche oder teilweise Untervermietung oder sonstige Überlassung des Mietgegenstandes an Dritte bedarf der
+    vorherigen schriftlichen Zustimmung des Vermieters.</p>
+  <p>Im Vollanwendungsbereich des MRG kann sich der Vermieter auf dieses Verbot nur berufen, wenn ein wichtiger
+    Grund gegen die Untervermietung vorliegt, insbesondere wenn der Mietgegenstand zur Gänze untervermietet werden
+    soll, der in Aussicht genommene Untermietzins eine im Vergleich zu dem vom Mieter zu entrichtenden Mietzins und
+    etwaigen sonstigen Leistungen des Mieters unverhältnismäßig hohe Gegenleistung darstellt, die Anzahl der Bewohner
+    die Anzahl der Wohnräume übersteigt oder nach der Aufnahme des Untermieters übersteigen würde oder mit Grund zu
+    besorgen ist, dass der Untermieter den Frieden der Hausgemeinschaft stören wird (§ 11 Abs. 1 MRG).</p>
+  <p>Im Teilanwendungsbereich und im Vollausnahmebereich des MRG gilt das vertragliche Verbot der Untervermietung
+    (§ 1098 ABGB). Im Voll- und im Teilanwendungsbereich des MRG kann die Weitergabe des Mietgegenstandes unter den
+    Voraussetzungen des § 30 Abs. 2 Z 4 MRG einen Kündigungsgrund bilden.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Der Vermieter übergibt den Mietgegenstand auf eigene Kosten in brauchbarem Zustand und erhält ihn in diesem
+    Zustand (§ 1096 Abs. 1 ABGB). Im Vollanwendungsbereich des MRG richtet sich seine Erhaltungspflicht nach § 3 MRG;
+    sie umfasst insbesondere die Erhaltung der allgemeinen Teile des Hauses, die Behebung von ernsten Schäden des
+    Hauses, die Beseitigung einer vom Mietgegenstand ausgehenden erheblichen Gesundheitsgefährdung und die Erhaltung
+    von mitvermieteten Heizthermen, Warmwasserboilern und sonstigen Wärmebereitungsgeräten (§ 3 Abs. 2 MRG).</p>
+  <p>Ist der Mietgegenstand bei der Übergabe so mangelhaft oder wird er während der Mietzeit ohne Verschulden des
+    Mieters so mangelhaft, dass er zum bedungenen Gebrauch nicht taugt, so ist der Mieter für die Dauer und in dem
+    Maß der Unbrauchbarkeit von der Entrichtung des Mietzinses befreit; auf diese Befreiung kann im Voraus nicht
+    verzichtet werden (§ 1096 Abs. 1 ABGB).</p>
+  <p>Werden Ausbesserungen nötig, die dem Vermieter obliegen, so zeigt der Mieter dies dem Vermieter ohne Verzug an
+    (§ 1097 ABGB). Im Vollanwendungsbereich des MRG wartet der Mieter den Mietgegenstand und die für ihn bestimmten
+    Einrichtungen, insbesondere die Lichtleitungs-, Gasleitungs-, Wasserleitungs-, Beheizungs- und sanitären Anlagen,
+    und hält sie, soweit es sich nicht um die Behebung von ernsten Schäden des Hauses oder um die Beseitigung einer
+    erheblichen Gesundheitsgefährdung handelt, so instand, dass dem Vermieter und den anderen Mietern des Hauses kein
+    Nachteil erwächst (§ 8 Abs. 1 MRG).</p>
+  <p>Notwendige Ausbesserungen hat der Mieter zuzulassen (§ 1118 ABGB); im Vollanwendungsbereich des MRG richtet sich
+    die Duldung von Eingriffen in das Mietrecht nach § 8 Abs. 2 und 3 MRG. Für Beschädigungen und für Abnützung durch
+    Missbrauch haftet der Mieter aus eigenem Verschulden und aus dem Verschulden eines Untermieters, nicht aber für
+    den Zufall (§ 1111 ABGB).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Der Vermieter hat dem Mieter rechtzeitig vor Abgabe seiner Vertragserklärung einen zu diesem Zeitpunkt
+    höchstens 10 Jahre alten Energieausweis vorgelegt und händigt ihm diesen binnen 14 Tagen nach Vertragsabschluss
+    aus, auf Verlangen auf Papier (§ 4 Abs. 1 EAVG 2012). Die darin angegebenen Energiekennzahlen gelten unter
+    Berücksichtigung der bei ihrer Ermittlung unvermeidlichen Bandbreiten als bedungene Eigenschaft (§ 6 EAVG 2012).</p>
+  <p>Wurde kein Energieausweis vorgelegt, so gilt zumindest eine dem Alter und der Art des Gebäudes entsprechende
+    Gesamtenergieeffizienz als vereinbart (§ 7 Abs. 1 EAVG 2012). Wird der Energieausweis nach Vertragsabschluss trotz
+    Aufforderung nicht ausgehändigt, so kann der Mieter die Aushändigung gerichtlich geltend machen oder selbst einen
+    Energieausweis einholen und die angemessenen Kosten binnen 3 Jahren nach Vertragsabschluss vom Vermieter ersetzt
+    begehren (§ 7 Abs. 2 EAVG 2012).</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>Der Mieter meldet sich innerhalb von 3 Tagen, nachdem er im Mietgegenstand Unterkunft genommen hat, bei der
+    Meldebehörde an (§ 3 Abs. 1 MeldeG). Der Vermieter wirkt als Unterkunftgeber an der Meldung mit, soweit das
+    Meldegesetz 1991 dies vorsieht.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Bei Übergabe des Mietgegenstandes erstellen die Parteien gemeinsam ein Übergabeprotokoll über den Zustand des
+    Mietgegenstandes, die Zählerstände und die übergebenen Schlüssel. Beide Parteien unterzeichnen das Protokoll und
+    erhalten je eine Ausfertigung.</p>
+  <p>Nach Beendigung des Mietverhältnisses stellt der Mieter den Mietgegenstand mit allen Schlüsseln in dem Zustand
+    zurück, in dem er ihn übernommen hat (§ 1109 ABGB); die Parteien erstellen dabei ein Rückstellungsprotokoll.
+    Ersatzansprüche des Vermieters wegen Beschädigung oder Abnützung durch Missbrauch sind längstens innerhalb von
+    1 Jahr nach Zurückstellung gerichtlich geltend zu machen (§ 1111 ABGB); Ersatzansprüche des Mieters für
+    Aufwendungen auf den Mietgegenstand längstens innerhalb von 6 Monaten nach Zurückstellung
+    (§ 1097 ABGB).<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Die Rückstellung der
+    Kaution folgt danach (siehe Punkt <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Im Voll- und im Teilanwendungsbereich des MRG kann der Mieter den Mietvertrag gerichtlich oder schriftlich, der
+    Vermieter jedoch nur gerichtlich kündigen (§ 33 Abs. 1 MRG). Der Vermieter kann nur aus wichtigen Gründen
+    kündigen, insbesondere aus den in § 30 Abs. 2 MRG genannten Gründen, und führt die Kündigungsgründe in der
+    Kündigung kurz an (§ 30 Abs. 1 MRG, § 33 Abs. 1 MRG). Eine Vereinbarung, wonach dem Vermieter das
+    Kündigungsrecht unbeschränkt oder in einem weiteren als dem gesetzlich bestimmten Maß zustehen soll, ist
+    rechtsunwirksam (§ 30 Abs. 3 MRG).</p>
+  <p>Ein Mietvertrag auf unbestimmte Zeit ist, soweit die Parteien nichts anderes vereinbaren, zum letzten Tag eines
+    Kalendermonats so aufzukündigen, dass die Kündigung der anderen Partei bei monatlicher oder kürzerer Zinszahlung
+    spätestens 1 Monat, bei Zinszahlung in längeren Abständen spätestens 3 Monate vor dem Kündigungstermin
+    zugestellt wird (§ 560 Abs. 1 Z 2 lit. d ZPO). Geht dem Vermieter eine schriftliche Kündigung des Mieters erst
+    nach Beginn der Kündigungsfrist zu, so wirkt sie für den ersten späteren Kündigungstermin, für den die Frist
+    noch offen war (§ 33 Abs. 1 MRG).</p>
+  <p th:if="${fixedTerm}">Bei einem nach § 29 Abs. 1 Z 3 MRG befristeten Mietvertrag<span class="clause-ref"
+    data-ref="term" th:if="${refs['term']}"> (siehe Punkt <span th:text="${refs['term']}"></span>)</span> hat der
+    Mieter nach Ablauf von 1 Jahr der ursprünglich vereinbarten oder verlängerten Dauer des Mietverhältnisses das
+    unverzichtbare und unbeschränkbare Recht, den Mietvertrag vor Ablauf der bedungenen Zeit jeweils zum
+    Monatsletzten gerichtlich oder schriftlich unter Einhaltung einer Kündigungsfrist von 3 Monaten zu kündigen
+    (§ 29 Abs. 2 MRG); einen nach § 29 Abs. 3 lit. b MRG erneuerten Vertrag kann er jederzeit in gleicher Weise
+    kündigen.</p>
+  <p>Im Vollausnahmebereich des MRG gelten die Kündigungsbeschränkungen der §§ 29 bis 36 MRG nicht; ein Mietvertrag
+    auf unbestimmte Zeit kann von jeder Partei unter Einhaltung der vereinbarten oder der in § 560 ZPO bestimmten
+    Termine und Fristen schriftlich oder gerichtlich gekündigt werden.</p>
+  <p>Der Mieter kann ohne Kündigung vom Vertrag zurücktreten, wenn der Mietgegenstand in einem Zustand übergeben
+    wird oder ohne sein Verschulden in einen Zustand gerät, der ihn zum bedungenen Gebrauch untauglich macht, oder
+    wenn ein beträchtlicher Teil durch Zufall auf längere Zeit entzogen oder unbrauchbar wird; aus dem Grund der
+    Gesundheitsschädlichkeit gemieteter Wohnräume steht ihm dieses Recht auch dann zu, wenn er darauf verzichtet oder
+    die Beschaffenheit der Räume bei Vertragsabschluss gekannt hat (§ 1117 ABGB). Der Vermieter kann die vorzeitige
+    Aufhebung des Vertrags insbesondere fordern, wenn der Mieter vom Mietgegenstand einen erheblich nachteiligen
+    Gebrauch macht oder nach geschehener Einmahnung mit der Zahlung des Mietzinses so säumig ist, dass er mit Ablauf
+    des Termins den rückständigen Mietzins nicht vollständig entrichtet hat (§ 1118 ABGB).<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> Für die Rückstellung gilt das in diesem
+    Vertrag Bestimmte (siehe Punkt <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Der Vermieter verarbeitet personenbezogene Daten des Mieters nur, soweit dies für den Abschluss und die
+    Durchführung dieses Vertrags und zur Erfüllung gesetzlicher Pflichten erforderlich ist, nach der
+    Datenschutz-Grundverordnung (DSGVO, Verordnung (EU) 2016/679). Er speichert die Daten nicht länger als hierfür
+    erforderlich.</p>
+  <p>Der Mieter kann gegenüber dem Vermieter seine Rechte aus der DSGVO geltend machen, insbesondere die Rechte auf
+    Auskunft, Berichtigung und Löschung, und kann sich bei der Datenschutzbehörde beschweren.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Für diesen Vertrag gilt österreichisches Recht.</p>
+  <p>Für Streitigkeiten aus diesem Mietverhältnis ist das Bezirksgericht zuständig, in dessen Sprengel der
+    Mietgegenstand liegt (§ 49 Abs. 2 Z 5 JN, § 83 Abs. 1 JN). In den Angelegenheiten des § 37 Abs. 1 MRG, etwa über
+    die Höhe des Hauptmietzinses, die Betriebskosten oder die Kaution, entscheidet das Bezirksgericht im Verfahren
+    außer Streitsachen; in Gemeinden mit einer Schlichtungsstelle ist die Sache vorher bei der Gemeinde anhängig zu
+    machen (§ 39 Abs. 1 MRG).</p>
+  <p>Verträge über die Miete von Wohnräumen sind gebührenfrei (§ 33 TP 5 Abs. 4 Z 1 GebG). Sollte eine Bestimmung
+    dieses Vertrags unwirksam sein, so bleibt die Wirksamkeit der übrigen Bestimmungen unberührt; an ihre Stelle tritt
+    die gesetzliche Regelung.</p>
+</div>
+
+</body>
+</html>

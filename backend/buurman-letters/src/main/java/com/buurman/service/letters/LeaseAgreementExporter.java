@@ -271,6 +271,7 @@ public class LeaseAgreementExporter {
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
     variables.put("authoritative", doc.authoritative());
+    variables.put("noNationalVersion", doc.noNationalVersion());
     variables.put("languageUsed", plan.languageUsed());
     variables.put("requestedLang", plan.requestedLang());
     variables.put("fallbackUsed", !plan.languageUsed().equals(plan.requestedLang()));
@@ -525,8 +526,9 @@ public class LeaseAgreementExporter {
     vars.put("tenantNoticeDays", input.tenantNoticeDays());
     vars.put("countryMetadata", input.countryMetadata().orElse(null));
     // Lets a document branch on nation and region/state ({@code th:if="${regionCode == 'X'}"});
-    // the region is null when the contract has none.
-    vars.put("regionCode", input.regionCode().orElse(null));
+    // the region is null when the contract has none. Upper-cased so a lower-case stored or preview
+    // code still matches the documents' upper-case branches.
+    vars.put("regionCode", input.regionCode().map(r -> r.toUpperCase(Locale.ROOT)).orElse(null));
     vars.put("countryCode", countryCode);
   }
 

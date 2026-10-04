@@ -26,7 +26,7 @@ export const LEASE_KIND_META: Record<LeaseKind, LeaseKindMeta> = {
     label: 'Legacy (example text)',
     color: 'gray',
     oneLine:
-      'Placeholder lease with example clauses, used when no real document or clause set exists.',
+      'Placeholder lease with example clauses, used for kinds without a country document (e.g. mixed-use, agricultural, short-term, student/mobility).',
     appliesWhen:
       'Never derived from a contract directly. It is the last step of every fallback chain, so it is used when a country has no clause set or document for the contract’s own kind.',
     fallbackChain: [LeaseKind.LEGACY],

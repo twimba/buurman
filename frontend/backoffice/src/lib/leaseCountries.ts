@@ -1,6 +1,5 @@
-// Countries whose lease clause templates are managed in the backoffice: the 7 seeded with
-// placeholder templates (BUUR-105) plus Greece, added to the rent-regulation catalog ahead of
-// its lease pack (no templates yet, so its list starts empty).
+// Countries whose lease clause templates are managed in the backoffice: every rent-regulation
+// catalog country (each has residential and commercial lease documents; unvetted drafts).
 export const LEASE_COUNTRIES = [
   { code: 'NL', name: 'Netherlands' },
   { code: 'DE', name: 'Germany' },
@@ -10,4 +9,17 @@ export const LEASE_COUNTRIES = [
   { code: 'BE', name: 'Belgium' },
   { code: 'GB', name: 'United Kingdom' },
   { code: 'GR', name: 'Greece' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'CZ', name: 'Czechia' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'LU', name: 'Luxembourg' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'US', name: 'United States' },
 ];

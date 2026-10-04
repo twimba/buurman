@@ -1,0 +1,377 @@
+<!--
+  legal-basis: Kodeks cywilny (ustawa z dnia 23 kwietnia 1964 r.), consolidated text Dz.U. z 2026 r. poz. 795
+               (obwieszczenie Marszalka Sejmu z 27 maja 2026 r.; the later amendments Dz.U. 2026 poz. 184 and poz. 507
+               do not touch the lease articles), read on api.sejm.gov.pl (ELI DU/2026/795, PDF): art. 58 § 1 and
+               § 3, 77 § 2, 481 § 1 and § 2, 659, 660, 661 § 1, 662, 663, 664 § 2 and § 3, 666, 667 § 1, 668,
+               669 § 2, 673, 674, 675, 677, 678 § 1, 680^1 § 1, 681, 682, 683, 684, 688, 688^1, 688^2, 691, 692.
+               Ustawa z dnia 21 czerwca 2001 r. o ochronie praw lokatorow, mieszkaniowym zasobie gminy i o zmianie
+               Kodeksu cywilnego (u.o.p.l.), consolidated text Dz.U. z 2023 r. poz. 725 (ELI DU/2001/733: no amending
+               act published after the 2022 amendments it consolidates; checked 2026-10-04): art. 2 ust. 1 pkt 4 and
+               pkt 8, 5 ust. 1, 6 ust. 1, 3, 4, 6a, 6b, 6c, 6d, 6e, 6f, 6g, 8a ust. 1-8, 9 ust. 1b, 2, 5, 6, 8,
+               10 ust. 1 and 3, 11 ust. 1-7 and 12, 19a, 19f.
+               Ustawa z dnia 29 sierpnia 2014 r. o charakterystyce energetycznej budynkow, consolidated text Dz.U.
+               z 2024 r. poz. 101 (ELI DU/2014/1200; last amendment in force 2023-10-01): art. 3 ust. 1 pkt 3 and
+               ust. 4, 11 ust. 1 pkt 2, ust. 4 and ust. 5, 14 ust. 1 and 2.
+               Kodeks postepowania cywilnego, consolidated text Dz.U. z 2026 r. poz. 468: art. 31 § 2, 37.
+               RODO: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); ustawa z dnia 10 maja 2018 r.
+               o ochronie danych osobowych (ELI DU/2018/1000).
+               Scope: the ordinary residential lease of a dwelling (lokal mieszkalny) under the Civil Code and the
+               u.o.p.l.; NOT the najem okazjonalny (art. 19a-19e u.o.p.l.) nor the najem instytucjonalny (art.
+               19f-19j u.o.p.l.), which need a notarial submission to enforcement and have their own rules.
+               Pending (not law on 2026-10-04): Sejm print 2447 (poselski projekt o zmianie u.o.p.l., filed
+               2026-02-27, first reading 2026-04-30, government position 2026-09-02: easier termination for rent
+               arrears); Sejm print 1318 (u.o.p.l. and gospodarka nieruchomosciami, second reading 2025-12-17, not
+               published); Sejm print 2353 (najem krotkoterminowy, first reading 2026-04-17). Re-verify art. 11
+               u.o.p.l. and the termination clause when print 2447 is enacted.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against api.sejm.gov.pl (ISAP/ELI consolidated texts and process data).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in pl.html, never spelled out (pl "12-krotnosc miesiecznego czynszu" is "12 times the monthly rent" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of pl.html; the Polish text is authoritative. It states Polish law (Kodeks cywilny,
+  ustawa o ochronie praw lokatorow) in English and is not the law of any other country. Draft text, not vetted by
+  legal counsel. Only prose differs from pl.html: fragments, th: expressions and attributes are identical (enforced
+  by LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Landlord: <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the Landlord&rdquo; (wynajmujący),</p>
+  <p>PESEL number or identity document number and address of residence or registered office of the Landlord: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">Tenant: <strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the Tenant&rdquo; (najemca),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">The tenant or tenants signing at the end of this agreement,
+    hereinafter (jointly) &ldquo;the Tenant&rdquo; (najemca),</p>
+  <p>PESEL number or identity document number and previous address of residence of the Tenant: ______________________________,</p>
+  <p>conclude this lease of a dwelling (umowa najmu lokalu mieszkalnego), governed by the Act of 23 April 1964
+    &ndash; Civil Code (Kodeks cywilny; consolidated text: Journal of Laws (Dziennik Ustaw) 2026, item 795; hereinafter
+    the &ldquo;Civil Code&rdquo;), in particular Articles 659&ndash;692 of the Civil Code, and by the Act of 21 June 2001
+    on the protection of the rights of tenants, the municipal housing stock and amending the Civil Code (ustawa o
+    ochronie praw lokatorów; consolidated text: Journal of Laws 2023, item 725; hereinafter the &ldquo;Tenant
+    Protection Act&rdquo;). The agreement is concluded in writing; a lease of premises for longer than a year that is
+    concluded without written form is deemed to be concluded for an indefinite term (Article 660 of the Civil
+    Code).</p>
+  <p>If the lease of premises intended to meet the housing needs of the family founded by spouses is entered into
+    during the marriage, the spouses are tenants of the premises regardless of the property regime between them
+    (Article 680¹ § 1 of the Civil Code). Where the Tenant consists of several persons, the parties stipulate that
+    they are jointly and severally liable for all obligations arising from this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The Landlord lets to the Tenant for use the dwelling located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the Premises&rdquo; (lokal).</p>
+  <p>usable floor area of the Premises and number of rooms: ______________________________</p>
+  <p>ancillary rooms and parts of the building the Tenant may use (cellar, storage room, parking space or other):
+    ______________________________</p>
+  <p>legal title of the Landlord to the Premises and land and mortgage register number (księga wieczysta), if one
+    has been opened: ______________________________</p>
+  <p>The Premises serve to meet the housing needs of the Tenant and the persons living with the Tenant (Article 2,
+    paragraph 1, point 4, of the Tenant Protection Act). This model is not intended for an occasional lease of
+    premises (najem okazjonalny lokalu, Article 19a of the Tenant Protection Act) nor for an institutional lease of
+    premises (najem instytucjonalny lokalu, Article 19f of the Tenant Protection Act); those agreements require in
+    particular a statement by the tenant in the form of a notarial deed submitting to enforcement (Article 19a,
+    paragraph 2, point 1, and Article 19f, paragraph 3, of the Tenant Protection Act).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The technical
+    condition and the fittings of the Premises are recorded in the report provided for in this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease begins on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The agreement is concluded for a fixed term<span th:if="${endDate != null}">, until
+    <strong th:text="${endDate}">end date</strong></span>. Duration of the lease, if it does not follow from the
+    end date: ______________________________. A lease concluded for longer than 10 years is deemed, after that period
+    has expired, to be concluded for an indefinite term (Article 661 § 1 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">If, after the term stated in the agreement has expired, the Tenant continues to use the
+    Premises with the Landlord&rsquo;s consent, the lease is deemed, in case of doubt, to have been extended for an
+    indefinite term (Article 674 of the Civil Code).</p>
+  <p th:if="${!fixedTerm}">The agreement is concluded for an indefinite term (Article 659 § 1 of the Civil Code and
+    Article 5, paragraph 1, of the Tenant Protection Act).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Termination of the agreement is
+    governed by this agreement (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent agreed by the parties is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">monthly</span> (Article 659 § 1 of the Civil Code).<span class="clause-ref"
+    data-ref="service-costs" th:if="${refs['service-costs']}"> The charges independent of the owner that the Tenant
+    pays in addition to the rent are set out in this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Rent increases are governed
+    by this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The Landlord may increase the rent or other charges for the use of the Premises by giving notice of their
+    current amount, at the latest for the end of a calendar month, observing a notice period of 3 months unless the
+    parties agree a longer period in the agreement; notice of the amount of the rent or other charges must be given
+    in writing, failing which it is void (Article 8a, paragraphs 1&ndash;3, of the Tenant Protection Act). Longer
+    notice period agreed by the parties, if any: ______________________________</p>
+  <p>An increase as a result of which the annual amount of the rent or other charges for the use of the Premises
+    exceeds, or which starts from a level higher than, 3 % of the replacement value of the Premises may take place
+    in the justified cases referred to in Article 8a, paragraph 4a or paragraph 4e, of the Tenant Protection
+    Act; at the Tenant&rsquo;s written request the Landlord, within 14 days of receiving that request, presents in
+    writing the reason for the increase and its calculation, failing which the increase is void (Article 8a,
+    paragraph 4, of the Tenant Protection Act). The replacement value of the Premises is the product of their usable
+    floor area and the conversion rate of the replacement cost of 1 m² of usable floor area of a residential building
+    (Article 9, paragraph 8, of the Tenant Protection Act).</p>
+  <p>Within 2 months of the date of the notice the Tenant may refuse the increase in writing, with the effect that
+    the agreement terminates when the notice period expires, or contest the increase referred to in Article 8a,
+    paragraph 4, of the Tenant Protection Act by bringing an action before the court for a declaration, on the basis of
+    paragraphs 4a&ndash;4e, that the increase is unjustified or justified but in a different amount; the burden of proving that the increase is
+    justified lies on the Landlord (Article 8a, paragraph 5, of the Tenant Protection Act). In the first case the
+    Tenant pays the rent in the current amount until the agreement terminates, and in the second case until the
+    court&rsquo;s decision becomes final, with the obligation to pay the difference for the period from the expiry
+    of the notice period if the court finds the increase justified, even in a different amount (Article 8a,
+    paragraphs 6a and 6b, of the Tenant Protection Act).</p>
+  <p>The rent or other charges for the use of the Premises, except the charges independent of the owner, may not
+    be increased more often than every 6 months, counted from the day on which the increase took effect (Article 9,
+    paragraph 1b, of the Tenant Protection Act). Article 8a, paragraphs 1&ndash;6b, of the Tenant Protection Act does
+    not apply to increases of the charges independent of the owner (Article 8a, paragraph 8, of the Tenant
+    Protection Act).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the Landlord may charge the Tenant only the charges independent of the owner (opłaty
+    niezależne od właściciela), that is, the charges for the supply of energy, gas and water to the Premises and for
+    the removal of sewage, waste and liquid waste, and only where the Tenant has no contract directly with the
+    utility or service provider (Article 2, paragraph 1, point 8, and Article 9, paragraphs 5 and 6, of the Tenant
+    Protection Act).</p>
+  <p>Charges independent of the owner collected by the Landlord and the method of settling them:
+    ______________________________. Supplies for which the Tenant concludes contracts directly with the providers:
+    ______________________________</p>
+  <p>If the charges independent of the owner increase, the Landlord presents to the Tenant in writing a statement
+    of the charges together with the reason for the increase; the Tenant is obliged to pay the increased charges only
+    in the amount necessary to cover the Landlord&rsquo;s costs of supplying those deliveries to the Premises (Article
+    9, paragraph 2, of the Tenant Protection Act).</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">On conclusion of the agreement the Tenant pays the Landlord a security
+    deposit (kaucja) securing the payment of the amounts due to the Landlord under the lease of the Premises on the
+    day the Premises are vacated, in the amount of <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The parties do not provide for a security deposit. Security deposit agreed by the
+    parties, if any: ______________________________</p>
+  <p>The security deposit may not exceed 12 times the monthly rent for the Premises, calculated at the rent rate in
+    force on the day the agreement is concluded (Article 6, paragraph 1, of the Tenant Protection Act); the parties
+    stipulate that the amount of the security deposit does not exceed that limit. Multiple of the monthly rent to
+    which the security deposit corresponds: ______________________________</p>
+  <p>The security deposit is repaid within 1 month of the day the Premises are vacated or the Tenant acquires
+    ownership of them, after deduction of the Landlord&rsquo;s claims under the lease of the Premises (Article 6,
+    paragraph 4, of the Tenant Protection Act). The indexed security deposit is repaid in an amount equal to the
+    monthly rent in force on the day of repayment multiplied by the multiple of the rent applied when the deposit was
+    taken, but not less than the deposit taken (Article 6, paragraph 3, of the Tenant Protection Act).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    Premises is governed by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The Tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the charges independent of the owner collected by the Landlord</span>
+    <span th:text="${paymentFrequency}">monthly</span>, in advance,
+    <span th:if="${paymentDueDay != null}">by day <strong th:text="${paymentDueDay}">1</strong> of each
+      month</span><span th:if="${paymentDueDay == null}">by the date agreed by the parties</span>. Where the date of
+    payment of the rent is not specified in the agreement, the rent must be paid in advance, namely: where the lease
+    is to last no longer than a month, for the whole period of the lease, and where the lease is to last longer than
+    a month or the agreement was concluded for an indefinite term, monthly, by the 10th day of the month (Article 669
+    § 2 of the Civil Code).</p>
+  <p>Payments are made by bank transfer to the Landlord&rsquo;s bank account no.: ______________________________. In
+    the event of late payment the Landlord may claim statutory interest for late payment (Article 481 § 1 and § 2 of
+    the Civil Code).</p>
+  <p>The adult persons permanently living with the Tenant are jointly and severally liable with the Tenant for the
+    payment of the rent and other charges due, except adult descendants maintained by the Tenant who are unable to
+    support themselves; the liability of those persons is limited to the rent and other charges due for the period of
+    their permanent residence (Article 688¹ of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The Tenant uses the Premises for housing purposes, in the manner specified in the agreement or, where the
+    agreement does not specify the manner of use, in a manner corresponding to the properties and purpose of the
+    Premises (Article 666 § 1 of the Civil Code). Persons who will live permanently with the Tenant:
+    ______________________________</p>
+  <p>The Tenant complies with the house rules (porządek domowy), insofar as they do not conflict with the rights
+    arising from the agreement, and has regard to the needs of other residents and neighbours (Article 683 of the
+    Civil Code and Article 6b, paragraph 1, of the Tenant Protection Act). Without the Landlord&rsquo;s consent the
+    Tenant may not make changes to the Premises contrary to the agreement or to the purpose of the Premises (Article
+    667 § 1 of the Civil Code).</p>
+  <p>The Tenant may install electric lighting, gas, telephone, radio and other similar equipment in the Premises,
+    unless the manner of their installation is contrary to the regulations in force or endangers the safety of the
+    property (Article 684 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Without the Landlord&rsquo;s consent the Tenant may not give the Premises or part of them to another person for
+    use free of charge or sublet them; the Landlord&rsquo;s consent is not required for a person to whom the Tenant
+    owes maintenance (Article 688² of the Civil Code). The parties stipulate that the Landlord&rsquo;s consent must be
+    given in writing.</p>
+  <p>Where the Premises are given to a third party, both the Tenant and that person are liable to the Landlord for
+    the Premises being used in accordance with the obligations arising from the agreement; a sublease or a loan for
+    use ends at the latest when the lease ends (Article 668 § 1 and § 2 of the Civil Code). The Landlord may
+    terminate the agreement by notice given no later than 1 month in advance, for the end of a calendar month, if the
+    Tenant has let, sublet or given for use free of charge the Premises or part of them without the required written
+    consent of the Landlord (Article 11, paragraph 2, point 3, of the Tenant Protection Act).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The Landlord hands over the Premises in a condition fit for the agreed use and keeps them in that condition
+    throughout the lease (Article 662 § 1 of the Civil Code). The Landlord&rsquo;s obligations include in particular
+    ensuring the proper functioning of the existing installations and equipment connected with the building, keeping
+    the rooms and equipment of the building intended for the common use of the residents in proper condition, order
+    and cleanliness, and carrying out repairs of the Premises and repairs or replacement of installations and
+    technical fittings to the extent not borne by the Tenant (Article 6a, paragraphs 1 and 3, of the Tenant
+    Protection Act).</p>
+  <p>Minor outlays connected with the ordinary use of the Premises are borne by the Tenant (Article 662 § 2 and
+    Article 681 of the Civil Code). The Tenant is obliged to keep the Premises in proper technical and
+    hygienic-sanitary condition and to carry out the repairs and maintenance listed in Article 6b, paragraph 2, of the
+    Tenant Protection Act, in particular of floors, windows and doors, built-in furniture and sanitary fittings, as
+    well as painting or wallpapering (Article 6b, paragraphs 1 and 2, of the Tenant Protection Act).</p>
+  <p>The Tenant may make improvements to the Premises only with the Landlord&rsquo;s consent and on the basis of a
+    written agreement specifying how they will be settled (Article 6d of the Tenant Protection Act). In a lease of
+    premises that do not form part of the public housing stock the parties may agree rights and obligations
+    different from those listed in Articles 6a&ndash;6e of the Tenant Protection Act (Article 6f of the Tenant
+    Protection Act). Different arrangements of the parties, if any: ______________________________</p>
+  <p>If the need for repairs borne by the Landlord arises during the lease, the Tenant notifies the Landlord without
+    delay (Article 666 § 2 of the Civil Code); if the Landlord does not carry out, within an appropriate time limit
+    set by the Tenant, repairs without which the Premises are not fit for the agreed use, the Tenant may, after that
+    time limit has expired without effect, carry out the necessary repairs at the Landlord&rsquo;s expense (Article
+    663 of the Civil Code).</p>
+  <p>After a date has been agreed in advance, the Tenant gives the Landlord access to the Premises for a periodic
+    and, in particularly justified cases, also an ad hoc inspection of the condition and technical fittings of the
+    Premises and for determining and carrying out the necessary work; in the event of a failure causing damage or
+    directly threatening to cause damage, the Tenant gives access to the Premises without delay so that it can be
+    remedied (Article 10, paragraphs 1 and 3, of the Tenant Protection Act).</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The owner of a let building or part of a building ensures that an energy performance certificate (świadectwo
+    charakterystyki energetycznej) is drawn up, except for the buildings listed in Article 3, paragraph 4, of the Act
+    of 29 August 2014 on the energy performance of buildings (Article 3, paragraph 1, point 3, of that Act).</p>
+  <p>On conclusion of the agreement the Landlord hands over to the Tenant a copy of the energy performance
+    certificate concerning the Premises, if it was delivered on paper, or a printout of the certificate, if it was
+    delivered electronically; the Tenant may not waive the right to receive it (Article 11, paragraph 1, point 2,
+    paragraph 4 and paragraph 5, of the Act on the energy performance of buildings).</p>
+  <p>Number of the certificate and date on which it was drawn up: ______________________________. The certificate
+    is valid for 10 years from the date on which it was drawn up, unless it ceased to be valid earlier because the
+    energy performance of the building or part of the building changed as a result of construction or installation
+    works carried out (Article 14, paragraphs 1 and 2, of the Act on the energy performance of buildings).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Before the Premises are handed over to the Tenant, the parties draw up a report recording the technical
+    condition and the degree of wear of the installations and equipment in them; the report is the basis for the
+    settlement when the Premises are returned (Article 6c of the Tenant Protection Act). The parties stipulate that
+    the report also covers the fittings of the Premises, the meter readings and the number of keys handed over and is
+    annexed to the agreement. The Premises are presumed to have been handed over to the Tenant in good condition and
+    fit for the agreed use (Article 675 § 3 of the Civil Code).</p>
+  <p>When the lease ends the Tenant returns the Premises in an undeteriorated condition, but is not liable for wear
+    resulting from proper use (Article 675 § 1 of the Civil Code). When the lease ends and the Premises have been
+    vacated, the Tenant is obliged to redecorate the Premises and carry out the repairs borne by the Tenant, and to
+    reimburse the Landlord the value of the worn technical fittings listed in Article 6b, paragraph 2, point 4, of the
+    Tenant Protection Act that were in the Premises when they were handed over to the Tenant (Article 6e, paragraph
+    1, of the Tenant Protection Act), unless the parties have agreed otherwise (Article 6f of the Tenant Protection
+    Act).</p>
+  <p>The Landlord&rsquo;s claims for damages for damage to or deterioration of the Premises, as well as the
+    Tenant&rsquo;s claims for reimbursement of outlays on the Premises or of overpaid rent, become time-barred upon
+    the expiry of a year from the day the Premises are returned (Article 677 of the Civil Code).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The repayment of the security deposit is
+    governed by this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-succession" data-clause="succession">
+  <p>On the death of the Tenant, the following persons enter into the lease of the Premises: the spouse who is not
+    a co-tenant of the Premises, the children of the Tenant and of the Tenant&rsquo;s spouse, other persons to whom the
+    Tenant was obliged to provide maintenance, and the person who actually lived in a de facto union with the Tenant,
+    if they lived permanently with the Tenant in the Premises until the Tenant&rsquo;s death; if there are no such
+    persons the lease expires (Article 691 § 1&ndash;3 of the Civil Code).</p>
+  <p>The persons who have entered into the lease may terminate it with the statutory notice periods even if the
+    agreement was concluded for a fixed term; where only some of those persons give notice, the lease expires with
+    respect to the persons who gave notice. These rules do not apply on the death of one of the co-tenants of the
+    Premises (Article 691 § 4 and § 5 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The Landlord may terminate the agreement only on the grounds laid down by statute; the notice must be given
+    in writing, failing which it is void, and must state the ground for termination (Article 11, paragraph 1, of the
+    Tenant Protection Act).</p>
+  <p>No later than 1 month in advance, for the end of a calendar month, the Landlord may terminate the agreement if
+    the Tenant: (a) despite a written warning, continues to use the Premises in a manner contrary to the agreement or
+    to their purpose, or neglects obligations, allowing damage to occur, or destroys equipment intended for the common
+    use of the residents, or flagrantly or persistently breaches the house rules, making the use of other premises
+    burdensome, (b) is in default with payment of the rent, other charges for the use of the Premises or charges
+    independent of the owner collected by the Landlord only where the Tenant has no contract directly with the
+    utility or service provider, for at least 3 full payment periods, despite having been warned in writing of the
+    intention to terminate and given an additional 1-month period to pay the arrears and current amounts due, or (c)
+    has let, sublet or given for use free of charge the Premises or part of them without the required written consent
+    of the Landlord (Article 11, paragraph 2, points 1&ndash;3, of the Tenant Protection Act).</p>
+  <p th:if="${!fixedTerm}">The Landlord may further terminate an agreement concluded for an indefinite term only
+    on the grounds, under the conditions and with the notice periods laid down in Article 11, paragraph 2, point 4,
+    and paragraphs 3&ndash;7 and 12, of the Tenant Protection Act.</p>
+  <p th:if="${fixedTerm}">The parties may terminate an agreement concluded for a fixed term in the cases specified
+    in the agreement (Article 673 § 3 of the Civil Code). The parties stipulate that the Landlord may terminate it only
+    in the cases specified in Article 11, paragraphs 2 and 3, of the Tenant Protection Act, under the conditions and with
+    the notice periods laid down there, and the Tenant in the following cases and with the following notice period:
+    ______________________________</p>
+  <p th:if="${!fixedTerm}">The Tenant may terminate an agreement concluded for an indefinite term with the agreed
+    notice period or, failing one, where the rent is payable monthly, at the latest 3 months in advance for the end
+    of a calendar month, and where the rent is payable at intervals longer than a month, at the latest 3 months in
+    advance for the end of a calendar quarter (Article 673 § 1 and § 2 and Article 688 of the Civil Code). Notice
+    period agreed by the parties, if any: ______________________________</p>
+  <p>The Tenant may terminate the lease without notice if, at the time of handover, the Premises had defects that
+    prevent the use provided for in the agreement, or if such defects arose later and the Landlord, despite having
+    been notified, did not remedy them within an appropriate time, or if the defects cannot be remedied; the Tenant
+    does not have this right if the Tenant knew of the defects when the agreement was concluded (Article 664 § 2 and
+    § 3 of the Civil Code). If the defects of the Premises are such that they endanger the health of the Tenant, of
+    the members of the Tenant&rsquo;s household or of persons employed by the Tenant, the Tenant may terminate the
+    lease without notice even if the Tenant knew of the defects when the agreement was concluded (Article 682 of the
+    Civil Code).</p>
+  <p>If the Premises are transferred during the lease, the acquirer enters into the lease in place of the
+    transferor; the rules on termination of the lease by the acquirer do not apply to leases of dwellings unless the
+    Tenant has not yet taken possession of the Premises (Article 678 § 1 and Article 692 of the Civil Code).<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    Premises is governed by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>The parties reserve written form for notice of termination of the agreement by either party (Article 77 § 2 of
+    the Civil Code). Notice of termination of the agreement by the Landlord and notice of the amount of the rent
+    require written form, failing which they are void (Article 8a, paragraph 3, and Article 11, paragraph 1, of the
+    Tenant Protection Act).</p>
+  <p>Address of the Landlord for service: ______________________________. Address of the Tenant for service, if
+    different from the address of the Premises: ______________________________. E-mail addresses of the parties for
+    day-to-day correspondence: ______________________________</p>
+  <p>During the lease the parties are obliged to inform each other in writing of any change of their address of
+    residence or registered office; if this obligation is neglected, correspondence sent by registered letter with
+    acknowledgement of receipt to the last address and not collected is deemed to have been delivered (Article 6g of
+    the Tenant Protection Act).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The Landlord processes the personal data of the Tenant and of the persons living with the Tenant only to the
+    extent necessary to conclude and perform the agreement and to comply with the Landlord&rsquo;s legal obligations,
+    in accordance with Regulation (EU) 2016/679 of the European Parliament and of the Council (GDPR, RODO) and the Act
+    of 10 May 2018 on the protection of personal data, and does not keep them longer than necessary for those
+    purposes.</p>
+  <p>The Tenant may exercise against the Landlord the rights conferred by the GDPR, in particular the rights of
+    access to, rectification and erasure of the data, and may lodge a complaint with the President of the Personal
+    Data Protection Office (Prezes Urzędu Ochrony Danych Osobowych).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>The agreement is governed by Polish law, in particular by the lease provisions of the Civil Code and by the
+    Tenant Protection Act. Disputes arising from the agreement are decided by the common court having jurisdiction
+    under the Act of 17 November 1964 &ndash; Code of Civil Procedure (Kodeks postępowania cywilnego; hereinafter
+    the &ldquo;Code of Civil Procedure&rdquo;). An action for a claim arising from the lease of immovable property may
+    also be brought before the court of the place where the property is located (Article 37 of the Code of Civil
+    Procedure); that provision does not apply in cases against consumers (Article 31 § 2 of the Code of Civil
+    Procedure).</p>
+  <p>Provisions of the agreement that are contrary to statute are void, unless the relevant provision provides for
+    a different effect, in particular that the corresponding statutory provisions take their place; the invalidity of
+    part of the agreement does not affect the remaining provisions, unless the circumstances show that the agreement
+    would not have been concluded without the provisions affected by invalidity (Article 58 § 1 and § 3 of the Civil
+    Code).</p>
+</div>
+
+</body>
+</html>

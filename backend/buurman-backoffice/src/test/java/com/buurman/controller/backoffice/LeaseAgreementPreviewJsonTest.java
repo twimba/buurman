@@ -53,6 +53,23 @@ class LeaseAgreementPreviewJsonTest {
   }
 
   @Test
+  @DisplayName("a body without clauses deserializes with null clauses")
+  void requestWithoutClausesDeserializes() {
+    String json =
+        """
+        {"countryCode":"NL","leaseKind":"RESIDENTIAL","language":"nl",
+         "sample":{"contractType":"INDEFINITE","startDate":"2026-03-01",
+           "rentComponents":[{"type":"BASE_RENT","amount":1250.00,"currency":"EUR"}],
+           "landlordName":"L","propertyAddress":"A"}}
+        """;
+
+    LeaseAgreementPreviewRequest request =
+        mapper.readValue(json, LeaseAgreementPreviewRequest.class);
+
+    assertThat(request.clauses()).isNull();
+  }
+
+  @Test
   @DisplayName("an unavailable response serializes with absent optional fields")
   void unavailableResponseSerializes() {
     String json =

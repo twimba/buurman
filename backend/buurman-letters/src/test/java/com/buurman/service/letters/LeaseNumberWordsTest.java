@@ -422,14 +422,24 @@ class LeaseNumberWordsTest {
                   "innen en dag",
                   "en gang i året",
                   "en gang per år",
-                  "et halvt år"),
+                  "et halvt år",
+                  "ett år",
+                  "én måned",
+                  "Én uke",
+                  "ett halvt år",
+                  "én gang i året",
+                  "ett"),
               List.of(
                   "en leietaker",
                   "et leieforhold",
                   "en dag som faller på en søndag",
                   "en gang imellom",
                   "en frist på 14 dager",
-                  "de to partene")),
+                  "de to partene",
+                  "etter avtale",
+                  "ettersom leien",
+                  "rettet mot",
+                  "énsidig endring")),
           c(
               "fi",
               List.of(
@@ -738,6 +748,30 @@ class LeaseNumberWordsTest {
           .as("%s should spare: %s", c.language(), text)
           .isEmpty();
     }
+  }
+
+  @Test
+  @DisplayName("en: the 2 prescribed California notice phrases pass, other 'one' quantities do not")
+  void californiaPrescribedNoticePhrases() {
+    String notice =
+        "<div th:fragment=\"clause-disclosures\"><p>after all of the tenants have continuously and"
+            + " lawfully occupied the property for 12 months or more or at least one of the tenants"
+            + " has\n"
+            + "   continuously and lawfully occupied the property for 24 months or more; (3) a"
+            + " limited liability company in which at least one member is a corporation.</p></div>";
+    assertThat(LeaseNumberWords.violations(notice, "en")).isEmpty();
+    String mixed =
+        notice.replace(
+            "</p></div>",
+            " Notice is given within one month or at least one day before.</p></div>");
+    assertThat(LeaseNumberWords.violations(mixed, "en"))
+        .anyMatch(v -> v.contains("within one"))
+        .anyMatch(v -> v.contains("least one"))
+        .noneMatch(v -> v.contains("tenants") || v.contains("member"));
+    assertThat(
+            LeaseNumberWords.violations(
+                fragment("at least one of the owners has continuously occupied"), "en"))
+        .isNotEmpty();
   }
 
   @ParameterizedTest(name = "{0}")

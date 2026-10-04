@@ -36,6 +36,25 @@ class LeaseDocumentLocatorTest {
   }
 
   @Test
+  @DisplayName(
+      "a country without a national language flags its documents as having no national version")
+  void noNationalVersionFlag() {
+    assertThat(locator.locate("ZZ", LeaseKind.RESIDENTIAL, "en").orElseThrow().noNationalVersion())
+        .as("ZZ has a national language (nl)")
+        .isFalse();
+    var none =
+        new LeaseDocumentLocator(Map.of("ZZ", List.of())).locate("ZZ", LeaseKind.RESIDENTIAL, "en");
+    assertThat(none.orElseThrow().noNationalVersion()).isTrue();
+    assertThat(none.orElseThrow().authoritative()).isFalse();
+    assertThat(new LeaseDocumentLocator().locate("CZ", LeaseKind.RESIDENTIAL, "en").orElseThrow())
+        .extracting(LeaseDocumentLocator.LeaseDocument::noNationalVersion)
+        .isEqualTo(true);
+    assertThat(new LeaseDocumentLocator().locate("DE", LeaseKind.RESIDENTIAL, "en").orElseThrow())
+        .extracting(LeaseDocumentLocator.LeaseDocument::noNationalVersion)
+        .isEqualTo(false);
+  }
+
+  @Test
   @DisplayName("template path is relative to templates/documents without extension")
   void templatePath() {
     assertThat(locator.locate("ZZ", LeaseKind.RESIDENTIAL, "nl").orElseThrow().templatePath())
@@ -235,6 +254,10 @@ class LeaseDocumentLocatorTest {
         assertThat(doc.authoritative())
             .as("%s/%s", entry.key(), lang)
             .isEqualTo(nationalCountry && lang.equals(entry.authoritativeLanguage()));
+        // and that document gets the no-national-version notice instead of the courtesy one
+        assertThat(doc.noNationalVersion())
+            .as("%s/%s", entry.key(), lang)
+            .isEqualTo(!nationalCountry);
       }
     }
   }

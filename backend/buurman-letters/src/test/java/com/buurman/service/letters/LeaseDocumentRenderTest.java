@@ -583,6 +583,30 @@ class LeaseDocumentRenderTest {
     assertThat(markersOutsideParentheses("<p>(the landlord) unlessness</p>", custom)).isEmpty();
   }
 
+  @Test
+  @DisplayName("markers starting or ending with a non-ASCII letter are whole words too")
+  void markerPatternUnicodeBoundaries() {
+    Pattern custom =
+        new LeaseDocumentRegistry.Entry(
+                "ZZ",
+                LeaseKind.RESIDENTIAL,
+                "en",
+                List.of("en"),
+                List.of(new LeaseDocumentRegistry.ClauseSpec("rent", true, false, 1)),
+                List.of("μίσθιο", "déjà", "umową", "écrit"))
+            .foreignMarkerPattern()
+            .orElseThrow();
+    assertThat(
+            markersOutsideParentheses(
+                "<p>The μίσθιο is let; DÉJÀ paid, under the umową, by Écrit.</p>", custom))
+        .containsExactly("μίσθιο", "DÉJÀ", "umową", "Écrit");
+    assertThat(markersOutsideParentheses("<p>(μίσθιο) (déjà)</p>", custom)).isEmpty();
+    assertThat(
+            markersOutsideParentheses(
+                "<p>υπομίσθιος, déjàvu, umowąś, manuscrit, écrite, xμίσθιο</p>", custom))
+        .isEmpty();
+  }
+
   private static String clauseBody(String html, String key) {
     int start = html.indexOf("data-clause=\"" + key + "\"");
     assertThat(start).as("clause %s rendered", key).isPositive();

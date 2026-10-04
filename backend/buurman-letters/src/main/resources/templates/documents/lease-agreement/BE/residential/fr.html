@@ -1,0 +1,682 @@
+<!--
+  legal-basis: Belgian residential lease law is regional since the sixth state reform (bijzondere wet van 8 augustus
+               1980, art. 6, § 1, IV, 2°; transfer in force 01/07/2014). Region branches on countryCode == 'BE' and the
+               catalog region codes VLG / WAL / BRU (rent-regulations.json); general text for any other or unknown region.
+               Flanders: Vlaams Woninghuurdecreet (decreet van 9 november 2018, BS 07/12/2018, in force 01/01/2019),
+               consolidated text codex.vlaanderen.be (document 1029963, last amendments 2023): art. 3, 5, 6, 7, 8, 9,
+               10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 34, 35, 36,
+               37, 38, 39, 40, 43, 44, 51, 52. Vlaamse Codex Wonen van 2021 (conformity, via art. 12). Energiedecreet
+               van 8 mei 2009 (EPC, cited generally).
+               Wallonia: decret wallon du 15 mars 2018 relatif au bail d'habitation (MB 28/03/2018, in force
+               01/09/2018), consolidated text wallex.wallonie.be (version in force from 01/07/2024): art. 3, 6, 7, 8,
+               9, 14, 15, 17, 21, 24, 25/1, 26, 27, 28, 30, 37, 47, 49, 51/1, 52, 53, 54, 55, 56, 57, 58, 59, 60, 62,
+               63; art. 62, § 1 guarantee capped at 2 months (decret du 19 mai 2023). Code wallon de l'habitation
+               durable art. 3 to 4bis (via art. 9). Decret du 28 novembre 2013 relatif a la performance energetique des
+               batiments (via art. 3, § 1, 12°).
+               Brussels: Code bruxellois du Logement / Brusselse Huisvestingscode (ordonnance du 17 juillet 2003,
+               version 2013), title XI, consolidated text www.ejustice.just.fgov.be (Justel 2003071790, updated to
+               26-06-2026): art. 215, 216, 217, 218, 218/1, 219, 220, 220/1, 221, 223, 224, 224/1, 224/2, 224/3,
+               225/1, 225/2, 226, 228, 228/1 to 228/5 (regional registration, in force 01-01-2025), 229, 230, 230/1,
+               231, 233, 234, 237, 238, 239, 240, 242, 247/1, 248, 249, 250 (ordonnance du 4 avril 2024, in force
+               01-11-2024; art. 224/1 in force 01-05-2025).
+               Federal residual law: oud Burgerlijk Wetboek, boek III, titel VIII, hoofdstuk II, afdeling I, art. 1728bis,
+               1730, 1731 (Justel PDF 1804032154, updated to 28-05-2024). Registration: Wetboek der registratie-,
+               hypotheek- en griffierechten art. 32, 5° (as cited by the regional texts). GDPR: Verordening (EU)
+               2016/679 (eur-lex.europa.eu CELEX 32016R0679); wet van 30 juli 2018 (cited generally).
+               Verified 2026-10-04 against codex.vlaanderen.be, wallex.wallonie.be and www.ejustice.just.fgov.be.
+               Pending: Walloon proposition de decret (Parlement de Wallonie, February 2026) limiting indexation by PEB
+               class (not adopted on 2026-10-04); re-verify the rent-adjustment clause if it is adopted.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in nl.html, never spelled out (nl "3 maanden huur" is "3 months' rent" in English, "3 mois de loyer" in French), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  Draft text, not vetted by legal counsel. Reflects Belgian law in French (translation of nl.html, which is
+  authoritative): the regional law of the region where the dwelling lies (Flanders, Wallonia or Brussels-Capital)
+  for a dwelling let as the tenant's main residence. Each clause-<key> fragment holds only the clause body; the shell
+  supplies article numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded.
+  Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Entre</p>
+  <p><strong th:text="${landlordName}">bailleur</strong>, ci-après &laquo;&nbsp;le bailleur&nbsp;&raquo;,</p>
+  <p>pour une personne physique&nbsp;: nom, 2 premiers prénoms, domicile et numéro de registre national ou, à
+    défaut, date et lieu de naissance&nbsp;; pour une personne morale&nbsp;: dénomination, siège social et numéro
+    d'entreprise&nbsp;: ______________________________, et</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">preneur</strong>, ci-après
+    (ensemble) &laquo;&nbsp;le preneur&nbsp;&raquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">le ou les preneurs soussignés, ci-après (ensemble) &laquo;&nbsp;le
+    preneur&nbsp;&raquo;,</p>
+  <p>pour chaque preneur&nbsp;: nom, 2 premiers prénoms, domicile et numéro de registre national ou, à défaut,
+    date et lieu de naissance&nbsp;: ______________________________,</p>
+  <p>il est conclu le présent bail portant sur un logement que le preneur, avec l'accord du bailleur, affecte dès
+    l'entrée en jouissance à sa résidence principale. Lorsqu'il y a plusieurs preneurs, ils sont tenus solidairement
+    et indivisiblement de toutes les obligations découlant du présent bail.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le logement est situé en Région flamande. Le titre II du
+    décret flamand sur la location d'habitations (Vlaams Woninghuurdecreet, décret du 9 novembre 2018) s'applique au
+    présent bail&nbsp;; les dispositions de ce titre sont impératives, sauf si elles en disposent autrement
+    (article 6 du décret flamand sur la location d'habitations). Pour ce que le décret ne règle pas, les règles
+    générales de l'ancien Code civil relatives au louage des choses s'appliquent.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Le logement est situé en Région wallonne. Le décret
+    wallon relatif au bail d'habitation (décret du 15 mars 2018) s'applique au présent bail, en particulier son
+    chapitre III relatif aux baux portant sur la résidence principale du preneur&nbsp;; sauf si elles en disposent
+    autrement, les règles de ce chapitre sont impératives (article 52, § 5, du décret wallon relatif au bail
+    d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le logement est situé en Région de Bruxelles-Capitale.
+    Le titre XI du Code bruxellois du Logement (ordonnance du 17 juillet 2003) s'applique au présent bail, en
+    particulier son chapitre III relatif aux baux portant sur la résidence principale du preneur&nbsp;; sauf si elles
+    en disposent autrement, les règles de ce titre sont impératives (article 216 du Code bruxellois du
+    Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    bail d'habitation est régi par la Région où le logement est situé&nbsp;: le décret flamand sur la location
+    d'habitations en Région flamande, le décret wallon relatif au bail d'habitation en Région wallonne et le titre XI
+    du Code bruxellois du Logement en Région de Bruxelles-Capitale. Les règles impératives de la Région où le
+    logement est situé priment toute stipulation contraire du présent bail&nbsp;; des règles régionales peuvent
+    donc s'appliquer.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>Le bailleur donne en location au preneur, qui accepte, le logement situé
+    <strong th:text="${propertyAddress}">adresse</strong>, ci-après &laquo;&nbsp;le logement&nbsp;&raquo;.</p>
+  <p>Désignation de toutes les pièces et parties d'immeuble qui font l'objet de la location (y compris cave,
+    grenier, garage, jardin et parties communes)&nbsp;: ______________________________</p>
+  <p>Superficie habitable&nbsp;: ________ m²&nbsp;; nombre de chambres&nbsp;: ________&nbsp;; compteurs individuels
+    ou collectifs d'eau, de gaz et d'électricité, avec numéros de compteurs et codes EAN&nbsp;: ______________________________</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le bailleur délivre le logement en bon état d'entretien
+    à tous égards&nbsp;; il doit répondre à l'exigence de conformité du Code flamand du Logement (Vlaamse Codex
+    Wonen van 2021). Le bail portant sur un logement qui ne satisfait pas à cette exigence est nul, sauf en cas
+    de bail de rénovation aux conditions de l'article 13 du décret flamand sur la location d'habitations&nbsp;; la
+    nullité doit être constatée par le juge (article 12, § 2, du décret flamand sur la location
+    d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Sauf dans l'hypothèse d'un bail à rénovation, le
+    logement répond aux exigences de sécurité, de salubrité et d'habitabilité des articles 3 à 4bis du Code wallon de
+    l'habitation durable (article 9, § 1er, du décret wallon relatif au bail d'habitation). Si le logement n'y répond
+    pas et que le bailleur, mis en demeure, n'exécute pas les travaux nécessaires, le preneur peut, lorsque la
+    non-conformité ne lui est pas imputable, exiger l'exécution des travaux ou demander la résolution du bail avec
+    dommages et intérêts&nbsp;; en attendant les travaux, le juge peut accorder une diminution du loyer.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le bailleur délivre le logement en bon état de
+    réparations de toute espèce&nbsp;; il doit répondre aux exigences élémentaires de sécurité, de salubrité et
+    d'équipement des logements arrêtées en vertu du Code bruxellois du Logement (article 219, § 2, du Code
+    bruxellois du Logement). À défaut, et lorsque la non-conformité ne lui est pas imputable, le preneur peut exiger
+    l'exécution des travaux ou demander la résolution du bail avec dommages et intérêts.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    bailleur délivre le logement en bon état d'entretien&nbsp;; il doit répondre aux normes de sécurité, de salubrité
+    et d'habitabilité ou d'équipement de la Région où il est situé.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>Le bail prend cours le <strong th:text="${startDate}">date de prise de cours</strong>.</p>
+  <p th:if="${fixedTerm}">Les parties conviennent d'une durée déterminée<span th:if="${endDate != null}">, qui
+    prend fin le <strong th:text="${endDate}">date de fin</strong></span>. Si cette durée est inférieure ou égale à
+    3 ans, les règles du bail de courte durée s'appliquent&nbsp;; si elle est supérieure à 9 ans, les règles du bail
+    de longue durée s'appliquent&nbsp;; dans les autres cas, le bail est réputé conclu pour 9 ans.</p>
+  <p th:if="${!fixedTerm}">Les parties ne conviennent pas d'une durée dérogatoire&nbsp;: le bail est réputé conclu
+    pour 9 ans.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Tout bail de résidence principale est réputé conclu pour 9 ans. Il prend fin à l'expiration d'une période de
+      9 ans si le bailleur a donné congé au moins 6 mois avant l'échéance&nbsp;; à défaut, il est prorogé chaque fois
+      pour 3 ans aux mêmes conditions (article 16 du décret flamand sur la location d'habitations).</p>
+    <p>Par dérogation, le bail peut être conclu par écrit pour une durée inférieure ou égale à 3 ans. Il ne peut être
+      prorogé que 1 fois, uniquement par écrit et aux mêmes conditions, sans que la durée totale de location puisse
+      excéder 3 ans, et il prend fin si l'une des parties a donné congé au moins 3 mois avant l'expiration de la
+      durée convenue. À défaut de congé donné à temps, ou si le preneur continue d'occuper le bien sans opposition du
+      bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il est réputé conclu pour 9 ans à compter de la date de prise de cours du premier bail de courte
+      durée, au même loyer et aux mêmes conditions, sous réserve de l'indexation et de la révision (article 21,
+      § 1er, du décret flamand sur la location d'habitations). Le bail peut également être conclu par écrit pour plus
+      de 9 ans ou pour la vie du preneur (articles 22 et 23 du décret flamand sur la location d'habitations).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Tout bail de résidence principale est réputé conclu pour 9 ans. Il prend fin à l'expiration d'une période de
+      9 ans moyennant un congé notifié par le bailleur au moins 6 mois et par le preneur au moins 3 mois avant
+      l'échéance&nbsp;; à défaut, il est prorogé chaque fois pour 3 ans aux mêmes conditions (article 55, § 1er, du
+      décret wallon relatif au bail d'habitation).</p>
+    <p>Par dérogation, un bail peut être conclu pour une durée inférieure ou égale à 3 ans. Il ne peut être prorogé
+      que 2 fois, seulement par écrit et sous les mêmes conditions, sans préjudice de l'indexation du loyer au moment
+      du renouvellement, sans que la durée totale de location puisse excéder 3 ans. Il prend fin moyennant un congé
+      notifié par l'une ou l'autre des parties au moins 3 mois avant l'expiration de la durée convenue&nbsp;; si le
+      bail a été conclu pour une durée inférieure ou égale à 3 mois, le congé est réputé notifié par la signature du
+      bail ou de sa prorogation. À défaut de congé notifié à temps, ou si le preneur continue d'occuper les lieux sans
+      opposition du bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au
+      même loyer et aux mêmes conditions, sans préjudice de l'indexation et de la révision (article 55, § 6, du
+      décret wallon relatif au bail d'habitation). Le bail peut également être conclu par écrit pour plus de 9 ans ou
+      pour la vie du preneur (article 55, § 7, du décret wallon relatif au bail d'habitation).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Tout bail de résidence principale est réputé conclu pour 9 ans. Il prend fin à l'expiration d'une période de
+      9 ans moyennant un congé notifié par l'une ou l'autre des parties au moins 6 mois avant l'échéance&nbsp;; à
+      défaut, il est prorogé chaque fois pour 3 ans aux mêmes conditions (article 237, § 1er, du Code bruxellois du
+      Logement).</p>
+    <p>Par dérogation, un bail peut être conclu par écrit pour une durée inférieure ou égale à 3 ans. Il ne peut être
+      prorogé que 1 fois, seulement par un écrit contenu dans le bail, un avenant ou un écrit subséquent et sous les
+      mêmes conditions, sans préjudice de l'indexation au moment du renouvellement, sans que la durée totale de
+      location puisse excéder 3 ans. Sauf prorogation, le bail d'une durée inférieure à 6 mois prend fin à
+      l'expiration de la durée convenue&nbsp;; le bail d'une durée égale ou supérieure à 6 mois prend fin moyennant
+      un congé notifié par l'une ou l'autre des parties au moins 3 mois avant l'expiration de la durée convenue. À
+      défaut de congé notifié à temps, ou si le preneur continue d'occuper le logement sans opposition du bailleur, et même si un nouveau contrat est conclu entre les mêmes parties, il
+      est réputé conclu pour 9 ans à compter de l'entrée en vigueur du bail initial, au même loyer et aux mêmes conditions, sans préjudice de l'application de l'article 224 du Code bruxellois du Logement (article 238 du Code bruxellois du Logement). Le bail peut également être conclu par écrit pour plus
+      de 9 ans ou pour la vie du preneur (article 239 du Code bruxellois du Logement).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Dans
+    chaque Région, le bail de résidence principale est en principe réputé conclu pour 9 ans et, à défaut de congé, il
+    est prorogé chaque fois pour 3 ans&nbsp;; un bail de courte durée de 3 ans au plus et un bail de plus de 9 ans
+    doivent être conclus par écrit. Le nombre de prorogations autorisées d'un bail de courte durée et les délais de
+    congé à l'échéance diffèrent selon la Région&nbsp;; les règles de la Région où le logement est situé
+    s'appliquent.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>Le loyer, hors frais et charges, s'élève à <strong th:text="${rentAmount}">montant</strong>
+    (<span th:text="${paymentFrequency}">par mois</span>).<span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> Le preneur paie en outre les frais et charges (voir l'article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Les parties fixent librement le loyer, dans le respect des règles impératives de la Région où le logement est
+    situé.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Loyer de référence du logement, ou intervalle de loyers autour de ce loyer de référence, selon la grille
+      indicative des loyers (article 218, § 1er, du Code bruxellois du Logement)&nbsp;: ________ euros par mois.</p>
+    <p>Le bailleur ne peut pas proposer un loyer abusif. Le loyer est présumé abusif lorsqu'il dépasse de plus de
+      20 % le loyer de référence, sauf si la différence est justifiée par des éléments de confort substantiels du
+      logement ou de son environnement, ou lorsqu'il ne dépasse pas de plus de 20 % le loyer de référence mais que le
+      logement ou son environnement accuse des défauts de qualité substantiels&nbsp;; le preneur peut alors solliciter
+      une révision du loyer (articles 224 et 224/1 du Code bruxellois du Logement).</p>
+    <p>Pour un bail de courte durée&nbsp;: montant et date de versement du dernier loyer appliqué au précédent
+      locataire, communiqués au préalable par le bailleur (article 217, § 1er, du Code bruxellois du Logement)&nbsp;: ______________________________</p>
+  </th:block>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">L'indexation et la révision
+    du loyer obéissent aux stipulations du présent bail (voir l'article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>Sauf exclusion expresse par les parties ci-dessous, le loyer est adapté au coût de la vie sur la base de
+    l'indice santé. Adaptation exclue&nbsp;: oui / non (biffer la mention inutile). Indice de départ (mois et année
+    de base)&nbsp;: ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Si le bail a été conclu par écrit, l'adaptation a lieu 1 fois par année de location, à la date anniversaire de l'entrée en vigueur du bail,
+      uniquement si la partie intéressée en fait la demande écrite, et n'a d'effet rétroactif que pour les 3 mois
+      précédant le mois de la demande. Le loyer adapté ne peut dépasser&nbsp;: loyer de base x nouvel indice / indice
+      de départ&nbsp;; le nouvel indice est l'indice santé du mois précédant celui de l'anniversaire, l'indice de
+      départ celui du mois qui précède le mois au cours duquel le bail ou la révision du loyer est entré en vigueur
+      (article 34 du décret flamand sur la location d'habitations).</p>
+    <p>Les parties peuvent convenir de la révision du loyer entre le neuvième et le sixième mois précédant
+      l'expiration de chaque triennat. À défaut d'accord, le juge peut réviser le loyer si la valeur locative normale
+      est, par le fait de circonstances nouvelles, supérieure ou inférieure de 20 % au moins au loyer exigible, ou
+      augmenter le loyer si la valeur locative normale a augmenté de 10 % au moins en raison de travaux effectués aux
+      frais du bailleur, à l'exception des travaux nécessaires pour mettre le logement en conformité&nbsp;; l'action
+      ne peut être intentée qu'entre le sixième et le troisième mois précédant l'expiration du triennat. Les parties
+      peuvent aussi convenir à tout moment d'une révision en raison d'investissements économiseurs d'énergie
+      (article 35 du décret flamand sur la location d'habitations).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>L'adaptation est due 1 fois par année de location, à la date anniversaire de l'entrée en vigueur du bail,
+      uniquement après demande écrite de la partie intéressée, et n'a d'effet pour le passé que pour les 3 mois
+      précédant celui de la demande. Si elle augmente le loyer, elle n'est due que si le bail a été conclu par écrit
+      et, pour un bien immeuble, enregistré (article 57 du décret wallon relatif au bail d'habitation). Le loyer adapté
+      ne peut dépasser&nbsp;: loyer de base x nouvel indice / indice de départ&nbsp;; le nouvel indice est l'indice
+      santé du mois qui précède celui de l'anniversaire, l'indice de départ celui du mois précédant le mois pendant
+      lequel la convention a été conclue (article 26 du décret wallon relatif au bail d'habitation).</p>
+    <p>Les parties peuvent convenir de la révision du loyer entre le neuvième et le sixième mois précédant
+      l'expiration de chaque triennat. À défaut d'accord, le juge peut réviser le loyer si la valeur locative normale
+      est, par le fait de circonstances nouvelles, supérieure ou inférieure de 20 % au moins au loyer exigible, ou
+      augmenter le loyer si la valeur locative normale a augmenté de 10 % au moins en raison de travaux effectués aux
+      frais du bailleur, à l'exception des travaux de mise en conformité&nbsp;; une augmentation n'est due que si le
+      bail écrit a été enregistré, et l'action ne peut être intentée qu'entre le sixième et le troisième mois
+      précédant l'expiration du triennat (article 58, § 1er, du décret wallon relatif au bail d'habitation).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>À condition que le bail ait été conclu par écrit, l'adaptation est due 1 fois par année de location, à la
+      date anniversaire de l'entrée en vigueur du bail, dans les conditions de l'article 1728bis de l'ancien Code
+      civil&nbsp;; elle ne s'opère qu'après demande écrite de la partie intéressée et n'a d'effet pour le passé que
+      pour les 3 mois précédant celui de la demande. Une adaptation qui augmente le loyer n'est due que si le bail
+      écrit a été enregistré et que le certificat PEB a été produit au preneur (article 224/2 du Code bruxellois du
+      Logement).</p>
+    <p>Les parties peuvent convenir de la révision du loyer entre le neuvième et le sixième mois précédant
+      l'expiration de chaque triennat et saisir à cet effet la commission paritaire locative pour avis. À défaut
+      d'accord, le juge peut réviser le loyer si, par le fait de circonstances nouvelles, le loyer de référence est
+      supérieur de 20 % au moins au loyer exigible et que le logement n'accuse pas de défauts de qualité substantiels
+      justifiant cette différence, ou augmenter le loyer si le loyer de référence est supérieur de 10 % au moins en
+      raison de travaux effectués aux frais du bailleur, à l'exception des travaux de mise en conformité&nbsp;; une
+      augmentation n'est due que si le bail a été enregistré, et l'action ne peut être intentée qu'entre le sixième et
+      le troisième mois précédant l'expiration du triennat (article 240 du Code bruxellois du Logement).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Dans
+    chaque Région, l'indexation a lieu au plus 1 fois par année de location, à la date anniversaire de l'entrée en
+    vigueur du bail, sur demande écrite et avec un effet rétroactif limité, selon la formule loyer de base x nouvel
+    indice santé / indice de départ. Les conditions d'une augmentation (telles qu'un bail écrit et enregistré ou la
+    communication du certificat de performance énergétique) et les motifs de révision du loyer à l'expiration de
+    chaque triennat diffèrent selon la Région&nbsp;; les règles de la Région où le logement est situé
+    s'appliquent.</p>
+  <p>Les dispositions contractuelles dont l'effet excéderait l'adaptation légale sont réductibles à celle-ci.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>Outre le loyer, le preneur supporte les frais et charges liés à l'usage du logement&nbsp;; les frais et
+    charges liés à l'exercice de droits réels sur le logement restent à charge du bailleur. Le précompte immobilier
+    ne peut être mis à charge du preneur.</p>
+  <p>Nature, mode de calcul et clé de répartition des frais et charges, avec indication de leur caractère
+    forfaitaire ou provisionnel&nbsp;: ______________________________&nbsp;; montant du forfait ou de la
+    provision&nbsp;: ________ euros par mois.</p>
+  <p>Sauf s'il a été expressément convenu d'un montant forfaitaire, les frais et charges doivent correspondre à des
+    dépenses réelles&nbsp;; ils sont mentionnés dans un compte distinct et les documents justificatifs sont produits
+    au preneur. Chaque partie peut à tout moment demander au juge la révision d'un forfait ou sa conversion en frais
+    et charges réels.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Ainsi dispose l'article 36 du décret flamand sur la
+    location d'habitations&nbsp;; le Gouvernement flamand établit une liste non limitative des frais pouvant être
+    imputés au preneur ou au bailleur.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Ainsi disposent l'article 24 et l'article 59 du décret
+    wallon relatif au bail d'habitation&nbsp;; le bail mentionne le montant et la nature des charges ainsi que leur
+    caractère forfaitaire ou provisionnel (article 3, § 1er, du décret wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">S'ils ne sont pas forfaitaires, seules sont dues les
+    dépenses pour des postes libellés explicitement et énumérés limitativement dans le présent bail, à l'exception des
+    charges exceptionnelles ou nouvelles qui doivent correspondre à des dépenses réelles&nbsp;; le bailleur
+    communique chaque année au preneur, dans les 12 mois qui suivent la date anniversaire de l'entrée en vigueur, un
+    décompte distinct (article 224/3 du Code bruxellois du Logement). Le précompte immobilier reste à charge du
+    bailleur (article 226 du Code bruxellois du Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Les
+    modalités du décompte et des justificatifs diffèrent selon la Région&nbsp;; les règles de la Région où le
+    logement est situé s'appliquent.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">Pour assurer le respect de ses obligations, le preneur constitue une garantie
+    locative de <strong th:text="${depositAmount}">montant</strong>.</p>
+  <p th:if="${depositAmount == null}">Pour assurer le respect de ses obligations, le preneur constitue une garantie
+    locative du montant convenu par écrit entre les parties.</p>
+  <p>Forme de la garantie locative choisie par le preneur&nbsp;: ______________________________</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>La garantie locative ne peut excéder 3 mois de loyer. Le preneur choisit 1 des formes suivantes&nbsp;: un
+      compte individualisé à son nom auprès d'une institution financière, une sûreté réelle auprès d'une institution
+      financière à son nom, ou une garantie bancaire résultant d'un contrat-type entre un CPAS (OCMW) et une
+      institution financière&nbsp;; avec l'accord du bailleur, la garantie peut aussi être fournie par un
+      cautionnement. Si le preneur opte pour un compte individualisé ou une sûreté réelle, les intérêts produits sont capitalisés au profit du preneur (article 37, § 1er, du décret flamand
+      sur la location d'habitations). Dans la mesure où le montant mentionné ci-dessus excède 3 mois de loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
+    <p>Il ne peut être disposé de la garantie qu'au profit de l'une ou l'autre des parties, moyennant production soit
+      d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision judiciaire (article 37,
+      § 3, du décret flamand sur la location d'habitations). Le bailleur qui détient la garantie et s'abstient de la
+      placer sur un compte individualisé est tenu de payer des intérêts au taux moyen du marché financier.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>La garantie locative ne peut excéder un montant équivalent à 2 mois de loyer. Le preneur choisit 1 des formes
+      suivantes&nbsp;: un compte individualisé ouvert à son nom auprès d'une institution financière, une garantie
+      bancaire qu'il constitue progressivement par mensualités constantes pendant la durée du contrat, avec un maximum
+      de 3 ans, ou une garantie bancaire résultant d'un contrat-type entre un CPAS et une institution financière. En
+      cas de compte individualisé, les intérêts produits sont capitalisés au profit du preneur (article 62, § 1er, du
+      décret wallon relatif au bail d'habitation). Dans la mesure où le montant mentionné ci-dessus excède 2 mois de
+      loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
+    <p>Il ne peut être disposé du compte ou de la garantie bancaire qu'au profit de l'une ou l'autre des parties,
+      moyennant production soit d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision
+      judiciaire (article 62, § 3, du décret wallon relatif au bail d'habitation). Le bailleur qui détient la garantie
+      et s'abstient de la placer est tenu de payer des intérêts au taux moyen du marché financier.</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>La garantie locative ne peut excéder un montant équivalent à 2 mois de loyer. Le preneur choisit 1 des formes
+      suivantes&nbsp;: un compte individualisé ouvert à son nom auprès d'une institution financière agréée par la
+      FSMA, une garantie bancaire résultant d'un contrat-type entre un CPAS et une institution financière, une
+      garantie bancaire qu'il constitue progressivement, une sûreté réelle à son nom auprès d'une institution
+      financière ou une caution personnelle (article 248 du Code bruxellois du Logement). Dans la mesure où le montant
+      mentionné ci-dessus excède 2 mois de loyer, la partie excédentaire n'est pas due à titre de garantie locative.</p>
+    <p>Il ne peut être disposé de la garantie qu'au profit de l'une ou l'autre des parties, moyennant production soit
+      d'un accord écrit établi au plus tôt à la fin du bail, soit d'une copie d'une décision judiciaire. Sous réserve
+      d'une procédure contentieuse, la garantie est libérée dans un délai maximal de 2 mois à compter de la remise des
+      clés&nbsp;; à défaut, le montant dû est majoré d'une somme égale à 10 % du loyer mensuel par période mensuelle
+      commencée (article 249, § 2, du Code bruxellois du Logement).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    montant maximal de la garantie locative et les formes autorisées diffèrent selon la Région (au plus 3 mois de
+    loyer en Région flamande, au plus 2 mois de loyer en Région wallonne et en Région de Bruxelles-Capitale)&nbsp;;
+    il ne peut être disposé de la garantie que moyennant un accord écrit des deux parties, établi au plus tôt à la
+    fin du bail, ou en vertu d'une décision judiciaire.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>Le preneur paie le loyer<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (voir l'article
+    <span th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> et les frais et
+    charges</span> par terme (<span th:text="${paymentFrequency}">par mois</span>),
+    <span th:if="${paymentDueDay != null}">au plus tard le jour <strong th:text="${paymentDueDay}">1</strong> de
+      chaque période de paiement</span><span th:if="${paymentDueDay == null}">au jour convenu entre les
+      parties</span>, par virement sur le compte bancaire du bailleur portant le numéro (IBAN)&nbsp;: ______________________________</p>
+  <p>En cas de retard de paiement, le preneur doit, après mise en demeure, les intérêts au taux légal sur les
+    sommes arriérées.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le paiement du loyer et des charges ne peut être demandé
+    que sur un compte bancaire mentionné dans le présent bail&nbsp;; sans préjudice des intérêts au taux légal, toute
+    clause indemnitaire concernant un retard dans le paiement du loyer est prohibée (articles 225/1 et 225/2 du Code
+    bruxellois du Logement).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>Le preneur use du logement en bon père de famille et suivant sa destination de résidence principale. Il
+    informe le bailleur des réparations nécessaires qui incombent à celui-ci. Le bailleur assure au preneur la
+    jouissance paisible du logement&nbsp;; il ne peut y pénétrer qu'aux moments convenus avec le preneur.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Si le preneur n'use pas du logement suivant sa
+    destination ou lui donne une destination préjudiciable au bailleur, celui-ci peut, suivant les circonstances,
+    demander la résolution du bail (article 28 du décret flamand sur la location d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Si le preneur emploie le logement à un autre usage que
+    celui auquel il a été destiné, ou d'une manière dont il puisse résulter un dommage pour le bailleur, celui-ci
+    peut, suivant les circonstances, demander la résolution du bail (article 11 du décret wallon relatif au bail
+    d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le bailleur ne peut interdire au preneur de se
+    domicilier dans le logement (article 218, § 6, du Code bruxellois du Logement). Est réputée non écrite toute
+    stipulation interdisant purement et simplement la détention d'un animal de compagnie&nbsp;; la détention
+    d'animaux de compagnie peut toutefois être conditionnée à l'absence de nuisance, et leur nombre ou leurs espèces
+    peuvent être limités sur la base de motifs raisonnables (article 218/1 du Code bruxellois du Logement).</p>
+  <p>Règles relatives aux animaux, règlement d'ordre intérieur de l'immeuble et autres conventions relatives à
+    l'usage&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Le preneur ne peut céder le bail sans l'accord écrit et préalable du bailleur&nbsp;; après une cession
+    autorisée, le cédant est déchargé de toute obligation future, sauf convention contraire dans l'accord sur la
+    cession. Le preneur qui affecte le logement à sa résidence principale ne peut le sous-louer en totalité&nbsp;;
+    avec l'accord du bailleur, il peut en sous-louer une partie, à condition que le reste demeure affecté à sa
+    résidence principale. La durée de la sous-location ne peut excéder la durée restant à courir du bail principal
+    et le preneur informe préalablement le sous-locataire de sa qualité et de l'étendue de ses droits.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Ainsi disposent l'article 31 et l'article 32 du décret
+    flamand sur la location d'habitations.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Ainsi disposent l'article 47, l'article 49 et
+    l'article 60 du décret wallon relatif au bail d'habitation.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le projet de cession est notifié au bailleur par
+    courrier recommandé&nbsp;; le bailleur communique son accord ou son refus dans les 30 jours de la réception, faute
+    de quoi la cession est réputée acceptée (article 230 du Code bruxellois du Logement). Le projet de sous-location
+    est notifié au bailleur par courrier recommandé au moins 15 jours avant sa conclusion (article 230/1 du Code
+    bruxellois du Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Les
+    formalités et délais de la cession et de la sous-location diffèrent selon la Région&nbsp;; les règles de la
+    Région où le logement est situé s'appliquent.</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Le bailleur entretient le logement en état de servir à l'usage pour lequel il a été loué et y fait toutes les
+    réparations nécessaires, autres que celles qui incombent au preneur. Le preneur supporte les menues réparations
+    ou réparations locatives&nbsp;; les réparations occasionnées uniquement par la vétusté ou la force majeure
+    restent à charge du bailleur.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le preneur répond en outre des réparations rendues
+    nécessaires par un usage contraire à la destination ou à un usage en bon père de famille et par un manquement à
+    son obligation d'information&nbsp;; le Gouvernement flamand établit une liste des menues réparations
+    (articles 25 et 26 du décret flamand sur la location d'habitations). Le preneur souffre les réparations urgentes
+    qui ne peuvent être différées jusqu'à la fin du bail&nbsp;; si elles durent plus de 30 jours, le loyer est
+    diminué à proportion du temps et de la partie du logement dont il a été privé, et si elles rendent l'occupation
+    normale impossible, il peut faire résilier le bail (article 27 du décret flamand sur la location
+    d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Les réparations locatives ou de menu entretien sont les
+    réparations de minime importance dues à l'utilisation normale des lieux&nbsp;; le Gouvernement wallon arrête une
+    liste non limitative (articles 8 et 15 du décret wallon relatif au bail d'habitation). Le preneur souffre les
+    réparations urgentes et les travaux économiseurs d'énergie fixés par le Gouvernement&nbsp;; s'ils durent plus de
+    40 jours, le loyer est diminué à proportion du temps et de la partie du logement dont il a été privé (article 21
+    du décret wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le preneur est tenu des réparations locatives, à
+    l'exception de celles occasionnées par la vétusté ou la force majeure, et des travaux de menu entretien&nbsp;; le
+    bailleur est tenu de toutes les autres réparations, et le Gouvernement établit une liste non limitative
+    (article 223 du Code bruxellois du Logement). Des travaux visant à améliorer la performance énergétique ou à
+    adapter le logement au handicap du preneur peuvent être exécutés en cours de bail aux conditions de l'article 221
+    du Code bruxellois du Logement.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">La
+    liste des réparations à charge du preneur et les règles relatives aux réparations urgentes en cours de bail sont
+    fixées par la Région où le logement est situé.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le preneur répond de l'incendie et des dégâts des eaux,
+    à moins qu'il ne prouve que l'incendie s'est déclaré sans sa faute, et assure cette responsabilité par une
+    assurance dont les effets ne sont pas suspendus&nbsp;; le bailleur assure également sa responsabilité pour
+    l'incendie et les dégâts des eaux (article 29 du décret flamand sur la location d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Le preneur répond de l'incendie, à moins qu'il ne prouve
+    que celui-ci s'est déclaré sans sa faute&nbsp;; cette responsabilité est couverte par une assurance que le
+    preneur, sauf convention contraire des parties, contracte préalablement à l'entrée dans les lieux. Il apporte
+    annuellement la preuve du paiement des primes&nbsp;; s'il ne le fait pas dans le mois suivant l'entrée dans les
+    lieux ou suivant la date anniversaire de celle-ci, le bailleur peut solliciter de son propre assureur l'ajout
+    d'une clause d'abandon de recours au profit du preneur et en répercuter le coût au preneur (article 17 du décret
+    wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le preneur répond de l'incendie et des dégâts des eaux,
+    à moins qu'il ne prouve qu'ils se sont déclarés sans sa faute&nbsp;; cette responsabilité est couverte par une
+    assurance que le preneur, sauf convention contraire des parties, contracte préalablement à l'entrée dans les
+    lieux. Il apporte annuellement la preuve du paiement des primes&nbsp;; s'il ne le fait pas dans le mois suivant
+    l'entrée dans les lieux ou suivant la demande du bailleur, celui-ci peut solliciter de son propre assureur
+    l'ajout d'une clause d'abandon de recours au profit du preneur et en répercuter le coût au preneur
+    (article 220/1 du Code bruxellois du Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    preneur répond de l'incendie et assure cette responsabilité&nbsp;; les modalités (dégâts des eaux, preuve de
+    l'assurance, assurance du bailleur) sont fixées par la Région où le logement est situé.</p>
+  <p>Assureur et numéro de police du preneur&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le bailleur dispose du certificat de performance
+    énergétique (EPC) requis pour le logement par le décret flamand sur l'énergie du 8 mai 2009 (Energiedecreet) et
+    ses arrêtés d'exécution, et en remet une copie au preneur.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Le bail mentionne la date du dernier certificat PEB,
+    lorsque celui-ci est requis par le décret wallon du 28 novembre 2013 relatif à la performance énergétique des
+    bâtiments, ainsi que l'indice de performance attribué au logement (article 3, § 1er, du décret wallon relatif au
+    bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le bailleur communique au preneur, avant la conclusion
+    du bail, le certificat de performance énergétique (certificat PEB) (article 217, § 1er, du Code bruxellois du
+    Logement)&nbsp;; à défaut de ce certificat, une indexation qui augmente le loyer n'est pas due.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    bailleur remet au preneur le certificat de performance énergétique requis par la réglementation de la Région où
+    le logement est situé.</p>
+  <p>Numéro, date et classe énergétique ou indice de performance du certificat&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">L'obligation d'enregistrer le bail et l'état des lieux
+    incombe au bailleur&nbsp;; les frais liés à un enregistrement tardif sont entièrement à sa charge (article 11 du
+    décret flamand sur la location d'habitations). Aussi longtemps que le bail n'est pas enregistré après le délai de
+    2 mois visé à l'article 32, 5°, du Code des droits d'enregistrement, d'hypothèque et de greffe, le délai de
+    congé et l'indemnité à charge du preneur ne s'appliquent pas (article 20, § 1er, du décret flamand sur la
+    location d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">L'obligation d'enregistrement du bail repose sur le
+    bailleur&nbsp;; les frais liés à un enregistrement tardif sont entièrement à sa charge (article 53 du décret
+    wallon relatif au bail d'habitation). Après le délai de 2 mois visé à l'article 32, 5°, du Code des droits
+    d'enregistrement, d'hypothèque et de greffe et aussi longtemps que le bail n'est pas enregistré, le délai de
+    congé et l'indemnité à charge du preneur ne s'appliquent pas, pour autant qu'une mise en demeure d'enregistrer
+    le bail adressée par le preneur soit demeurée sans effet pendant 1 mois (article 54 du décret wallon relatif au
+    bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Le bailleur enregistre gratuitement le bail dans les
+    2 mois de sa signature dans le registre électronique du service régional de l'enregistrement des baux, en
+    téléversant le bail signé par les deux parties, ses annexes et l'état des lieux d'entrée. Après ce délai et aussi
+    longtemps que le bail n'est pas enregistré, les délais de congé et les indemnités dues par le preneur et les modalités de révision du loyer visés aux articles 237, § 5, 238, 240 et 256 du Code bruxellois du Logement ne s'appliquent pas (article 228/5 du Code bruxellois du Logement). Ceci ne
+    préjudicie pas aux obligations imposées par la législation fiscale.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Le
+    bailleur fait enregistrer le bail et l'état des lieux dans les 2 mois de la signature, selon les règles de la
+    Région où le logement est situé&nbsp;; aussi longtemps que le bail n'est pas enregistré, le preneur peut, dans les
+    cas prévus par la Région, donner congé sans délai de préavis ni indemnité.</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>Les parties dressent contradictoirement un état des lieux d'entrée détaillé, soit au cours de la période où les
+    lieux sont inoccupés, soit au cours du premier mois pendant lequel le preneur peut disposer du logement&nbsp;; il
+    est annexé au bail et enregistré.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">L'état des lieux d'entrée est dressé à frais
+    communs&nbsp;; à défaut d'accord, le juge de paix désigne un expert sur requête introduite avant l'expiration du
+    délai de 1 mois. À la demande de l'une des parties, un état des lieux de
+    sortie est dressé contradictoirement et à frais communs à la fin du bail, au plus tard au moment de la remise et
+    de l'acceptation des clés. Si un état des lieux détaillé a été dressé au début du bail, le preneur rend le
+    logement tel qu'il l'a reçu suivant cet état, excepté ce qui a péri ou a été dégradé par vétusté ou force
+    majeure et les réparations à charge du bailleur (articles 9 et 39 du décret flamand sur la location
+    d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">En cas de désignation conjointe d'un expert, l'état des
+    lieux d'entrée s'établit à frais communs et à part égale&nbsp;; en cas de désignation d'un expert par une seule
+    partie, celle-ci en assume les frais. À défaut d'accord, le juge de paix désigne un expert sur requête introduite
+    dans les 15 jours suivant l'expiration du délai de 1 mois (article 27, § 1er, du décret wallon relatif au bail
+    d'habitation). Chaque partie peut requérir l'établissement d'un état des
+    lieux de sortie contradictoire et à frais partagés&nbsp;; il est établi après la libération des lieux par le
+    preneur et avant la remise des clés (article 27 du décret wallon relatif au bail d'habitation). S'il a été fait
+    un état des lieux détaillé, le preneur rend le logement tel qu'il l'a reçu, excepté ce qui a péri ou a été
+    dégradé par vétusté ou force majeure (article 28 du décret wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">L'état des lieux d'entrée est dressé à frais
+    communs&nbsp;; à défaut d'accord, le juge de paix désigne un expert sur requête (article 1730 de l'ancien Code
+    civil). Les états des lieux d'entrée et de sortie comprennent le
+    relevé des index, les numéros de compteurs et les codes EAN. Chaque partie peut requérir l'établissement d'un état
+    des lieux de sortie contradictoire et à frais partagés&nbsp;; il est établi après la libération des lieux par le
+    preneur et avant la remise des clés, et au plus tard dans le mois de la libération des lieux (article 220 du Code
+    bruxellois du Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">La répartition des frais, le délai pour faire désigner un expert par le juge de paix et les règles relatives
+    à l'état des lieux de sortie sont fixés par la Région où le logement est situé. S'il n'a pas
+    été fait d'état des lieux d'entrée détaillé, le preneur est présumé avoir reçu le logement dans l'état où il se
+    trouve à la fin du bail, sauf preuve contraire.</p>
+  <p class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}">La libération de la garantie locative suit
+    l'état des lieux de sortie (voir l'article <span th:text="${refs['deposit']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-transfer" data-clause="transfer">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Avant la cession d'un droit réel sur le logement, le
+    bailleur informe le candidat acquéreur de l'existence et du type du bail. L'acquéreur est subrogé dans tous les
+    droits et obligations du bailleur à la date de l'acte authentique ou, si elle est postérieure, à la date de prise
+    d'effet de la cession, même si le bail réserve la faculté d'expulsion en cas d'aliénation (article 38 du décret
+    flamand sur la location d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Si le bail a date certaine antérieure à l'aliénation du
+    logement, l'acquéreur est subrogé aux droits et obligations du bailleur à la date de l'acte authentique, même si
+    le bail réserve la faculté d'expulsion en cas d'aliénation. S'il n'a pas date certaine mais que le preneur occupe
+    le logement depuis 6 mois au moins, il en va de même, mais l'acquéreur peut mettre fin au bail pour les motifs et
+    dans les conditions du congé donné par le bailleur, moyennant un congé de 3 mois notifié, à peine de déchéance,
+    dans les 3 mois qui suivent l'acte authentique (article 63 du décret wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Avant l'aliénation, le bailleur informe le candidat
+    acquéreur de l'existence du bail et lui en fournit une copie&nbsp;; le nouveau titulaire du droit réel est subrogé
+    pour l'avenir aux droits et obligations du bailleur, et toute clause réservant la faculté d'expulsion en cas
+    d'aliénation est réputée non écrite (article 229 du Code bruxellois du Logement). En cas de mise en vente de gré
+    à gré, le bailleur notifie au preneur son intention de vendre avant toute communication publique (article 242 du
+    Code bruxellois du Logement), et le preneur d'une résidence principale bénéficie d'un droit de préférence aux
+    conditions et sous les exceptions de l'article 247/1 du Code bruxellois du Logement.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">En
+    cas d'aliénation du logement, l'acquéreur est en principe subrogé aux droits et obligations du bailleur&nbsp;; les
+    conditions, les obligations d'information et un éventuel droit de préférence du preneur sont fixés par la Région
+    où le logement est situé.</p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Dans tous les cas où un congé peut être donné à tout moment, le délai de préavis prend cours le premier jour
+    du mois qui suit le mois durant lequel le congé est donné. Le congé est notifié par envoi recommandé, par exploit
+    d'huissier de justice ou par remise contre accusé de réception.</p>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'VLG'}">
+    <p>Dans un bail de 9 ans, le bailleur peut mettre fin au bail&nbsp;: à tout moment, moyennant un préavis de
+      6 mois, pour occuper le logement personnellement et effectivement ou le faire occuper par les proches visés à
+      l'article 17 du décret flamand sur la location d'habitations, à toutes les conditions de cet article&nbsp;; à
+      tout moment, moyennant un préavis de 6 mois, pour des travaux de rénovation importants, à toutes les conditions
+      de l'article 18 du décret flamand sur la location d'habitations&nbsp;; et à l'expiration du premier ou du
+      deuxième triennat, sans motif, moyennant un préavis de 6 mois et le paiement d'une indemnité de 9 ou 6 mois de
+      loyer (article 19 du décret flamand sur la location d'habitations). Les parties peuvent exclure ou limiter ces
+      facultés de résiliation anticipée.</p>
+    <p>Le preneur peut mettre fin au bail à tout moment moyennant un préavis de 3 mois&nbsp;; si le bail prend ainsi
+      fin au cours du premier triennat, le bailleur a droit à une indemnité de 3, 2 ou 1 mois de loyer selon que le
+      bail prend fin au cours de la première, de la deuxième ou de la troisième année. Lorsque le bailleur met fin au
+      bail sur la base des articles 17 à 19, le preneur peut à son tour donner congé à tout moment moyennant un
+      préavis de 1 mois, sans indemnité (article 20 du décret flamand sur la location d'habitations).</p>
+    <p>Dans un bail de courte durée, le bailleur ne peut pas donner congé anticipativement&nbsp;; le preneur peut
+      donner congé à tout moment moyennant un préavis de 3 mois et une indemnité de 1,5 mois, 1 mois ou 0,5 mois de
+      loyer selon que le bail prend fin au cours de la première, de la deuxième ou de la troisième année, à compter de
+      la date de prise de cours du premier bail (article 21, § 2, du décret flamand sur la location d'habitations).
+      Le preneur qui justifie de circonstances exceptionnelles peut demander une prorogation (article 24 du décret
+      flamand sur la location d'habitations).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'WAL'}">
+    <p>Dans un bail de 9 ans, le bailleur peut mettre fin au bail&nbsp;: à tout moment, moyennant un congé de
+      6 mois, pour occuper le logement personnellement et effectivement ou le faire occuper par les proches visés à
+      l'article 55, § 2, du décret wallon relatif au bail d'habitation, à toutes les conditions de ce paragraphe&nbsp;;
+      à l'expiration du premier ou du deuxième triennat, moyennant un congé de 6 mois, pour reconstruire, transformer
+      ou rénover l'immeuble, à toutes les conditions de l'article 55, § 3, du décret wallon relatif au bail
+      d'habitation&nbsp;; et à l'expiration du premier ou du deuxième triennat, sans motif, moyennant un congé de
+      6 mois et le versement d'une indemnité de 9 ou 6 mois de loyer (article 55, § 4, du décret wallon relatif au
+      bail d'habitation). Les parties peuvent exclure ou limiter ces facultés de résiliation anticipée.</p>
+    <p>Le preneur peut mettre fin au bail à tout moment moyennant un congé de 3 mois&nbsp;; si le bail prend fin au
+      cours du premier triennat, le bailleur a droit à une indemnité de 3, 2 ou 1 mois de loyer selon que le bail
+      prend fin au cours de la première, de la deuxième ou de la troisième année. Lorsque le bailleur met fin au bail
+      sur la base des paragraphes 2 à 4, le preneur peut lui aussi mettre fin au bail à tout moment moyennant un congé
+      de 1 mois, sans indemnité (article 55, § 5, du décret wallon relatif au bail d'habitation).</p>
+    <p>Dans un bail de courte durée, le preneur peut mettre fin au bail à tout moment moyennant un congé de 3 mois et
+      une indemnité de 1 mois de loyer&nbsp;; le bailleur ne peut y mettre fin anticipativement qu'après la première
+      année de location, pour occuper le logement personnellement et effectivement ou le faire occuper aux conditions
+      de l'article 55, § 2, moyennant un préavis de 3 mois et une indemnité de 1 mois de loyer (article 55, § 6, du
+      décret wallon relatif au bail d'habitation). La clause résolutoire expresse est réputée non écrite (article 37
+      du décret wallon relatif au bail d'habitation). Le preneur qui justifie de circonstances exceptionnelles peut
+      demander une prorogation (article 56 du décret wallon relatif au bail d'habitation).</p>
+  </th:block>
+  <th:block th:if="${countryCode == 'BE' and regionCode == 'BRU'}">
+    <p>Dans un bail de 9 ans, le bailleur peut mettre fin au bail&nbsp;: à tout moment, moyennant un congé de
+      6 mois, pour occuper le logement personnellement et effectivement ou le faire occuper par les proches visés à
+      l'article 237, § 2, du Code bruxellois du Logement, à toutes les conditions de ce paragraphe&nbsp;; à
+      l'expiration du premier ou du deuxième triennat, moyennant un congé de 6 mois, pour reconstruire, transformer ou
+      rénover l'immeuble, à toutes les conditions de l'article 237, § 3, du Code bruxellois du Logement&nbsp;; et à
+      l'expiration du premier ou du deuxième triennat, sans motif, moyennant un congé de 6 mois et le versement d'une
+      indemnité de 9 ou 6 mois de loyer (article 237, § 4, du Code bruxellois du Logement). Les parties peuvent
+      exclure ou limiter ces facultés de résiliation anticipée.</p>
+    <p>Le preneur peut mettre fin au bail à tout moment moyennant un congé de 3 mois&nbsp;; si le bail prend fin au
+      cours du premier triennat, le bailleur a droit à une indemnité de 3, 2 ou 1 mois de loyer selon que le bail
+      prend fin au cours de la première, de la deuxième ou de la troisième année. Lorsque le bailleur met fin au bail
+      sur la base des paragraphes 2 à 4, le preneur peut lui aussi mettre fin au bail à tout moment moyennant un congé
+      de 1 mois, sans indemnité, et le bailleur demeure tenu de l'exécution du motif fondant son congé (article 237,
+      § 5, du Code bruxellois du Logement).</p>
+    <p>Dans un bail de courte durée, le preneur peut mettre fin au bail à tout moment moyennant un préavis de 3 mois
+      et une indemnité de 1 mois de loyer&nbsp;; le bailleur ne peut y mettre fin anticipativement qu'après la
+      première année de location, aux conditions de l'article 237, § 2, moyennant un préavis de 3 mois et une
+      indemnité de 1 mois de loyer, et le preneur peut alors lui aussi mettre fin au bail à tout moment moyennant un
+      congé de 1 mois, sans indemnité (article 238 du Code bruxellois du Logement). Le preneur qui justifie de
+      circonstances exceptionnelles peut demander une prorogation (article 250 du Code bruxellois du Logement).</p>
+  </th:block>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Dans
+    chaque Région, le preneur d'un bail de 9 ans peut donner congé à tout moment moyennant un congé de 3 mois, avec
+    une indemnité de 3, 2 ou 1 mois de loyer si le bail prend fin au cours de la première, de la deuxième ou de la
+    troisième année, et le bailleur ne peut donner congé que pour les motifs prévus par la loi (occupation
+    personnelle, travaux de rénovation ou, moyennant indemnité, sans motif à l'expiration d'un triennat), aux
+    conditions de la Région où le logement est situé. Les règles de résiliation anticipée d'un bail de courte durée
+    diffèrent selon la Région.</p>
+  <p>Les parties peuvent mettre fin au bail à tout moment d'un commun accord. Si une partie ne remplit pas ses
+    obligations, l'autre partie peut demander au juge la résolution du bail.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> À la fin du bail, un état des lieux de
+    sortie est dressé (voir l'article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-annexes" data-clause="annexes">
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Le présent bail renvoie au commentaire explicatif
+    (vulgariserende toelichting) établi par le Gouvernement flamand sur, notamment, les normes de santé, de sécurité
+    et d'habitabilité, l'enregistrement, la durée, l'indexation, les réparations locatives, l'assurance incendie et
+    la fin du bail (articles 8 et 10 du décret flamand sur la location d'habitations)&nbsp;; le preneur déclare avoir
+    pu en prendre connaissance. L'état des lieux d'entrée est annexé au présent bail.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Est obligatoirement jointe au présent bail l'annexe
+    rédigée par le Gouvernement wallon, contenant une explication synthétique et pédagogique des dispositions légales
+    relatives notamment aux normes de salubrité, de sécurité et d'habitabilité, à l'enregistrement et à sa gratuité,
+    à la durée, à la révision et à l'indexation du loyer, aux réparations locatives et à la fin du bail (article 3,
+    § 2, du décret wallon relatif au bail d'habitation). L'état des lieux d'entrée est annexé au présent bail.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Est obligatoirement jointe au présent bail l'annexe
+    rédigée par le Gouvernement de la Région de Bruxelles-Capitale, contenant une explication des dispositions
+    légales relatives notamment aux normes de salubrité, de sécurité et d'équipement, à l'enregistrement et à sa
+    gratuité, à la durée, à la grille indicative des loyers, à la révision, à l'indexation, aux charges, aux
+    réparations locatives, à la fin du bail et aux animaux de compagnie (article 218, § 5, du Code bruxellois du
+    Logement). L'état des lieux d'entrée est annexé au présent bail.</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Sont
+    annexés au présent bail l'annexe ou le commentaire explicatif prescrit par la Région où le logement est situé et
+    l'état des lieux d'entrée.</p>
+  <p>Autres annexes&nbsp;: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Le bailleur traite les données à caractère personnel du preneur uniquement dans la mesure nécessaire à la
+    conclusion et à l'exécution du présent bail et au respect de ses obligations légales, conformément au règlement
+    général sur la protection des données (RGPD, règlement (UE) 2016/679) et à la législation belge qui l'exécute.
+    Il ne demande aux candidats preneurs que les données et documents autorisés par les règles de la Région où le
+    logement est situé. Il ne conserve pas les données au-delà de la durée nécessaire.</p>
+  <p>Le preneur peut exercer auprès du bailleur les droits que lui confère le RGPD, notamment les droits d'accès, de
+    rectification et d'effacement, et peut introduire une réclamation auprès de l'Autorité de protection des
+    données.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>Le présent bail est soumis au droit belge. Les litiges relatifs au présent bail relèvent, quel que soit le
+    montant de la demande, de la compétence du juge de paix du lieu où le logement est situé. Les parties peuvent
+    aussi régler leur différend à l'amiable, notamment par la médiation.</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'VLG'}">Toute convention d'arbitrage conclue avant la naissance
+    du litige est nulle de plein droit (article 44 du décret flamand sur la location d'habitations).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'WAL'}">Les parties ne peuvent soumettre leur différend à un
+    arbitre qu'après sa naissance&nbsp;; toute clause d'arbitrage convenue avant la naissance du différend est
+    réputée non écrite (article 51/1 du décret wallon relatif au bail d'habitation).</p>
+  <p th:if="${countryCode == 'BE' and regionCode == 'BRU'}">Les parties ne peuvent soumettre leur différend à un
+    arbitre qu'après sa naissance&nbsp;; toute clause d'arbitrage convenue avant la naissance du différend est
+    réputée non écrite (article 233 du Code bruxellois du Logement).</p>
+  <p th:if="${!(countryCode == 'BE' and (regionCode == 'VLG' or regionCode == 'WAL' or regionCode == 'BRU'))}">Une
+    clause d'arbitrage conclue avant la naissance du litige est sans effet selon les règles de chaque Région.</p>
+  <p>Les stipulations du présent bail contraires aux règles impératives du droit régional applicable sont sans
+    effet&nbsp;; les règles légales s'appliquent à leur place.</p>
+</div>
+
+</body>
+</html>

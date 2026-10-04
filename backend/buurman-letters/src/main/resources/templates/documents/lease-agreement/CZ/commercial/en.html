@@ -1,0 +1,371 @@
+<!--
+  legal-basis: Czech Republic. Act No. 89/2012 Coll., the Civil Code (zákon č. 89/2012 Sb., občanský zákoník),
+               consolidated version 18 in force 01.01.2026 - 31.12.2026 (latest amendments in force 01.01.2026:
+               Acts No. 176/2025, 268/2025, 270/2025, 290/2025 and 333/2025 Coll.; none changes the provisions on
+               the lease of business premises); version 19 in force from 01.01.2027 (Act No. 159/2026 Coll.)
+               compared word for word on 2026-10-04: sections 2201 to 2331 unchanged. Sections used: 1970
+               (late-payment interest), 2201 to 2234 (general provisions on lease: 2203, 2204, 2205, 2206, 2207,
+               2208, 2210, 2214, 2215, 2216, 2217, 2218, 2219, 2220, 2221, 2222, 2223, 2225, 2228, 2229, 2230, 2232),
+               2285 (applied by 2311), 2302 to 2315 (lease of premises used for business, nájem prostoru sloužícího
+               podnikání).
+               Act No. 67/2013 Coll. on services connected with the use of flats and non-residential premises in a
+               building with flats, version in force 01.01.2026: sections 1(2), 7, 8 (applied with section 2303 of
+               the Civil Code).
+               Act No. 235/2004 Coll. on value added tax (zákon č. 235/2004 Sb., o dani z přidané hodnoty), version
+               in force 01.01.2026: section 56a(1), (2), (3) and (5).
+               Act No. 406/2000 Coll. on energy management, version in force 01.08.2026: section 7a(2), (3), (4),
+               (5) and (10).
+               Government Regulation No. 351/2013 Coll. (late-payment interest), version in force 01.01.2026:
+               section 2(1).
+               Regulation (EU) 2016/679 (GDPR); Act No. 110/2019 Coll. on the processing of personal data.
+               Sources consulted 2026-10-04: consolidated texts and version histories on www.zakonyprolidi.cz;
+               the official collection e-Sbírka (e-sbirka.gov.cz) was not machine-readable from the drafting
+               environment, so each text should be confirmed there. Items not verified are listed as unverified in
+               the pack report and are stated only generally here.
+               No region branches: the Civil Code applies in the whole country.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("3 months", never "three months"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document: Czech is not among the document languages of the application,
+  and no Czech version exists. The runtime locator therefore shows the no-national-version notice (lease.notice.noNationalVersion) on this document instead of the courtesy notice, and the
+  text itself states that it is drawn up and signed in English only and should be checked by a person qualified in
+  Czech law. Czech legal terms are given in
+  parentheses at first use. Draft text, not vetted by legal counsel. Reflects Czech law (lease of premises used
+  for business), not the law of any other country; not for a lease of a flat or of premises used neither for
+  housing nor for business (section 2302(2) of the Civil Code: general provisions only). Each clause-<key> fragment
+  holds only the clause body; the shell supplies article numbers and titles. Cross-references use refs['key'] and
+  disappear when the clause is excluded. Never hard-code article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease of premises used for business (nájemní smlouva, nájem prostoru sloužícího podnikání) is made
+    between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (pronajímatel),</p>
+  <p>identification number (IČO): ______________________________</p>
+  <p>tax identification number (DIČ): ______________________________</p>
+  <p>registered office and entry in the commercial register (obchodní rejstřík) or other register:
+    ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (nájemce),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (nájemce),</p>
+  <p>identification number (IČO): ______________________________</p>
+  <p>tax identification number (DIČ): ______________________________</p>
+  <p>registered office and entry in the commercial register (obchodní rejstřík) or other register:
+    ______________________________</p>
+  <p>represented by: ______________________________.</p>
+  <p>The lease is governed by Czech law, in particular by sections 2302 to 2315 (lease of premises used for
+    business) and, unless those provisions provide otherwise, by the general provisions on lease in sections 2201 to
+    2234 of the Civil Code (Act No. 89/2012 Coll., občanský zákoník) (section 2302(1) of the Civil Code). The parties
+    conclude this agreement in writing. Where the tenant consists of several persons, they are jointly and severally
+    liable for all obligations of the tenant under this agreement.</p>
+  <p>Language: this agreement is drawn up and signed in English only; it is not a translation of a Czech original
+    and no Czech version exists. The Czech terms in parentheses are those of the Czech statutes. Czech courts and
+    authorities may require a Czech translation, as proceedings before them are conducted in Czech. The parties are
+    advised to have the agreement checked by a person qualified in Czech law before signing, or to sign a Czech
+    version as well.</p>
+  <p>If the parties also sign a Czech version of this agreement, they agree which version prevails in case of a
+    discrepancy: ______________________________</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>,
+    hereinafter &ldquo;the premises&rdquo;, consisting of: ______________________________, with a floor area of
+    approximately ________ m², together with the right to use the common parts of the building for access and the
+    following other rights: ______________________________</p>
+  <p>building, unit or land concerned and its designation in the land register (katastr nemovitostí):
+    ______________________________</p>
+  <p>The premises are let for the purpose of carrying on a business in them and serve at least predominantly for
+    business; they are premises used for business (prostor sloužící podnikání) within the meaning of section
+    2302(1) of the Civil Code. They are not let as a dwelling.</p>
+  <p>Where the property is registered in the land register, the lease right is also entered in it if the owner so
+    proposes, or the tenant with the owner&rsquo;s consent (section 2203 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The tenant uses the premises only for the following business activity: ______________________________.</p>
+  <p>The tenant may not carry on another activity, or change the manner or conditions of carrying it on, beyond
+    what follows from the purpose of the lease, from another agreement of the parties or from what could
+    reasonably be expected when the agreement was concluded, if that change would worsen the conditions in the
+    property or would harm the landlord or the other users of the property beyond a reasonable degree; this does
+    not apply where, as a result of a change in the tenant&rsquo;s circumstances, the activity has changed only
+    insignificantly in some respect (section 2304 of the Civil Code).</p>
+  <p>The landlord gives no warranty that the permitted use is lawful under public law. The tenant obtains, at the
+    tenant&rsquo;s own cost, any trade licence, building-law consent or other permit needed for the tenant&rsquo;s
+    activity and complies with the public-law requirements relating to it.</p>
+  <p>With the landlord&rsquo;s consent, the tenant may fit the property in which the premises are located, to a
+    reasonable extent, with signboards, notices and similar signs; the landlord may refuse consent for a serious
+    reason. If the tenant asked for consent in writing and the landlord does not respond within 1 month, consent is
+    deemed given (section 2305 of the Civil Code). At the end of the lease the tenant removes the signs and restores
+    the affected part of the property to its original condition (section 2306 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is concluded for a fixed term (nájem na dobu určitou)<span
+    th:if="${endDate != null}"> and ends on <strong th:text="${endDate}">end date</strong></span>. Term, if it does
+    not follow from the end date: ______________________________</p>
+  <p th:if="${fixedTerm}">Section 2311 of the Civil Code applies the provisions on the end of a fixed-term lease
+    of a flat mutatis mutandis; under the prevailing reading of that section, section 2285 of the Civil Code then
+    applies rather than the general rule of section 2230: if the tenant continues to use the premises for at least
+    3 months after the day on which the lease should have ended, and the landlord does not call on the tenant in that period, in writing, to leave
+    the premises, the lease is deemed agreed again for the same term as before, but for no more than 2 years, unless
+    the parties agree otherwise (section 2285 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">[ ] The parties agree that the lease is not renewed in this way and ends on the agreed
+    day.</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite term (nájem na dobu neurčitou) (section
+    2204(1) of the Civil Code).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Notice of termination is governed
+    by the provisions of this agreement on termination (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (nájemné) is <strong th:text="${rentAmount}">amount</strong> per month<span
+    th:if="${refs['vat']}">, exclusive of value added tax where the lease is taxable</span>.</p>
+  <p class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}">The payments for services
+    connected with the use of the premises are not part of the rent and are governed by the provisions of this
+    agreement on services (see article <span th:text="${refs['service-costs']}"></span>).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes of the rent are
+    governed by the provisions of this agreement on rent adjustment (see article
+    <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is adjusted once in each calendar year, with effect from ______________ (tick 1 box):</p>
+  <p>[ ] by the annual average rate of inflation measured by the consumer price index published by the Czech
+    Statistical Office (Český statistický úřad) for the previous calendar year; the rent is not reduced if the rate is
+    negative;</p>
+  <p>[ ] as follows: ______________________________.</p>
+  <p>The landlord notifies the tenant in writing of the adjusted rent and of its calculation; the adjusted rent is
+    payable from the first payment falling due after the notice was delivered, for the period from the agreed date
+    of effect.</p>
+  <p>The rules on rent increases in sections 2248 to 2250 of the Civil Code, including the landlord&rsquo;s
+    unilateral proposal of an increase, belong to the provisions on the lease of a flat and do not govern this
+    lease; the rent changes only as agreed in this clause or by a further agreement of the parties.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The landlord provides the following services connected with the use of the premises:
+    ______________________________. Where services are connected with the lease of premises used for business, the
+    provisions on services connected with the lease of a flat apply mutatis mutandis (section 2303 of the Civil
+    Code).</p>
+  <p>The tenant pays monthly advances on the costs of the services together with the rent; the monthly advance is
+    ______________________________. The landlord bills the actual costs and the advances for each billing period of
+    at most 12 months and delivers the statement within the agreed time, and the parties settle the balance within
+    the agreed time. Where the premises are in a building with flats, Act No. 67/2013 Coll. applies to them (section
+    1(2) of Act No. 67/2013 Coll.), including its time limits for the statement (section 7 of that Act) and for
+    objections (section 8 of that Act).</p>
+  <p>Services which the tenant arranges directly with the supplier are paid by the tenant to the supplier:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The lease of immovable property is exempt from value added tax (daň z přidané hodnoty, DPH), except in
+    particular short-term lease of no more than 48 hours, accommodation services, the lease of parking spaces, safe
+    deposit boxes and fixed machines or other fixed equipment (section 56a(1) and (2) of Act No. 235/2004 Coll. on
+    value added tax).</p>
+  <p>A landlord who is a VAT payer (plátce) may decide that the lease is a taxable supply where it lets the
+    premises to another VAT payer, or to a person registered for VAT in another Member State under the conditions of
+    section 56a(3) of that Act, for the purposes of their economic activity; this option is not available for
+    residential property as defined in section 56a(5) of that Act.</p>
+  <p>The parties agree (tick 1 box):</p>
+  <p>[ ] the lease is exempt from VAT;</p>
+  <p>[ ] the landlord opts to tax the lease; the tenant pays VAT at the rate in force on the rent and on the
+    payments for services that are subject to VAT, on the basis of a tax document issued by the landlord.</p>
+  <p>The tenant confirms that it is a VAT payer: [ ] yes [ ] no.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with a security deposit (jistota) of
+    <strong th:text="${depositAmount}">amount</strong> as security that the tenant pays the rent and the payments for
+    services and fulfils the other obligations arising from the lease, by
+    ______________________________.</p>
+  <p th:if="${depositAmount == null}">The parties do not agree a security deposit (jistota). Deposit or bank
+    guarantee agreed, if any: ______________________________</p>
+  <p>The limit of 3 times the monthly rent in section 2254 of the Civil Code belongs to the provisions on the lease
+    of a flat and does not apply to this lease; the amount is a matter for the parties.</p>
+  <p>The landlord may set off against the deposit what the tenant owes under the lease and the tenant tops the
+    deposit up to the agreed amount within 15 days of a written request. At the end of the lease the landlord returns
+    the deposit, less what the tenant owes under the lease, within 1 month of the handback of the premises. Interest
+    on the deposit: ______________________________</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span
+    th:text="${refs['rent']}"></span>)</span><span th:if="${refs['service-costs']}"> and the advances on the
+    services</span> in advance for each month, <span th:if="${paymentDueDay != null}">no later than day
+    <strong th:text="${paymentDueDay}">5</strong> of the month to which the payment relates</span><span
+    th:if="${paymentDueDay == null}">no later than the 5th day of the month to which the payment relates</span>,
+    to the landlord&rsquo;s account: ______________________________. This agreement departs from the default rule
+    that rent is paid monthly in arrears (section 2218 of the Civil Code).</p>
+  <p>If the tenant is late with a payment, the landlord may claim late-payment interest (úrok z prodlení) unless
+    the tenant is not responsible for the delay, provided that the landlord has duly fulfilled its contractual
+    and statutory obligations (section 1970 of the Civil Code); unless the parties agree
+    otherwise, its annual rate equals the repo rate of the Czech National Bank on the first day of the calendar
+    period of 6 months (starting on 1 January or 1 July) in which the delay began, plus 8 percentage points (section
+    2(1) of Government Regulation No. 351/2013 Coll.).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord hands over the premises in a condition fit for the agreed use, keeps them in that condition and
+    ensures the tenant&rsquo;s undisturbed use during the lease (section 2205 of the Civil Code). The tenant carries
+    out the routine maintenance of the premises; the other maintenance and the necessary repairs are carried out by
+    the landlord, unless the tenant has undertaken a particular kind of maintenance or the repair of particular
+    defects (section 2207(1) of the Civil Code). Maintenance and repairs undertaken by the tenant:
+    ______________________________</p>
+  <p>The tenant notifies the landlord of a defect that the landlord must remove as soon as the tenant discovers it
+    or could have discovered it with careful use (section 2214 of the Civil Code). The tenant&rsquo;s rights where the
+    landlord does not remove such a defect without undue delay, including a reasonable rent reduction or the repair
+    by the tenant at the landlord&rsquo;s cost, are governed by section 2208 of the Civil Code.</p>
+  <p>The tenant tolerates necessary repairs that cannot be postponed until after the lease (section 2210 of the
+    Civil Code). If the landlord gives notice in advance within a reasonable time, the tenant allows the landlord, to
+    the necessary extent, to inspect the premises and to access them to carry out necessary repairs or maintenance;
+    prior notice is not required where this is necessary to prevent damage or where there is a risk in delay (section
+    2219(1) of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant may alter the premises, including the fit-out for the tenant&rsquo;s business, only with the
+    landlord&rsquo;s prior consent, which requires written form because this agreement is in writing. The tenant
+    carries out alterations at the tenant&rsquo;s own cost; if an alteration increases the value of the premises, the
+    landlord settles with the tenant at the end of the lease according to the increase in value (section 2220(1) of
+    the Civil Code). The parties may agree otherwise on that settlement in the consent.</p>
+  <p>If the tenant alters the premises without the landlord&rsquo;s consent, the tenant restores them to their
+    original condition as soon as the landlord asks, at the latest at the end of the lease; if the tenant does not do
+    so at the landlord&rsquo;s request, the landlord may terminate the lease without a notice period (section 2220(2)
+    of the Civil Code).</p>
+  <p>At the handback the tenant separates and takes away everything the tenant put into or onto the premises at
+    the tenant&rsquo;s own cost, where this is possible without impairing the substance of the premises or making
+    their use unreasonably more difficult (section 2225(2) of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The tenant may give a third person a right to use the premises (podnájem) only with the landlord&rsquo;s
+    consent; because this agreement is in writing, the consent also requires written form (section 2215(1) of the
+    Civil Code). Giving a third person such a right without the landlord&rsquo;s consent is deemed a gross breach of
+    the tenant&rsquo;s obligations causing the landlord more serious harm (section 2215(2) of the Civil Code). The
+    right of use may be granted only for the duration of the lease (section 2215(3) of the Civil Code).</p>
+  <p>The tenant is liable to the landlord for the conduct of the person whom the tenant allows to use the premises
+    as if the tenant used them (section 2216 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>With the landlord&rsquo;s prior consent, the tenant may transfer the lease in connection with the transfer of
+    the business activity that the premises serve; the landlord&rsquo;s consent and the agreement on the transfer of
+    the lease require written form (section 2307(1) of the Civil Code).</p>
+  <p>Any other transfer of the tenant&rsquo;s rights and obligations under this agreement requires the
+    landlord&rsquo;s prior written consent.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building against the usual risks. The tenant insures the tenant&rsquo;s fit-out,
+    equipment and stock and holds liability insurance for the tenant&rsquo;s business activity in the premises with an
+    insured amount of at least ______________________________, and provides proof of it on request.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord presented to the tenant, before this agreement was concluded, the energy performance certificate
+    (průkaz energetické náročnosti budovy) of the building or of the self-contained part of the building, or a copy
+    of it, and hands it or a copy to the tenant at the latest on signing this agreement (section 7a(2) and (3) of Act
+    No. 406/2000 Coll. on energy management). Energy performance class and date of the certificate:
+    ______________________________</p>
+  <p>A certificate is valid for 10 years from its issue or until a major alteration of the building or a change of
+    the method of heating, cooling or hot-water preparation (section 7a(4) of Act No. 406/2000 Coll.). Some buildings,
+    such as cultural monuments, are exempt (section 7a(5) of Act No. 406/2000 Coll.), and no certificate is obtained
+    where both parties so agree in writing and the building was built, and last underwent a major alteration, before
+    1 January 1947 (section 7a(10) of Act No. 406/2000 Coll.).</p>
+</div>
+
+<div th:fragment="clause-goodwill-compensation" data-clause="goodwill-compensation">
+  <p>If the lease ends by notice given by the landlord, the tenant is entitled to compensation for the advantage
+    that the landlord or a new tenant has gained by taking over the customer base (zákaznická základna) built up by
+    the tenant. The tenant has no such right if the tenant was given notice for a gross breach of the tenant&rsquo;s
+    obligations (section 2315 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord hands the premises over to the tenant, with everything needed for their proper use, on
+    <strong th:text="${startDate}">start date</strong> (section 2206 of the Civil Code). The parties record the
+    handover in a handover record (předávací protokol) signed by both, stating the condition of the premises, the
+    existing defects, the meter readings and the number of keys handed over.</p>
+  <p>At the end of the lease the tenant hands the premises back, vacated, at the place where the tenant took them
+    over and in the condition in which they were when taken over, taking into account the usual wear and tear from
+    proper use; the handover record is taken into account (section 2225(1) of the Civil Code).<span
+    class="clause-ref" data-ref="alterations" th:if="${refs['alterations']}"> Alterations are dealt with as provided
+    in the provisions of this agreement on alterations (see article
+    <span th:text="${refs['alterations']}"></span>).</span><span class="clause-ref" data-ref="deposit"
+    th:if="${refs['deposit']}"> The return of the security deposit is governed by the provisions of this agreement on
+    the deposit (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>The parties may end the lease at any time by written agreement. Notice of termination (výpověď) is given in
+    writing and must be delivered to the other party. The parties agree that a notice period runs from the first
+    day of the calendar month following the month in which the notice was delivered.</p>
+  <p th:if="${fixedTerm}">The tenant may terminate the fixed-term lease before the agreed term expires if (a) the
+    tenant loses the capacity to carry on the activity for which the premises are intended; (b) the premises cease,
+    for objective reasons, to be fit for the activity for which they were intended and the landlord does not provide
+    the tenant with suitable substitute premises; or (c) the landlord grossly breaches its obligations towards the
+    tenant (section 2308 of the Civil Code).</p>
+  <p th:if="${fixedTerm}">The landlord may terminate the fixed-term lease before the agreed term expires if (a) the
+    property in which the premises are located is to be removed, or rebuilt in a way that prevents the further use of
+    the premises, and the landlord neither had to nor could foresee this when the agreement was concluded; or (b) the
+    tenant grossly breaches its obligations towards the landlord, in particular by acting contrary to section 2305 of
+    the Civil Code although the landlord has called on the tenant to remedy this, or by being in delay with the
+    payment of the rent or of the services connected with the use of the premises for more than 1 month (section 2309
+    of the Civil Code).</p>
+  <p th:if="${fixedTerm}">The notice must state its ground; a notice that does not state its ground is invalid
+    (section 2310(1) of the Civil Code). The notice period (výpovědní doba) is 3 months (section 2310(2) of the Civil
+    Code). Other grounds of notice during the fixed term apply only if they are agreed here together with the notice
+    period (section 2229 of the Civil Code): ______________________________</p>
+  <p th:if="${!fixedTerm}">Either party may terminate the lease for an indefinite term with a notice period of 6
+    months; where the party has a serious reason for the notice, the notice period is 3 months; where the lease has
+    lasted for more than 5 years and, in view of the circumstances, the party could not have expected the other party
+    to give notice, the notice period is always 6 months (section 2312 of the Civil Code).</p>
+  <p>The party given notice may raise written objections to it within 1 month of the day the notice was delivered;
+    if it does not do so in time, the right to have the justification of the notice reviewed lapses. If the
+    objections were raised in time and the party giving notice does not withdraw the notice within 1 month of their
+    delivery, the party given notice may ask the court to review the justification of the notice within 2 months of
+    the expiry of that period (section 2314 of the Civil Code). If the tenant vacates the premises in accordance with
+    the notice, the notice is deemed valid and accepted by the tenant without objections (section 2313 of the Civil
+    Code).</p>
+  <p>If a party breaches its obligations in a particularly serious manner and thereby causes considerable harm to
+    the other party, the other party may terminate the lease without a notice period (section 2232 of the Civil
+    Code). The
+    landlord may also terminate the lease without a notice period where the tenant, despite a written warning with a
+    reasonable time for remedy, uses the premises so that they wear out beyond what is reasonable or are at risk of
+    destruction, or does not pay the rent even by the due date of the next rent (section 2228 of the Civil Code), and
+    in the other cases provided by law.</p>
+  <p>If the owner of the premises changes, the rights and obligations under the lease pass to the new owner
+    (section 2221(1) of the Civil Code). A party may not terminate the lease merely because the owner has changed,
+    save in the cases and within the time limits of section 2222 of the Civil Code.</p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices and other documents under this agreement are delivered in writing to the registered offices of the
+    parties stated in this agreement, or to another address the party has notified in writing, or through the data
+    boxes (datové schránky) of the parties. Data box identifiers: ______________________________</p>
+  <p>E-mail addresses for other communications: ______________________________</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party&rsquo;s representatives and contact persons only to
+    the extent necessary to conclude and perform this agreement and to meet legal obligations, in accordance with
+    Regulation (EU) 2016/679 (General Data Protection Regulation) and Act No. 110/2019 Coll. on the processing of
+    personal data. The supervisory authority is the Office for Personal Data Protection (Úřad pro ochranu osobních
+    údajů).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Czech law. The parties first try to settle disputes amicably; failing that, the
+    competent Czech court decides.</p>
+  <p>Amendments to this agreement require written form.</p>
+</div>
+
+</body>
+</html>

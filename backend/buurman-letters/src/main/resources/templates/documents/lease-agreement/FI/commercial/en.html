@@ -1,0 +1,345 @@
+<!--
+  legal-basis: Laki liikehuoneiston vuokrauksesta (LHVL, 482/1995; Swedish: lag om hyra av affärslokal),
+               consolidated text including the amending Act 532/2026 (HE 33/2026, in force 01.10.2026), read in
+               Finnish and Swedish on finlex.fi (opendata.finlex.fi consolidated versions fin@20260532 and
+               swe@20260532): sections 1, 2, 3, 4, 4 a, 7, 11, 11 a, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 27,
+               28, 29, 30, 36, 37, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 55, 56, 57.
+               Arvonlisaverolaki (1501/1993), sections 27 and 30 (finlex.fi, consolidated with Act 597/2026).
+               Laki indeksiehdon kayton rajoittamisesta (1195/2000), still cited in LHVL section 24, is no longer in
+               force (finlex.fi "Ei voimassa"; vm.fi: the restriction was not extended beyond 2012).
+               Laki rakennuksen energiatodistuksesta (50/2013), consolidated with Act 1010/2024, sections 3 and 6.
+               Korkolaki (633/1982). Oikeudenkaymiskaari (4/1734), chapter 10. Tietosuojalaki (1050/2018); GDPR:
+               Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679). Aland: Hyreslag (1999:19) for
+               landskapet Aland (regeringen.ax) applies instead of the LHVL in the Aland Islands; not covered by
+               this document.
+               Verified 2026-10-04 against finlex.fi (section texts read on that date).
+               Pending: HE 164/2026 (new Act on the energy performance of buildings, given to Parliament
+               10.09.2026) would replace Act 50/2013 - re-verify the energy-certificate clause after enactment.
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in fi.html, never spelled out (fi "3 kuukautta" is "3 months" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of fi.html; the Finnish text is authoritative. It states the law of mainland
+  Finland (LHVL) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from fi.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Citations are written "(LHVL section 42, subsection 2)" to pair with the Finnish
+  "(LHVL 42 § 2 mom.)". Each clause-<key> fragment holds only the clause body; the shell supplies article numbers
+  and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article
+  numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease of business premises (liikehuoneiston vuokrasopimus) is concluded between the following
+    parties:</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (vuokranantaja),</p>
+  <p>Business ID (Y-tunnus): ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo; (vuokralainen),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (vuokralainen),</p>
+  <p>Business ID (Y-tunnus): ______________________________</p>
+  <p>VAT identification number: ______________________________</p>
+  <p>represented by: ______________________________.</p>
+  <p>If there are several tenants, they are jointly and severally liable for all obligations of the tenant under
+    this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, for a use other than residential, the premises located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the business premises&rdquo;
+    (liikehuoneisto). Floor area approximately ________ m². Additional spaces and parking spaces belonging to the
+    business premises: ______________________________.</p>
+  <p>The landlord&rsquo;s right to let the business premises is based on the following:
+    ______________________________. The landlord must inform the tenant of what the landlord&rsquo;s right to let
+    the premises is based on or what restricts that right (LHVL section 30).</p>
+  <p>This agreement is governed by the Act on Commercial Leases (laki liikehuoneiston vuokrauksesta, 482/1995,
+    hereinafter LHVL). The provisions of the Act may be departed from by agreement where the Act does not provide
+    otherwise and the departure is not otherwise to be regarded as prohibited (LHVL section 2).</p>
+  <p>This document is drafted under the legislation of mainland Finland. Premises located in the Åland Islands are
+    governed by the province&rsquo;s own tenancy legislation (Hyreslag för landskapet Åland, 1999:19), under which
+    this document has not been drafted.</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The business premises are let exclusively for the following purpose: ______________________________
+    (permitted use). Any change of the permitted use requires the landlord&rsquo;s prior written consent.</p>
+  <p>The purpose of the premises is determined by their agreed principal use (LHVL section 1, subsection 1). Using
+    the premises for another purpose or in another manner than presupposed when the lease was concluded may entitle
+    the landlord to rescind the lease (LHVL section 48, subsection 1, paragraph 3). The tenant obtains, at its own
+    expense, the official permits required for its business.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The tenancy starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite period (toistaiseksi voimassa oleva).</p>
+  <p th:if="${fixedTerm}">The lease is concluded for a fixed term (määräaikainen)<span th:if="${endDate != null}"> and
+    ends on <strong th:text="${endDate}">end date</strong></span>. A fixed-term lease ends when its term expires
+    (LHVL section 3, subsection 2). A fixed-term lease ends by notice of termination only on the death of the
+    tenant as provided by law (LHVL section 41, subsection 2) or on a ground provided in other legislation
+    (LHVL section 41, subsection 3).</p>
+  <p>The lease and any amendment to it are made in writing. If the lease has not been made in writing, it is
+    deemed to be in force for an indefinite period (LHVL section 4). An electronic agreement in a form that can
+    generally be stored and reproduced for a period appropriate to its purpose also counts as written
+    (LHVL section 4 a).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong> <span th:text="${paymentFrequency}">monthly</span>.<span
+    class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> Value added tax is governed by this agreement (see article <span th:text="${refs['vat']}"></span>).</span><span
+    class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> In addition, the tenant pays the
+    agreed usage charges (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The rent is determined by what has been agreed, unless otherwise provided by law (LHVL section 24). During the
+    tenancy, the landlord or the tenant may bring the reasonableness of the rent or of a term on its determination
+    before a court (LHVL section 25, subsection 1).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">The review of the rent is governed by this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is reviewed annually from ______________ on the following basis:
+    ______________________________ (for example the change in the cost-of-living index (elinkustannusindeksi)
+    published by Statistics Finland (Tilastokeskus) or a fixed percentage increase). Method of calculating the
+    review: ______________________________.</p>
+  <p>The landlord notifies the tenant in writing of the reviewed rent and the date on which it takes effect before
+    the reviewed rent takes effect. The review term forms part of the agreed rent (LHVL section 24), and its
+    reasonableness may be brought before a court (LHVL section 25, subsection 1).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays the landlord the following usage and upkeep charges: water
+    ______________, electricity ______________, heating ______________, waste management ______________, other
+    ______________.</p>
+  <p>Consumption-based charges are invoiced according to meter readings or another agreed basis, and the landlord
+    provides the tenant, on request, with an account of the bases of the charges.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>The transfer of a right to use real property is exempt from value added tax (Value Added Tax Act,
+    arvonlisäverolaki, 1501/1993, section 27), unless the transferor applies to become liable to tax for the
+    transfer (Value Added Tax Act, section 30). The tax liability covers only the property or part of it named in
+    the application, and it requires that the property is used continuously for activities entitling to deduction
+    within the meaning of Chapter 10 of the Value Added Tax Act or that the user of the property is the State or
+    one of the educational institutions listed in the Act (Value Added Tax Act, section 30).</p>
+  <p>The landlord has applied or applies to become liable to tax for the business premises (yes / no):
+    ______________. If the landlord is liable to tax, value added tax at the rate in force from time to time is
+    added to the rent and to the other payments under this agreement. The tenant undertakes to use the business
+    premises continuously for activities entitling to deduction and to notify the landlord in writing without delay
+    of any change of use, and the tenant compensates the landlord for damage resulting from a failure to comply
+    with these obligations.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant provides the landlord with security (vakuus) for the performance
+    of the tenant&rsquo;s obligations. The amount of the security is <strong th:text="${depositAmount}">amount</strong>.</p>
+  <p th:if="${depositAmount == null}">The tenant provides the landlord with security (vakuus) for the performance
+    of the tenant&rsquo;s obligations. The amount of the security is the amount agreed in writing between the
+    parties.</p>
+  <p>Form of the security (for example a cash deposit or a bank guarantee) and time for providing it:
+    ______________________________. The parties may agree that reasonable security is provided; if the security is
+    not provided within the agreed time, the landlord is entitled to rescind the agreement, except where the
+    security has been provided before the notice of rescission was received (LHVL section 7). The law sets no
+    maximum amount, in euros or linked to the rent, for security in a lease of business premises.</p>
+  <p>The security covers all obligations of the tenant arising from the tenancy. The landlord returns or releases
+    the security without delay after the tenancy has ended and the business premises have been handed back, less
+    the landlord&rsquo;s claims that have fallen due, of which the landlord gives the tenant a written
+    account.<span class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The condition of the premises is recorded at their handover (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the usage charges</span><span th:if="${refs['vat']}"> together with value added tax</span>
+    <span th:text="${paymentFrequency}">monthly</span>
+    <span th:if="${paymentDueDay != null}">no later than day
+      <strong th:text="${paymentDueDay}">1</strong> of each rent payment period</span><span
+    th:if="${paymentDueDay == null}">no later than day 2 of each rent payment period (LHVL section 27, subsection 1)</span>
+    to the bank account designated by the landlord ______________________________.</p>
+  <p>Payment of rent in advance for one or more rent payment periods may be agreed when the lease is concluded,
+    and for a special reason when the terms of the lease are amended or the tenant changes; a term otherwise
+    imposing on the tenant, during the tenancy, an obligation to pay rent in advance is void (LHVL section 29,
+    subsection 1). Advance rent: ______________________________.</p>
+  <p>On late payment the tenant is obliged to pay default interest under the Interest Act (korkolaki, 633/1982).
+    Failure to pay the rent within the statutory or agreed time may entitle the landlord to rescind the lease
+    (LHVL section 48, subsection 1, paragraph 1).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The parties may agree on the rights and obligations concerning the use, condition and maintenance of the
+    premises; unless otherwise agreed, the provisions of Chapter 2 of the LHVL apply, some of which are mandatory in
+    the tenant&rsquo;s favour (LHVL section 14). The parties agree on the following allocation of responsibility:
+    the landlord is responsible for ______________________________; the tenant is responsible for
+    ______________________________.</p>
+  <p>Unless otherwise agreed, at the start of the tenancy and during it the premises must be in the condition that
+    the tenant can reasonably require, taking into account the age of the premises, the condition of premises used
+    for a corresponding purpose in the area and the other local circumstances (LHVL section 18,
+    subsection 1).</p>
+  <p>The tenant must take good care of the premises; the tenant is not liable for ordinary wear and tear if the
+    landlord is responsible for the condition and maintenance of the premises (LHVL section 23, subsection 1). The
+    tenant must notify the landlord without delay of damage to the premises or of a defect for whose repair the
+    landlord is responsible (LHVL section 22, subsection 1).</p>
+  <p>The landlord may carry out immediately work that cannot be postponed without causing damage, and work that
+    causes no substantial inconvenience after notifying the tenant at least 14 days before the work starts
+    (LHVL section 19, subsection 2). For other repair or alteration works the landlord must give notice at least
+    6 months before the work starts, and the tenant is entitled, within 14 days of receiving the notice, to rescind
+    the agreement with effect from the earliest date on which the work may begin (LHVL section 19,
+    subsection 3).</p>
+  <p>The landlord and the landlord&rsquo;s representative are entitled to enter the premises when this is necessary
+    to supervise their condition and upkeep or for repair and alteration works or upkeep measures, and to show the
+    premises if they are to be sold or are available for re-letting; the visit is arranged at a time suitable for
+    the parties unless the urgency or nature of the matter prevents this (LHVL section 20).</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant has no right, without the landlord&rsquo;s permission, to carry out repair or alteration works
+    other than to remedy a defect for which the landlord is responsible, but the tenant may always take measures to
+    prevent or limit immediate damage to the premises (LHVL section 19, subsection 1). The tenant&rsquo;s
+    alteration and fit-out works are carried out in accordance with the landlord&rsquo;s prior written permission
+    and at the tenant&rsquo;s expense: ______________________________.</p>
+  <p>When a fixed-term agreement ends, the tenant is entitled to compensation for the repair and alteration works
+    carried out by the tenant that have increased the value of the premises, at their value at the end of the
+    tenancy, if the tenant was entitled by law to carry out the works and they have not already been compensated
+    (LHVL section 45, subsection 1); a term restricting this right is void (LHVL section 47). When the tenancy
+    ends, the tenant restores the premises to their original condition insofar as agreed in the landlord&rsquo;s
+    permission.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant may not assign the tenancy without permission given in the lease or separately by the landlord,
+    unless the law provides otherwise. When the tenant assigns the tenancy, the tenant must notify the landlord in
+    writing immediately; if the tenant is entitled to assign the tenancy, the tenant is released from its
+    obligations once it has notified the landlord of the assignment (LHVL section 36).</p>
+  <p>Where the tenant carries on a business under a trade name entered in the Trade Register in premises let wholly
+    or partly for that purpose, the tenant is entitled, when transferring the business, to assign the tenancy to the
+    transferee without the landlord&rsquo;s permission, unless otherwise agreed or unless the landlord has a
+    justified reason to object to the assignment (LHVL section 37, subsection 1). The tenant must notify the
+    landlord of the assignment in writing no later than 2 months before it, and a landlord who does not accept the
+    assignment must, within 1 month of receiving the notice, bring the grounds of the objection before a court
+    (LHVL section 37, subsection 2).</p>
+  <p>The parties agree as follows on the right of assignment on a transfer of the business (for example the right
+    is excluded or requires the landlord&rsquo;s consent): ______________________________.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>Unless otherwise agreed, the tenant may, without the landlord&rsquo;s permission, sublet or otherwise give up
+    to half of the premises for use by another person, provided that this does not cause the landlord considerable
+    inconvenience or disturbance (LHVL section 16). The parties agree as follows on subletting:
+    ______________________________.</p>
+  <p>Where the tenant has given the premises wholly or partly for use by another person, the tenant remains liable
+    to the landlord for the obligations under the lease and for damage that the person who received the premises
+    for use is obliged to compensate to the landlord (LHVL section 17).</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The tenant takes out and maintains for the duration of the tenancy liability and property insurance adequate
+    for its business and provides a certificate of it on request. The landlord insures the building. Minimum
+    amounts of the insurance: ______________________________.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>The landlord has made a valid energy performance certificate (energiatodistus) for the building or part of it
+    available to the tenant at the viewing and gives it to the tenant as an original or a copy (Act on Energy
+    Performance Certificates for Buildings, laki rakennuksen energiatodistuksesta, 50/2013, section 6,
+    subsection 1).</p>
+  <p>The energy performance certificate need not be made available or given if the letting is for a fixed term of
+    at most 1 year, if it is a sublease or a letting between entities of the same group (Act 50/2013, section 6,
+    subsection 2), or if the building is excluded from the scope of that Act (Act 50/2013,
+    section 3).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>The landlord must keep the premises available to the tenant on the day on which the tenant is entitled to
+    obtain possession of them (LHVL section 15, subsection 1). The parties inspect the premises together before they
+    are handed over and record their condition, the keys handed over and the meter readings in an inspection report,
+    which each party signs and of which each party receives a copy.</p>
+  <p>The moving day (muuttopäivä) is the working day following the end of the lease (LHVL section 55). The tenant
+    returns the premises and all keys to the landlord no later than on that day, and the parties inspect the
+    premises together. In a tenancy for an indefinite period, a court may postpone the moving day by at most
+    6 months under the conditions provided by law (LHVL section 56, subsection 2); the claim must be brought within
+    7 days after the notice of termination or rescission was received and before the moving day (LHVL section 57,
+    subsection 1).<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the security is governed by this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>Unless otherwise agreed on the notice period, the notice period (irtisanomisaika) of a lease for an indefinite
+    period is 3 months when the landlord gives notice and 1 month when the tenant gives notice (LHVL section 42,
+    subsection 2). The notice period is counted from the last day of the calendar month during which notice was
+    given, unless otherwise agreed (LHVL section 42, subsection 1). Agreed notice periods:
+    ______________________________.</p>
+  <p>The landlord&rsquo;s notice of termination must be given in writing and must state the date on which the
+    tenancy ends and the ground for the termination (LHVL section 43, subsection 1). The tenant&rsquo;s notice of
+    termination is given in writing to the landlord or to the person whom the landlord has instructed to collect
+    the rent, but not to a financial institution (LHVL section 43, subsection 2). The notice of termination must
+    be served in a verifiable manner (todisteellisesti) (LHVL section 11 a, subsection 1), and a termination made
+    in any other way is ineffective (LHVL section 43, subsections 5 and 6).</p>
+  <p>At the tenant&rsquo;s request, the court must declare a termination made by the landlord ineffective in the
+    cases provided by law (LHVL section 44, subsection 1). The claim must be brought while the tenancy lasts and no
+    later than 1 month after the notice of termination was received (LHVL section 44, subsection 2).</p>
+  <p>If a tenancy for an indefinite period ends on a notice of termination by the landlord that cannot be regarded
+    as consistent with good practice in tenancies, the tenant is entitled to compensation for repair and alteration
+    works that have increased the value of the premises and for moving costs and the
+    costs of acquiring new premises (LHVL section 45, subsection 2). A tenant who, on the basis of the lease, has carried on trade, craft, industrial
+    business or other gainful activity in the premises for at least 2 years is in addition entitled to reasonable
+    compensation for the reduction or loss of clientele caused by the move and for the increase in the rental value
+    of the premises resulting from the tenant&rsquo;s activity, if the next occupant of the premises starts to carry
+    on substantially similar gainful activity in them (LHVL section 45, subsection 2). A term restricting these
+    rights is void (LHVL section 47). The tenant loses these rights if, after the notice of termination, the tenant
+    neglects its obligations as tenant other than to a minor extent (LHVL section 46).</p>
+  <p th:if="${fixedTerm}">A fixed-term lease<span class="clause-ref" data-ref="term"
+    th:if="${refs['term']}"> (see article <span th:text="${refs['term']}"></span>)</span> cannot be terminated by
+    notice other than in the cases provided by law (LHVL section 41, subsection 2).</p>
+  <p>The landlord is entitled to rescind (purkaa) the lease on the grounds provided by law, such as where the
+    tenant fails to pay the rent within the statutory or agreed time or otherwise materially breaches what has been
+    agreed concerning the premises (LHVL section 48, subsection 1); there is no such right if the conduct giving rise
+    to the ground for rescission is of minor significance (LHVL section 48, subsection 3). On certain grounds,
+    rescission requires that the tenant has first been given a written warning (LHVL section 49). The tenant is
+    entitled to rescind the lease on the grounds provided by law, such as where the landlord materially breaches
+    what has been agreed concerning the premises (LHVL section 50, subsection 1). The notice of rescission must be
+    given in writing and must state the ground for rescission (LHVL section 53, subsection 1); it must be served in
+    a verifiable manner (LHVL section 11 a, subsection 1).</p>
+  <p>The parties may always agree on the end of the tenancy.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the premises is governed by this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices may be served by letter sent by post to the postal address that the recipient usually uses
+    (LHVL section 11, subsection 1).</p>
+  <p>The parties expressly agree that notices may also be served through the following electronic communication
+    channel, using the most recent contact details given by the recipient:
+    ______________________________ (for example an email address). If no electronic communication channel has been
+    agreed in this way and nothing else has been expressly agreed, notices may be served through an electronic
+    communication channel that the parties have regularly used for communicating with each other during the tenancy
+    (LHVL section 11, subsection 2).</p>
+  <p>If the letter is not returned to the sender and it is not evident when the electronic message is sent that
+    the recipient has not received it, service is deemed, unless otherwise shown, to have taken place on day 7
+    after the notice was handed over for postal delivery and, where the agreed electronic channel is used, on day 3
+    after the notice was sent (LHVL section 11, subsection 4). The parties must notify changes to their postal
+    address and electronic contact details without delay (LHVL section 11, subsection 3).</p>
+  <p>Notices of termination and of rescission and the warning preceding rescission must be served in a verifiable
+    manner; a term under which they may be served in a way other than as provided by law is void
+    (LHVL section 11 a, subsection 4).</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party&rsquo;s representatives and contact persons only
+    insofar as this is necessary for concluding and performing this agreement and for complying with legal
+    obligations, in accordance with the EU General Data Protection Regulation (Regulation (EU) 2016/679) and the
+    Finnish Data Protection Act (tietosuojalaki, 1050/2018). The data are kept only as long as necessary for those
+    purposes.</p>
+  <p>Data subjects have the rights under the General Data Protection Regulation, in particular the rights of
+    access, rectification and erasure, and the right to lodge a complaint with the Data Protection Ombudsman
+    (tietosuojavaltuutettu).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Finnish law.</p>
+  <p>The parties seek to resolve disagreements primarily through negotiation. Disputes are decided by the competent
+    district court (käräjäoikeus) in accordance with the venue provisions of Chapter 10 of the Code of Judicial
+    Procedure (oikeudenkäymiskaari). If a term of this agreement is void, the remainder of the agreement remains in
+    force, and the law applies in place of the void term.</p>
+</div>
+
+</body>
+</html>
