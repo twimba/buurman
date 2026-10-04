@@ -22,7 +22,8 @@ import org.springframework.core.io.ClassPathResource;
 
 /**
  * Mechanical fidelity gate: a translated lease document may change prose only. Against the
- * authoritative {@code nl.html} it must keep the same fragments, the same Thymeleaf expressions and
+ * authoritative document of its (country, kind) in the {@link LeaseDocumentRegistry} (for NL
+ * residential {@code nl.html}) it must keep the same fragments, the same Thymeleaf expressions and
  * structural attributes in the same order, the same element skeleton, the same statute citations
  * and bare numbers, and the legal header.
  *
@@ -58,17 +59,17 @@ import org.springframework.core.io.ClassPathResource;
  * prose (deadlines, periods, multiples, amounts, counts) is written as DIGITS exactly as in {@code
  * nl.html}, in every language, and never spelled out ("2 maal de kale huurprijs" is "2 times the
  * net rent", "2 Kaltmieten", "2 fois le loyer de base", never "twice" or "zweifach"). {@code
- * nl.html} is itself checked for Dutch number words (whitespace tolerant): the article "een" is
- * allowed ("een dag die valt", "een termijn van 2 jaar") but "een" before maand/week/jaar, or after
- * a quantity cue ("binnen een dag", "per een termijn"), is a quantity; "in acht" is allowed only in
- * the idiom "in acht nemen" (also "in acht die ...", "... in acht." at the end of a clause), so "in
- * acht weken" still flags.
+ * nl.html} is itself checked for Dutch number words (whitespace tolerant), as is the authoritative
+ * document of every registry entry in its own language ({@link LeaseNumberWords}, one rule set per
+ * language). For Dutch: the article "een" is allowed ("een dag die valt", "een termijn van 2 jaar")
+ * but "een" before maand/week/jaar, or after a quantity cue ("binnen een dag", "per een termijn"),
+ * is a quantity; "in acht" is allowed only in the idiom "in acht nemen" (also "in acht die ...",
+ * "... in acht." at the end of a clause), so "in acht weken" still flags.
  */
 @DisplayName("lease document fidelity")
 class LeaseDocumentFidelityTest {
 
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
-  private static final List<String> COUNTRY_KINDS = List.of("NL/residential");
 
   private static final Set<String> VOID_TAGS =
       Set.of("br", "hr", "img", "input", "meta", "link", "wbr");
@@ -83,32 +84,21 @@ class LeaseDocumentFidelityTest {
   private static final Pattern NUMBER = Pattern.compile("\\d+");
   private static final Pattern HEADER_ANCHOR =
       Pattern.compile(
-          "\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|7:\\d+[a-z]?"
-              + "|[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*\\.(?:nl|eu)\\b|BWBR\\d+|CELEX\\s+\\w+");
+          "\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}\\.\\d{2}\\.\\d{4}|\\d{2}/\\d{2}/\\d{4}"
+              + "|\\d+:\\d+[a-z]?|§\\s*\\d+[a-z]?"
+              + "|[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*\\.(?:nl|eu|de|fr|es|pt|it|se|dk|no|fi|gr|pl|at"
+              + "|be|lu|ie|cz|ch|ca|us|uk|gov|int)\\b|BWBR\\d+|CELEX\\s+\\w+");
   private static final Pattern TRANSLATION = Pattern.compile("translation:\\s*(\\S+)");
   private static final Pattern REVIEWED_BY = Pattern.compile("reviewed-by:\\s*(\\S+)");
-  private static final Pattern IN_ACHT_IDIOM =
-      Pattern.compile(
-          "\\bin\\s+acht(?=\\s*[,.;:)!?]|\\s*$|\\s+(?:nemen|neemt|nam|genomen|neem|die|dat|en|of|te)\\b)",
-          Pattern.CASE_INSENSITIVE);
-  private static final Pattern DUTCH_NUMBER_WORD =
-      Pattern.compile(
-          "\\b(twee|drie|vier|vijf|zes|zeven|acht|negen|tien|elf|twaalf|dertien|veertien|vijftien"
-              + "|twintig|dertig|veertig|vijftig|zestig|zeventig|tachtig|negentig|honderd|duizend"
-              + "|eenmaal|tweemaal|driemaal|viermaal|anderhalf|half|halve|dubbel\\w*"
-              + "|een\\s+(?:maand|maanden|week|weken|jaar|jaren)"
-              + "|(?:binnen|na|per|gedurende|elke|uiterlijk|ten\\s+minste|ten\\s+hoogste"
-              + "|langer\\s+dan|korter\\s+dan|meer\\s+dan|minder\\s+dan)\\s+een\\s+(?:dag|termijn))\\b",
-          Pattern.CASE_INSENSITIVE);
   private static final Pattern SENTENCE_END = Pattern.compile("[()\\[\\];:]|[.!?](?=\\s+\\D)");
   private static final Pattern LID_AFTER_CITATION =
       Pattern.compile("^(?:[\\s,]+[^\\s\\d,]+){0,3}?[\\s,]+(?<![\\d:])(\\d+)(?![\\d:])");
 
-  /** All violations of {@code other} against the authoritative {@code nl} document. */
-  static List<String> violations(String nl, String other) {
-    List<String> problems = new ArrayList<>(headerViolations(nl, other));
+  /** All violations of {@code other} against the {@code authoritative} document. */
+  static List<String> violations(String authoritative, String other) {
+    List<String> problems = new ArrayList<>(headerViolations(authoritative, other));
 
-    Map<String, String> nlFragments = fragments(nl);
+    Map<String, String> nlFragments = fragments(authoritative);
     Map<String, String> otherFragments = fragments(other);
     if (!nlFragments.keySet().equals(otherFragments.keySet())) {
       problems.add(
@@ -138,20 +128,15 @@ class LeaseDocumentFidelityTest {
 
   /** Dutch number words left in the prose of the authoritative document. */
   static List<String> numberWordViolations(String nl) {
-    List<String> problems = new ArrayList<>();
-    fragments(nl)
-        .forEach(
-            (name, body) -> {
-              String prose = IN_ACHT_IDIOM.matcher(prose(body)).replaceAll(" ");
-              Matcher m = DUTCH_NUMBER_WORD.matcher(prose);
-              while (m.find()) {
-                problems.add("number word in " + name + ": " + m.group());
-              }
-            });
-    return problems;
+    return numberWordViolations(nl, "nl");
   }
 
-  private static List<String> headerViolations(String nl, String other) {
+  /** Spelled-out numbers left in the prose of an authoritative document in {@code language}. */
+  static List<String> numberWordViolations(String authoritative, String language) {
+    return LeaseNumberWords.violations(authoritative, language);
+  }
+
+  private static List<String> headerViolations(String authoritative, String other) {
     List<String> problems = new ArrayList<>();
     String header = header(other);
     for (String marker : List.of("legal-basis:", "reviewed-by:", "translation:")) {
@@ -170,7 +155,7 @@ class LeaseDocumentFidelityTest {
         problems.add("header rule: a translation must not claim translation: authoritative");
       }
     }
-    Matcher m = HEADER_ANCHOR.matcher(legalBasis(header(nl)));
+    Matcher m = HEADER_ANCHOR.matcher(legalBasis(header(authoritative)));
     while (m.find()) {
       if (!header.contains(m.group())) {
         problems.add("header anchor missing: " + m.group());
@@ -284,7 +269,7 @@ class LeaseDocumentFidelityTest {
     return result;
   }
 
-  private static String prose(String fragment) {
+  static String prose(String fragment) {
     return ENTITY.matcher(TAG.matcher(fragment).replaceAll(" ")).replaceAll(" ");
   }
 
@@ -329,39 +314,39 @@ class LeaseDocumentFidelityTest {
     return result;
   }
 
-  private static String read(String country, String kind, String language) throws IOException {
+  private static String read(LeaseDocumentRegistry.Entry entry, String language)
+      throws IOException {
     try (var in =
-        new ClassPathResource(DOCUMENT_ROOT + country + "/" + kind + "/" + language + ".html")
+        new ClassPathResource(DOCUMENT_ROOT + entry.key() + "/" + language + ".html")
             .getInputStream()) {
       return new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
   }
 
   @Test
-  @DisplayName("every enforced translation is faithful to the authoritative NL document")
+  @DisplayName(
+      "every enforced translation is faithful to the authoritative document of its (country, kind)")
   void translationsAreFaithful() throws IOException {
-    for (String countryKind : COUNTRY_KINDS) {
-      String[] parts = countryKind.split("/");
-      String nl = read(parts[0], parts[1], "nl");
-      for (String language : LeaseDocumentCatalogTest.ENFORCED_LANGUAGES) {
-        if ("nl".equals(language)) {
-          continue;
-        }
-        assertThat(violations(nl, read(parts[0], parts[1], language)))
-            .as("%s/%s fidelity", countryKind, language)
+    for (LeaseDocumentRegistry.Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      String authoritative = read(entry, entry.authoritativeLanguage());
+      for (String language : entry.translations()) {
+        assertThat(violations(authoritative, read(entry, language)))
+            .as("%s/%s fidelity against %s", entry.key(), language, entry.authoritativeLanguage())
             .isEmpty();
       }
     }
   }
 
   @Test
-  @DisplayName("nl.html is authoritative and writes every quantity as digits")
-  void nlIsAuthoritativeAndDigitOnly() throws IOException {
-    for (String countryKind : COUNTRY_KINDS) {
-      String[] parts = countryKind.split("/");
-      String nl = read(parts[0], parts[1], "nl");
-      assertThat(header(nl)).containsPattern("translation:\\s*authoritative");
-      assertThat(numberWordViolations(nl)).as("%s nl number words", countryKind).isEmpty();
+  @DisplayName(
+      "the authoritative document is marked authoritative and writes every quantity as digits")
+  void authoritativeIsAuthoritativeAndDigitOnly() throws IOException {
+    for (LeaseDocumentRegistry.Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      String authoritative = read(entry, entry.authoritativeLanguage());
+      assertThat(header(authoritative)).containsPattern("translation:\\s*authoritative");
+      assertThat(numberWordViolations(authoritative, entry.authoritativeLanguage()))
+          .as("%s/%s number words", entry.key(), entry.authoritativeLanguage())
+          .isEmpty();
     }
   }
 

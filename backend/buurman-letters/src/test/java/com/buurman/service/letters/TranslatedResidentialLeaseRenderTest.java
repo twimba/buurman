@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -16,18 +19,28 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.ClassPathResource;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.buurman.document.DocumentTemplateSupport;
+import com.buurman.domain.LeaseKind;
 
-/** Real Thymeleaf engine and bundles over each courtesy translation (no PDF). */
-@DisplayName("translated NL residential lease document render")
+/**
+ * Real Thymeleaf engine and bundles over every shipped lease document (no PDF), for every {@link
+ * LeaseDocumentRegistry} entry and enforced language: each translation (courtesy notice, no leaking
+ * authoritative-language marker words) and each authoritative document. The clause set, required
+ * clauses and marker words come from the registry; adding a country adds cases without test
+ * changes. The per-language wording expectations below ({@link Lang}) are specific to the NL
+ * residential documents and only apply to that entry; every other entry gets the language-neutral
+ * assertions.
+ */
+@DisplayName("lease document render over the registry")
 class TranslatedResidentialLeaseRenderTest {
 
   /**
-   * Per-language expectations. Substrings avoid HTML entities and are matched against
-   * whitespace-normalized clause text.
+   * Per-language wording expectations of the NL residential translations. Substrings avoid HTML
+   * entities and are matched against whitespace-normalized clause text.
    */
   record Lang(
       String code,
@@ -151,33 +164,36 @@ class TranslatedResidentialLeaseRenderTest {
               "najpóźniej <strong>1</strong>. dnia miesiąca",
               "najpóźniej <strong>5</strong>. dnia miesiąca"));
 
-  private static Stream<Lang> languages() {
-    return LANGS.stream();
+  /** One registry entry rendered in one of its translation languages. */
+  record Case(LeaseDocumentRegistry.Entry entry, String language) {
+    Locale locale() {
+      return Locale.forLanguageTag(language);
+    }
+
+    /** The NL residential wording expectations, absent for every other entry. */
+    Optional<Lang> expectation() {
+      return "NL/RESIDENTIAL".equals(entry.dbKey())
+          ? LANGS.stream().filter(l -> l.code().equals(language)).findFirst()
+          : Optional.empty();
+    }
+
+    @Override
+    public String toString() {
+      return entry.key() + "/" + language;
+    }
   }
 
-  private static final List<String> ALL =
-      List.of(
-          "parties",
-          "premises",
-          "term",
-          "rent",
-          "rent-adjustment",
-          "service-costs",
-          "deposit",
-          "payment",
-          "use",
-          "subletting",
-          "maintenance",
-          "energy-label",
-          "handover-inspection",
-          "termination",
-          "data-protection",
-          "disputes");
+  private static Stream<Case> translations() {
+    return LeaseDocumentRegistry.ENTRIES.stream()
+        .flatMap(e -> e.translations().stream().map(l -> new Case(e, l)));
+  }
 
-  private static final List<String> REQUIRED =
-      List.of("parties", "premises", "term", "rent", "payment", "energy-label", "termination");
+  private static Stream<LeaseDocumentRegistry.Entry> entries() {
+    return LeaseDocumentRegistry.ENTRIES.stream();
+  }
 
   private static final Pattern DATA_CLAUSE = Pattern.compile("data-clause=\"([a-z0-9-]+)\"");
+  private static final Pattern DATA_REF = Pattern.compile("data-ref=\"([a-z0-9-]+)\"");
   private TemplateEngine engine;
   private MessageSource messages;
 
@@ -191,12 +207,10 @@ class TranslatedResidentialLeaseRenderTest {
     engine = DocumentTemplateSupport.templateEngine(messages, false);
   }
 
-  private String render(Lang lang, List<String> orderedKeys, boolean withOptionalValues) {
-    return render(lang, orderedKeys, withOptionalValues, Map.of());
-  }
-
   private String render(
-      Lang lang,
+      LeaseDocumentRegistry.Entry entry,
+      String language,
+      boolean authoritative,
       List<String> orderedKeys,
       boolean withOptionalValues,
       Map<String, Object> overrides) {
@@ -211,11 +225,11 @@ class TranslatedResidentialLeaseRenderTest {
       refs.put(orderedKeys.get(i), i + 1);
     }
     Map<String, Object> vars = new HashMap<>();
-    vars.put("clauseSource", "lease-agreement/NL/residential/" + lang.code());
-    vars.put("authoritative", false);
+    vars.put("clauseSource", entry.documentPath(language));
+    vars.put("authoritative", authoritative);
     vars.put("fallbackUsed", false);
-    vars.put("languageUsed", lang.code());
-    vars.put("requestedLang", lang.code());
+    vars.put("languageUsed", language);
+    vars.put("requestedLang", language);
     vars.put("generatedDate", "3 October 2026");
     vars.put("contractIdentifier", "CON01TEST");
     vars.put("propertyAddress", "Keizersgracht 1, 1015 AA Amsterdam");
@@ -230,6 +244,8 @@ class TranslatedResidentialLeaseRenderTest {
     vars.put("landlordNoticeDays", 90);
     vars.put("tenantNoticeDays", 30);
     vars.put("countryMetadata", null);
+    vars.put("countryCode", entry.countryCode());
+    vars.put("regionCode", null);
     vars.put("endDate", withOptionalValues ? "31 October 2028" : null);
     vars.put("depositAmount", withOptionalValues ? "EUR 2,500.00" : null);
     vars.put("paymentDueDay", withOptionalValues ? 1 : null);
@@ -237,9 +253,18 @@ class TranslatedResidentialLeaseRenderTest {
     vars.put("clauses", clauses);
     vars.put("refs", refs);
     vars.putAll(overrides);
-    Context ctx = new Context(lang.locale());
+    Context ctx = new Context(Locale.forLanguageTag(language));
     ctx.setVariables(vars);
     return engine.process("lease-agreement/_shell", ctx);
+  }
+
+  private String render(Case c, List<String> orderedKeys, boolean withOptionalValues) {
+    return render(c.entry(), c.language(), false, orderedKeys, withOptionalValues, Map.of());
+  }
+
+  private String render(
+      Case c, List<String> orderedKeys, boolean withOptionalValues, Map<String, Object> overrides) {
+    return render(c.entry(), c.language(), false, orderedKeys, withOptionalValues, overrides);
   }
 
   private static List<String> renderedClauses(String html) {
@@ -251,78 +276,181 @@ class TranslatedResidentialLeaseRenderTest {
     return keys;
   }
 
-  private void assertClean(Lang lang, String html) {
+  private static Set<String> referencedClauses(String html) {
+    Set<String> keys = new LinkedHashSet<>();
+    Matcher m = DATA_REF.matcher(html);
+    while (m.find()) {
+      keys.add(m.group(1));
+    }
+    return keys;
+  }
+
+  /** The document source of one language, to see which cross-references and values it uses. */
+  private static String source(LeaseDocumentRegistry.Entry entry, String language) {
+    try (var in =
+        new ClassPathResource(
+                DocumentTemplateSupport.TEMPLATE_PREFIX + entry.documentPath(language) + ".html")
+            .getInputStream()) {
+      return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+    } catch (java.io.IOException e) {
+      throw new java.io.UncheckedIOException(e);
+    }
+  }
+
+  private void assertNoTemplateResidue(String html) {
     assertThat(html)
         .doesNotContain("${")
         .doesNotContain("#{")
         .doesNotContain("[[")
         .doesNotContainPattern("(?<!\\p{L})null(?!\\p{L})")
-        .doesNotContain("??")
-        .contains(messages.getMessage("lease.ref", new Object[] {"CON01TEST"}, lang.locale()))
-        .contains(messages.getMessage("lease.notice.courtesy", null, lang.locale()));
+        .doesNotContain("??");
     assertThat(html)
         .as("raw bundle key rendered")
         .doesNotContainPattern(NlResidentialLeaseRenderTest.RAW_KEY);
-    // sv and da legitimately use "artikel" in the cross-reference phrase and in "denna/denne
-    // artikel" (this article); drop exactly those phrases first, any other "artikel" is leakage
-    String withoutOwnWord = html.replace(lang.articleRef(), "");
-    if (!lang.ownArticleWord().isEmpty()) {
-      withoutOwnWord = withoutOwnWord.replace(lang.ownArticleWord(), "");
+  }
+
+  private void assertClean(Case c, String html) {
+    assertNoTemplateResidue(html);
+    assertThat(html)
+        .contains(messages.getMessage("lease.ref", new Object[] {"CON01TEST"}, c.locale()))
+        .contains(messages.getMessage("lease.notice.courtesy", null, c.locale()));
+    // NL wording check: sv and da legitimately use "artikel" in the cross-reference phrase and in
+    // "denna/denne artikel" (this article); drop exactly those phrases first, any other "artikel"
+    // is leakage of the Dutch text
+    c.expectation()
+        .ifPresent(
+            lang -> {
+              String withoutOwnWord = html.replace(lang.articleRef(), "");
+              if (!lang.ownArticleWord().isEmpty()) {
+                withoutOwnWord = withoutOwnWord.replace(lang.ownArticleWord(), "");
+              }
+              assertThat(withoutOwnWord).doesNotContain("artikel").doesNotContain("de huurder");
+            });
+  }
+
+  /** Cross-references of the document appear exactly for the clauses that are included. */
+  private void assertCrossReferences(
+      LeaseDocumentRegistry.Entry entry, String language, String html, List<String> included) {
+    Set<String> declared = referencedClauses(source(entry, language));
+    Set<String> rendered = referencedClauses(html);
+    assertThat(rendered)
+        .as("%s/%s rendered cross-references", entry.key(), language)
+        .isSubsetOf(included);
+    assertThat(rendered)
+        .as("%s/%s cross-references to included clauses", entry.key(), language)
+        .containsExactlyInAnyOrderElementsOf(declared.stream().filter(included::contains).toList());
+  }
+
+  /**
+   * The values the document prints appear in the render ({@code allClauses}: optional clauses,
+   * which may print the optional values, are included).
+   */
+  private void assertValuesPrinted(
+      LeaseDocumentRegistry.Entry entry, String language, String html, boolean allClauses) {
+    String source = source(entry, language);
+    assertThat(html.replaceAll("\\s+", " ")).contains("Example Landlord BV");
+    if (!allClauses) {
+      return;
     }
-    assertThat(withoutOwnWord).doesNotContain("artikel").doesNotContain("de huurder");
+    if (source.contains("${depositAmount}")) {
+      assertThat(html).contains("EUR 2,500.00");
+    }
+    if (source.contains("${endDate}")) {
+      assertThat(html).contains("31 October 2028");
+    }
   }
 
   @ParameterizedTest(name = "{0}")
-  @MethodSource("languages")
+  @MethodSource("translations")
   @DisplayName(
       "all clauses included: every clause renders in the language with the courtesy notice")
-  void allIncluded(Lang lang) {
+  void allIncluded(Case c) {
+    List<String> all = c.entry().clauseKeys();
     for (boolean withOptionalValues : List.of(true, false)) {
-      String html = render(lang, ALL, withOptionalValues);
-      assertThat(renderedClauses(html)).containsExactlyElementsOf(ALL);
-      assertClean(lang, html);
-      assertThat(html.replaceAll("\\s+", " "))
-          .contains("Example Landlord BV")
-          .contains(lang.depositTerm())
-          .contains(lang.articleRef());
+      String html = render(c, all, withOptionalValues);
+      assertThat(renderedClauses(html)).containsExactlyElementsOf(all);
+      assertClean(c, html);
+      assertThat(html.replaceAll("\\s+", " ")).contains("Example Landlord BV");
+      c.expectation()
+          .ifPresent(
+              lang ->
+                  assertThat(html.replaceAll("\\s+", " "))
+                      .contains(lang.depositTerm())
+                      .contains(lang.articleRef()));
     }
-    assertThat(render(lang, ALL, true)).contains("EUR 2,500.00").contains("31 October 2028");
+    String withValues = render(c, all, true);
+    assertValuesPrinted(c.entry(), c.language(), withValues, true);
+    // the NL documents print both optional values, whatever the generic source check finds
+    c.expectation()
+        .ifPresent(
+            lang -> assertThat(withValues).contains("EUR 2,500.00").contains("31 October 2028"));
+    assertCrossReferences(c.entry(), c.language(), withValues, all);
   }
 
   @ParameterizedTest(name = "{0}")
-  @MethodSource("languages")
+  @MethodSource("translations")
   @DisplayName("only required clauses: optional bodies absent, references to them omitted")
-  void requiredOnly(Lang lang) {
-    String html = render(lang, REQUIRED, true);
-    assertThat(renderedClauses(html)).containsExactlyElementsOf(REQUIRED);
-    assertThat(html)
-        .doesNotContain("data-clause=\"deposit\"")
-        .doesNotContain("data-ref=\"deposit\"")
-        .doesNotContain("data-ref=\"rent-adjustment\"");
-    assertClean(lang, html);
+  void requiredOnly(Case c) {
+    List<String> required = c.entry().requiredClauseKeys();
+    String html = render(c, required, true);
+    assertThat(renderedClauses(html)).containsExactlyElementsOf(required);
+    c.entry().clauseKeys().stream()
+        .filter(k -> !required.contains(k))
+        .forEach(
+            k ->
+                assertThat(html)
+                    .doesNotContain("data-clause=\"" + k + "\"")
+                    .doesNotContain("data-ref=\"" + k + "\""));
+    assertCrossReferences(c.entry(), c.language(), html, required);
+    assertClean(c, html);
   }
 
   @ParameterizedTest(name = "{0}")
-  @MethodSource("languages")
+  @MethodSource("translations")
   @DisplayName("payment: a due day other than the 1st is not called payment in advance")
-  void paymentDueDay(Lang lang) {
-    String first = clauseBody(render(lang, ALL, true, Map.of("paymentDueDay", 1)), "payment");
-    assertThat(first).contains(lang.inAdvance()).contains(lang.dueDay1());
-    String fifth = clauseBody(render(lang, ALL, true, Map.of("paymentDueDay", 5)), "payment");
-    assertThat(fifth).contains(lang.dueDay5()).doesNotContain(lang.inAdvance());
+  void paymentDueDay(Case c) {
+    List<String> all = c.entry().clauseKeys();
+    String first = render(c, all, true, Map.of("paymentDueDay", 1));
+    String fifth = render(c, all, true, Map.of("paymentDueDay", 5));
+    assertClean(c, first);
+    assertClean(c, fifth);
+    c.expectation()
+        .ifPresent(
+            lang -> {
+              assertThat(clauseBody(first, "payment"))
+                  .contains(lang.inAdvance())
+                  .contains(lang.dueDay1());
+              assertThat(clauseBody(fifth, "payment"))
+                  .contains(lang.dueDay5())
+                  .doesNotContain(lang.inAdvance());
+            });
   }
 
-  private static final Pattern DUTCH_MARKERS =
-      Pattern.compile(
-          "\\b(?:de verhuurder|tenzij|overeenkomst|zie artikel|deurwaardersexploot)\\b",
-          Pattern.CASE_INSENSITIVE);
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("entries")
+  @DisplayName("the authoritative document renders every clause cleanly, without courtesy notice")
+  void authoritativeRenders(LeaseDocumentRegistry.Entry entry) {
+    String language = entry.authoritativeLanguage();
+    Locale locale = Locale.forLanguageTag(language);
+    for (List<String> keys : List.of(entry.clauseKeys(), entry.requiredClauseKeys())) {
+      String html = render(entry, language, true, keys, true, Map.of());
+      assertThat(renderedClauses(html)).containsExactlyElementsOf(keys);
+      assertNoTemplateResidue(html);
+      assertThat(html)
+          .contains(messages.getMessage("lease.ref", new Object[] {"CON01TEST"}, locale))
+          .doesNotContain(messages.getMessage("lease.notice.courtesy", null, locale));
+      assertValuesPrinted(entry, language, html, keys.equals(entry.clauseKeys()));
+      assertCrossReferences(entry, language, html, keys);
+    }
+  }
+
   private static final Pattern PARENTHETICAL = Pattern.compile("\\([^()]*\\)");
 
   /**
-   * Dutch marker words left in the text outside parentheses (Dutch terms are only allowed as
+   * Marker words left in the text outside parentheses (foreign terms are only allowed as
    * parenthetical glosses after the translated term).
    */
-  static List<String> dutchOutsideParentheses(String html) {
+  static List<String> markersOutsideParentheses(String html, Pattern markers) {
     String text =
         html.replaceAll("(?s)<!--.*?-->", " ")
             .replaceAll("(?s)<style.*?</style>", " ")
@@ -334,19 +462,38 @@ class TranslatedResidentialLeaseRenderTest {
       text = PARENTHETICAL.matcher(text).replaceAll(" ");
     } while (!text.equals(previous));
     List<String> found = new ArrayList<>();
-    Matcher m = DUTCH_MARKERS.matcher(text.replaceAll("\\s+", " "));
+    Matcher m = markers.matcher(text.replaceAll("\\s+", " "));
     while (m.find()) {
       found.add(m.group());
     }
     return found;
   }
 
+  /** The Dutch markers of the NL entry. */
+  static List<String> dutchOutsideParentheses(String html) {
+    return markersOutsideParentheses(
+        html,
+        LeaseDocumentRegistry.find("NL", LeaseKind.RESIDENTIAL)
+            .flatMap(LeaseDocumentRegistry.Entry::foreignMarkerPattern)
+            .orElseThrow());
+  }
+
   @ParameterizedTest(name = "{0}")
-  @MethodSource("languages")
-  @DisplayName("no Dutch marker words outside parenthetical glosses")
-  void noDutchOutsideParentheses(Lang lang) {
-    assertThat(dutchOutsideParentheses(render(lang, ALL, true))).isEmpty();
-    assertThat(dutchOutsideParentheses(render(lang, REQUIRED, false))).isEmpty();
+  @MethodSource("translations")
+  @DisplayName("no foreign marker words of the entry outside parenthetical glosses")
+  void noForeignMarkersOutsideParentheses(Case c) {
+    c.entry()
+        .foreignMarkerPattern()
+        .ifPresent(
+            markers -> {
+              assertThat(
+                      markersOutsideParentheses(render(c, c.entry().clauseKeys(), true), markers))
+                  .isEmpty();
+              assertThat(
+                      markersOutsideParentheses(
+                          render(c, c.entry().requiredClauseKeys(), false), markers))
+                  .isEmpty();
+            });
   }
 
   @org.junit.jupiter.api.Test
@@ -372,6 +519,33 @@ class TranslatedResidentialLeaseRenderTest {
                 "<p>Uppsägning sker genom delgivning (gerechtsdeurwaarder; deurwaardersexploot)"
                     + " eller brev.</p>"))
         .isEmpty();
+  }
+
+  @org.junit.jupiter.api.Test
+  @DisplayName("an entry without marker words forbids nothing; markers are whole words, any case")
+  void markerPatternSemantics() {
+    LeaseDocumentRegistry.Entry none =
+        new LeaseDocumentRegistry.Entry(
+            "ZZ",
+            LeaseKind.RESIDENTIAL,
+            "en",
+            List.of("en"),
+            List.of(new LeaseDocumentRegistry.ClauseSpec("rent", true, false, 1)),
+            List.of());
+    assertThat(none.foreignMarkerPattern()).isEmpty();
+    Pattern custom =
+        new LeaseDocumentRegistry.Entry(
+                "ZZ",
+                LeaseKind.RESIDENTIAL,
+                "en",
+                List.of("en"),
+                List.of(new LeaseDocumentRegistry.ClauseSpec("rent", true, false, 1)),
+                List.of("the landlord", "unless"))
+            .foreignMarkerPattern()
+            .orElseThrow();
+    assertThat(markersOutsideParentheses("<p>The Landlord pays UNLESS later.</p>", custom))
+        .containsExactly("The Landlord", "UNLESS");
+    assertThat(markersOutsideParentheses("<p>(the landlord) unlessness</p>", custom)).isEmpty();
   }
 
   private static String clauseBody(String html, String key) {

@@ -25,24 +25,22 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.buurman.service.letters.LeaseDocumentRegistry.ClauseSpec;
+import com.buurman.service.letters.LeaseDocumentRegistry.Entry;
 import com.buurman.util.DocumentLanguages;
 
 /**
- * Structural consistency of the shipped per-language lease documents.
+ * Structural consistency of the shipped per-language lease documents, over every entry of {@link
+ * LeaseDocumentRegistry} (adding a country is a registry entry, no change here).
  *
  * <p>The database side (every fragment key is an active {@code lease_clause_templates} row for the
  * same country and kind, and vice versa) needs Flyway + Testcontainers, which this module does not
- * carry: it lives in {@code buurman-app} as {@code LeaseDocumentCatalogDatabaseIntegrationTest}.
- * Here the same catalog is checked against the clause table the V092 seed implements.
+ * carry: it lives in {@code buurman-app} as {@code LeaseDocumentCatalogDatabaseIntegrationTest},
+ * driven by the same registry. Here the same catalog is checked against the clause table the seed
+ * migrations implement (the registry's clause specs mirror them).
  */
 @DisplayName("lease document catalog")
 class LeaseDocumentCatalogTest {
-
-  /**
-   * Languages whose document must exist for every (country, kind): all supported document
-   * languages. Task 7 is complete, there are no later batches.
-   */
-  static final List<String> ENFORCED_LANGUAGES = DocumentLanguages.ORDERED;
 
   private static final String DOCUMENT_ROOT = "templates/documents/lease-agreement/";
   private static final String BUNDLE = "messages/document-lease-agreement";
@@ -52,30 +50,6 @@ class LeaseDocumentCatalogTest {
       Pattern.compile(".*/lease-agreement/([A-Z]{2})/([a-z-]+)/([a-z]{2})\\.html$");
   private static final List<String> HEADER_MARKERS =
       List.of("legal-basis:", "reviewed-by:", "translation:");
-
-  private record ClauseSpec(String key, boolean required, boolean pinned, int sortOrder) {}
-
-  /** Mirror of V092__seed_nl_residential_lease_clauses.sql. */
-  private static final Map<String, List<ClauseSpec>> CATALOG =
-      Map.of(
-          "NL/residential",
-          List.of(
-              new ClauseSpec("parties", true, true, 1),
-              new ClauseSpec("premises", true, true, 2),
-              new ClauseSpec("term", true, false, 3),
-              new ClauseSpec("rent", true, false, 4),
-              new ClauseSpec("rent-adjustment", false, false, 5),
-              new ClauseSpec("service-costs", false, false, 6),
-              new ClauseSpec("deposit", false, false, 7),
-              new ClauseSpec("payment", true, false, 8),
-              new ClauseSpec("use", false, false, 9),
-              new ClauseSpec("subletting", false, false, 10),
-              new ClauseSpec("maintenance", false, false, 11),
-              new ClauseSpec("energy-label", true, false, 12),
-              new ClauseSpec("handover-inspection", false, false, 13),
-              new ClauseSpec("termination", true, false, 14),
-              new ClauseSpec("data-protection", false, false, 15),
-              new ClauseSpec("disputes", false, false, 16)));
 
   /** "NL/residential" -> language -> document resource; test fixtures are skipped. */
   private static Map<String, Map<String, Resource>> discover() throws IOException {
@@ -125,34 +99,35 @@ class LeaseDocumentCatalogTest {
     return properties;
   }
 
-  private static String i18nPrefix(String countryKind, String key) {
-    String[] parts = countryKind.split("/");
-    return "lease." + parts[0].toLowerCase() + "." + parts[1] + "." + key;
+  private static Resource document(
+      Map<String, Map<String, Resource>> found, Entry entry, String language) {
+    return Optional.ofNullable(found.getOrDefault(entry.key(), Map.of()).get(language))
+        .orElseThrow(() -> new AssertionError("missing " + entry.key() + "/" + language));
   }
 
   @Test
   @DisplayName("every catalogued (country, kind) has a document in every enforced language")
   void languageCoverage() throws IOException {
     Map<String, Map<String, Resource>> found = discover();
-    for (String countryKind : CATALOG.keySet()) {
-      assertThat(found.getOrDefault(countryKind, Map.of()).keySet())
-          .as("%s documents", countryKind)
-          .containsAll(ENFORCED_LANGUAGES);
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      assertThat(found.getOrDefault(entry.key(), Map.of()).keySet())
+          .as("%s documents", entry.key())
+          .containsAll(entry.enforcedLanguages());
     }
     assertThat(found.keySet())
         .as("every shipped document directory must be catalogued")
-        .isSubsetOf(CATALOG.keySet());
+        .isSubsetOf(LeaseDocumentRegistry.ENTRIES.stream().map(Entry::key).toList());
   }
 
   @Test
   @DisplayName(
-      "the language files of every catalogued (country, kind) are exactly the supported set")
-  void languageFilesEqualSupportedLanguages() throws IOException {
+      "the language files of every catalogued (country, kind) are exactly its enforced languages")
+  void languageFilesEqualEnforcedLanguages() throws IOException {
     Map<String, Map<String, Resource>> found = discover();
-    for (String countryKind : CATALOG.keySet()) {
-      assertThat(found.getOrDefault(countryKind, Map.of()).keySet())
-          .as("%s language files", countryKind)
-          .containsExactlyInAnyOrderElementsOf(DocumentLanguages.ORDERED);
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      assertThat(found.getOrDefault(entry.key(), Map.of()).keySet())
+          .as("%s language files", entry.key())
+          .containsExactlyInAnyOrderElementsOf(entry.enforcedLanguages());
     }
   }
 
@@ -160,15 +135,11 @@ class LeaseDocumentCatalogTest {
   @DisplayName("every enforced language declares exactly the catalogued clause fragments")
   void fragmentKeysMatchCatalog() throws IOException {
     Map<String, Map<String, Resource>> found = discover();
-    for (Map.Entry<String, List<ClauseSpec>> entry : CATALOG.entrySet()) {
-      Set<String> expected = new TreeSet<>(entry.getValue().stream().map(ClauseSpec::key).toList());
-      for (String language : ENFORCED_LANGUAGES) {
-        Resource doc =
-            Optional.ofNullable(found.getOrDefault(entry.getKey(), Map.of()).get(language))
-                .orElseThrow(
-                    () -> new AssertionError("missing " + entry.getKey() + "/" + language));
-        assertThat(new TreeSet<>(fragmentKeys(read(doc))))
-            .as("%s/%s fragments", entry.getKey(), language)
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      Set<String> expected = new TreeSet<>(entry.clauseKeys());
+      for (String language : entry.enforcedLanguages()) {
+        assertThat(new TreeSet<>(fragmentKeys(read(document(found, entry, language)))))
+            .as("%s/%s fragments", entry.key(), language)
             .isEqualTo(expected);
       }
     }
@@ -178,18 +149,37 @@ class LeaseDocumentCatalogTest {
   @DisplayName("every enforced document starts with the legal header markers")
   void headerMarkers() throws IOException {
     Map<String, Map<String, Resource>> found = discover();
-    for (String countryKind : CATALOG.keySet()) {
-      for (String language : ENFORCED_LANGUAGES) {
-        Resource doc =
-            Optional.ofNullable(found.getOrDefault(countryKind, Map.of()).get(language))
-                .orElseThrow(() -> new AssertionError("missing " + countryKind + "/" + language));
-        String html = read(doc).stripLeading();
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      for (String language : entry.enforcedLanguages()) {
+        String html = read(document(found, entry, language)).stripLeading();
         assertThat(html)
-            .as("%s/%s starts with a comment", countryKind, language)
+            .as("%s/%s starts with a comment", entry.key(), language)
             .startsWith("<!--");
         String header = html.substring(0, html.indexOf("-->"));
         for (String marker : HEADER_MARKERS) {
-          assertThat(header).as("%s/%s header", countryKind, language).contains(marker);
+          assertThat(header).as("%s/%s header", entry.key(), language).contains(marker);
+        }
+      }
+    }
+  }
+
+  @Test
+  @DisplayName(
+      "the authoritative document says translation: authoritative, every other one machine-drafted"
+          + " with reviewed-by: none")
+  void headerTranslationMarkers() throws IOException {
+    Map<String, Map<String, Resource>> found = discover();
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      for (String language : entry.enforcedLanguages()) {
+        String html = read(document(found, entry, language)).stripLeading();
+        String header = html.substring(0, html.indexOf("-->"));
+        String what = entry.key() + "/" + language + " header";
+        assertThat(header).as(what).containsPattern("reviewed-by:\\s*none");
+        if (language.equals(entry.authoritativeLanguage())) {
+          assertThat(header).as(what).containsPattern("translation:\\s*authoritative");
+        } else {
+          assertThat(header).as(what).containsPattern("translation:\\s*machine-drafted");
+          assertThat(header).as(what).doesNotContainPattern("translation:\\s*authoritative");
         }
       }
     }
@@ -198,8 +188,8 @@ class LeaseDocumentCatalogTest {
   @Test
   @DisplayName("catalogued clause keys are safe slugs and pinned clauses sort before the rest")
   void pinnedSortFirst() {
-    for (Map.Entry<String, List<ClauseSpec>> entry : CATALOG.entrySet()) {
-      List<ClauseSpec> clauses = entry.getValue();
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      List<ClauseSpec> clauses = entry.clauses();
       clauses.forEach(c -> assertThat(c.key()).matches(CLAUSE_KEY));
       int maxPinned =
           clauses.stream()
@@ -213,7 +203,7 @@ class LeaseDocumentCatalogTest {
               .mapToInt(ClauseSpec::sortOrder)
               .min()
               .orElse(Integer.MAX_VALUE);
-      assertThat(maxPinned).as("%s pinned sort orders", entry.getKey()).isLessThan(minFree);
+      assertThat(maxPinned).as("%s pinned sort orders", entry.key()).isLessThan(minFree);
     }
   }
 
@@ -223,9 +213,9 @@ class LeaseDocumentCatalogTest {
     List<String> missing = new ArrayList<>();
     for (String language : DocumentLanguages.ORDERED) {
       Properties props = bundle(language);
-      for (Map.Entry<String, List<ClauseSpec>> entry : CATALOG.entrySet()) {
-        for (ClauseSpec clause : entry.getValue()) {
-          String prefix = i18nPrefix(entry.getKey(), clause.key());
+      for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+        for (ClauseSpec clause : entry.clauses()) {
+          String prefix = entry.i18nPrefix(clause.key());
           for (String key : List.of(prefix + ".title", prefix + ".summary")) {
             String value = props.getProperty(key);
             if (value == null || value.isBlank()) {

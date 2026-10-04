@@ -27,15 +27,34 @@ public class LeaseDocumentLocator {
   /** The country and language segments are interpolated into a classpath path: allowlist both. */
   private static final Pattern COUNTRY_PATTERN = Pattern.compile("[A-Z]{2}");
 
+  /**
+   * National languages per country in preference order (a document in one of them is the
+   * authoritative one). Czechia has none among the supported document languages: English is the
+   * only fallback there.
+   */
   private static final Map<String, List<String>> DEFAULT_NATIONAL_LANGUAGES =
-      Map.of(
-          "NL", List.of("nl"),
-          "BE", List.of("nl", "fr"),
-          "DE", List.of("de"),
-          "ES", List.of("es"),
-          "FR", List.of("fr"),
-          "GB", List.of("en"),
-          "PT", List.of("pt"));
+      Map.ofEntries(
+          Map.entry("AT", List.of("de")),
+          Map.entry("BE", List.of("nl", "fr")),
+          Map.entry("CA", List.of("en", "fr")),
+          Map.entry("CH", List.of("de", "fr", "it")),
+          Map.entry("CZ", List.of()),
+          Map.entry("DE", List.of("de")),
+          Map.entry("DK", List.of("da")),
+          Map.entry("ES", List.of("es")),
+          Map.entry("FI", List.of("fi", "sv")),
+          Map.entry("FR", List.of("fr")),
+          Map.entry("GB", List.of("en")),
+          Map.entry("GR", List.of("el")),
+          Map.entry("IE", List.of("en")),
+          Map.entry("IT", List.of("it")),
+          Map.entry("LU", List.of("fr", "de")),
+          Map.entry("NL", List.of("nl")),
+          Map.entry("NO", List.of("nb")),
+          Map.entry("PL", List.of("pl")),
+          Map.entry("PT", List.of("pt")),
+          Map.entry("SE", List.of("sv")),
+          Map.entry("US", List.of("en")));
 
   private final Map<String, List<String>> nationalLanguages;
 
@@ -61,14 +80,8 @@ public class LeaseDocumentLocator {
     if (kind == null || countryCode == null || !COUNTRY_PATTERN.matcher(countryCode).matches()) {
       return Optional.empty();
     }
-    List<String> national = nationalLanguages.getOrDefault(countryCode, List.of());
-
-    Set<String> chain = new LinkedHashSet<>();
-    if (requestedLang != null && DocumentLanguages.isSupported(requestedLang)) {
-      chain.add(requestedLang);
-    }
-    chain.addAll(national);
-    chain.add("en");
+    List<String> national = nationalLanguages(countryCode);
+    List<String> chain = languageChain(countryCode, requestedLang);
 
     return kind.fallbackChain().stream()
         .flatMap(
@@ -80,6 +93,25 @@ public class LeaseDocumentLocator {
                             new LeaseDocument(
                                 path(countryCode, k, lang), lang, national.contains(lang))))
         .findFirst();
+  }
+
+  /** The country's national languages in preference order; empty when it has none. */
+  List<String> nationalLanguages(String countryCode) {
+    return nationalLanguages.getOrDefault(countryCode, List.of());
+  }
+
+  /**
+   * Languages tried in order: the requested one (when supported), the country's national languages
+   * in their listed order, then English; duplicates dropped.
+   */
+  List<String> languageChain(String countryCode, String requestedLang) {
+    Set<String> chain = new LinkedHashSet<>();
+    if (requestedLang != null && DocumentLanguages.isSupported(requestedLang)) {
+      chain.add(requestedLang);
+    }
+    chain.addAll(nationalLanguages(countryCode));
+    chain.add("en");
+    return List.copyOf(chain);
   }
 
   private static String path(String country, LeaseKind kind, String lang) {

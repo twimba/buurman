@@ -101,6 +101,7 @@ clauses:
 contactAddress=<null>
 contractIdentifier=String:CON00000000000000000000001
 contractTypeLabel=String:Unbefristet
+countryCode=String:NL
 countryMetadata=<null>
 depositAmount=String:2.000,00 €
 endDate=<null>
@@ -131,6 +132,7 @@ refs:
   term=Integer:3
   termination=Integer:14
   use=Integer:9
+regionCode=<null>
 rentAmount=String:1.000,00 €
 rentComponents:
   [0]:

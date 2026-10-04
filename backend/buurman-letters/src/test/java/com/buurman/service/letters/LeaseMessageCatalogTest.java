@@ -27,7 +27,7 @@ class LeaseMessageCatalogTest {
   void baseInheritanceIsNotDefined() {
     String baseOnly = "lease.test.only.in.base";
     LeaseMessageCatalog custom =
-        new LeaseMessageCatalog("messages/lease-catalog-test", DocumentLanguages.ORDERED);
+        new LeaseMessageCatalog("messages/test-lease-catalog", DocumentLanguages.ORDERED);
 
     assertThat(custom.definedIn("en", baseOnly)).isTrue();
     assertThat(custom.definedIn("nl", baseOnly)).isFalse();
@@ -42,7 +42,7 @@ class LeaseMessageCatalogTest {
   @DisplayName("a blank value counts as not defined")
   void blankValueIsMissing() {
     LeaseMessageCatalog custom =
-        new LeaseMessageCatalog("messages/lease-catalog-test", DocumentLanguages.ORDERED);
+        new LeaseMessageCatalog("messages/test-lease-catalog", DocumentLanguages.ORDERED);
     assertThat(custom.definedIn("nl", "lease.test.blank")).isFalse();
   }
 

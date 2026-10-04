@@ -33,12 +33,18 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import com.buurman.domain.LeaseKind;
+import com.buurman.service.letters.LeaseDocumentRegistry;
+import com.buurman.service.letters.LeaseDocumentRegistry.ClauseSpec;
+import com.buurman.service.letters.LeaseDocumentRegistry.Entry;
 import com.buurman.util.DocumentLanguages;
 
 /**
- * The shipped lease documents and the Flyway-seeded {@code lease_clause_templates} rows must agree:
- * every {@code clause-<key>} fragment is an active row for the same country and kind and vice
- * versa, pinned clauses sort first, and every row's title/summary key exists in all bundles.
+ * The shipped lease documents and the Flyway-seeded {@code lease_clause_templates} rows must agree,
+ * for every entry of {@link LeaseDocumentRegistry} (the registry is shared with the letters module
+ * through its test-jar; adding a country is a registry entry, no change here): every {@code
+ * clause-<key>} fragment of every enforced language is an active row for the same country and kind
+ * and vice versa, the rows match the registry's clause specs (required, pinned, order), pinned
+ * clauses sort first, and every row's title/summary key exists in all 13 bundles.
  *
  * <p>Lives here rather than in {@code buurman-letters} because only this module has both the letter
  * templates and Testcontainers on its test classpath. Mirrors the container setup of {@code
@@ -88,6 +94,9 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
             .getResources("classpath*:templates/documents/lease-agreement/*/*/*.html");
     Map<String, Map<String, Set<String>>> found = new TreeMap<>();
     for (Resource resource : resources) {
+      if (resource.getURL().toString().contains("/test-classes/")) {
+        continue;
+      }
       Matcher file = FILE.matcher(resource.getURL().toString());
       if (!file.matches()) {
         continue;
@@ -145,16 +154,45 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("NL residential is documented and seeded")
-  void nlResidentialPresent() throws IOException {
-    assertThat(documents()).containsKey("NL/RESIDENTIAL");
-    assertThat(rows("NL", "RESIDENTIAL")).hasSize(16);
+  @DisplayName(
+      "every registered (country, kind) is documented in its enforced languages and seeded")
+  void registeredEntriesPresent() throws IOException {
+    Map<String, Map<String, Set<String>>> documents = documents();
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      assertThat(documents).as("%s documented", entry.dbKey()).containsKey(entry.dbKey());
+      assertThat(documents.getOrDefault(entry.dbKey(), Map.of()).keySet())
+          .as("%s language files", entry.dbKey())
+          .containsExactlyInAnyOrderElementsOf(entry.enforcedLanguages());
+      assertThat(rows(entry.countryCode(), entry.kind().name()))
+          .as("%s seeded rows", entry.dbKey())
+          .hasSize(entry.clauses().size());
+    }
+  }
+
+  @Test
+  @DisplayName("every shipped document directory is registered")
+  void everyDocumentIsRegistered() throws IOException {
+    assertThat(documents().keySet())
+        .isSubsetOf(LeaseDocumentRegistry.ENTRIES.stream().map(Entry::dbKey).toList());
   }
 
   @Test
   @DisplayName("every document's fragments equal the active rows of its country and kind")
   void fragmentsEqualRows() throws IOException {
-    for (Map.Entry<String, Map<String, Set<String>>> doc : documents().entrySet()) {
+    Map<String, Map<String, Set<String>>> documents = documents();
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      Set<String> rowKeys =
+          new TreeSet<>(
+              rows(entry.countryCode(), entry.kind().name()).stream().map(Row::clauseKey).toList());
+      Set<String> specKeys = new TreeSet<>(entry.clauseKeys());
+      assertThat(rowKeys).as("%s rows vs registry clause keys", entry.dbKey()).isEqualTo(specKeys);
+      for (String language : entry.enforcedLanguages()) {
+        assertThat(documents.getOrDefault(entry.dbKey(), Map.of()).get(language))
+            .as("%s/%s fragments vs rows", entry.dbKey(), language)
+            .isEqualTo(rowKeys);
+      }
+    }
+    for (Map.Entry<String, Map<String, Set<String>>> doc : documents.entrySet()) {
       String[] ck = doc.getKey().split("/");
       Set<String> rowKeys = new TreeSet<>(rows(ck[0], ck[1]).stream().map(Row::clauseKey).toList());
       doc.getValue()
@@ -167,7 +205,7 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("every non-legacy seeded (country, kind) has a document")
+  @DisplayName("every non-legacy seeded (country, kind) has a document and a registry entry")
   void everySeededKindHasDocument() throws IOException {
     Set<String> documented = documents().keySet();
     List<String> seeded =
@@ -178,14 +216,32 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
             .and(DSL.field("lease_kind").ne(LeaseKind.LEGACY.name()))
             .fetch(r -> r.get(0, String.class) + "/" + r.get(1, String.class));
     assertThat(documented).containsAll(seeded);
+    assertThat(LeaseDocumentRegistry.ENTRIES.stream().map(Entry::dbKey).toList())
+        .as("seeded kinds without a registry entry")
+        .containsAll(seeded);
   }
 
   @Test
-  @DisplayName("pinned rows sort before non-pinned; required rows default to included")
-  void pinnedAndRequired() throws IOException {
-    for (String countryKind : documents().keySet()) {
-      String[] ck = countryKind.split("/");
-      List<Row> rows = rows(ck[0], ck[1]);
+  @DisplayName("rows match the registry clause specs; pinned rows sort first; required default in")
+  void pinnedAndRequired() {
+    for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+      List<Row> rows = rows(entry.countryCode(), entry.kind().name());
+      for (ClauseSpec spec : entry.clauses()) {
+        Row row =
+            rows.stream()
+                .filter(r -> r.clauseKey().equals(spec.key()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(entry.dbKey() + " has no row " + spec.key()));
+        assertThat(row.optional())
+            .as("%s/%s optional", entry.dbKey(), spec.key())
+            .isEqualTo(!spec.required());
+        assertThat(row.pinned())
+            .as("%s/%s pinned", entry.dbKey(), spec.key())
+            .isEqualTo(spec.pinned());
+        assertThat(row.sortOrder())
+            .as("%s/%s sort order", entry.dbKey(), spec.key())
+            .isEqualTo(spec.sortOrder());
+      }
       int maxPinned = rows.stream().filter(Row::pinned).mapToInt(Row::sortOrder).max().orElse(0);
       int minFree =
           rows.stream()
@@ -193,7 +249,7 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
               .mapToInt(Row::sortOrder)
               .min()
               .orElse(Integer.MAX_VALUE);
-      assertThat(maxPinned).as("%s pinned sort orders", countryKind).isLessThan(minFree);
+      assertThat(maxPinned).as("%s pinned sort orders", entry.dbKey()).isLessThan(minFree);
       rows.stream()
           .filter(r -> !r.optional())
           .forEach(r -> assertThat(r.defaultIncluded()).as(r.clauseKey()).isTrue());
@@ -201,16 +257,24 @@ class LeaseDocumentCatalogDatabaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("every row's title and summary key exists in all bundle languages")
+  @DisplayName(
+      "every row's title and summary key follows the registry prefix and exists in all 13 bundles")
   void rowBundleKeys() throws IOException {
     List<String> missing = new ArrayList<>();
     for (String language : DocumentLanguages.ORDERED) {
       Properties props = bundle(language);
-      for (String countryKind : documents().keySet()) {
-        String[] ck = countryKind.split("/");
-        for (Row row : rows(ck[0], ck[1])) {
+      for (Entry entry : LeaseDocumentRegistry.ENTRIES) {
+        for (Row row : rows(entry.countryCode(), entry.kind().name())) {
+          String prefix = entry.i18nPrefix(row.clauseKey());
+          assertThat(row.titleKey())
+              .as("%s title key", row.clauseKey())
+              .isEqualTo(prefix + ".title");
+          assertThat(row.bodyKey())
+              .as("%s summary key", row.clauseKey())
+              .isEqualTo(prefix + ".summary");
           for (String key : List.of(row.titleKey(), row.bodyKey())) {
-            if (props.getProperty(key) == null) {
+            String value = props.getProperty(key);
+            if (value == null || value.isBlank()) {
               missing.add(language + ":" + key);
             }
           }

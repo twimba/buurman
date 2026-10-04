@@ -95,6 +95,7 @@ clauses:
 contactAddress=<null>
 contractIdentifier=String:CON00000000000000000000001
 contractTypeLabel=String:Bepaalde tijd
+countryCode=String:NL
 countryMetadata=<null>
 depositAmount=String:€ 1.800,00
 endDate=String:31 januari 2028
@@ -124,6 +125,7 @@ refs:
   term=Integer:5
   termination=Integer:14
   use=Integer:10
+regionCode=String:NH
 rentAmount=String:€ 900,00
 rentComponents:
   [0]:

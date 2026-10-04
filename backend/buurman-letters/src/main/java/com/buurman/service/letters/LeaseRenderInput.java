@@ -20,7 +20,8 @@ import com.buurman.util.MoneyAmount;
  * document path; they stay empty on the legacy path, which never reads them. The typed path
  * requires both and fails with a clear {@link IllegalStateException} when either is empty.
  *
- * @param regionCode the contract's region; carried for callers, not (yet) a template variable
+ * @param regionCode the contract's region; the {@code regionCode} template variable of the
+ *     per-language document path (null when absent)
  * @param baseRent the net rent ("kale huur"), already derived from the components
  * @param deposit already resolved by {@code depositAmount} then {@code securityDeposit} precedence
  * @param signatureBlocks landlord first, then one block per tenant signer
