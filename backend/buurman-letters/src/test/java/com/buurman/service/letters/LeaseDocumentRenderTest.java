@@ -348,7 +348,16 @@ class LeaseDocumentRenderTest {
   /** Cross-references of the document appear exactly for the clauses that are included. */
   private void assertCrossReferences(
       LeaseDocumentRegistry.Entry entry, String language, String html, List<String> included) {
-    Set<String> declared = referencedClauses(source(entry, language));
+    // only references written inside an included clause can render: a required clause (ES
+    // deposit) may be the target of a reference from an optional clause that is left out
+    Set<String> declared = new LinkedHashSet<>();
+    LeaseDocumentText.fragments(source(entry, language))
+        .forEach(
+            (fragment, body) -> {
+              if (included.contains(fragment.replaceFirst("^clause-", ""))) {
+                declared.addAll(referencedClauses(body));
+              }
+            });
     Set<String> rendered = referencedClauses(html);
     assertThat(rendered)
         .as("%s/%s rendered cross-references", entry.key(), language)
@@ -361,8 +370,8 @@ class LeaseDocumentRenderTest {
   /**
    * The values the document prints appear in the render. Detected by what is rendered, not by
    * scanning the source: a deposit clause (key containing "deposit") must print the deposit amount,
-   * a term/duration clause must print the end date; with optional clauses left out neither value
-   * may appear.
+   * a term/duration clause must print the end date; with optional clauses left out the deposit may
+   * not appear unless the deposit clause itself is required.
    */
   private void assertValuesPrinted(LeaseDocumentRegistry.Entry entry, String html, boolean all) {
     assertThat(html.replaceAll("\\s+", " ")).contains("Example Landlord BV");
@@ -377,7 +386,15 @@ class LeaseDocumentRenderTest {
         assertThat(html).as("%s end date printed", entry.key()).contains(END_DATE);
       }
     } else if (hasDeposit) {
-      assertThat(html).as("%s optional deposit excluded", entry.key()).doesNotContain(DEPOSIT);
+      // a deposit clause that is REQUIRED (ES: the fianza is compulsory, art. 36.1 LAU) stays in
+      // the required-only render and prints the amount; an optional one is left out
+      boolean depositRequired =
+          entry.requiredClauseKeys().stream().anyMatch(k -> k.contains("deposit"));
+      if (depositRequired) {
+        assertThat(html).as("%s required deposit printed", entry.key()).contains(DEPOSIT);
+      } else {
+        assertThat(html).as("%s optional deposit excluded", entry.key()).doesNotContain(DEPOSIT);
+      }
     }
   }
 
