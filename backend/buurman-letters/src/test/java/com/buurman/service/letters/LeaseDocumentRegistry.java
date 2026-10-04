@@ -60,6 +60,10 @@ import com.buurman.util.DocumentLanguages;
  *   <li>ES (present): {@link #SPANISH_CITATION}, the number after "art."/"artículo(s)"/"article(s)"
  *       with an optional dotted paragraph, for "artículo 36.1 de la LAU" / "article 36.1 of the
  *       LAU"; the paragraph is part of the token.
+ *   <li>PT (present): {@link #PORTUGUESE_CITATION}, the article digits after "artigo(s)"/"art."/
+ *       "article(s)", for "artigo 1097.º, n.º 3, do Código Civil" / "article 1097, paragraph 3, of
+ *       the Civil Code"; the ordinal sign glued to the number is skipped before the paragraph
+ *       digit.
  * </ul>
  *
  * Write the paragraph as a DIGIT after the reference in the same sentence in every language (see
@@ -479,6 +483,88 @@ public final class LeaseDocumentRegistry {
           SPANISH_MARKERS,
           Optional.of(SPANISH_CITATION));
 
+  /**
+   * The Portuguese statute citation format: the article number after "artigo(s)" / "art." /
+   * "article(s)": {@code artigo 1097.º, n.º 3} / {@code article 1097, paragraph 3}, {@code artigo
+   * 1110.º-A} / {@code article 1110-A}. Only the digits are the token, so the ordinal sign and a
+   * letter suffix ("1097.º", "1110.º-A") written in Portuguese and left out in English pair alike;
+   * the "n.º" paragraph after the ordinal sign is the digit the gate pairs.
+   */
+  public static final Pattern PORTUGUESE_CITATION =
+      Pattern.compile(
+          "(?<=\\b(?:art\\.|arts\\.|artigos?|articles?)\\s{1,20})\\d+",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /** Portuguese marker words that must not leak into translations outside parenthetical glosses. */
+  private static final List<String> PORTUGUESE_MARKERS =
+      List.of("o senhorio", "o arrendatário", "ver o artigo", "nos termos do");
+
+  /** Mirror of V096__seed_pt_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry PT_RESIDENTIAL =
+      new Entry(
+          "PT",
+          LeaseKind.RESIDENTIAL,
+          "pt",
+          List.of("pt", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("registration", false, false, 13),
+              new ClauseSpec("pre-emption", false, false, 14),
+              new ClauseSpec("succession", false, false, 15),
+              new ClauseSpec("handover-inspection", false, false, 16),
+              new ClauseSpec("termination", true, false, 17),
+              new ClauseSpec("notices", false, false, 18),
+              new ClauseSpec("guarantor", false, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          PORTUGUESE_MARKERS,
+          Optional.of(PORTUGUESE_CITATION));
+
+  /** Mirror of V096__seed_pt_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry PT_COMMERCIAL =
+      new Entry(
+          "PT",
+          LeaseKind.COMMERCIAL,
+          "pt",
+          List.of("pt", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("pre-emption", false, false, 14),
+              new ClauseSpec("insurance", false, false, 15),
+              new ClauseSpec("energy-certificate", false, false, 16),
+              new ClauseSpec("registration", false, false, 17),
+              new ClauseSpec("handover-inspection", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("notices", false, false, 20),
+              new ClauseSpec("guarantor", false, false, 21),
+              new ClauseSpec("data-protection", false, false, 22),
+              new ClauseSpec("disputes", false, false, 23)),
+          PORTUGUESE_MARKERS,
+          Optional.of(PORTUGUESE_CITATION));
+
   /** Every shipped (country, kind); add new entries here. */
   public static final List<Entry> ENTRIES =
       List.of(
@@ -488,7 +574,9 @@ public final class LeaseDocumentRegistry {
           FR_RESIDENTIAL,
           FR_COMMERCIAL,
           ES_RESIDENTIAL,
-          ES_COMMERCIAL);
+          ES_COMMERCIAL,
+          PT_RESIDENTIAL,
+          PT_COMMERCIAL);
 
   /** The entry for a country and kind. */
   public static Optional<Entry> find(String countryCode, LeaseKind kind) {

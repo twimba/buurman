@@ -38,7 +38,8 @@ import org.springframework.core.io.ClassPathResource;
  *       "lid"/paragraph number: "7:271 lid 2", "7:271 Abs. 2", "7:271, al. 2"). Tokens are compared
  *       as a multiset per element (innermost enclosing {@code <p>}, {@code <li>}, conditional span
  *       ...), so citations may be reordered within an element but not moved to another one, and lid
- *       numbers cannot swap between citations.
+ *       numbers cannot swap between citations. Non-digit characters glued to the reference are
+ *       skipped before the words are counted (PT "artigo 1097.º, n.º 3": the ordinal sign ".º").
  *   <li>Numbers: sorted multiset of the remaining digit sequences, keyed by the element holding
  *       them, so numbers may be reordered within an element but not swapped across paragraphs.
  * </ul>
@@ -90,7 +91,7 @@ class LeaseDocumentFidelityTest {
               + "|be|lu|ie|cz|ch|ca|us|uk|gov|int)\\b|BWBR\\d+|CELEX\\s+\\w+");
   private static final Pattern SENTENCE_END = Pattern.compile("[()\\[\\];:]|[.!?](?=\\s+\\D)");
   private static final Pattern LID_AFTER_CITATION =
-      Pattern.compile("^(?:[\\s,]+[^\\s\\d,]+){0,3}?[\\s,]+(?<![\\d:])(\\d+)(?![\\d:])");
+      Pattern.compile("^[^\\s\\d,]*(?:[\\s,]+[^\\s\\d,]+){0,3}?[\\s,]+(?<![\\d:])(\\d+)(?![\\d:])");
 
   /**
    * All violations of {@code other} against the {@code authoritative} document, with the Dutch
@@ -670,5 +671,41 @@ class LeaseDocumentFidelityTest {
         deTranslation("<p>Under § 556 para. 2 and § 557 para. 4 BGB.</p><p>See § 558a.</p>");
     assertThat(violations(DE_AUTH, changed, Optional.empty()))
         .anyMatch(v -> v.startsWith("numbers differ in clause-a"));
+  }
+
+  // ---- PT: the ordinal sign glued to the article number ("1097.º, n.º 3") ----
+
+  private static final Optional<Pattern> PT_CITATION =
+      Optional.of(LeaseDocumentRegistry.PORTUGUESE_CITATION);
+
+  private static final String PT_AUTH =
+      "<!-- legal-basis: CC x reviewed-by: none translation: authoritative -->\n"
+          + "<div th:fragment=\"clause-a\"><p>Nos termos do artigo 1097.º, n.º 3, e do artigo"
+          + " 1110.º-A, n.º 1, do Código Civil.</p><p>Ver o artigo 1083.º do Código"
+          + " Civil.</p></div>";
+
+  @Test
+  @DisplayName("a PT citation pairs the article with the n.º paragraph after the ordinal sign")
+  void portugueseCitationPairsParagraphAfterOrdinalSign() {
+    assertThat(citations("<p>artigo 1097.º, n.º 3, e artigo 1110.º-A, n.º 1</p>", PT_CITATION))
+        .hasSize(2)
+        .anyMatch(c -> c.endsWith(": 1097 3"))
+        .anyMatch(c -> c.endsWith(": 1110 1"));
+    assertThat(
+            citations(
+                "<p>article 1097, paragraph 3, and article 1110-A, paragraph 1</p>", PT_CITATION))
+        .anyMatch(c -> c.endsWith(": 1097 3"))
+        .anyMatch(c -> c.endsWith(": 1110 1"));
+    String good =
+        deTranslation(
+            "<p>Under article 1097, paragraph 3, and article 1110-A, paragraph 1, of the Civil"
+                + " Code.</p><p>See article 1083 of the Civil Code.</p>");
+    assertThat(violations(PT_AUTH, good, PT_CITATION)).isEmpty();
+    String swapped =
+        deTranslation(
+            "<p>Under article 1097, paragraph 1, and article 1110-A, paragraph 3, of the Civil"
+                + " Code.</p><p>See article 1083 of the Civil Code.</p>");
+    assertThat(violations(PT_AUTH, swapped, PT_CITATION))
+        .anyMatch(v -> v.startsWith("citations differ in clause-a"));
   }
 }
