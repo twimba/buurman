@@ -614,6 +614,91 @@ public final class LeaseDocumentRegistry {
   // ===== GR entries (country pack) =====
   // Constants, citation pattern and foreign markers for GR go here, only inside these markers.
 
+  /**
+   * The Greek statute citation format, in Greek and English: the article digits after
+   * "άρθρο/άρθρου/άρθρα/άρθρων" or "article(s)", and the law number "1703/1987" after "ν." / "π.δ."
+   * or "Law" / "Decree": {@code άρθρο 13 παρ. 1 του ν. 4242/2014} and {@code article 13, paragraph
+   * 1, of Law 4242/2014} both give "13 1" and "4242/2014". A Greek letter suffix ("612Α") is left
+   * out of the token, so it pairs with the Latin "612A"; the law token ends the article's rest, so
+   * the law number is never taken for its paragraph. Unicode-aware: Java's {@code \b} does not see
+   * Greek letters.
+   */
+  public static final Pattern GREEK_CITATION =
+      Pattern.compile(
+          "(?<=(?<![\\p{L}\\p{N}])(?:άρθρ(?:ο|ου|α|ων)|articles?|ν\\.|π\\.\\s?δ\\.|Laws?|Decree)"
+              + "\\s{1,20})\\d+(?:/\\d{4})?",
+          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+  /**
+   * Greek marker words that must not leak into the English translations outside parenthetical
+   * glosses. Not passed to the registry entry: {@link Entry#foreignMarkerPattern()} uses {@code
+   * \b}, which does not match next to Greek letters, so {@code GrLeaseDocumentTest} checks them
+   * with a Unicode-aware boundary.
+   */
+  public static final List<String> GREEK_MARKERS =
+      List.of("ο εκμισθωτής", "ο μισθωτής", "μίσθιο", "βλ. άρθρο", "σύμφωνα με");
+
+  /** Mirror of V102__seed_gr_lease_clauses.sql (RESIDENTIAL rows). */
+  private static final Entry GR_RESIDENTIAL =
+      new Entry(
+          "GR",
+          LeaseKind.RESIDENTIAL,
+          "el",
+          List.of("el", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("term", true, false, 3),
+              new ClauseSpec("rent", true, false, 4),
+              new ClauseSpec("rent-adjustment", false, false, 5),
+              new ClauseSpec("service-costs", false, false, 6),
+              new ClauseSpec("deposit", false, false, 7),
+              new ClauseSpec("payment", true, false, 8),
+              new ClauseSpec("use", false, false, 9),
+              new ClauseSpec("subletting", false, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("energy-certificate", false, false, 12),
+              new ClauseSpec("registration", false, false, 13),
+              new ClauseSpec("sale-of-premises", false, false, 14),
+              new ClauseSpec("handover-inspection", false, false, 15),
+              new ClauseSpec("termination", true, false, 16),
+              new ClauseSpec("data-protection", false, false, 17),
+              new ClauseSpec("disputes", false, false, 18)),
+          List.of(),
+          Optional.of(GREEK_CITATION));
+
+  /** Mirror of V102__seed_gr_lease_clauses.sql (COMMERCIAL rows). */
+  private static final Entry GR_COMMERCIAL =
+      new Entry(
+          "GR",
+          LeaseKind.COMMERCIAL,
+          "el",
+          List.of("el", "en"),
+          List.of(
+              new ClauseSpec("parties", true, true, 1),
+              new ClauseSpec("premises", true, true, 2),
+              new ClauseSpec("permitted-use", true, false, 3),
+              new ClauseSpec("term", true, false, 4),
+              new ClauseSpec("rent", true, false, 5),
+              new ClauseSpec("rent-adjustment", false, false, 6),
+              new ClauseSpec("service-costs", false, false, 7),
+              new ClauseSpec("vat", false, false, 8),
+              new ClauseSpec("deposit", false, false, 9),
+              new ClauseSpec("payment", true, false, 10),
+              new ClauseSpec("maintenance", false, false, 11),
+              new ClauseSpec("alterations", false, false, 12),
+              new ClauseSpec("assignment", false, false, 13),
+              new ClauseSpec("insurance", false, false, 14),
+              new ClauseSpec("energy-certificate", false, false, 15),
+              new ClauseSpec("registration", false, false, 16),
+              new ClauseSpec("sale-of-premises", false, false, 17),
+              new ClauseSpec("handover-inspection", false, false, 18),
+              new ClauseSpec("termination", true, false, 19),
+              new ClauseSpec("data-protection", false, false, 20),
+              new ClauseSpec("disputes", false, false, 21)),
+          List.of(),
+          Optional.of(GREEK_CITATION));
+
   // ===== end GR =====
 
   // ===== IE entries (country pack) =====
@@ -705,6 +790,8 @@ public final class LeaseDocumentRegistry {
     // ===== end GB ENTRIES =====
 
     // ===== GR ENTRIES (country pack) =====
+    entries.add(GR_RESIDENTIAL);
+    entries.add(GR_COMMERCIAL);
 
     // ===== end GR ENTRIES =====
 

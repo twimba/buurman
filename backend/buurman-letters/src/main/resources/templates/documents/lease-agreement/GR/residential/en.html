@@ -1,0 +1,310 @@
+<!--
+  legal-basis: Astikos Kodikas (Civil Code, AK), mischosi pragmatos, art. 574-618 as consolidated on www.lawspot.gr
+               (no official consolidation exists): 574, 575, 576-581, 585, 586, 588, 589, 590, 591, 592, 593,
+               594, 595, 596, 597, 598, 599, 601, 602, 603, 608, 609, 611, 612, 612A, 613, 614, 615; art. 388.
+               Law 1703/1987 (FEK A 78/27.5.1987, api.et.gr): art. 1 (scope: main residence, predominant use)
+               and art. 2 par. 1 as replaced by Law 2235/1994 art. 1 par. 5 (FEK A 145/1.9.1994): minimum term
+               of 3 years, shortening by later notarial agreement, 75% cost-of-living default adjustment.
+               Art. 2 par. 2-4 of Law 1703/1987 (deposit limit, advance rent, common charges, inspections) are
+               NOT relied on: their force after 1.7.1997 is disputed (EirArgous 114/2023, www.dsanet.gr:
+               only art. 2 par. 1 remains in force).
+               Law 4122/2013 art. 12 par. 1, 2, 5, 6, 7, 8 (energy performance certificate, PEA), consolidated
+               text on www.taxheaven.gr.
+               AADE: decision POL 1162/2018 (FEK B 3579/2018) on the electronic lease declaration, as amended
+               by decision A.1068/2025 (FEK B 2703/02.06.2025: 30-day acceptance by the tenant).
+               Law 5222/2025 art. 210 (rent paid through a payment account; start date postponed several
+               times - see the pack report).
+               KPolD (Code of Civil Procedure) art. 29 par. 1 and art. 637 as replaced by Law 5221/2025 art. 72
+               (FEK A 133/28.07.2025, in force 1.1.2026, api.et.gr).
+               GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX 32016R0679); Law 4624/2019.
+               No region branches: the rules above apply in the whole country.
+               Verified 2026-10-04 against api.et.gr, www.lawspot.gr, www.taxheaven.gr, www.dsanet.gr and
+               mitos.gov.gr (texts read on that date).
+               Convention for all languages: every numeric quantity in the prose is written as digits exactly as in el.html, never spelled out (el "3 έτη" is "3 years" in English), enforced by the translation fidelity gate.
+  reviewed-by: none
+  translation: machine-drafted
+  English courtesy translation of el.html; the Greek text is authoritative. It states Greek law (Civil Code, Law
+  1703/1987) in English and is not the law of any other country. Draft text, not vetted by legal counsel. Only
+  prose differs from el.html: fragments, th: expressions and attributes are identical (enforced by
+  LeaseDocumentFidelityTest). Each clause-<key> fragment holds only the clause body; the shell supplies article
+  numbers and titles. Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code
+  article numbers of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>Between <strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo; (εκμισθωτής),</p>
+  <p>tax identification number (ΑΦΜ), identity card or passport number and home address of the landlord: ______________________________</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}">and <strong th:text="${tenantNames}">tenant</strong>,
+    hereinafter (jointly) &ldquo;the tenant&rdquo; (μισθωτής),</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">and the tenant(s) signing at the end, hereinafter (jointly)
+    &ldquo;the tenant&rdquo; (μισθωτής),</p>
+  <p>tax identification number, identity card or passport number and address of the tenant: ______________________________,</p>
+  <p>this residential lease agreement is concluded. The agreement is governed by its terms and by the provisions of
+    the Greek Civil Code (Αστικός Κώδικας, AK) on the lease of things (articles 574 to 618 of the Civil Code), and by
+    the provision on the minimum term of a residential lease (article 2, paragraph 1, of Law 1703/1987).</p>
+  <p>Where there are several tenants, the parties agree that they are jointly and severally liable for all
+    obligations arising from this agreement.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant, who accepts, the property located at
+    <strong th:text="${propertyAddress}">address</strong>, hereinafter &ldquo;the leased premises&rdquo;
+    (μίσθιο), with the following particulars:</p>
+  <p>floor, area and description, and appurtenances let together with the leased premises (storage room, parking
+    space or other): ______________________________</p>
+  <p>electricity supply number and, where one exists, National Cadastre property code (ΚΑΕΚ): ______________________________</p>
+  <p>furniture and equipment let together with the leased premises, if any: ______________________________</p>
+  <p>The leased premises are let for use as the tenant&rsquo;s main residence. Law 1703/1987 covers leases of
+    immovable property used under the lease as a main residence; where mixed use has been agreed, that law applies
+    only if use of the leased premises as a main residence is the predominant use (article 1, paragraphs 1 and 2, of
+    Law 1703/1987).</p>
+  <p>This model is not intended for the lease of a secondary or holiday home, for a short-term rental or for the
+    lease of business premises.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The lease begins on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is concluded for a fixed term<span th:if="${endDate != null}"> and ends on
+    <strong th:text="${endDate}">end date</strong></span>. Term, if it does not follow from the end date: ______________________________.
+    A fixed-term lease ends as soon as the agreed term has elapsed, without anything further being required (article
+    608 of the Civil Code). If, after the agreed term has elapsed, the tenant continues to use the leased premises and
+    the landlord knows this and does not object, the lease is deemed renewed for an indefinite term (article 611 of
+    the Civil Code).</p>
+  <p th:if="${!fixedTerm}">The lease is concluded for an indefinite term and ends by notice of termination
+    (καταγγελία) given by either of the parties (article 608 of the Civil Code).</p>
+  <p>A lease of immovable property for housing is valid for at least 3 years, even where it has been agreed for a
+    shorter period or for an indefinite term. This minimum term may be shortened only by a later agreement, made at
+    least 6 months after the lease was concluded counting from its start, and proved by a notarial deed (article 2,
+    paragraph 1, of Law 1703/1987, as replaced by article 1, paragraph 5, of Law 2235/1994).</p>
+  <p class="clause-ref" data-ref="termination" th:if="${refs['termination']}">Notice of termination and the ending
+    of the lease are governed by the provisions of this agreement (see article <span th:text="${refs['termination']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent (μίσθωμα) is <strong th:text="${rentAmount}">amount</strong> (payable
+    <span th:text="${paymentFrequency}">monthly</span>) and is freely agreed by the parties (article 574 of the Civil
+    Code).<span class="clause-ref" data-ref="service-costs" th:if="${refs['service-costs']}"> The tenant also bears
+    the costs assumed in this agreement (see article <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>The tenant is not released from the rent if prevented from using the leased premises for reasons concerning the
+    tenant; the tenant may, however, deduct from the rent any benefit the landlord obtained by using the leased
+    premises in another way (article 596 of the Civil Code).</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Rent adjustment is governed
+    by the provisions of this agreement (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The adjustment of the rent of a residential lease is freely agreed by the parties. The parties agree the
+    following adjustment (interval and percentage or index, such as the annual change in the Consumer Price Index
+    of the Hellenic Statistical Authority): ______________________________</p>
+  <p>Where the contractual term has been set at less than 3 years and there is no agreement on adjusting the rent for
+    the remaining period, the rent payable increases annually by 75% of the cost-of-living index as determined by
+    the Bank of Greece for the immediately preceding 12 months (article 2, paragraph 1, of Law 1703/1987).</p>
+  <p>Adjustment of the agreement on the ground of an unforeseeable change of circumstances, under the conditions laid
+    down by law, remains reserved (article 388 of the Civil Code).</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>The tenant bears the consumption costs of electricity, water, natural gas and telecommunications of the leased
+    premises and the common charges (κοινόχρηστα: heating, cleaning, lift and other costs of use) attributable to the
+    leased premises. More detailed allocation agreed by the parties: ______________________________</p>
+  <p>The landlord bears the charges on the leased premises and the taxes levied on them (article 590 of the Civil
+    Code). The parties agree that extraordinary costs for the repair, renovation or improvement of the building and
+    its common installations are borne by the landlord.</p>
+  <p>The parties agree that late payment of the common charges borne by the tenant has the same consequences as late
+    payment of the rent.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">As security for the performance of the tenant&rsquo;s obligations, the
+    tenant pays the landlord, on signing this agreement, the sum of <strong th:text="${depositAmount}">amount</strong>
+    as a security deposit (εγγύηση).</p>
+  <p th:if="${depositAmount == null}">The parties do not agree a security deposit (εγγύηση). Security deposit agreed, if any: ______________________________</p>
+  <p>The parties agree that the security deposit is not set off against rent during the lease and bears no interest.
+    After the lease has ended and the leased premises have been returned, the landlord returns the security deposit
+    to the tenant, less the sums owed to the landlord under the lease, in particular unpaid rent and costs and
+    compensation for damage for which the tenant is responsible. Period for its return agreed by the parties: ______________________________.<span
+    class="clause-ref" data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the
+    leased premises is governed by the provisions of this agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article <span th:text="${refs['rent']}"></span>)</span><span
+    th:if="${refs['service-costs']}"> and the costs borne by the tenant</span>
+    <span th:text="${paymentFrequency}">monthly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of each
+      month</span><span th:if="${paymentDueDay == null}">on the date agreed by the parties</span>.
+    In the absence of agreed or customary payment dates, the rent is paid at the end of the lease and, where payment
+    at shorter intervals has been agreed, at the end of each interval (article 595 of the Civil Code).</p>
+  <p>Payment is made by deposit or transfer to the landlord&rsquo;s bank account with IBAN: ______________________________.
+    From the time the law makes payment of rent through a bank account mandatory, payment is made exclusively in that
+    way (article 210 of Law 5222/2025).</p>
+</div>
+
+<div th:fragment="clause-use" data-clause="use">
+  <p>The tenant uses the leased premises as the main residence of the tenant and of the persons living with the
+    tenant. The tenant must treat the leased premises with care and as agreed and behave appropriately towards the
+    other occupants; if the tenant fails to do so despite the landlord&rsquo;s objections, the landlord is entitled
+    to terminate the lease with immediate effect and at the same time claim damages (article 594 of the Civil
+    Code).</p>
+  <p>The tenant complies with the rules of the apartment building, where they exist and have been made known to the
+    tenant. Other terms of use agreed by the parties (pets or other): ______________________________</p>
+  <p>The parties agree that the landlord or the landlord&rsquo;s representative may visit the leased premises, by
+    prior arrangement with the tenant, up to 1 time every 3 months, to check that they are used properly and in
+    accordance with the agreement.</p>
+</div>
+
+<div th:fragment="clause-subletting" data-clause="subletting">
+  <p>The law allows the tenant, unless otherwise agreed, to give another person the use of the leased premises and in
+    particular to sublet them, the tenant being liable to the landlord for the fault of the third party (article 593
+    of the Civil Code). The parties agree that the tenant does not sublet the leased premises or give a third party
+    the use of them, in whole or in part, for consideration or free of charge, nor offer them for short-term rental,
+    without the landlord&rsquo;s prior written consent.</p>
+  <p>The landlord&rsquo;s consent to a sublease or to the transfer of use does not release the tenant from liability
+    for the fault of the third party (article 593 of the Civil Code). When the lease ends, the landlord may also claim
+    the leased premises from the subtenant or from the person to whom the use was transferred (article 599 of the
+    Civil Code).</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>The landlord must hand over the leased premises to the tenant fit for the agreed use and keep them fit
+    throughout the lease (article 575 of the Civil Code). If the leased premises have a defect that wholly or partly
+    prevents the agreed use, or if such a defect appeared during the lease, the tenant is entitled to reduce or
+    withhold the rent, on the terms and with the exceptions of articles 576 to 581 of the Civil Code.</p>
+  <p>If the landlord is in default in remedying the defect, the tenant is entitled to remedy it and claim the cost
+    (article 578 of the Civil Code). The landlord reimburses the tenant for necessary expenses the tenant incurred on
+    the leased premises; useful expenses are reimbursed under the rules on the management of another&rsquo;s affairs,
+    and the tenant is entitled to remove fixtures the tenant added to the leased premises (article 591 of the Civil
+    Code).</p>
+  <p>The tenant is not liable for deterioration or changes resulting from the agreed use (article 592 of the Civil
+    Code). The tenant must compensate the landlord if the tenant failed to inform the landlord in good time of defects
+    in the leased premises that appeared during the lease or of rights claimed over them by a third party (article
+    589 of the Civil Code).</p>
+  <p>The parties agree that the tenant bears minor repairs resulting from ordinary use, as follows: ______________________________,
+    and that the tenant makes no alterations or additions to the leased premises without the landlord&rsquo;s prior
+    written consent.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>When a building or building unit is let to a new tenant, an energy performance certificate (Πιστοποιητικό
+    Ενεργειακής Απόδοσης, ΠΕΑ) must be issued, until the activation of the Building Identity (Ταυτότητα Κτιρίου),
+    which must include the certificate and its period of validity, save in the cases excepted by law (article 12,
+    paragraphs 1, 6 and 7, of Law 4122/2013). The landlord showed the tenant the certificate or a copy of it and
+    hands it over to the tenant (article 12, paragraph 2, of Law 4122/2013). These obligations cannot be excluded by
+    agreement of the parties (article 12, paragraph 5, of Law 4122/2013).</p>
+  <p>The protocol number of the certificate must be entered in the declaration of the lease to a new tenant to the
+    competent public authority (article 12, paragraph 8, of Law 4122/2013).</p>
+  <p>Protocol number, energy class and date of issue of the certificate: ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The landlord files electronically with the Independent Authority for Public Revenue (Ανεξάρτητη Αρχή Δημοσίων
+    Εσόδων, ΑΑΔΕ) the declaration of the particulars of the lease of immovable property by the end of the month
+    following the start of the lease or its amendment, and also declares its termination, under decision POL
+    1162/2018 of the Governor of the AADE, as in force.</p>
+  <p>The tenant accepts or rejects the declaration electronically within 30 days of receiving the relevant
+    notification; if that period expires without action, the declaration is deemed accepted (decision A.1068/2025 of
+    the Governor of the AADE). Late filing or failure to file the declaration incurs the penalties laid down in tax
+    legislation.</p>
+  <p>Number of the lease declaration with the AADE (completed after filing): ______________________________</p>
+</div>
+
+<div th:fragment="clause-sale-of-premises" data-clause="sale-of-premises">
+  <p>In a lease of immovable property proved by a document of certain date, if the landlord, during the lease,
+    transfers ownership of the leased premises to a third party or grants another right in rem that excludes the
+    tenant&rsquo;s use, the new acquirer succeeds to the rights and obligations under the lease, unless the lease
+    document provides otherwise (article 614 of the Civil Code). The parties do not agree any such contrary
+    clause.</p>
+  <p>If the lease is not proved by a document of certain date or contains a term that, on a disposal of the leased
+    premises, the new acquirer will be entitled to evict the tenant, the new acquirer may terminate the lease by
+    notice given 1 month in advance if the lease has a term of up to 1 year, and 2 months in advance if its term is
+    longer than 1 year (article 615 of the Civil Code). Method of establishing the certain date of this document
+    chosen by the parties: ______________________________</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>At handover the parties draw up and sign a report describing the condition of the leased premises, the furniture
+    and equipment and the meter readings, which is annexed to this agreement.</p>
+  <p>When the lease ends, the tenant must return the leased premises in the condition in which the tenant received
+    them (article 599 of the Civil Code), without being liable for deterioration or changes resulting from the agreed
+    use (article 592 of the Civil Code), and hand over all keys.</p>
+  <p>For as long as the tenant retains the leased premises after the end of the lease, the tenant owes the agreed
+    rent as compensation, without prejudice to the landlord&rsquo;s right to claim further damage (article 601 of
+    the Civil Code). The landlord&rsquo;s claims for compensation for changes to or deterioration of the leased
+    premises become time-barred 6 months after the landlord took them back, and the tenant&rsquo;s claims for
+    expenses 6 months after the lease ended (articles 602 and 603 of the Civil Code).</p>
+  <p>The parties agree that during the last 2 months before the end of the lease the tenant allows prospective tenants
+    or buyers to view the leased premises at times agreed with the landlord.<span
+    class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The return of the security deposit is governed
+    by the provisions of this agreement (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p th:if="${fixedTerm}">A fixed-term lease ends when the agreed term has elapsed, but not before the minimum term
+    of 3 years has elapsed, unless that term has been lawfully shortened. Right of the tenant to terminate the lease
+    before its expiry, if the parties so agree (minimum period of the lease, notice period, any compensation): ______________________________</p>
+  <p th:if="${!fixedTerm}">Notice of termination of a lease of indefinite term, where the rent is set by the month,
+    is given, unless otherwise agreed, at least 15 days in advance and takes effect at the end of the calendar month
+    (article 609 of the Civil Code); the lease is, however, valid for at least 3 years, unless that term has been
+    lawfully shortened.</p>
+  <p>If the tenant is in arrears with the rent, wholly or in part, the landlord is entitled to terminate the lease by
+    notice given at least 1 month in advance in the case of a lease whose term was agreed for 1 year or more, and 10
+    days in advance in other leases, without prejudice to the landlord&rsquo;s claim for damages for the early ending
+    of the lease; the notice has no effect if the tenant, before that period expires, pays the rent in arrears
+    together with any costs of the notice (article 597 of the Civil Code). Any agreement that shortens these periods,
+    or ends the lease automatically, or gives the landlord such a right as soon as the tenant is in default with the
+    payment of the rent, is void (article 598 of the Civil Code).</p>
+  <p>The tenant is entitled to terminate the lease, in particular: if the agreed use was not granted to the tenant
+    unhindered in good time, wholly or in part, or was later withdrawn, after setting the landlord a reasonable
+    period to restore it which has expired without result, or even without setting a period if, because of that
+    ground, the tenant has no interest in the performance of the agreement, save in the cases for which the landlord
+    is not liable (articles 585 and 586 of the Civil Code); without setting a period, if use of the leased premises
+    entails a serious risk to the health of the tenant or of the tenant&rsquo;s relatives living with the tenant, even
+    if the tenant knew of the dangerous conditions or waived the relevant rights (article 588 of the Civil Code); and,
+    where the tenant is a civil servant transferred to another place, from the transfer, under the rules on leases of
+    indefinite term (article 613 of the Civil Code).</p>
+  <p>On the tenant&rsquo;s death, the tenant&rsquo;s heirs are entitled to terminate the lease by notice given at
+    least 3 months in advance, taking effect at the end of a calendar month; if the leased premises served as the
+    family home within the meaning of article 1393 of the Civil Code and the tenant&rsquo;s spouse is alive, the
+    rights and obligations under the lease pass exclusively to the spouse, who may, observing the same period,
+    terminate the lease at any time (article 612 of the Civil Code). If the leased premises serve as the family home
+    and that use has been notified to the landlord, a notice of termination by the landlord is void unless it is
+    also served on the tenant&rsquo;s spouse, observing the same period, if any, required for the notice (article
+    612A of the Civil Code).</p>
+  <p>The landlord may apply for an order for possession (διαταγή απόδοσης της χρήσης μισθίου) in the event of arrears
+    of rent due to obstinacy (δυστροπία) or of the expiry of the fixed term of the lease, under the conditions of
+    article 637 of the Code of Civil Procedure (Κώδικας Πολιτικής Δικονομίας, ΚΠολΔ): the start or the end of the
+    lease must be proved in writing and a written demand must have been served by a judicial officer at least 15 days
+    before the application is filed, which is required only the first time; payment of the rent within that period,
+    proved in writing, prevents the order from being issued, unless there are repeated arrears due to obstinacy. For
+    an order on the ground of the expiry of the term of the lease, the landlord must in addition serve an
+    extrajudicial request to return the leased premises at least 3 months before that term expires or, for a lease
+    that has become one of indefinite term after its expiry, at least 3 months before the order is served; in that
+    case enforcement may begin once 2 months have passed since the order was served on the tenant.</p>
+  <p>The parties agree that every notice of termination is given in writing.<span class="clause-ref" data-ref="handover-inspection"
+    th:if="${refs['handover-inspection']}"> The return of the leased premises is governed by the provisions of this
+    agreement (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>The landlord processes the tenant&rsquo;s personal data only to the extent necessary to conclude and perform this
+    agreement and to comply with the landlord&rsquo;s legal obligations, in particular tax obligations, in accordance
+    with the General Data Protection Regulation (Regulation (EU) 2016/679) and Law 4624/2019, and does not keep them
+    longer than necessary for those purposes.</p>
+  <p>The tenant may exercise against the landlord the rights conferred by that legislation, in particular the rights
+    of access, rectification and erasure, and lodge a complaint with the Hellenic Data Protection Authority (Αρχή
+    Προστασίας Δεδομένων Προσωπικού Χαρακτήρα).</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This agreement is governed by Greek law. Disputes arising from a lease of immovable property fall within the
+    exclusive jurisdiction of the court for the area in which the property is situated (article 29, paragraph 1, of
+    the Code of Civil Procedure) and are heard under the special procedure for lease disputes of that code.</p>
+  <p>Amendments to this agreement are made only in writing. Terms of this agreement that conflict with mandatory
+    provisions of law do not apply to the extent of that conflict.</p>
+</div>
+
+</body>
+</html>
