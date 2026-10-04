@@ -16,8 +16,11 @@
                Renteloven § 5 (default interest). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
                32016R0679); databeskyttelsesloven; Datatilsynet.
                Verified 2026-10-04 against retsinformation.dk (texts read on that date).
-               Pending: bill on digital communication of notices and paakrav (fremsat 15/01/2026, not enacted on
-               2026-10-04) - re-verify § 13, stk. 2, and the termination clause if it is enacted.
+               Pending: bill on digital communication (forslag til lov om aendring af lov om leje, Digital
+               kommunikation; first fremsat 15/01/2026, renewed hearing published 04/09/2026, deadline 18/09/2026,
+               expected in force 01/01/2027; hoeringsportalen.dk Hearing 71434) would allow the landlord's notice
+               and paakrav as digital documents by agreement - re-check the § 13, stk. 2, sentence of the
+               termination clause on 01/01/2027 together with the 344 kr. fee change.
                Convention for all languages: every numeric quantity in the prose is written as digits exactly as in da.html, never spelled out (da "3 måneders leje" is "3 months' rent" in English), enforced by the translation fidelity gate.
   reviewed-by: none
   translation: machine-drafted
@@ -51,11 +54,12 @@
   <p>The tenancy is governed by the Danish Rent Act (lov om leje, lejeloven). This agreement is deemed concluded
     on the terms of the Act, to the extent that nothing else is expressly provided (§ 11, subsection 2).
     Provisions of this agreement that conflict with mandatory rules of the Act have no effect.</p>
-  <p>This agreement is not the authorised standard form (typeformular A, 10. udgave) under § 14 of the Rent Act
-    and Executive Order no. 77 of 29 January 2025 on authorised standard forms for leases (bekendtgørelse om
-    autoriserede standardblanketter for lejeaftaler). If this agreement is used as a standard form (blanket),
-    provisions that impose greater obligations on the tenant or give the tenant fewer rights than provided in
-    the Act are invalid (§ 14, subsection 3).</p>
+  <p>This agreement is not the authorised standard form (typeformular A, 10. udgave) under Executive Order
+    no. 77 of 29 January 2025 on authorised standard forms for leases (bekendtgørelse om autoriserede
+    standardblanketter for lejeaftaler). When a lease of a residential dwelling is concluded, standard forms
+    (blanketter) may be used only if they are authorised (§ 14, subsection 1). Provisions of this agreement that
+    impose greater obligations on the tenant or give the tenant fewer rights than provided in the Act are invalid
+    (§ 14, subsection 3).</p>
 </div>
 
 <div th:fragment="clause-term" data-clause="term">
@@ -103,8 +107,8 @@
   <p>For tenancies with cost-based rent in a regulated municipality (reguleret kommune, § 6, subsection 1),
     § 53 does not apply; the rent is instead adjusted under the rules of Chapter 3. The landlord&rsquo;s right
     to a rent increase on account of increased property taxes and charges under §§ 46-48 and to an increase for
-    improvements under the rules of the Act is not affected by this provision. A demand for a rent increase
-    under § 42 must be made in writing, stating the amount of and the reason for the increase and informing
+    improvements under the rules of the Act is not affected by this provision. For tenancies not covered by § 6, subsection 1,
+    the following applies: a demand for a rent increase under § 42 must be made in writing, stating the amount of and the reason for the increase and informing
     the tenant of the right to object, and may be implemented with 3 months&rsquo; notice
     (§ 44, subsections 1 and 2).</p>
 </div>
@@ -112,9 +116,10 @@
 <div th:fragment="clause-service-costs" data-clause="service-costs">
   <p>If the landlord supplies heating and hot water, the landlord may claim reimbursement of the costs of the
     tenant&rsquo;s consumption and of the tenant&rsquo;s share of other costs under § 72, subsections 4 and 5;
-    these costs cannot be included in the rent (§ 65, subsection 1). If the landlord supplies cooling, water,
-    electricity or gas, the landlord may claim reimbursement of the costs of the tenant&rsquo;s consumption
-    under §§ 67-69. The costs are allocated according to customary allocation rules based on consumption
+    these costs cannot be included in the rent (§ 65, subsection 1). If the landlord supplies cooling, cold water,
+    or electricity and gas, the landlord may claim reimbursement of the costs of the tenant&rsquo;s consumption
+    (§ 67, subsection 1, § 68, subsection 1, § 69); if the property is exempt from the requirement of
+    individual metering of cooling or cold water, those costs are included in the rent. The costs are allocated according to customary allocation rules based on consumption
     meters.</p>
   <p>The tenant pays on-account contributions towards the tenant&rsquo;s share of the costs, in equal amounts
     together with the rent. The total contributions for 1 year may not exceed the cost expected to be charged
@@ -224,7 +229,8 @@
     premises must be clean, the windowpanes intact and all external doors fitted with working locks with
     the corresponding keys (§ 89). If the landlord lets more than 1 residential dwelling, the landlord must
     inspect the dwelling on moving in, summon the tenant to the inspection and draw up a move-in report
-    (indflytningsrapport), which is handed over at the inspection or sent to the tenant no later than 2 weeks
+    (indflytningsrapport), which is handed to the tenant at the inspection; if the tenant is not present at the
+    inspection or will not acknowledge receipt of the report, it is sent to the tenant no later than 2 weeks
     after the inspection (§ 90, subsections 1 and 2).</p>
   <p>If the leased premises are defective at the start of the tenancy, the tenant must notify the landlord no
     later than 2 weeks after the start of the tenancy that the tenant intends to invoke the defect, unless the
@@ -241,7 +247,8 @@
     moving-out day, and costs not included in the move-out report are of no concern to the tenant, unless the
     defect cannot be detected with ordinary care or the tenant has acted fraudulently
     (§ 187, subsection 2). No later than 8 days before
-    moving out, the tenant gives the tenant&rsquo;s new address (§ 186, subsection 2).<span
+    moving out, the tenant gives the address to which notices, including claims for restoration, can be sent
+    (§ 186, subsection 2).<span
     class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The deposit is then settled (see article
     <span th:text="${refs['deposit']}"></span>).</span></p>
 </div>

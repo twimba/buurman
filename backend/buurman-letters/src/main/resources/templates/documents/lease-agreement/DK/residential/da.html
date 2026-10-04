@@ -16,8 +16,11 @@
                Renteloven § 5 (default interest). GDPR: Regulation (EU) 2016/679 (eur-lex.europa.eu CELEX
                32016R0679); databeskyttelsesloven; Datatilsynet.
                Verified 2026-10-04 against retsinformation.dk (texts read on that date).
-               Pending: bill on digital communication of notices and paakrav (fremsat 15/01/2026, not enacted on
-               2026-10-04) - re-verify § 13, stk. 2, and the termination clause if it is enacted.
+               Pending: bill on digital communication (forslag til lov om aendring af lov om leje, Digital
+               kommunikation; first fremsat 15/01/2026, renewed hearing published 04/09/2026, deadline 18/09/2026,
+               expected in force 01/01/2027; hoeringsportalen.dk Hearing 71434) would allow the landlord's notice
+               and paakrav as digital documents by agreement - re-check the § 13, stk. 2, sentence of the
+               termination clause on 01/01/2027 together with the 344 kr. fee change.
                Convention for all languages: every numeric quantity in the prose is written as digits exactly as in da.html, never spelled out (da "3 måneders leje" is "3 months' rent" in English), enforced by the translation fidelity gate.
   reviewed-by: none
   translation: authoritative
@@ -47,10 +50,11 @@
   <p>Lejeforholdet er omfattet af lov om leje (lejeloven). Aftalen anses for indgået på lovens vilkår, i det
     omfang der ikke udtrykkeligt er fastsat andet (§ 11, stk. 2). Bestemmelser i denne aftale, som strider mod
     ufravigelige regler i loven, er uden virkning.</p>
-  <p>Denne aftale er ikke den autoriserede standardblanket (typeformular A, 10. udgave) efter § 14 i lov om
-    leje og bekendtgørelse nr. 77 af 29. januar 2025 om autoriserede standardblanketter for lejeaftaler.
-    Anvendes aftalen som blanket, er bestemmelser, der pålægger lejeren større forpligtelser eller giver
-    lejeren mindre rettigheder end angivet i loven, ugyldige (§ 14, stk. 3).</p>
+  <p>Denne aftale er ikke den autoriserede standardblanket (typeformular A, 10. udgave) efter bekendtgørelse
+    nr. 77 af 29. januar 2025 om autoriserede standardblanketter for lejeaftaler. Ved indgåelse af lejeaftale
+    om beboelseslejligheder må blanketter kun anvendes, hvis de er autoriseret (§ 14, stk. 1). Bestemmelser i
+    denne aftale, der pålægger lejeren større forpligtelser eller giver lejeren mindre rettigheder end angivet
+    i loven, er ugyldige (§ 14, stk. 3).</p>
 </div>
 
 <div th:fragment="clause-term" data-clause="term">
@@ -93,7 +97,7 @@
   <p>For lejemål med omkostningsbestemt leje i en reguleret kommune (§ 6, stk. 1) gælder § 53 ikke; lejen
     reguleres i stedet efter reglerne i kapitel 3. Udlejerens ret til lejeforhøjelse som følge af øgede
     ejendomsskatter og afgifter efter §§ 46-48 og til forhøjelse for forbedringer efter lovens regler berøres
-    ikke af denne bestemmelse. Et krav om lejeforhøjelse efter § 42 skal fremsættes skriftligt med angivelse af
+    ikke af denne bestemmelse. For lejemål, der ikke er omfattet af § 6, stk. 1, gælder: et krav om lejeforhøjelse efter § 42 skal fremsættes skriftligt med angivelse af
     lejeforhøjelsens størrelse og grund og oplysning om lejerens adgang til at gøre indsigelse og kan
     gennemføres med 3 måneders varsel (§ 44, stk. 1 og 2).</p>
 </div>
@@ -101,8 +105,9 @@
 <div th:fragment="clause-service-costs" data-clause="service-costs">
   <p>Leverer udlejeren varme og opvarmning af vand, kan udlejeren kræve sine udgifter til lejerens forbrug og
     andel i andre udgifter efter § 72, stk. 4 og 5, refunderet; udgifterne kan ikke indeholdes i lejen
-    (§ 65, stk. 1). Leverer udlejeren køling, vand, el eller gas, kan udlejeren efter §§ 67-69 kræve sine
-    udgifter til lejerens forbrug refunderet. Udgifterne fordeles efter sædvanlige fordelingsregler efter
+    (§ 65, stk. 1). Leverer udlejeren køling, koldt vand eller el og gas, kan udlejeren kræve sine
+    udgifter til lejerens forbrug refunderet (§ 67, stk. 1, § 68, stk. 1, § 69); er ejendommen undtaget fra
+    krav om individuel måling af køling eller koldt vand, indeholdes disse udgifter i lejen. Udgifterne fordeles efter sædvanlige fordelingsregler efter
     forbrugsmålere.</p>
   <p>Lejeren betaler acontobidrag til dækning af sin andel af udgifterne, med lige store beløb sammen med
     lejen. De samlede bidrag for 1 år må højst svare til den udgift, der forventes at blive pålignet for
@@ -203,7 +208,8 @@
     rengjort, ruderne skal være hele, og alle udvendige døre skal være forsynet med brugelige låse med
     tilhørende nøgler (§ 89). Udlejer udlejeren mere end 1 beboelseslejlighed, skal udlejeren syne
     lejligheden ved indflytningen, indkalde lejeren til synet og udarbejde en indflytningsrapport, der
-    udleveres ved synet eller sendes til lejeren senest 2 uger efter synet (§ 90, stk. 1 og 2).</p>
+    udleveres til lejeren ved synet; er lejeren ikke til stede ved synet, eller vil lejeren ikke kvittere for
+    modtagelsen af rapporten, sendes den til lejeren senest 2 uger efter synet (§ 90, stk. 1 og 2).</p>
   <p>Er det lejede mangelfuldt ved lejeforholdets begyndelse, skal lejeren senest 2 uger efter lejeforholdets
     begyndelse meddele udlejeren, at lejeren vil gøre manglen gældende, medmindre manglen ikke kan erkendes
     ved sædvanlig agtpågivenhed eller udlejeren har handlet svigagtigt (§ 91).</p>
@@ -217,7 +223,8 @@
     istandsættelse skal gøres gældende senest 2 uger efter flyttesynet eller, for lejemål uden pligt til
     flyttesyn, efter fraflytningsdagen, og udgifter, der ikke er medtaget i fraflytningsrapporten, er lejeren
     uvedkommende, medmindre manglen ikke kan erkendes ved sædvanlig agtpågivenhed eller lejeren har handlet
-    svigagtigt (§ 187, stk. 2). Lejeren opgiver senest 8 dage før fraflytning sin nye adresse (§ 186, stk. 2).<span
+    svigagtigt (§ 187, stk. 2). Lejeren opgiver senest 8 dage før fraflytning den adresse, som meddelelser, herunder
+    krav om istandsættelse, kan sendes til (§ 186, stk. 2).<span
     class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> Depositum afregnes derefter (se artikel
     <span th:text="${refs['deposit']}"></span>).</span></p>
 </div>

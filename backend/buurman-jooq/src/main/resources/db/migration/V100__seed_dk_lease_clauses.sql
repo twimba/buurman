@@ -6,7 +6,7 @@
 -- LEGACY), so these are the first DK clause rows. Pinned clauses (parties, premises) sort before every movable clause.
 -- Required clauses (optional = FALSE) must default to included (chk_lease_clause_templates_required_default). The
 -- deposit is optional in both kinds: lov om leje § 59 allows it (up to 3 months' rent) but does not require it, and
--- erhvervslejeloven sets no rule on it.
+-- erhvervslejeloven sets no cap on it (it addresses deposits only in § 6, stk. 1, and § 38, stk. 3).
 INSERT INTO
     lease_clause_templates (
         id,
