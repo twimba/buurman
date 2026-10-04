@@ -53,11 +53,14 @@ export const DEFAULT_PREVIEW_FORM: PreviewForm = {
   propertyAddress: 'Keizersgracht 123, 1015 CJ Amsterdam',
 };
 
+export type FieldErrors = Partial<Record<keyof PreviewForm, string>>;
+
 export type BuildResult =
   | { ok: true; request: LeaseAgreementPreviewRequest }
-  | { ok: false; errors: string[] };
+  | { ok: false; errors: string[]; fieldErrors: FieldErrors };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_DECIMALS = 6;
 
 export const isIsoDate = (value: string): boolean => {
   if (!ISO_DATE.test(value)) {
@@ -67,56 +70,96 @@ export const isIsoDate = (value: string): boolean => {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
 };
 
-const parseAmount = (raw: string): number | null => {
-  const text = raw.trim();
-  if (!/^\d+(\.\d+)?$/.test(text)) {
+/** Collects per-field messages (shown inline) in one place. */
+class Problems {
+  readonly fields: FieldErrors = {};
+
+  add(field: keyof PreviewForm, message: string): void {
+    if (!this.fields[field]) {
+      this.fields[field] = message;
+    }
+  }
+
+  messages(): string[] {
+    return Object.values(this.fields);
+  }
+}
+
+const parseAmount = (
+  label: string,
+  field: keyof PreviewForm,
+  raw: string,
+  problems: Problems
+): number | null => {
+  const value = raw.trim();
+  if (value.includes(',')) {
+    problems.add(field, `${label}: use a dot as the decimal separator.`);
     return null;
   }
-  const n = Number(text);
-  return Number.isFinite(n) && n > 0 && n <= MAX_AMOUNT ? n : null;
-};
-
-const text = (label: string, value: string, errors: string[]): string => {
-  const trimmed = value.trim();
-  if (trimmed.length === 0 || trimmed.length > MAX_TEXT_LENGTH) {
-    errors.push(`${label} must be 1-${MAX_TEXT_LENGTH} characters.`);
+  const decimals = value.split('.')[1]?.length ?? 0;
+  const n = Number(value);
+  if (
+    !/^\d+(\.\d+)?$/.test(value) ||
+    !Number.isFinite(n) ||
+    n <= 0 ||
+    n > MAX_AMOUNT
+  ) {
+    problems.add(
+      field,
+      `${label} must be a positive amount up to ${MAX_AMOUNT}.`
+    );
+    return null;
   }
-  return trimmed;
-};
-
-const amount = (
-  label: string,
-  raw: string,
-  errors: string[]
-): number | null => {
-  const n = parseAmount(raw);
-  if (n === null) {
-    errors.push(`${label} must be a positive amount up to ${MAX_AMOUNT}.`);
+  if (decimals > MAX_DECIMALS) {
+    problems.add(field, `${label} may have at most ${MAX_DECIMALS} decimals.`);
+    return null;
   }
   return n;
 };
 
-const checkDates = (form: PreviewForm, errors: string[]): void => {
+const text = (
+  label: string,
+  field: keyof PreviewForm,
+  value: string,
+  problems: Problems
+): string => {
+  const trimmed = value.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_TEXT_LENGTH) {
+    problems.add(field, `${label} must be 1-${MAX_TEXT_LENGTH} characters.`);
+  }
+  return trimmed;
+};
+
+const checkDates = (form: PreviewForm, problems: Problems): void => {
   const inRange = (d: string) => d >= MIN_DATE && d < MAX_DATE;
   if (!isIsoDate(form.startDate) || !inRange(form.startDate)) {
-    errors.push('Start date must be a valid date between 1900 and 2199.');
+    problems.add(
+      'startDate',
+      'Start date must be a valid date between 1900 and 2199.'
+    );
     return;
   }
   if (form.contractType !== 'FIXED_TERM') {
     return;
   }
   if (!isIsoDate(form.endDate) || !inRange(form.endDate)) {
-    errors.push('A fixed-term contract needs a valid end date.');
+    problems.add('endDate', 'A fixed-term contract needs a valid end date.');
   } else if (form.endDate <= form.startDate) {
-    errors.push('End date must be after the start date.');
+    problems.add('endDate', 'End date must be after the start date.');
   }
 };
 
-const checkTenants = (form: PreviewForm, errors: string[]): string[] => {
+const checkTenants = (form: PreviewForm, problems: Problems): string[] => {
   if (form.tenantNames.length < 1 || form.tenantNames.length > MAX_TENANTS) {
-    errors.push(`Between 1 and ${MAX_TENANTS} tenants are required.`);
+    problems.add(
+      'tenantNames',
+      `Between 1 and ${MAX_TENANTS} tenants are required.`
+    );
   }
-  return form.tenantNames.map((t) => text('Tenant name', t, errors));
+  const names = form.tenantNames.map((t) =>
+    text('Tenant name', 'tenantNames', t, problems)
+  );
+  return names;
 };
 
 /** Validates the form like the backend does and builds the preview request. */
@@ -124,20 +167,34 @@ export const buildPreviewRequest = (
   form: PreviewForm,
   choices: LeasePreviewClauseChoice[] | null
 ): BuildResult => {
-  const errors: string[] = [];
-  checkDates(form, errors);
-  const landlordName = text('Landlord name', form.landlordName, errors);
+  const problems = new Problems();
+  checkDates(form, problems);
+  const landlordName = text(
+    'Landlord name',
+    'landlordName',
+    form.landlordName,
+    problems
+  );
   const propertyAddress = text(
     'Property address',
+    'propertyAddress',
     form.propertyAddress,
-    errors
+    problems
   );
-  const tenantNames = checkTenants(form, errors);
+  const tenantNames = checkTenants(form, problems);
 
   if (!/^[A-Z]{3}$/.test(form.currency)) {
-    errors.push('Currency must be a 3-letter upper-case code, e.g. EUR.');
+    problems.add(
+      'currency',
+      'Currency must be a 3-letter upper-case code, e.g. EUR.'
+    );
   }
-  const rent = amount('Base rent', form.rentAmount, errors);
+  const rent = parseAmount(
+    'Base rent',
+    'rentAmount',
+    form.rentAmount,
+    problems
+  );
   const rentComponents: LeasePreviewRentComponent[] = [];
   if (rent !== null) {
     rentComponents.push({
@@ -147,7 +204,12 @@ export const buildPreviewRequest = (
     });
   }
   if (form.utilitiesAmount.trim() !== '') {
-    const utilities = amount('Utilities advance', form.utilitiesAmount, errors);
+    const utilities = parseAmount(
+      'Utilities advance',
+      'utilitiesAmount',
+      form.utilitiesAmount,
+      problems
+    );
     if (utilities !== null) {
       rentComponents.push({
         type: 'UTILITIES_ADVANCE',
@@ -158,7 +220,12 @@ export const buildPreviewRequest = (
   }
   let deposit: { amount: number; currency: string } | undefined;
   if (form.depositAmount.trim() !== '') {
-    const value = amount('Deposit', form.depositAmount, errors);
+    const value = parseAmount(
+      'Deposit',
+      'depositAmount',
+      form.depositAmount,
+      problems
+    );
     deposit =
       value === null ? undefined : { amount: value, currency: form.currency };
   }
@@ -167,16 +234,20 @@ export const buildPreviewRequest = (
   if (form.paymentDueDay.trim() !== '') {
     const day = Number(form.paymentDueDay);
     if (!Number.isInteger(day) || day < 1 || day > 31) {
-      errors.push('Payment day must be a whole number from 1 to 31.');
+      problems.add(
+        'paymentDueDay',
+        'Payment day must be a whole number from 1 to 31.'
+      );
     } else {
       paymentDueDay = day;
     }
   }
+  const errors = problems.messages();
   if ((choices?.length ?? 0) > MAX_CLAUSES) {
     errors.push(`At most ${MAX_CLAUSES} clauses are allowed.`);
   }
   if (errors.length > 0) {
-    return { ok: false, errors };
+    return { ok: false, errors, fieldErrors: problems.fields };
   }
   return {
     ok: true,

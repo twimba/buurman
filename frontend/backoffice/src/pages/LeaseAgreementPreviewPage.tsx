@@ -1,17 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft, Info, Plus, X } from 'lucide-react';
 import { Button } from '@buurman/ui';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { LanguageSwitcher } from '../components/lease/LanguageSwitcher';
 import { PreviewClauseList } from '../components/lease/PreviewClauseList';
+import type { FocusRequest } from '../components/lease/PreviewClauseList';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLeasePreview } from '../hooks/useLeaseClauseTemplateHooks';
 import { LEASE_COUNTRIES } from '../lib/leaseCountries';
 import { LEASE_KIND_META, LEASE_KIND_ORDER } from '../lib/leaseKindMeta';
 import {
+  moveButtonFocus,
   moveClause,
   orderedClauses,
+  reconcileChoices,
   toChoices,
   toggleClause,
   withChoices,
@@ -23,11 +26,15 @@ import {
   deriveWarnings,
   previewErrorMessage,
 } from '../lib/leasePreviewWarnings';
-import type { LeasePreviewClauseChoice } from '../generated/models';
-import type { LeaseKind } from '../generated/models';
-import type { DocumentLanguage } from '../generated/models';
+import type {
+  DocumentLanguage,
+  LeaseKind,
+  LeasePreviewClause,
+  LeasePreviewClauseChoice,
+} from '../generated/models';
 
 const DEBOUNCE_MS = 400;
+const NO_CLAUSES: LeasePreviewClause[] = [];
 
 const INPUT_CLASS =
   'w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
@@ -35,14 +42,21 @@ const LABEL_CLASS = 'mb-1 block text-sm font-medium text-text-secondary';
 
 const Field = ({
   label,
+  error,
   children,
 }: {
   label: string;
+  error?: string;
   children: React.ReactNode;
 }) => (
   <label className="block">
     <span className={LABEL_CLASS}>{label}</span>
     {children}
+    {error && (
+      <span className="mt-1 block text-xs text-red-700" role="note">
+        {error}
+      </span>
+    )}
   </label>
 );
 
@@ -69,43 +83,91 @@ const WARNING_STYLE = {
 
 export const LeaseAgreementPreviewPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const form = useMemo(() => decodePreviewForm(searchParams), [searchParams]);
+  // The local form is the source of truth while editing; the URL follows it (debounced) and is
+  // only read on mount and when it changes from elsewhere (e.g. a link from the templates page).
+  const [form, setForm] = useState(() => decodePreviewForm(searchParams));
   const [choices, setChoices] = useState<LeasePreviewClauseChoice[] | null>(
     null
   );
+  const writtenQuery = useRef(searchParams.toString());
+  useEffect(() => {
+    const query = searchParams.toString();
+    if (query !== writtenQuery.current) {
+      writtenQuery.current = query;
+      setForm(decodePreviewForm(searchParams));
+      setChoices(null);
+    }
+  }, [searchParams]);
+  const debouncedForm = useDebouncedValue(form, DEBOUNCE_MS);
+  useEffect(() => {
+    const query = encodePreviewForm(debouncedForm).toString();
+    if (query !== writtenQuery.current) {
+      writtenQuery.current = query;
+      setSearchParams(new URLSearchParams(query), { replace: true });
+    }
+  }, [debouncedForm, setSearchParams]);
+
+  const [focusRequest, setFocusRequest] = useState<FocusRequest | null>(null);
 
   const update = (patch: Partial<PreviewForm>) => {
     const next = { ...form, ...patch };
     if (next.country !== form.country || next.kind !== form.kind) {
       setChoices(null);
     }
-    setSearchParams(encodePreviewForm(next), { replace: true });
+    setForm(next);
   };
   const setTenant = (index: number, value: string) =>
     update({
       tenantNames: form.tenantNames.map((t, i) => (i === index ? value : t)),
     });
 
-  const live = useMemo(() => ({ form, choices }), [form, choices]);
+  // Last successful clause list for the current country + kind, kept across errors.
+  const [base, setBase] = useState<{
+    scope: string;
+    clauses: LeasePreviewClause[];
+  }>({ scope: '', clauses: [] });
+  const scope = (f: PreviewForm) => `${f.country}|${f.kind}`;
+  const baseClauses = base.scope === scope(form) ? base.clauses : NO_CLAUSES;
+  const effectiveChoices = useMemo(
+    () => reconcileChoices(choices, baseClauses),
+    [choices, baseClauses]
+  );
+
+  const live = useMemo(
+    () => ({ form, choices: effectiveChoices }),
+    [form, effectiveChoices]
+  );
   const settled = useDebouncedValue(live, DEBOUNCE_MS);
   const built = useMemo(
     () => buildPreviewRequest(settled.form, settled.choices),
     [settled]
   );
-  const liveErrors = useMemo(() => {
-    const r = buildPreviewRequest(form, choices);
-    return r.ok ? [] : r.errors;
-  }, [form, choices]);
+  const liveBuild = useMemo(
+    () => buildPreviewRequest(form, effectiveChoices),
+    [form, effectiveChoices]
+  );
+  const fieldErrors = liveBuild.ok ? {} : liveBuild.fieldErrors;
   const preview = useLeasePreview(built.ok ? built.request : null);
 
   const data = preview.data;
+  const stale = preview.isPlaceholderData;
+  const settledScope = scope(settled.form);
+  if (
+    data &&
+    !stale &&
+    !preview.isError &&
+    (base.clauses !== data.clauses || base.scope !== settledScope)
+  ) {
+    setBase({ scope: settledScope, clauses: data.clauses });
+  }
+
   const isUpdating = settled !== live || preview.isFetching;
   const clauses = useMemo(
-    () => orderedClauses(withChoices(data?.clauses ?? [], choices)),
-    [data, choices]
+    () => orderedClauses(withChoices(baseClauses, effectiveChoices)),
+    [baseClauses, effectiveChoices]
   );
   const warnings =
-    data && !preview.isError
+    data && !preview.isError && !stale
       ? deriveWarnings(
           {
             country: settled.form.country,
@@ -117,6 +179,25 @@ export const LeaseAgreementPreviewPage = () => {
       : [];
   const showHtml =
     data?.html && data.availability.startsWith('AVAILABLE') && !preview.isError;
+  const status = (preview.error as { response?: { status?: number } } | null)
+    ?.response?.status;
+  const retryable = preview.isError && (status === undefined || status >= 500);
+
+  const changeClauses = (next: LeasePreviewClause[]) => {
+    setChoices(toChoices(next));
+  };
+  const moveAndFocus = (key: string, direction: -1 | 1) => {
+    const moved = moveClause(clauses, key, direction);
+    if (moved === clauses) {
+      return;
+    }
+    changeClauses(moved);
+    setFocusRequest((prev) => ({
+      clauseKey: key,
+      button: moveButtonFocus(orderedClauses(moved), key, direction),
+      nonce: (prev?.nonce ?? 0) + 1,
+    }));
+  };
 
   return (
     <div>
@@ -202,7 +283,7 @@ export const LeaseAgreementPreviewPage = () => {
                 <option value="INDEFINITE">Indefinite</option>
               </select>
             </Field>
-            <Field label="Start date">
+            <Field label="Start date" error={fieldErrors.startDate}>
               <input
                 type="date"
                 className={INPUT_CLASS}
@@ -211,7 +292,7 @@ export const LeaseAgreementPreviewPage = () => {
               />
             </Field>
             {form.contractType === 'FIXED_TERM' && (
-              <Field label="End date">
+              <Field label="End date" error={fieldErrors.endDate}>
                 <input
                   type="date"
                   className={INPUT_CLASS}
@@ -221,7 +302,7 @@ export const LeaseAgreementPreviewPage = () => {
               </Field>
             )}
             <div className="grid grid-cols-[1fr_5rem] gap-2">
-              <Field label="Base rent (monthly)">
+              <Field label="Base rent (monthly)" error={fieldErrors.rentAmount}>
                 <input
                   inputMode="decimal"
                   className={INPUT_CLASS}
@@ -229,7 +310,7 @@ export const LeaseAgreementPreviewPage = () => {
                   onChange={(e) => update({ rentAmount: e.target.value })}
                 />
               </Field>
-              <Field label="Currency">
+              <Field label="Currency" error={fieldErrors.currency}>
                 <input
                   maxLength={3}
                   className={INPUT_CLASS}
@@ -240,7 +321,10 @@ export const LeaseAgreementPreviewPage = () => {
                 />
               </Field>
             </div>
-            <Field label="Utilities advance (optional)">
+            <Field
+              label="Utilities advance (optional)"
+              error={fieldErrors.utilitiesAmount}
+            >
               <input
                 inputMode="decimal"
                 className={INPUT_CLASS}
@@ -248,7 +332,7 @@ export const LeaseAgreementPreviewPage = () => {
                 onChange={(e) => update({ utilitiesAmount: e.target.value })}
               />
             </Field>
-            <Field label="Deposit (optional)">
+            <Field label="Deposit (optional)" error={fieldErrors.depositAmount}>
               <input
                 inputMode="decimal"
                 className={INPUT_CLASS}
@@ -256,7 +340,10 @@ export const LeaseAgreementPreviewPage = () => {
                 onChange={(e) => update({ depositAmount: e.target.value })}
               />
             </Field>
-            <Field label="Payment day of month">
+            <Field
+              label="Payment day of month"
+              error={fieldErrors.paymentDueDay}
+            >
               <input
                 inputMode="numeric"
                 className={INPUT_CLASS}
@@ -267,7 +354,7 @@ export const LeaseAgreementPreviewPage = () => {
           </Section>
 
           <Section title="Parties and property">
-            <Field label="Landlord name">
+            <Field label="Landlord name" error={fieldErrors.landlordName}>
               <input
                 className={INPUT_CLASS}
                 value={form.landlordName}
@@ -277,7 +364,12 @@ export const LeaseAgreementPreviewPage = () => {
             {form.tenantNames.map((name, index) => (
               <div key={index} className="flex items-end gap-2">
                 <div className="flex-1">
-                  <Field label={`Tenant ${index + 1}`}>
+                  <Field
+                    label={`Tenant ${index + 1}`}
+                    error={
+                      name.trim() === '' ? fieldErrors.tenantNames : undefined
+                    }
+                  >
                     <input
                       className={INPUT_CLASS}
                       value={name}
@@ -321,7 +413,7 @@ export const LeaseAgreementPreviewPage = () => {
                 Add tenant
               </Button>
             )}
-            <Field label="Property address">
+            <Field label="Property address" error={fieldErrors.propertyAddress}>
               <input
                 className={INPUT_CLASS}
                 value={form.propertyAddress}
@@ -336,56 +428,66 @@ export const LeaseAgreementPreviewPage = () => {
                 No clauses for this selection.
               </p>
             ) : (
-              <>
-                <PreviewClauseList
-                  clauses={clauses}
-                  onToggle={(key) =>
-                    setChoices(toChoices(toggleClause(clauses, key)))
-                  }
-                  onMove={(key, dir) =>
-                    setChoices(toChoices(moveClause(clauses, key, dir)))
-                  }
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  disabled={choices === null}
-                  onClick={() => setChoices(null)}
-                >
-                  Reset to defaults
-                </Button>
-              </>
+              <PreviewClauseList
+                clauses={clauses}
+                disabled={stale}
+                focusRequest={focusRequest}
+                onToggle={(key) => changeClauses(toggleClause(clauses, key))}
+                onMove={moveAndFocus}
+              />
+            )}
+            {choices !== null && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setChoices(null)}
+              >
+                Reset to defaults
+              </Button>
             )}
           </Section>
         </form>
 
         <section aria-label="Agreement preview" className="min-w-0">
-          <div className="mb-3 space-y-2" role="status">
-            {liveErrors.length > 0 && (
-              <p className="rounded-lg border border-warning-border bg-warning-bg px-3 py-2 text-sm text-warning-text">
-                Fix the options to update the preview: {liveErrors.join(' ')}
-              </p>
-            )}
-            {warnings.map((w) => (
-              <p
-                key={w.id}
-                className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-sm ${WARNING_STYLE[w.severity]}`}
-              >
-                <Info
-                  className="mt-0.5 h-4 w-4 flex-shrink-0"
-                  aria-hidden="true"
-                />
-                {w.message}
-              </p>
-            ))}
+          <div className="mb-3 space-y-2">
+            <div role="status" aria-live="polite" className="space-y-2">
+              <span className="sr-only">{isUpdating ? 'Updating…' : ''}</span>
+              {liveBuild.ok === false && liveBuild.errors.length > 0 && (
+                <p className="rounded-lg border border-warning-border bg-warning-bg px-3 py-2 text-sm text-warning-text">
+                  Fix the highlighted options to update the preview.
+                </p>
+              )}
+              {warnings.map((w) => (
+                <p
+                  key={w.id}
+                  className={`flex items-start gap-2 rounded-lg border px-3 py-2 text-sm ${WARNING_STYLE[w.severity]}`}
+                >
+                  <Info
+                    className="mt-0.5 h-4 w-4 flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  {w.message}
+                </p>
+              ))}
+            </div>
             {preview.isError && (
-              <p
+              <div
                 role="alert"
-                className={`rounded-lg border px-3 py-2 text-sm ${WARNING_STYLE.error}`}
+                className={`flex items-start justify-between gap-3 rounded-lg border px-3 py-2 text-sm ${WARNING_STYLE.error}`}
               >
-                {previewErrorMessage(preview.error)}
-              </p>
+                <span>{previewErrorMessage(preview.error)}</span>
+                {retryable && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => preview.refetch()}
+                  >
+                    Retry
+                  </Button>
+                )}
+              </div>
             )}
           </div>
 
@@ -394,7 +496,10 @@ export const LeaseAgreementPreviewPage = () => {
             className="relative rounded-lg border border-border-default bg-surface-inset"
           >
             {isUpdating && (
-              <div className="absolute right-3 top-3 z-10 flex items-center gap-2 rounded-md bg-surface-card px-2 py-1 text-xs text-text-secondary shadow">
+              <div
+                aria-hidden="true"
+                className="absolute right-3 top-3 z-10 flex items-center gap-2 rounded-md bg-surface-card px-2 py-1 text-xs text-text-secondary shadow"
+              >
                 <LoadingSpinner />
                 Updating…
               </div>
@@ -403,6 +508,7 @@ export const LeaseAgreementPreviewPage = () => {
               <iframe
                 title="Lease agreement preview (sample data)"
                 sandbox=""
+                referrerPolicy="no-referrer"
                 srcDoc={data?.html ?? ''}
                 className={`h-[calc(100vh-18rem)] min-h-[600px] w-full rounded-lg bg-white transition-opacity ${isUpdating ? 'opacity-60' : ''}`}
               />

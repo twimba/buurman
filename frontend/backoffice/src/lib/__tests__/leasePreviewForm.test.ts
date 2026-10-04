@@ -7,9 +7,14 @@ const form = (patch: Partial<PreviewForm> = {}): PreviewForm => ({
   ...patch,
 });
 
-const errorsOf = (f: PreviewForm, choices = null as never) => {
-  const r = buildPreviewRequest(f, choices);
+const errorsOf = (f: PreviewForm) => {
+  const r = buildPreviewRequest(f, null);
   return r.ok ? [] : r.errors;
+};
+
+const fieldErrorsOf = (f: PreviewForm) => {
+  const r = buildPreviewRequest(f, null);
+  return r.ok ? {} : r.fieldErrors;
 };
 
 describe('buildPreviewRequest', () => {
@@ -118,5 +123,30 @@ describe('buildPreviewRequest', () => {
     expect(ok.ok && ok.request.clauses).toHaveLength(2);
     const many = Array.from({ length: 101 }, (_, i) => choice(i));
     expect(buildPreviewRequest(form(), many).ok).toBe(false);
+  });
+
+  it('reports partial and malformed values as field errors', () => {
+    expect(fieldErrorsOf(form({ currency: 'G' })).currency).toBeDefined();
+    expect(fieldErrorsOf(form({ currency: 'EU' })).currency).toBeDefined();
+    expect(
+      fieldErrorsOf(form({ paymentDueDay: '0' })).paymentDueDay
+    ).toBeDefined();
+    expect(
+      fieldErrorsOf(form({ paymentDueDay: '' })).paymentDueDay
+    ).toBeUndefined();
+    expect(fieldErrorsOf(form({ rentAmount: '1,5' })).rentAmount).toMatch(
+      /dot/
+    );
+    expect(
+      fieldErrorsOf(form({ landlordName: '' })).landlordName
+    ).toBeDefined();
+    expect(fieldErrorsOf(form({ endDate: '' })).endDate).toBeDefined();
+  });
+
+  it('rejects amounts with more than 6 decimals', () => {
+    expect(
+      fieldErrorsOf(form({ rentAmount: '1.1234567' })).rentAmount
+    ).toBeDefined();
+    expect(errorsOf(form({ rentAmount: '1.123456' }))).toEqual([]);
   });
 });

@@ -3,10 +3,13 @@ import type {
   LeasePreviewClauseChoice,
 } from '../generated/models';
 
+/** Backend order: pinned first, then by sortOrder (the backend ignores a pinned sortOrder). */
 export const orderedClauses = (
   clauses: LeasePreviewClause[]
 ): LeasePreviewClause[] =>
-  [...clauses].sort((a, b) => a.sortOrder - b.sortOrder);
+  [...clauses].sort(
+    (a, b) => Number(!a.pinned) - Number(!b.pinned) || a.sortOrder - b.sortOrder
+  );
 
 /** Only optional clauses can be switched off; anything else returns the same list. */
 export const toggleClause = (
@@ -24,7 +27,7 @@ export const toggleClause = (
 
 /**
  * Swaps a non-pinned clause with its neighbour. Pinned clauses never move and nothing moves into
- * or above them; an impossible move returns the same list.
+ * or above the pinned block; an impossible move returns the same list.
  */
 export const moveClause = (
   clauses: LeasePreviewClause[],
@@ -52,7 +55,10 @@ export const toChoices = (
     sortOrder: i,
   }));
 
-/** Overlays the user's pending choices on the clause list the server last returned. */
+/**
+ * Overlays the user's choices (toggles and the order of optional clauses) on the clause list the
+ * server last returned. Pinned and required clauses are never overridden.
+ */
 export const withChoices = (
   clauses: LeasePreviewClause[],
   choices: LeasePreviewClauseChoice[] | null
@@ -63,12 +69,50 @@ export const withChoices = (
   const byKey = new Map(choices.map((c) => [c.clauseKey, c]));
   return clauses.map((c) => {
     const choice = byKey.get(c.clauseKey);
-    return choice
-      ? {
-          ...c,
-          included: c.optional ? choice.included : true,
-          sortOrder: choice.sortOrder,
-        }
-      : c;
+    if (!choice || c.pinned) {
+      return c;
+    }
+    return {
+      ...c,
+      included: c.optional ? choice.included : true,
+      sortOrder: choice.sortOrder,
+    };
   });
+};
+
+/** Drops choices whose clause is not in the latest response (e.g. after a country change). */
+export const reconcileChoices = (
+  choices: LeasePreviewClauseChoice[] | null,
+  clauses: LeasePreviewClause[]
+): LeasePreviewClauseChoice[] | null => {
+  if (!choices || clauses.length === 0) {
+    return choices;
+  }
+  const known = new Set(clauses.map((c) => c.clauseKey));
+  const kept = choices.filter((c) => known.has(c.clauseKey));
+  if (kept.length === choices.length) {
+    return choices;
+  }
+  return kept.length > 0 ? kept : null;
+};
+
+export type MoveButton = 'up' | 'down';
+
+/**
+ * After moving `clauseKey` in `direction`, which of its buttons should keep keyboard focus:
+ * the one just used, or the opposite one when the clause now sits at an edge.
+ */
+export const moveButtonFocus = (
+  ordered: LeasePreviewClause[],
+  clauseKey: string,
+  direction: -1 | 1
+): MoveButton => {
+  const index = ordered.findIndex((c) => c.clauseKey === clauseKey);
+  const canUp = !!ordered[index - 1] && !ordered[index - 1].pinned;
+  const canDown = !!ordered[index + 1];
+  const wanted: MoveButton = direction === -1 ? 'up' : 'down';
+  if (wanted === 'up') {
+    return canUp || !canDown ? 'up' : 'down';
+  }
+  return canDown || !canUp ? 'down' : 'up';
 };

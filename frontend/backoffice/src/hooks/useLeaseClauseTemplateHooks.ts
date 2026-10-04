@@ -103,15 +103,18 @@ export const useDeleteLeaseClauseTemplate = () => {
 
 /**
  * Renders the sample preview. The previous result stays on screen while a new request loads
- * (`isPlaceholderData`); 4xx errors are not retried.
+ * (`isPlaceholderData`); 4xx errors are not retried automatically, `refetch` retries on demand.
+ * The abort signal cancels superseded requests.
  */
 export const useLeasePreview = (
   request: LeaseAgreementPreviewRequest | null
 ) => {
   const query = useQuery({
     queryKey: ['lease-preview', request],
-    queryFn: () =>
-      previewLeaseAgreement(request as LeaseAgreementPreviewRequest),
+    queryFn: ({ signal }) =>
+      previewLeaseAgreement(request as LeaseAgreementPreviewRequest, {
+        signal,
+      }),
     enabled: request !== null,
     placeholderData: keepPreviousData,
     retry: false,
@@ -122,5 +125,7 @@ export const useLeasePreview = (
     error: query.error,
     isFetching: query.isFetching,
     isError: query.isError,
+    isPlaceholderData: query.isPlaceholderData,
+    refetch: () => query.refetch(),
   };
 };

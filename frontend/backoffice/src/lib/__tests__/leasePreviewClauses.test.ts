@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  moveButtonFocus,
   moveClause,
+  reconcileChoices,
   orderedClauses,
   toChoices,
   toggleClause,
@@ -97,5 +99,63 @@ describe('preview clause list', () => {
       'parking',
     ]);
     expect(withChoices(list, null)).toBe(list);
+  });
+
+  it('sorts pinned first even when their template sortOrder is later', () => {
+    const odd = [
+      clause('rent', 1),
+      clause('parties', 7, { pinned: true }),
+      clause('pets', 2, { optional: true }),
+      clause('end', 9, { pinned: true }),
+    ];
+    expect(keys(orderedClauses(odd))).toEqual([
+      'parties',
+      'end',
+      'rent',
+      'pets',
+    ]);
+    // moving never goes into or above the pinned block
+    expect(moveClause(odd, 'rent', -1)).toBe(odd);
+    expect(keys(moveClause(odd, 'rent', 1))).toEqual([
+      'parties',
+      'end',
+      'pets',
+      'rent',
+    ]);
+    expect(moveClause(odd, 'end', 1)).toBe(odd);
+  });
+
+  it('never overlays a local sortOrder or exclusion on a pinned clause', () => {
+    const odd = [clause('rent', 1), clause('parties', 7, { pinned: true })];
+    const merged = withChoices(odd, [
+      { clauseKey: 'parties', included: false, sortOrder: 0 },
+      { clauseKey: 'rent', included: true, sortOrder: 5 },
+    ]);
+    const parties = merged.find((c) => c.clauseKey === 'parties');
+    expect(parties?.sortOrder).toBe(7);
+    expect(parties?.included).toBe(true);
+    expect(keys(orderedClauses(merged))).toEqual(['parties', 'rent']);
+  });
+
+  it('drops choices for keys the latest response does not know', () => {
+    const choices = [
+      { clauseKey: 'pets', included: false, sortOrder: 0 },
+      { clauseKey: 'gone', included: true, sortOrder: 1 },
+    ];
+    expect(reconcileChoices(choices, list)).toEqual([choices[0]]);
+    expect(reconcileChoices([choices[1]], list)).toBeNull();
+    expect(reconcileChoices(null, list)).toBeNull();
+    expect(reconcileChoices(choices, [])).toBe(choices);
+  });
+
+  it('chooses which move button keeps focus after a move', () => {
+    const ordered = orderedClauses(list);
+    // pets is at index 3 (rent above it, parking below): both enabled
+    expect(moveButtonFocus(ordered, 'pets', -1)).toBe('up');
+    // rent sits right under the pinned block: up is disabled, so focus down
+    expect(moveButtonFocus(ordered, 'rent', -1)).toBe('down');
+    // parking is last: down is disabled, so focus up
+    expect(moveButtonFocus(ordered, 'parking', 1)).toBe('up');
+    expect(moveButtonFocus(ordered, 'pets', 1)).toBe('down');
   });
 });

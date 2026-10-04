@@ -39,13 +39,31 @@ describe('preview URL state', () => {
     expect(roundTrip(f).landlordName).toBe('');
   });
 
-  it('falls back to defaults for invalid values', () => {
+  it('falls back to defaults for invalid enum values and unknown countries', () => {
     const d = decodePreviewForm(
-      new URLSearchParams(
-        'country=nl1&kind=NOPE&lang=xx&type=WEIRD&start=tomorrow&end=2026-13-99&cur=eur&rent=abc&day=99&deposit=1e9'
-      )
+      new URLSearchParams('country=nl1&kind=NOPE&lang=xx&type=WEIRD')
     );
     expect(d).toEqual(DEFAULT_PREVIEW_FORM);
+    expect(decodePreviewForm(new URLSearchParams('country=XX')).country).toBe(
+      DEFAULT_PREVIEW_FORM.country
+    );
+    expect(decodePreviewForm(new URLSearchParams('country=DE')).country).toBe(
+      'DE'
+    );
+    expect(decodePreviewForm(new URLSearchParams('kind=LEGACY')).kind).toBe(
+      'LEGACY'
+    );
+  });
+
+  it('keeps partially typed values instead of resetting them', () => {
+    const typed = (patch: Partial<PreviewForm>) =>
+      roundTrip({ ...DEFAULT_PREVIEW_FORM, ...patch });
+    expect(typed({ currency: 'G' }).currency).toBe('G');
+    expect(typed({ currency: 'EU' }).currency).toBe('EU');
+    expect(typed({ paymentDueDay: '' }).paymentDueDay).toBe('');
+    expect(typed({ paymentDueDay: '0' }).paymentDueDay).toBe('0');
+    expect(typed({ rentAmount: '1,5' }).rentAmount).toBe('1,5');
+    expect(typed({ startDate: '' }).startDate).toBe('');
   });
 
   it('caps tenants at 3 and truncates long text', () => {
