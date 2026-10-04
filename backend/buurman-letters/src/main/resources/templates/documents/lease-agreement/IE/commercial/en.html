@@ -1,0 +1,351 @@
+<!--
+  legal-basis: Irish law of business (commercial) lettings. Landlord and Tenant (Amendment) Act 1980 (No. 10 of
+               1980, Law Reform Commission revised text): Part II, s.13(1)(a) (business equity after 5 years'
+               continuous occupation and bona fide business use, as substituted by the Landlord and Tenant
+               (Amendment) Act 1994), s.13(1)(b) and (c), s.17 (exclusions; s.17(1)(a)(iiia) renunciation in
+               writing after independent legal advice, inserted by the Civil Law (Miscellaneous Provisions) Act
+               2008, s.47), s.20 (notice of intention to claim relief, time limits of 3 months), s.23(2) (new
+               tenancy of 20 years or such less term as the tenant nominates, not less than 5 years without the
+               landlord's agreement), Part IV (compensation for disturbance and improvements), s.65 (limits on
+               damages for breach of a repairing covenant), s.66 (alienation), s.67 (user), s.68
+               (improvements), s.85 (contracting out void, except a renunciation under s.17(1)(a)(iiia)).
+               Land and Conveyancing Law Reform Act 2009, s.132 (rent review in a business lease entered into on
+               or after 28 February 2010 may result in a lower, higher or the same rent; S.I. No. 471 of 2009).
+               Conveyancing Act 1881, s.14 (notice before forfeiture for breach of covenant other than
+               non-payment of rent; relief; s.14 not repealed by Schedule 2 to the 2009 Act).
+               Residential Tenancies Act 2004, s.3(2)(a) (dwellings with business use excluded; the Act does not
+               apply to premises that are not dwellings). Value-Added Tax Consolidation Act 2010, s.97 (lettings
+               exempt, landlord's option to tax with restrictions for residential use and connected persons;
+               revenue.ie). Property Services (Regulation) Act 2011, s.87 and s.88 (Commercial Leases Database;
+               notice by the tenant after receipt of the stamp certificate). Stamp Duties Consolidation Act
+               1999 (stamp duty on leases, stated generally). European Union (Energy Performance of Buildings)
+               Regulations 2012 (S.I. No. 243 of 2012). Regulation (EU) 2016/679 (GDPR) and the Data Protection
+               Act 2018.
+               Verified 2026-10-04 against revisedacts.lawreform.ie (1980 Act revised, 2009 Act revised to 31
+               December 2025), irishstatutebook.ie (Conveyancing Act 1881 s.14; Property Services (Regulation)
+               Act 2011 s.88) and revenue.ie (VAT on lettings).
+               Pending: none identified for business lettings as of the verification date.
+               Convention: every numeric quantity in the prose is written as digits, never spelled out
+               ("5 years", never "five years"); checked by the number-word lint.
+  reviewed-by: none
+  translation: authoritative
+  English is the only language of this document (Ireland); there is no translation. Draft text, not vetted by
+  legal counsel. Reflects the law of Ireland on business lettings, not the law of any other country. Each
+  clause-<key> fragment holds only the clause body; the shell supplies article numbers and titles.
+  Cross-references use refs['key'] and disappear when the clause is excluded. Never hard-code article numbers
+  of this agreement.
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clause-parties" data-clause="parties">
+  <p>This lease is made between</p>
+  <p><strong th:text="${landlordName}">landlord</strong>, hereinafter &ldquo;the landlord&rdquo;,</p>
+  <p>company registration number (CRO): ______________________________</p>
+  <p>registered office: ______________________________</p>
+  <p>VAT registration number: ______________________________</p>
+  <p>represented by: ______________________________, and</p>
+  <p th:if="${!#strings.isEmpty(tenantNames)}"><strong th:text="${tenantNames}">tenant</strong>, hereinafter
+    (jointly) &ldquo;the tenant&rdquo;,</p>
+  <p th:if="${#strings.isEmpty(tenantNames)}">the tenant or tenants signing below, hereinafter (jointly)
+    &ldquo;the tenant&rdquo;,</p>
+  <p>company registration number (CRO): ______________________________</p>
+  <p>registered office: ______________________________</p>
+  <p>VAT registration number: ______________________________</p>
+  <p>represented by: ______________________________.</p>
+  <p>Where the tenant consists of several persons, each of them is jointly and severally liable for all
+    obligations of the tenant under this lease.</p>
+</div>
+
+<div th:fragment="clause-premises" data-clause="premises">
+  <p>The landlord lets to the tenant the premises at <strong th:text="${propertyAddress}">address</strong>,
+    shown on the plan annexed to this lease and with a net internal area of approximately ________ m²,
+    hereinafter &ldquo;the premises&rdquo;, together with the right to use the common parts of the building for
+    access and the other rights listed here: ______________________________</p>
+  <p>The premises are let for business purposes and not as a dwelling; this lease does not create a tenancy of a
+    dwelling to which the Residential Tenancies Act 2004 applies. This lease is governed by the law of Ireland,
+    including the Landlord and Tenant (Amendment) Act 1980 (hereinafter &ldquo;the 1980 Act&rdquo;).</p>
+</div>
+
+<div th:fragment="clause-permitted-use" data-clause="permitted-use">
+  <p>The tenant uses the premises only for the following business: ______________________________. The tenant
+    does not change that use without the landlord&rsquo;s prior written consent. Under section 67 of the 1980 Act
+    the landlord may not unreasonably withhold that consent; the landlord may require payment of a reasonable sum
+    for the legal and other expenses incurred in connection with the consent, but, unless the change involves
+    the erection, provision or reconstruction of a building or structure (other than an improvement), no fine or
+    increase of rent is payable for the consent.</p>
+  <p>The tenant obtains, at the tenant&rsquo;s own cost and risk, any planning permission, fire safety
+    certificate, licence or other authorisation required for the permitted use and complies with them. The
+    landlord gives no warranty that the premises are fit for the permitted use under planning law.</p>
+</div>
+
+<div th:fragment="clause-term" data-clause="term">
+  <p>The term starts on <strong th:text="${startDate}">start date</strong>.</p>
+  <p th:if="${fixedTerm}">The lease is granted for a fixed term<span th:if="${endDate != null}"> ending on
+    <strong th:text="${endDate}">end date</strong></span>, subject to earlier termination in accordance with this
+    lease.</p>
+  <p th:if="${!fixedTerm}">The lease is a periodic tenancy from rent period to rent period and continues until
+    it is ended by a notice to quit giving the period stated here, which is not shorter than the period
+    required by law: ______________________________</p>
+  <p class="clause-ref" data-ref="renewal" th:if="${refs['renewal']}">Any statutory entitlement of the tenant to a
+    new tenancy at the end of the term is governed by what this lease provides (see article
+    <span th:text="${refs['renewal']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-renewal" data-clause="renewal">
+  <p>Under Part II of the 1980 Act a tenant may become entitled to a new tenancy of a tenement (business equity)
+    where, at the end of the tenancy, the tenement was, during the whole of the period of 5 years ending at that
+    time, continuously in the occupation of the tenant or the tenant&rsquo;s predecessors in title and bona fide
+    used wholly or partly for the purpose of carrying on a business (section 13(1)(a) of the 1980 Act); a
+    temporary break in that use may be disregarded if the court considers it reasonable. Section 13(1)(b) and
+    (c) provide further grounds: continuous occupation by the tenant or the tenant&rsquo;s predecessors in title for
+    the whole of the period of 20 years, and improvements for which the tenant would otherwise be entitled to
+    compensation under Part IV of the 1980 Act and to which not less than 50 per cent of the letting value of the
+    tenement is attributable. Section 17 of the
+    1980 Act excludes the entitlement in certain cases, among them termination for non-payment of rent or for
+    breach of covenant, termination by the tenant by notice of surrender or otherwise, and the cases of
+    redevelopment with planning permission and good estate management listed in section 17(2).</p>
+  <p>A claim for a new tenancy requires a notice of intention to claim relief in the prescribed form, served
+    within the time limited by section 20 of the 1980 Act, for a tenancy terminating by the expiration of a term
+    either before its termination or before the expiration of 3 months after the landlord has served, not earlier than
+    3 months before the termination, notice in the prescribed form of the expiration of the term. Where the
+    court fixes the terms of a new tenancy based on
+    business equity, its duration is 20 years or such less term as the tenant nominates, but not less than 5
+    years without the landlord&rsquo;s agreement (section 23(2)). A tenant who is refused a new tenancy may be
+    entitled to compensation for disturbance or for improvements under the 1980 Act.</p>
+  <p>Any provision of a contract that excludes or restricts the application of the 1980 Act is void, except a
+    renunciation under section 17(1)(a)(iiia) (section 85 of the 1980 Act). Where section 13(1)(a) applies, the
+    tenant is not entitled to a new tenancy if the tenant has renounced in writing, whether for or without
+    valuable consideration, the entitlement to a new tenancy in the tenement and has received independent legal
+    advice in relation to the renunciation (section 17(1)(a)(iiia)).</p>
+  <p>Renunciation of the entitlement to a new tenancy: [ ] the tenant has signed a renunciation in a separate
+    written document dated ______________, after receiving independent legal advice from
+    ______________________________ [ ] no renunciation has been made.</p>
+</div>
+
+<div th:fragment="clause-rent" data-clause="rent">
+  <p>The rent is <strong th:text="${rentAmount}">amount</strong>, payable
+    <span th:text="${paymentFrequency}">quarterly</span>, exclusive of VAT, service charge and insurance
+    contributions.<span class="clause-ref" data-ref="vat" th:if="${refs['vat']}"> VAT is dealt with separately
+    (see article <span th:text="${refs['vat']}"></span>).</span><span class="clause-ref" data-ref="service-costs"
+    th:if="${refs['service-costs']}"> The service charge is payable in addition (see article
+    <span th:text="${refs['service-costs']}"></span>).</span></p>
+  <p>Rent-free period or other incentive agreed: ______________________________</p>
+  <p class="clause-ref" data-ref="rent-adjustment" th:if="${refs['rent-adjustment']}">Changes to the rent are
+    governed by what this lease provides (see article <span th:text="${refs['rent-adjustment']}"></span>).</p>
+</div>
+
+<div th:fragment="clause-rent-adjustment" data-clause="rent-adjustment">
+  <p>The rent is reviewed on each of the following review dates: ______________________________. On each review
+    date the rent becomes the open market rent of the premises at that date, determined on the assumptions and
+    disregards set out here: ______________________________</p>
+  <p>Under section 132 of the Land and Conveyancing Law Reform Act 2009, a provision for the review of the rent in
+    a lease of land to be used wholly or partly for the purpose of carrying on a business, entered into (or
+    agreed to be entered into) on or after 28 February 2010, is construed as providing that the reviewed rent may
+    be less than, greater than or the same as the rent payable immediately before the review date,
+    notwithstanding any provision to the contrary, as respects the part of the premises in which business is
+    permitted to be carried on.</p>
+  <p>If the parties do not agree the reviewed rent within 3 months after the review date, either party may refer
+    it to an independent chartered surveyor acting as an expert (or, if so agreed here: [ ] as an arbitrator),
+    appointed by agreement or, failing agreement, by the President of the Society of Chartered Surveyors
+    Ireland. Until the reviewed rent is determined, the tenant continues to pay the rent payable before the
+    review date; any difference is paid or refunded within 14 days after the determination.</p>
+</div>
+
+<div th:fragment="clause-service-costs" data-clause="service-costs">
+  <p>In addition to the rent, the tenant pays a service charge for the services provided by the landlord for the
+    building and its common parts, equal to the following proportion of the total service costs:
+    ______________________________, by payments on account with the rent based on the landlord&rsquo;s annual
+    budget. After the end of each service charge year the landlord gives the tenant a statement of the actual
+    costs, with supporting documents available for inspection, and the balance is paid or credited within
+    30 days.</p>
+  <p>The tenant pays the commercial rates and the other outgoings levied in respect of the premises and the
+    charges for utilities consumed in them.</p>
+</div>
+
+<div th:fragment="clause-vat" data-clause="vat">
+  <p>All sums payable under this lease are exclusive of VAT. A letting of immovable goods is exempt from VAT
+    unless the landlord exercises the option to tax the letting under section 97 of the Value-Added Tax
+    Consolidation Act 2010, subject to the restrictions in that section (in particular for property used for
+    residential purposes and for lettings between connected persons). Where the landlord has opted to tax this
+    letting, the tenant pays VAT on the rent and the other sums at the applicable rate, against a valid VAT
+    invoice.</p>
+  <p>Option to tax this letting: [ ] the landlord opts to tax this letting and VAT is chargeable on the rent
+    [ ] the letting is exempt from VAT.</p>
+</div>
+
+<div th:fragment="clause-deposit" data-clause="deposit">
+  <p th:if="${depositAmount != null}">The tenant pays a rent deposit of
+    <strong th:text="${depositAmount}">amount</strong> as security for the performance of the tenant&rsquo;s
+    obligations.</p>
+  <p th:if="${depositAmount == null}">The tenant pays a rent deposit in the amount agreed in writing between the
+    parties as security for the performance of the tenant&rsquo;s obligations.</p>
+  <p>The limits on deposits for dwellings in the Residential Tenancies Act 2004 do not apply to this lease. The
+    landlord holds the deposit in a separate account designated here: ______________________________. The
+    landlord may apply the deposit to sums due and unpaid by the tenant under this lease, and the tenant then
+    restores the deposit to its agreed amount within 14 days after written demand. The deposit, less any sums
+    properly due, is repaid within 30 days after the end of the lease and the return of the premises.</p>
+</div>
+
+<div th:fragment="clause-payment" data-clause="payment">
+  <p>The tenant pays the rent<span class="clause-ref" data-ref="rent" th:if="${refs['rent']}"> (see article
+    <span th:text="${refs['rent']}"></span>)</span> <span th:text="${paymentFrequency}">quarterly</span>,
+    <span th:if="${paymentDueDay != null}">no later than day <strong th:text="${paymentDueDay}">1</strong> of
+    each rent period,</span><span th:if="${paymentDueDay == null}">on the first day of each rent period,</span>
+    without deduction or set-off, by bank transfer to the account designated in writing by the landlord: IBAN
+    ______________________________</p>
+  <p>Sums not paid within 14 days after their due date bear interest at the rate stated here from the due date
+    until payment: ______________________________</p>
+</div>
+
+<div th:fragment="clause-maintenance" data-clause="maintenance">
+  <p>Repairing obligation of the tenant: [ ] full repairing: the tenant keeps the premises, including the
+    structure and exterior, in good and substantial repair and condition [ ] internal repairing: the tenant keeps
+    the interior of the premises, including the landlord&rsquo;s fixtures and the service installations
+    exclusively serving them, in good repair and condition, and the landlord keeps the structure, exterior and
+    common parts in repair, the cost being recoverable through the service charge.</p>
+  <p>Damages for a breach of a covenant to keep or put the premises in repair may not exceed the amount by which
+    the value of the landlord&rsquo;s reversion is diminished owing to the breach, and, save where the want of
+    repair is due wholly or substantially to wilful damage or wilful waste by the tenant, no damages are
+    recoverable if it is shown that the repair is physically impossible having regard to the age and condition
+    of the premises, would involve expenditure which is excessive in proportion to the value of the premises
+    having regard to their age, condition, character and situation, or that the premises could not, when so
+    repaired, be profitably used without being rebuilt, reconstructed or structurally altered to a substantial
+    extent having regard to their character and situation (section 65 of the 1980 Act).</p>
+  <p>The tenant gives the landlord access to the premises, on reasonable prior notice except in an emergency, to
+    inspect them and to carry out repairs or works for which the landlord is responsible.</p>
+</div>
+
+<div th:fragment="clause-alterations" data-clause="alterations">
+  <p>The tenant does not make structural alterations or additions to the premises. Other alterations and
+    improvements require the landlord&rsquo;s prior written consent; under section 68 of the 1980 Act the landlord
+    may not unreasonably withhold consent to an improvement within the meaning of section 67(3) of that Act, and
+    no fine or increase of rent is payable for the consent, other than a reasonable sum for the legal or other
+    expenses incurred in connection with it.</p>
+  <p>Fit-out works agreed at the start of the lease: ______________________________. At the end of the lease the
+    tenant reinstates the premises if the landlord so requires by written notice given at least 3 months before
+    the end, except for alterations the landlord has agreed in writing may remain. The 1980 Act provides a
+    procedure, by notice to the landlord before the improvement is made, that may preserve a claim to
+    compensation for improvements.</p>
+</div>
+
+<div th:fragment="clause-assignment" data-clause="assignment">
+  <p>The tenant does not assign, sub-let, part with or share possession of the whole or any part of the premises
+    without the landlord&rsquo;s prior written consent. Under section 66 of the 1980 Act such a covenant is subject
+    to a proviso that the consent shall not be unreasonably withheld, but the landlord may require payment of a
+    reasonable sum in respect of legal or other expenses incurred in connection with the consent; a covenant that
+    absolutely prohibits alienation has effect as a covenant prohibiting it without the landlord&rsquo;s
+    consent.</p>
+  <p>The landlord may make the consent to an assignment conditional on reasonable terms, such as a guarantee
+    from the assignor or a satisfactory guarantor for the assignee. Any sub-tenant is informed in writing of the
+    terms of this lease that bind the sub-tenant.</p>
+</div>
+
+<div th:fragment="clause-insurance" data-clause="insurance">
+  <p>The landlord insures the building of which the premises form part against loss or damage by the usual
+    insured risks for its full reinstatement value, and the tenant pays the landlord, as insurance contribution,
+    the following proportion of the premium: ______________________________. The tenant insures its own contents,
+    stock, fit-out and business interruption and maintains public liability insurance of at least
+    ______________________________ per claim.</p>
+  <p>If the premises are damaged by an insured risk and become unfit for use, the rent and service charge, or a
+    fair proportion of them, are suspended until the premises are fit for use again, unless the insurance is
+    vitiated by an act or default of the tenant.</p>
+</div>
+
+<div th:fragment="clause-energy-certificate" data-clause="energy-certificate">
+  <p>Where the European Union (Energy Performance of Buildings) Regulations 2012 (S.I. No. 243 of 2012) require a
+    Building Energy Rating (BER) certificate for the letting of the premises, the landlord has made the
+    certificate available to the tenant. BER of the premises: ____________ BER certificate number:
+    ______________________________</p>
+</div>
+
+<div th:fragment="clause-registration" data-clause="registration">
+  <p>The tenant pays any stamp duty chargeable on this lease and on any counterpart under the Stamp Duties
+    Consolidation Act 1999, and files any return required for it.</p>
+  <p>Where this lease is a relevant commercial lease within the meaning of Part 9 of the Property Services
+    (Regulation) Act 2011, the tenant gives the Property Services Regulatory Authority, within the period
+    required by section 88 of that Act after the stamp certificate for the lease is received, a notice in the
+    specified form with the particulars of the lease required by sections 87 and 88 for the Commercial Leases
+    Database. The landlord provides the tenant with any information the tenant needs for that purpose.</p>
+</div>
+
+<div th:fragment="clause-break-option" data-clause="break-option">
+  <p>Break option: [ ] none [ ] the [ ] tenant [ ] landlord [ ] either party may terminate this lease on the
+    following break date or dates: ______________________________, by giving the other party written notice of at
+    least ______________ months before the break date.</p>
+  <p>A tenant&rsquo;s break notice is effective only if, on the break date, the rent due up to that date has been
+    paid and the tenant gives vacant possession of the premises. A tenant who terminates the lease by exercising a
+    break option may thereby lose any entitlement to a new tenancy under the 1980 Act (section 17(1)(a)(iii) of
+    that Act).</p>
+</div>
+
+<div th:fragment="clause-handover-inspection" data-clause="handover-inspection">
+  <p>A schedule of condition of the premises, with dated photographs, is signed by both parties at the start of
+    the lease and annexed to it. The tenant is not obliged to put the premises into a better condition than that
+    recorded in the schedule.</p>
+  <p>At the end of the lease the tenant gives vacant possession of the premises, with all keys and access cards,
+    in the condition required by this lease, having removed its own fixtures, stock and signage and made good any
+    damage caused by their removal.<span class="clause-ref" data-ref="deposit" th:if="${refs['deposit']}"> The
+    return of the deposit follows (see article <span th:text="${refs['deposit']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-termination" data-clause="termination">
+  <p>If any rent remains unpaid for 21 days after its due date, or if the tenant breaches any other covenant of
+    this lease, or if the tenant becomes insolvent, the landlord may re-enter the premises and the lease then
+    ends, without prejudice to the landlord&rsquo;s other rights. The landlord exercises that right only through
+    the courts or peaceably, as the law permits.</p>
+  <p>For a breach of covenant other than non-payment of rent, the right of re-entry or forfeiture is not
+    enforceable unless and until the landlord serves on the tenant a notice specifying the particular breach
+    complained of and, if the breach is capable of remedy, requiring the tenant to remedy it and, in any case,
+    requiring the tenant to make compensation in money for the breach, and the tenant fails, within a reasonable
+    time thereafter, to remedy the breach, if it is capable of remedy, and to make reasonable compensation in
+    money, to the satisfaction of the landlord, for the breach (section 14(1) of the Conveyancing Act 1881). The
+    tenant may apply to the court for relief against forfeiture (section 14(2)).</p>
+  <p>The lease also ends at the end of the fixed term or by a notice to quit as stated in this lease, by the
+    exercise of an agreed break option or by written agreement of the parties, in each case without prejudice to
+    any entitlement of the tenant to a new tenancy under the 1980 Act.<span class="clause-ref"
+    data-ref="handover-inspection" th:if="${refs['handover-inspection']}"> The return of the premises is governed
+    by what this lease provides (see article <span th:text="${refs['handover-inspection']}"></span>).</span></p>
+</div>
+
+<div th:fragment="clause-notices" data-clause="notices">
+  <p>Notices under this lease are given in writing and delivered by hand or sent by registered post to the address
+    of the recipient stated in this lease or notified in writing later, or to the registered office of a party
+    that is a company. A notice of intention to claim relief and the other notices under the 1980 Act are served
+    as that Act requires.</p>
+  <p>Landlord&rsquo;s address for notices: ______________________________</p>
+  <p>Tenant&rsquo;s address for notices: ______________________________</p>
+</div>
+
+<div th:fragment="clause-guarantor" data-clause="guarantor">
+  <p>The guarantor named here guarantees to the landlord, as principal debtor, the payment of the rent and the
+    other sums due and the performance of the tenant&rsquo;s obligations under this lease, for so long as the
+    tenant is bound by them:</p>
+  <p>name: ______________________________ address or registered office: ______________________________</p>
+  <p>company registration number (CRO), if any: ______________________________</p>
+  <p>The guarantee is not released by any time or indulgence granted to the tenant or by any variation of this
+    lease agreed with the tenant, except to the extent that the variation increases the guarantor&rsquo;s
+    liability without the guarantor&rsquo;s written consent.</p>
+</div>
+
+<div th:fragment="clause-data-protection" data-clause="data-protection">
+  <p>Each party processes the personal data of the other party&rsquo;s representatives, contact persons and
+    guarantors only insofar as this is necessary for entering into and performing this lease and for complying
+    with legal obligations, in accordance with the General Data Protection Regulation (Regulation (EU)
+    2016/679) and the Data Protection Act 2018, and keeps the data no longer than necessary for those
+    purposes.</p>
+  <p>The persons concerned may exercise the rights under the General Data Protection Regulation and may complain
+    to the Data Protection Commission.</p>
+</div>
+
+<div th:fragment="clause-disputes" data-clause="disputes">
+  <p>This lease is governed by the law of Ireland. Disputes arising out of or in connection with this lease are
+    decided by the courts of Ireland; an application for a new tenancy or for compensation under the 1980 Act is
+    made to the court having jurisdiction under that Act.</p>
+  <p>Before going to court, the parties try to settle the dispute amicably; a dispute on the reviewed rent is
+    settled as this lease provides.</p>
+</div>
+
+</body>
+</html>
