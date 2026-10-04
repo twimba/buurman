@@ -271,6 +271,7 @@ public class LeaseAgreementExporter {
     variables.put("clauseSource", doc.templatePath());
     variables.put("refs", clauseRefs(includedClauses));
     variables.put("authoritative", doc.authoritative());
+    variables.put("noNationalVersion", doc.noNationalVersion());
     variables.put("languageUsed", plan.languageUsed());
     variables.put("requestedLang", plan.requestedLang());
     variables.put("fallbackUsed", !plan.languageUsed().equals(plan.requestedLang()));

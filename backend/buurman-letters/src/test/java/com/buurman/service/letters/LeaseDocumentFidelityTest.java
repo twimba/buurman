@@ -687,15 +687,13 @@ class LeaseDocumentFidelityTest {
   @Test
   @DisplayName("a PT citation pairs the article with the n.º paragraph after the ordinal sign")
   void portugueseCitationPairsParagraphAfterOrdinalSign() {
+    // the letter suffix "-A" is a token of its own, paired with the n.º paragraph as well
     assertThat(citations("<p>artigo 1097.º, n.º 3, e artigo 1110.º-A, n.º 1</p>", PT_CITATION))
-        .hasSize(2)
-        .anyMatch(c -> c.endsWith(": 1097 3"))
-        .anyMatch(c -> c.endsWith(": 1110 1"));
+        .containsExactlyInAnyOrder("0: 1097 3", "0: 1110 1", "0: -A 1");
     assertThat(
             citations(
                 "<p>article 1097, paragraph 3, and article 1110-A, paragraph 1</p>", PT_CITATION))
-        .anyMatch(c -> c.endsWith(": 1097 3"))
-        .anyMatch(c -> c.endsWith(": 1110 1"));
+        .containsExactlyInAnyOrder("0: 1097 3", "0: 1110 1", "0: -A 1");
     String good =
         deTranslation(
             "<p>Under article 1097, paragraph 3, and article 1110-A, paragraph 1, of the Civil"

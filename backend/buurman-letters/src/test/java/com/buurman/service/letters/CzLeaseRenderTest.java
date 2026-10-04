@@ -121,12 +121,15 @@ class CzLeaseRenderTest {
 
   @ParameterizedTest(name = "{0}")
   @ValueSource(strings = {"residential", "commercial"})
-  @DisplayName("the runtime render shows the courtesy notice and the convenience-text statement")
-  void convenienceTextAndCourtesyNotice(String kind) {
+  @DisplayName(
+      "the runtime render shows the no-national-version notice (not the courtesy one) and the"
+          + " convenience-text statement")
+  void convenienceTextAndNoNationalVersionNotice(String kind) {
     LeaseKind leaseKind = kind.equals("residential") ? LeaseKind.RESIDENTIAL : LeaseKind.COMMERCIAL;
-    String html = render(kind, keys(leaseKind), false, true, Map.of());
+    String html = render(kind, keys(leaseKind), false, true, Map.of("noNationalVersion", true));
     assertThat(html)
-        .contains(messages.getMessage("lease.notice.courtesy", null, Locale.ENGLISH))
+        .contains(messages.getMessage("lease.notice.noNationalVersion", null, Locale.ENGLISH))
+        .doesNotContain(messages.getMessage("lease.notice.courtesy", null, Locale.ENGLISH))
         .contains(ENGLISH_ONLY)
         .contains("checked by a person qualified in Czech law")
         .contains("which version prevails")

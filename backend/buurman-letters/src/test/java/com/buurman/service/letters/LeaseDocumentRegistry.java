@@ -90,10 +90,12 @@ import com.buurman.util.DocumentLanguages;
  * <h2>Countries without a national language (CZ)</h2>
  *
  * The locator never flags a document authoritative when the country has no national language, so
- * the English CZ document renders WITH the courtesy notice at runtime, even though the registry
- * entry names English as authoritative (header {@code translation: authoritative}, number-word
- * lint, fidelity source). {@code authoritativeRenders} forces {@code authoritative=true} and so
- * does not show the runtime notice; {@code LeaseDocumentLocatorTest} covers the runtime flag.
+ * the English CZ document renders WITH a notice at runtime (the no-national-version notice {@code
+ * lease.notice.noNationalVersion}, not the courtesy one, which would point to a national version
+ * that does not exist), even though the registry entry names English as authoritative (header
+ * {@code translation: authoritative}, number-word lint, fidelity source). {@code
+ * authoritativeRenders} forces {@code authoritative=true} and so does not show the runtime notice;
+ * {@code LeaseDocumentLocatorTest} covers the runtime flag.
  */
 public final class LeaseDocumentRegistry {
 
@@ -225,8 +227,11 @@ public final class LeaseDocumentRegistry {
     }
 
     /**
-     * Case-insensitive word-boundary pattern over {@link #foreignMarkers()}, or empty when the
-     * entry has none.
+     * Case-insensitive whole-word pattern over {@link #foreignMarkers()}, or empty when the entry
+     * has none. The word boundary is a Unicode-aware lookaround (no letter or digit of any script
+     * before or after), not {@code \b}: Java's {@code \b} only sees ASCII word characters here, so
+     * a marker starting or ending with a Greek, Cyrillic or accented Latin letter ("μίσθιο",
+     * "déjà", "umową") would never match.
      */
     public Optional<Pattern> foreignMarkerPattern() {
       if (foreignMarkers.isEmpty()) {
@@ -235,7 +240,8 @@ public final class LeaseDocumentRegistry {
       String alternatives = String.join("|", foreignMarkers.stream().map(Pattern::quote).toList());
       return Optional.of(
           Pattern.compile(
-              "\\b(?:" + alternatives + ")\\b", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE));
+              "(?<![\\p{L}\\p{N}])(?:" + alternatives + ")(?![\\p{L}\\p{N}])",
+              Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE));
     }
   }
 
@@ -266,8 +272,13 @@ public final class LeaseDocumentRegistry {
           List.of("de verhuurder", "tenzij", "overeenkomst", "zie artikel", "deurwaardersexploot"),
           Optional.of(DUTCH_CITATION));
 
-  /** The German statute citation format: {@code § 556}, {@code § 556d}, {@code § 573c}. */
-  public static final Pattern GERMAN_CITATION = Pattern.compile("§\\s*\\d+[a-z]?");
+  /**
+   * The German statute citation format: {@code § 556}, {@code § 556d}, {@code § 573c}. A paragraph
+   * with a letter ("§ 556g Abs. 1a" / "§ 556g para. 1a") is a token of its own, so "1a" and "1b"
+   * differ (a plain paragraph digit stays paired with its section).
+   */
+  public static final Pattern GERMAN_CITATION =
+      Pattern.compile("§\\s*\\d+[a-z]?|(?<=\\b(?:Abs\\.|para\\.|paragraphs?)\\s{1,20})\\d+[a-z]+");
 
   /** German marker words that must not leak into translations outside parenthetical glosses. */
   private static final List<String> GERMAN_MARKERS =
@@ -337,11 +348,14 @@ public final class LeaseDocumentRegistry {
   /**
    * The French statute citation format: the article number after "art." / "article(s)", with an
    * optional code prefix ("L. 145-4", "R. 145-35"): {@code article 22}, {@code art. 17-1}, {@code
-   * article L. 145-40-2}. Only the number is the token, so "article" and "Article" pair alike.
+   * article L. 145-40-2}. Only the number is the token, so "article" and "Article" pair alike. A
+   * capital letter written after a space belongs to the token ({@code article 261 D} of the code
+   * général des impôts), so "261 D" and "261 E" differ.
    */
   public static final Pattern FRENCH_CITATION =
       Pattern.compile(
-          "(?<=\\b(?:art\\.|articles?)\\s{1,20})(?:[LRD]\\.\\s{0,3})?\\d+(?:-\\d+)*",
+          "(?<=\\b(?:art\\.|articles?)\\s{1,20})(?:[LRD]\\.\\s{0,3})?\\d+(?:-\\d+)*"
+              + "(?:\\s(?-i:[A-Z])(?![\\p{L}\\p{N}]))?",
           Pattern.CASE_INSENSITIVE);
 
   /** French marker words that must not leak into translations outside parenthetical glosses. */
@@ -415,11 +429,15 @@ public final class LeaseDocumentRegistry {
    * The Spanish statute citation format: the article number after "art." / "artículo(s)" /
    * "article(s)", with an optional dotted paragraph: {@code artículo 9}, {@code artículo 36.1},
    * {@code article 52.1}, {@code artículo 1124}. Only the number is the token, so "artículo" and
-   * "article" pair alike; a following "bis"/"ter" belongs to the token.
+   * "article" pair alike; a following "bis"/"ter" belongs to the token. Every further dotted part
+   * belongs to it too, a numeric one and a word one followed by a number ({@code artículo
+   * 52.1.7.º}, {@code artículo 20.Uno.23.º} of the VAT Act), so "52.1.7" and "52.1.8" or
+   * "20.Uno.23" and "20.Dos.23" differ.
    */
   public static final Pattern SPANISH_CITATION =
       Pattern.compile(
-          "(?<=\\b(?:art\\.|artículos?|articles?)\\s{1,20})\\d+(?:\\.\\d+)?(?:\\s+(?:bis|ter)\\b)?",
+          "(?<=\\b(?:art\\.|artículos?|articles?)\\s{1,20})\\d+"
+              + "(?:\\.(?:\\d+|\\p{L}+(?=\\.\\d)))*(?:\\s+(?:bis|ter)\\b)?",
           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
   /** Spanish marker words that must not leak into translations outside parenthetical glosses. */
@@ -494,11 +512,15 @@ public final class LeaseDocumentRegistry {
    * "article(s)": {@code artigo 1097.º, n.º 3} / {@code article 1097, paragraph 3}, {@code artigo
    * 1110.º-A} / {@code article 1110-A}. Only the digits are the token, so the ordinal sign and a
    * letter suffix ("1097.º", "1110.º-A") written in Portuguese and left out in English pair alike;
-   * the "n.º" paragraph after the ordinal sign is the digit the gate pairs.
+   * the "n.º" paragraph after the ordinal sign is the digit the gate pairs. The letter suffix is a
+   * token of its own, "-A" after the number with or without the ordinal sign ("1110.º-A" /
+   * "1110-A", "15.º-A" / "15-A"), so "15-A" and "15-B" differ; the paragraph then pairs with the
+   * suffix token.
    */
   public static final Pattern PORTUGUESE_CITATION =
       Pattern.compile(
-          "(?<=\\b(?:art\\.|arts\\.|artigos?|articles?)\\s{1,20})\\d+",
+          "(?<=\\b(?:art\\.|arts\\.|artigos?|articles?)\\s{1,20})\\d+"
+              + "|(?<=\\d|\\d\\.º)-(?-i:[A-Z])(?![\\p{L}\\p{N}])",
           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
   /** Portuguese marker words that must not leak into translations outside parenthetical glosses. */
@@ -1259,9 +1281,8 @@ public final class LeaseDocumentRegistry {
 
   /**
    * Greek marker words that must not leak into the English translations outside parenthetical
-   * glosses. Not passed to the registry entry: {@link Entry#foreignMarkerPattern()} uses {@code
-   * \b}, which does not match next to Greek letters, so {@code GrLeaseDocumentTest} checks them
-   * with a Unicode-aware boundary.
+   * glosses ({@link Entry#foreignMarkerPattern()} uses a Unicode-aware word boundary, so Greek
+   * letters are seen).
    */
   public static final List<String> GREEK_MARKERS =
       List.of("ο εκμισθωτής", "ο μισθωτής", "μίσθιο", "βλ. άρθρο", "σύμφωνα με");
@@ -1292,7 +1313,7 @@ public final class LeaseDocumentRegistry {
               new ClauseSpec("termination", true, false, 16),
               new ClauseSpec("data-protection", false, false, 17),
               new ClauseSpec("disputes", false, false, 18)),
-          List.of(),
+          GREEK_MARKERS,
           Optional.of(GREEK_CITATION));
 
   /** Mirror of V102__seed_gr_lease_clauses.sql (COMMERCIAL rows). */
@@ -1324,7 +1345,7 @@ public final class LeaseDocumentRegistry {
               new ClauseSpec("termination", true, false, 19),
               new ClauseSpec("data-protection", false, false, 20),
               new ClauseSpec("disputes", false, false, 21)),
-          List.of(),
+          GREEK_MARKERS,
           Optional.of(GREEK_CITATION));
 
   // ===== end GR =====
@@ -1520,12 +1541,17 @@ public final class LeaseDocumentRegistry {
    * 3", en "article 12, paragraph 3"); the gate pairs that digit (the "er" of "1er" is skipped). An
    * alinéa is "alinéa 2" / "Unterabsatz 2" / "subparagraph 2" after the paragraph. The statute is
    * named "loi modifiée du 21 septembre 2006" / "geänderten Gesetzes vom 21. September 2006" /
-   * "amended Law of 21 September 2006" so that its date never sits within 3 words of an article.
+   * "amended Law of 21 September 2006" so that its date never sits within 3 words of an article. A
+   * paragraph with a Latin suffix ("paragraphe 2bis" / "Absatz 2bis" / "paragraph 2bis") is a token
+   * of its own, so "2bis" and "2ter" differ (a plain paragraph digit stays paired with its
+   * article).
    */
   public static final Pattern LUXEMBOURG_CITATION =
       Pattern.compile(
           "(?<=\\b(?:art\\.|articles?|artikel|artikeln)\\s{1,20})\\d+(?:-\\d+)*"
-              + "(?:bis|ter|quater|quinquies|sexies)?",
+              + "(?:bis|ter|quater|quinquies|sexies)?"
+              + "|(?<=\\b(?:paragraphes?|paragraphs?|absatz|abs\\.)\\s{1,20})\\d+"
+              + "(?:bis|ter|quater|quinquies|sexies)",
           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
   /** French marker words that must not leak into the de/en translations outside glosses. */
@@ -1645,10 +1671,12 @@ public final class LeaseDocumentRegistry {
    * writes the paragraph (ledd) as an ordinal word ("§ 9-3 andre ledd"), which the fidelity gate
    * cannot pair with the English "paragraph 2"; the NO documents therefore write the ledd as a
    * digit ordinal in Norwegian, "§ 9-3 2. ledd", and as "§ 9-3, paragraph 2" in English, so the
-   * gate pairs (9-3, 2) in both. A letter section ("§ 9-3 a") is cited as the section without the
-   * letter.
+   * gate pairs (9-3, 2) in both. The letter of a letter section belongs to the token ("§ 9-3 a"),
+   * so "§ 9-3 a" and "§ 9-3 b" differ; a single letter followed by a word ("§ 9-3 i husleieloven",
+   * "§ 9-3 a landlord") is not a suffix.
    */
-  public static final Pattern NORWEGIAN_CITATION = Pattern.compile("§\\s*\\d+(?:-\\d+)?");
+  public static final Pattern NORWEGIAN_CITATION =
+      Pattern.compile("§\\s*\\d+(?:-\\d+)?(?:\\s?[a-z](?![\\p{L}\\p{N}])(?!\\s+\\p{L}))?");
 
   /** Norwegian marker words that must not leak into translations outside parenthetical glosses. */
   private static final List<String> NORWEGIAN_MARKERS =
