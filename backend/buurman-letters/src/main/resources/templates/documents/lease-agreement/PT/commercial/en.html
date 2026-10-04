@@ -68,8 +68,7 @@
   <p>areas for the tenant&rsquo;s exclusive use, common areas to which the tenant has access and annexes let with
     the leased premises: ______________________________</p>
   <p>licence or authorisation of use (licença ou autorização de utilização) for the purpose of the agreement: number
-    ________, date ________, issuing authority ______________________________ (article 2 of Decree-Law
-    160/2006).</p>
+    ________, date ________, issuing authority ______________________________, or a statement that none is required because the building predates 7 August 1951, with an authentic document proving the date of construction annexed (articles 2 and 5, paragraph 2, of Decree-Law 160/2006).</p>
   <p>Only buildings or units whose suitability for the purpose of the agreement is certified by the licence of use,
     where required, may be let under an urban lease; a lease for non-housing purposes of unlicensed buildings or units
     must always be authorised in advance by the municipal council (câmara municipal) (article 1070, paragraph 1, of
@@ -84,8 +83,7 @@
   <p>The tenant does not use the leased premises for a purpose other than the one for which they are intended and
     must actually use them for the agreed purpose, not leaving them unused for more than 1 year, save in the cases of
     lawful non-use listed in article 1072, paragraph 2, of the Civil Code (articles 1038, subparagraph (c), and 1072,
-    paragraph 1, of the Civil Code). A lease for a purpose other than the licensed one is void (article 5, paragraph
-    8, of Decree-Law 160/2006).</p>
+    paragraph 1, of the Civil Code). A lease for a purpose other than the licensed one is void, without prejudice to the fine provided for in paragraph 5 and to the tenant&rsquo;s right to compensation (article 5, paragraph 8, of Decree-Law 160/2006).</p>
   <p>The parties stipulate that the tenant obtains, at its own expense, the licences, authorisations and
     registrations required to carry on its activity in the leased premises, and complies with the condominium rules
     made known to it.</p>
@@ -95,13 +93,11 @@
   <p>This agreement takes effect on <strong th:text="${startDate}">start date</strong>.</p>
   <p th:if="${fixedTerm}">This agreement is concluded for a fixed term (prazo certo)<span th:if="${endDate != null}">,
     until <strong th:text="${endDate}">end date</strong></span>. A lease may not be concluded for more than 30 years
-    (article 1025 of the Civil Code). Term, if it does not follow from the end date: ______________________________</p>
+    (article 1025 of the Civil Code). If the parties do not stipulate the term, the agreement is deemed concluded for 5 years, and the tenant may not give notice of termination less than 1 year in advance (article 1110, paragraph 2, of the Civil Code). Term, if it does not follow from the end date: ______________________________</p>
   <p th:if="${!fixedTerm}">This agreement is concluded for an indefinite term (duração indeterminada).</p>
   <p>The rules on duration, notice of termination (denúncia) and opposition to renewal are freely agreed by the
     parties; failing a stipulation, the rules on leases for housing apply, without prejudice to articles 1110 and
-    1110-A of the Civil Code (article 1110, paragraph 1, of the Civil Code). Failing a stipulation, the agreement is
-    deemed concluded for a fixed term of 5 years, and the tenant may not give notice of termination less than 1 year
-    in advance (article 1110, paragraph 2, of the Civil Code). Rules agreed by the parties on notice of termination and
+    1110-A of the Civil Code (article 1110, paragraph 1, of the Civil Code). Rules agreed by the parties on notice of termination and
     opposition to renewal: ______________________________</p>
   <p th:if="${fixedTerm}">Unless otherwise stipulated, the agreement renews automatically at its expiry for
     successive periods of equal duration, or of 5 years if that duration is shorter (article 1110, paragraph 3, of the
@@ -175,9 +171,7 @@
   <p th:if="${depositAmount == null}">The parties do not stipulate a security deposit (caução). Security deposit
     agreed, if any: ______________________________</p>
   <p>The parties may secure the performance of their respective obligations by any of the legally provided forms, up
-    to the value of 2 months&rsquo; rent (article 1076, paragraph 2, of the Civil Code). Any part of a sum handed over
-    as a security deposit that exceeds the value of 2 months&rsquo; rent exceeds this statutory limit and is not owed
-    as a security deposit.</p>
+    to the value of 2 months&rsquo; rent (article 1076, paragraph 2, of the Civil Code). The parties stipulate that the amount of the security deposit does not exceed the value of 2 months&rsquo; rent.</p>
   <p>When the agreement has ended and the leased premises have been returned, the landlord returns the security
     deposit to the tenant, less the sums owed to the landlord under the agreement, in particular unpaid rent, charges
     and expenses and the repair of damage for which the tenant is responsible.<span class="clause-ref"
@@ -273,9 +267,7 @@
   <p>The leased premises are subject to the energy certification obligation at the time of their lease, save in the
     cases excepted by article 18, paragraph 2, of Decree-Law 101-D/2020 of 7 December (article 18, paragraph 1,
     subparagraph (e), of that decree-law).</p>
-  <p>The landlord gave the tenant a copy of the energy certificate (certificado energético), or made the information
-    on its content available digitally, before this agreement was concluded, and hands over the original before the
-    final agreement is concluded where there has been a preliminary agreement (article 29, paragraph 1, subparagraph
+  <p>The landlord gave the tenant a copy of the energy certificate (certificado energético), or made the information on its content available digitally, before the preliminary agreement, if any, or this agreement was concluded, and hands over the original before the final agreement is concluded (article 29, paragraph 1, subparagraph
     (c), of Decree-Law 101-D/2020).</p>
   <p>Energy certificate number and energy class: ______________________________</p>
 </div>
@@ -348,8 +340,7 @@
   <p>Termination by the landlord on the ground of a default of 3 months or more is of no effect if the tenant ends the
     default within 1 month, an option the tenant may use only 1 time in relation to each agreement (article 1084,
     paragraphs 3 and 4, of the Civil Code). Termination must be effected within 1 year of becoming aware of the fact
-    on which it is based, a period reduced to 3 months where the ground for termination is one of those set out in the
-    previous paragraph (article 1085, paragraphs 1 and 2, of the Civil Code). Vacating the leased premises may be
+    on which it is based, a period reduced to 3 months where the ground for termination is one of those set out in the previous paragraph; in the case of a continuing or lasting fact, the period does not end before 1 year has elapsed since the fact ceased (article 1085, paragraphs 1 to 3, of the Civil Code). Vacating the leased premises may be
     required 1 month after the termination, unless another period is set by a court or agreed by the parties (article
     1087 of the Civil Code).<span class="clause-ref" data-ref="handover-inspection"
     th:if="${refs['handover-inspection']}"> The return of the leased premises is governed by the provisions of this
@@ -364,8 +355,7 @@
     any change of address (article 9, paragraph 5, of the NRAU).</p>
   <p>Address of the landlord for notices: ______________________________. Agreed domicile (domicílio convencionado)
     of the tenant, if different from the leased premises: ______________________________. The tenant&rsquo;s agreed
-    domicile, even if it does not coincide with the address of the leased premises, is the place to which notices
-    concerning the agreement must be sent (article 3, paragraph 3, of Decree-Law 160/2006).</p>
+    domicile, even if it does not coincide with the address of the leased premises, is the place to which notices concerning the agreement must be sent (article 3, paragraph 3, of Decree-Law 160/2006). The landlord&rsquo;s notice of termination for breach that takes effect by notice to the other party is given by extrajudicial notification (notificação avulsa), by personal service through a lawyer, solicitor or enforcement agent (agente de execução) shown to be instructed for that purpose, made on the person to be notified, or by a signed document sent by registered letter with acknowledgement of receipt, the latter only in agreements concluded in writing in which the domicile was agreed (article 9, paragraph 7, of the NRAU).</p>
   <p>Where there are several landlords or several tenants, notices follow article 11 of the NRAU.</p>
 </div>
 
