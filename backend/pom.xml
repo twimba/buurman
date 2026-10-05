@@ -53,7 +53,7 @@
         <poi.version>5.5.1</poi.version>
         <google-api-services-sheets.version>v4-rev20260610-2.0.0</google-api-services-sheets.version>
         <google-api-services-drive.version>v3-rev20260901-2.0.0</google-api-services-drive.version>
-        <google-auth-library.version>1.53.0</google-auth-library.version>
+        <google-auth-library.version>1.54.0</google-auth-library.version>
         <!-- Default empty argLine; JaCoCo's prepare-agent goal overrides this. -->
         <argLine/>
     </properties>
