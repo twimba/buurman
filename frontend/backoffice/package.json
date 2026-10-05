@@ -23,7 +23,7 @@
     "@luma.gl/engine": "^9.4.2",
     "@luma.gl/shadertools": "^9.4.2",
     "@luma.gl/webgl": "^9.4.2",
-    "@tanstack/react-query": "5.104.0",
+    "@tanstack/react-query": "5.104.1",
     "@tiptap/core": "3.31.3",
     "@tiptap/extension-highlight": "3.31.3",
     "@tiptap/extension-link": "3.31.3",
