@@ -4232,7 +4232,7 @@ __metadata:
     react-is: "npm:19.3.0"
     react-router-dom: "npm:7.18.4"
     recharts: "npm:3.10.1"
-    swagger-ui-react: "npm:5.33.0"
+    swagger-ui-react: "npm:5.33.1"
     tailwindcss: "npm:4.3.3"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.71.0"
@@ -8961,9 +8961,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.33.0":
-  version: 5.33.0
-  resolution: "swagger-ui-react@npm:5.33.0"
+"swagger-ui-react@npm:5.33.1":
+  version: 5.33.1
+  resolution: "swagger-ui-react@npm:5.33.1"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9002,7 +9002,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/61a9599e44e5efe66844da2b36e4cb233cf3d6768ce01eb1a6f2b81f8fab68c47977a352d62d45c230b279d3297ccbbc915249db1077c79e3e2f16d9dfff885d
+  checksum: 10c0/c16be6af032affd89164c488782b4976732aeeb90aee0444de769654f39bb6df43cd883ae1932cfe7d87fa5098b8dd8620f0d7ad8f182948ee1fd595e3b37a27
   languageName: node
   linkType: hard
 
