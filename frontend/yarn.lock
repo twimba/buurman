@@ -3392,17 +3392,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.66.4, @types/google.maps@npm:^3.48.6, @types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.65.5":
-  version: 3.66.4
-  resolution: "@types/google.maps@npm:3.66.4"
-  checksum: 10c0/2879fc55647d11026801ad58c688d9b9552dc8baea8ae357b7169e0fcd2f92ba1b70ddfcd6b749b887f1e009d7c9bc151740735f049144a9d2862344354f8f01
-  languageName: node
-  linkType: hard
-
 "@types/google.maps@npm:3.66.5":
   version: 3.66.5
   resolution: "@types/google.maps@npm:3.66.5"
   checksum: 10c0/41833acb26d1f4655409f74179a475e655891b4432f669060fe41ea2fd5b36d6491f0936ae0516d378eb16f64cc56a63dd226e67ce6a550df0f19a38811058f8
+  languageName: node
+  linkType: hard
+
+"@types/google.maps@npm:^3.48.6, @types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.65.5":
+  version: 3.66.4
+  resolution: "@types/google.maps@npm:3.66.4"
+  checksum: 10c0/2879fc55647d11026801ad58c688d9b9552dc8baea8ae357b7169e0fcd2f92ba1b70ddfcd6b749b887f1e009d7c9bc151740735f049144a9d2862344354f8f01
   languageName: node
   linkType: hard
 
@@ -4209,7 +4209,7 @@ __metadata:
     "@tiptap/pm": "npm:3.31.4"
     "@tiptap/react": "npm:3.31.4"
     "@tiptap/starter-kit": "npm:3.31.4"
-    "@types/google.maps": "npm:3.66.4"
+    "@types/google.maps": "npm:3.66.5"
     "@types/react": "npm:19.3.0"
     "@types/react-dom": "npm:19.3.0"
     "@types/react-is": "npm:19.3.0"
