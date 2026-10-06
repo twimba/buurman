@@ -154,7 +154,7 @@ services:
       - buurman-network
 
   mailpit:
-    image: axllent/mailpit:v1.31.3
+    image: axllent/mailpit:v1.31.4
     env_file: .env
     ports:
       - "${SMTP_HOST_PORT:-1025}:1025"  # SMTP — direct port mapping (no Traefik)
