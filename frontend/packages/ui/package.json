@@ -11,7 +11,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
-    "@radix-ui/react-dialog": "1.1.23",
+    "@radix-ui/react-dialog": "1.2.0",
     "@tiptap/core": "3.31.4",
     "@tiptap/extension-highlight": "3.31.4",
     "@tiptap/extension-link": "3.31.4",
