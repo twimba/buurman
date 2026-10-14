@@ -38,7 +38,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "keycloak-js": "26.2.4",
     "posthog-js": "1.438.1",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.4",
