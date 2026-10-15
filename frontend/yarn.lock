@@ -4278,7 +4278,7 @@ __metadata:
     react-is: "npm:19.3.0"
     react-router-dom: "npm:7.18.4"
     recharts: "npm:3.10.1"
-    swagger-ui-react: "npm:5.33.1"
+    swagger-ui-react: "npm:5.33.2"
     tailwindcss: "npm:4.3.3"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.71.1"
@@ -4951,6 +4951,18 @@ __metadata:
     "@types/trusted-types":
       optional: true
   checksum: 10c0/65a901c6b6d489d3e898f67223d81dac66d613cda48f5785f0ed52a4ae320c4b2745490a58c14161e29f0273080fea0a0cb234a9ef892650e1a9b2a7befa07a5
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^3.4.16":
+  version: 3.4.17
+  resolution: "dompurify@npm:3.4.17"
+  dependencies:
+    "@types/trusted-types": "npm:^2.0.7"
+  dependenciesMeta:
+    "@types/trusted-types":
+      optional: true
+  checksum: 10c0/6a12251ef5e700fc91b6d96d33e9f8b5fd590c55276f632cf42d182c5808e9f48d5bef435ab26eac235dfcc05ed8fe95e1c8308dcc502bf1050e561f14d0361a
   languageName: node
   linkType: hard
 
@@ -9031,9 +9043,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.33.1":
-  version: 5.33.1
-  resolution: "swagger-ui-react@npm:5.33.1"
+"swagger-ui-react@npm:5.33.2":
+  version: 5.33.2
+  resolution: "swagger-ui-react@npm:5.33.2"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9043,7 +9055,7 @@ __metadata:
     classnames: "npm:^2.5.1"
     css.escape: "npm:1.5.1"
     deep-extend: "npm:0.6.0"
-    dompurify: "npm:^3.4.13"
+    dompurify: "npm:^3.4.16"
     ieee754: "npm:^1.2.1"
     immutable: "npm:^5.1.9"
     js-file-download: "npm:^0.4.12"
@@ -9072,7 +9084,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/c16be6af032affd89164c488782b4976732aeeb90aee0444de769654f39bb6df43cd883ae1932cfe7d87fa5098b8dd8620f0d7ad8f182948ee1fd595e3b37a27
+  checksum: 10c0/0c449e138398f69ab0ce9924521f42c74253866a63f43d09f8bfe093b14cb026c0f4a693f64bcead897721d8e5ad64292a3a815e8310d6358e8d57d7a0633b6a
   languageName: node
   linkType: hard
 
