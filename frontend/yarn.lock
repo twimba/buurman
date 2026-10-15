@@ -273,7 +273,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.55.0"
-    posthog-js: "npm:1.438.7"
+    posthog-js: "npm:1.438.9"
     prettier: "npm:3.9.10"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -1437,10 +1437,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@posthog/core@npm:^1.58.1":
+  version: 1.58.1
+  resolution: "@posthog/core@npm:1.58.1"
+  dependencies:
+    "@posthog/types": "npm:^1.415.3"
+  checksum: 10c0/101fcb90a6c69f5d0c33b85bc9b493c275da617a5821f44af77e7039fb664b1a260c83b8e4309965535cdfece76364687a19d42327edd07b9ef35526cf9930c6
+  languageName: node
+  linkType: hard
+
 "@posthog/types@npm:^1.415.2":
   version: 1.415.2
   resolution: "@posthog/types@npm:1.415.2"
   checksum: 10c0/2c1eeaf4370b0cfce61abbbe1e7fb28464f8e14f1f171670e8cadc0af64355eba331433c38922be7fe553cf6e6b20161e67fcbe754b474206633ed42143a0660
+  languageName: node
+  linkType: hard
+
+"@posthog/types@npm:^1.415.3":
+  version: 1.415.3
+  resolution: "@posthog/types@npm:1.415.3"
+  checksum: 10c0/c7bec7cd25f13825ef3b070e4a7a9203e7649f953f62e7289c3784062f69e294753596d5426ab4b2941725646bc86d80fcb7ff551d7baf84de54131c215485f0
   languageName: node
   linkType: hard
 
@@ -4270,7 +4286,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.15"
     lucide-react: "npm:1.55.0"
-    posthog-js: "npm:1.438.7"
+    posthog-js: "npm:1.438.9"
     prettier: "npm:3.9.10"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -4331,7 +4347,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.55.0"
-    posthog-js: "npm:1.438.7"
+    posthog-js: "npm:1.438.9"
     prettier: "npm:3.9.10"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
@@ -7709,13 +7725,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.438.7":
-  version: 1.438.7
-  resolution: "posthog-js@npm:1.438.7"
+"posthog-js@npm:1.438.9":
+  version: 1.438.9
+  resolution: "posthog-js@npm:1.438.9"
   dependencies:
     "@posthog/browser-common": "npm:^0.9.4"
-    "@posthog/core": "npm:^1.57.4"
-    "@posthog/types": "npm:^1.415.2"
+    "@posthog/core": "npm:^1.58.1"
+    "@posthog/types": "npm:^1.415.3"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -7731,7 +7747,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/1c03a65c68ae1e5667a411565d19e52780e37ab36aff24870b3065b85ef59d879c32d524660d8aabca74d17f1e691b372d80e8a0e37d77508546e1fae1bb218e
+  checksum: 10c0/f22db9432b669cd32a8537f06e157febf057e7f74da73006d673649bae4e2c8ab6d6e48182634257e839125f3f567564b57ab39256e56694c080fe94bc8c9003
   languageName: node
   linkType: hard
 
