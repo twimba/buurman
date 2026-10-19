@@ -4292,7 +4292,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     i18next: "npm:26.4.4"
     i18next-browser-languagedetector: "npm:8.2.1"
-    i18next-http-backend: "npm:4.0.2"
+    i18next-http-backend: "npm:4.0.3"
     ical.js: "npm:2.2.1"
     jsdom: "npm:30.1.2"
     keycloak-js: "npm:26.2.4"
@@ -6144,10 +6144,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:4.0.2":
-  version: 4.0.2
-  resolution: "i18next-http-backend@npm:4.0.2"
-  checksum: 10c0/23515d90f57d58505d68b7847a13c01ee1fe7668931ee4ca82499f7ea36f2740aa58125f0050ce1026b18ae16826f6c10ffb1b9e5bed358aa305dab820dbf49f
+"i18next-http-backend@npm:4.0.3":
+  version: 4.0.3
+  resolution: "i18next-http-backend@npm:4.0.3"
+  checksum: 10c0/61650dbea6c16499d67ec738b76fd73bd55df3b6bfd2ee60c85f8070974f6cfada18ce63983430f826556720fb8995bef8542b3829a0397bd09eccad5651e3ef
   languageName: node
   linkType: hard
 
