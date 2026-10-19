@@ -273,7 +273,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.58.0"
-    posthog-js: "npm:1.438.9"
+    posthog-js: "npm:1.438.12"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -1421,45 +1421,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/browser-common@npm:^0.9.4":
-  version: 0.9.4
-  resolution: "@posthog/browser-common@npm:0.9.4"
+"@posthog/browser-common@npm:^0.9.5":
+  version: 0.9.5
+  resolution: "@posthog/browser-common@npm:0.9.5"
   dependencies:
-    "@posthog/core": "npm:^1.57.4"
-    "@posthog/types": "npm:^1.415.2"
-  checksum: 10c0/bfcc39a1e2387c0e1db3187ffe3072049b84d9da12e576238e08fc515eff8876b69dbfcd20742502e1b609da937b80a1f416e298fdf07a9532f74910b97dcf06
+    "@posthog/core": "npm:^1.59.1"
+    "@posthog/types": "npm:^1.416.0"
+  checksum: 10c0/98a2b234d3f3e5c69b946bdbca899e147ceaea1ec3511d99bd70201f754af1a30c1f9c7de5b84ce338c742314f119fcab37c5ab01fe1d9b7c60d58a6f0f6bb09
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.57.4":
-  version: 1.58.0
-  resolution: "@posthog/core@npm:1.58.0"
+"@posthog/core@npm:^1.59.1":
+  version: 1.59.1
+  resolution: "@posthog/core@npm:1.59.1"
   dependencies:
-    "@posthog/types": "npm:^1.415.2"
-  checksum: 10c0/ea00f903e6d8826d803d7d6c496c1c0b4d750cc0ce104139e317ec7d714b4165cbca58d247c1e01ec0441354b1149bacbdcc64e34ba6af0d37073cc15f950237
+    "@posthog/types": "npm:^1.416.0"
+  checksum: 10c0/4211baa00c9e06fea5c555a12a3d28c29d62933aa8575b625e3ecafd27e9b142b267c82a423ce7b306577e82350704e3d3b6ef658f970b8de449aab20f09272b
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:^1.58.1":
-  version: 1.58.1
-  resolution: "@posthog/core@npm:1.58.1"
-  dependencies:
-    "@posthog/types": "npm:^1.415.3"
-  checksum: 10c0/101fcb90a6c69f5d0c33b85bc9b493c275da617a5821f44af77e7039fb664b1a260c83b8e4309965535cdfece76364687a19d42327edd07b9ef35526cf9930c6
-  languageName: node
-  linkType: hard
-
-"@posthog/types@npm:^1.415.2":
-  version: 1.415.2
-  resolution: "@posthog/types@npm:1.415.2"
-  checksum: 10c0/2c1eeaf4370b0cfce61abbbe1e7fb28464f8e14f1f171670e8cadc0af64355eba331433c38922be7fe553cf6e6b20161e67fcbe754b474206633ed42143a0660
-  languageName: node
-  linkType: hard
-
-"@posthog/types@npm:^1.415.3":
-  version: 1.415.3
-  resolution: "@posthog/types@npm:1.415.3"
-  checksum: 10c0/c7bec7cd25f13825ef3b070e4a7a9203e7649f953f62e7289c3784062f69e294753596d5426ab4b2941725646bc86d80fcb7ff551d7baf84de54131c215485f0
+"@posthog/types@npm:^1.416.0":
+  version: 1.416.0
+  resolution: "@posthog/types@npm:1.416.0"
+  checksum: 10c0/d3227a4b6423a1ce69db9c8e74ada17a5c3fd8ba824b0e6ed496744d907859717a0d3ad162bde08d5908679916896e7a1c4f1793ea74c6e641cf08928fe80c4e
   languageName: node
   linkType: hard
 
@@ -4343,7 +4327,7 @@ __metadata:
     eslint: "npm:10.13.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    i18next: "npm:26.4.4"
+    i18next: "npm:26.4.7"
     i18next-browser-languagedetector: "npm:8.2.1"
     i18next-http-backend: "npm:4.0.3"
     ical.js: "npm:2.2.1"
@@ -4351,7 +4335,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.15"
     lucide-react: "npm:1.58.0"
-    posthog-js: "npm:1.438.9"
+    posthog-js: "npm:1.438.12"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -4412,7 +4396,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.58.0"
-    posthog-js: "npm:1.438.9"
+    posthog-js: "npm:1.438.12"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -6204,15 +6188,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:26.4.4":
-  version: 26.4.4
-  resolution: "i18next@npm:26.4.4"
+"i18next@npm:26.4.7":
+  version: 26.4.7
+  resolution: "i18next@npm:26.4.7"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/7d94bb6cea2bdbf293547565d565b12fb0f2a24f462f06f6cc1cd08367f14cc36bd488c7abb01d2b9b827bd46e7d4b0713b44543f7ed0c43f32d1371f85dd305
+  checksum: 10c0/cf282613ad426fd1c4607487ed3d54eadc01a08f7e1e3ecca7aa4235cab72451ec322d30aee4028146cbfa88652456b727089cecfdd5b4667316d64001316692
   languageName: node
   linkType: hard
 
@@ -7802,13 +7786,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.438.9":
-  version: 1.438.9
-  resolution: "posthog-js@npm:1.438.9"
+"posthog-js@npm:1.438.12":
+  version: 1.438.12
+  resolution: "posthog-js@npm:1.438.12"
   dependencies:
-    "@posthog/browser-common": "npm:^0.9.4"
-    "@posthog/core": "npm:^1.58.1"
-    "@posthog/types": "npm:^1.415.3"
+    "@posthog/browser-common": "npm:^0.9.5"
+    "@posthog/core": "npm:^1.59.1"
+    "@posthog/types": "npm:^1.416.0"
     core-js: "npm:^3.49.0"
     dompurify: "npm:^3.4.13"
     fflate: "npm:^0.4.8"
@@ -7824,7 +7808,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/f22db9432b669cd32a8537f06e157febf057e7f74da73006d673649bae4e2c8ab6d6e48182634257e839125f3f567564b57ab39256e56694c080fe94bc8c9003
+  checksum: 10c0/2d207a8e3397ac4ce421c834558b99565700a40d091c3a54e80c17e9e177f51ab551adf80f56c2de0e77d59232cbc5b37af1fd3f99a26045574c44cb527489b6
   languageName: node
   linkType: hard
 
