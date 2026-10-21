@@ -4331,7 +4331,7 @@ __metadata:
     eslint: "npm:10.13.0"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
-    i18next: "npm:26.5.0"
+    i18next: "npm:26.5.2"
     i18next-browser-languagedetector: "npm:8.2.1"
     i18next-http-backend: "npm:4.0.4"
     ical.js: "npm:2.2.1"
@@ -6192,15 +6192,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:26.5.0":
-  version: 26.5.0
-  resolution: "i18next@npm:26.5.0"
+"i18next@npm:26.5.2":
+  version: 26.5.2
+  resolution: "i18next@npm:26.5.2"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/596972ba82a0f8286dbb4d9927d92ec44cf3794bb0e92ec1ca9c35af99717662607e15cc50245f06efe2d950b8747a3dd828fd41fa26993151bd437f32e5b041
+  checksum: 10c0/b2edaba4af8f907d685bb133b8878cc1f03a7eaac3e76937da736b819d6d9500a82f516441b272994e9988c227bbcbbbc38fd185b4a2f67ab6bf9884ecf31167
   languageName: node
   linkType: hard
 
