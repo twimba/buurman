@@ -4347,7 +4347,7 @@ __metadata:
     react-is: "npm:19.3.1"
     react-router-dom: "npm:7.18.4"
     recharts: "npm:3.10.1"
-    swagger-ui-react: "npm:5.33.3"
+    swagger-ui-react: "npm:5.34.0"
     tailwindcss: "npm:4.3.3"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.72.0"
@@ -9042,7 +9042,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-client@npm:^3.38.3":
+"swagger-client@npm:^3.38.4":
   version: 3.38.4
   resolution: "swagger-client@npm:3.38.4"
   dependencies:
@@ -9132,9 +9132,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:5.33.3":
-  version: 5.33.3
-  resolution: "swagger-ui-react@npm:5.33.3"
+"swagger-ui-react@npm:5.34.0":
+  version: 5.34.0
+  resolution: "swagger-ui-react@npm:5.34.0"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9165,7 +9165,7 @@ __metadata:
     reselect: "npm:^5.1.1"
     serialize-error: "npm:^8.1.0"
     sha.js: "npm:^2.4.12"
-    swagger-client: "npm:^3.38.3"
+    swagger-client: "npm:^3.38.4"
     url-parse: "npm:^1.5.10"
     xml: "npm:=1.0.1"
     xml-but-prettier: "npm:^1.0.1"
@@ -9173,7 +9173,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/7a1fbc98bacc1e10489e156a1441f3200b4f69b189635962cbdf487ad4a9396fc1305d2b3bde806cc149ce1b81e96886fd6d66c128f3c88e9eed2e2c114dfffe
+  checksum: 10c0/5c0dfe49f1e6242f51579241c42c1d8adaf7a99e852e75a87a06fd96e214fa4dfe0bceb804d5e931e68a5c5511b64d392eb0c03093ef725cd33e217c7f486e12
   languageName: node
   linkType: hard
 
