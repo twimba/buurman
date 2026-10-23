@@ -273,7 +273,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.60.0"
-    posthog-js: "npm:1.438.12"
+    posthog-js: "npm:1.438.13"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -4339,7 +4339,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.15"
     lucide-react: "npm:1.60.0"
-    posthog-js: "npm:1.438.12"
+    posthog-js: "npm:1.438.13"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -4392,7 +4392,7 @@ __metadata:
     "@vis.gl/react-google-maps": "npm:1.10.1"
     "@vitejs/plugin-react": "npm:6.1.2"
     axios: "npm:1.20.0"
-    cronstrue: "npm:3.33.0"
+    cronstrue: "npm:3.37.0"
     date-fns: "npm:4.4.0"
     dompurify: "npm:3.4.17"
     eslint: "npm:10.13.0"
@@ -4400,7 +4400,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.60.0"
-    posthog-js: "npm:1.438.12"
+    posthog-js: "npm:1.438.13"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -4688,12 +4688,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cronstrue@npm:3.33.0":
-  version: 3.33.0
-  resolution: "cronstrue@npm:3.33.0"
+"cronstrue@npm:3.37.0":
+  version: 3.37.0
+  resolution: "cronstrue@npm:3.37.0"
   bin:
     cronstrue: bin/cli.js
-  checksum: 10c0/8e66abbb6a901adbe8e9bb0e19a6fc12639d0501f042c7c5612a70279e9db7d4dec819a5d0f13a7d0c9a751c576320097d9c586780514848bd697191296ba513
+  checksum: 10c0/dfc2df2ffe5fba9ec3e1a22aa40e27a879f920b322de87dde74a7b0f66a4d67dcb4d2ce0ac5d0e51d0d18f6e5e92c3277348a615a300d350f8ae31efd957b97b
   languageName: node
   linkType: hard
 
@@ -7790,9 +7790,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.438.12":
-  version: 1.438.12
-  resolution: "posthog-js@npm:1.438.12"
+"posthog-js@npm:1.438.13":
+  version: 1.438.13
+  resolution: "posthog-js@npm:1.438.13"
   dependencies:
     "@posthog/browser-common": "npm:^0.9.5"
     "@posthog/core": "npm:^1.59.1"
@@ -7812,7 +7812,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/2d207a8e3397ac4ce421c834558b99565700a40d091c3a54e80c17e9e177f51ab551adf80f56c2de0e77d59232cbc5b37af1fd3f99a26045574c44cb527489b6
+  checksum: 10c0/add832acef7be6c7e90043537375adac337c7eeaee545a9809bcda78de11c55564f46f61ae0348686986242efb4b45d03e2b5e3b90cdaaf20e08e7495b6b2df6
   languageName: node
   linkType: hard
 
