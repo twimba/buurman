@@ -4339,7 +4339,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.13.15"
     lucide-react: "npm:1.60.0"
-    posthog-js: "npm:1.438.12"
+    posthog-js: "npm:1.438.13"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -4400,7 +4400,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.60.0"
-    posthog-js: "npm:1.438.12"
+    posthog-js: "npm:1.438.13"
     prettier: "npm:3.9.10"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -7790,9 +7790,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.438.12":
-  version: 1.438.12
-  resolution: "posthog-js@npm:1.438.12"
+"posthog-js@npm:1.438.13":
+  version: 1.438.13
+  resolution: "posthog-js@npm:1.438.13"
   dependencies:
     "@posthog/browser-common": "npm:^0.9.5"
     "@posthog/core": "npm:^1.59.1"
@@ -7812,7 +7812,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/2d207a8e3397ac4ce421c834558b99565700a40d091c3a54e80c17e9e177f51ab551adf80f56c2de0e77d59232cbc5b37af1fd3f99a26045574c44cb527489b6
+  checksum: 10c0/add832acef7be6c7e90043537375adac337c7eeaee545a9809bcda78de11c55564f46f61ae0348686986242efb4b45d03e2b5e3b90cdaaf20e08e7495b6b2df6
   languageName: node
   linkType: hard
 
