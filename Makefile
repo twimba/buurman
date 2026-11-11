@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data local
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-nocache backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub seed-data local website website-preview
 
 # Absolute path to the directory holding THIS Makefile. Targets that have to
 # hand an absolute path to another process (the `local` iTerm2 panes below)
@@ -109,6 +109,18 @@ frontend-backoffice:
 	VITE_HMR_PORT=$${HTTPS_PORT:-443}; \
 	echo "Starting backoffice on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
 	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:backoffice
+
+## Serve the marketing website (website/) locally — no build step, no deps
+## Usage: make website  |  make website PORT=9000
+WEBSITE_PORT ?= $(or $(PORT),8088)
+website:
+	@command -v open >/dev/null 2>&1 && (sleep 1 && open "http://localhost:$(WEBSITE_PORT)") & \
+	python3 scripts/serve-website.py $(WEBSITE_PORT)
+
+## Preview the website exactly as Cloudflare will serve it (honours .assetsignore)
+## Needs network on first run to fetch wrangler.
+website-preview:
+	cd website && npx --yes wrangler@latest dev
 
 ## Buurman Hub — workspace directory & service status dashboard (http://localhost:3333)
 hub:

@@ -70,3 +70,6 @@ frontend/.yarn/*
 !frontend/.yarn/sdks
 !frontend/.yarn/versions
 .pnp.*
+
+# Wrangler local state (website/)
+.wrangler/

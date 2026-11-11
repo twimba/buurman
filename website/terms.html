@@ -12,22 +12,58 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms & Conditions - Buurman</title>
-    <meta name="description" content="Buurman terms and conditions. Simple, fair terms for our property management service.">
-    <link rel="icon" type="image/x-icon" href="assets/logo/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/apple-touch-icon.png">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/pages.css">
+    <title>Terms & Conditions — Buurman</title>
+    <meta name="description" content="The terms you agree to when you use Buurman. Plain language, no traps.">
+    <link rel="icon" type="image/x-icon" href="/assets/logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/apple-touch-icon.png">
+    <link rel="canonical" href="https://buurman.io/terms">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Buurman">
+    <meta property="og:url" content="https://buurman.io/terms">
+    <meta property="og:title" content="Terms & Conditions — Buurman">
+    <meta property="og:description" content="The terms you agree to when you use Buurman. Plain language, no traps.">
+    <meta property="og:image" content="https://buurman.io/assets/logo/og-image.png">
+    <meta property="og:image:width" content="1155">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Terms & Conditions — Buurman">
+    <meta name="twitter:description" content="The terms you agree to when you use Buurman. Plain language, no traps.">
+    <meta name="twitter:image" content="https://buurman.io/assets/logo/social-post.png">
+
+    <link rel="preload" href="/assets/fonts/Satoshi-Variable.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/pages.css">
 </head>
 <body>
-    <header class="header">
+<header class="header" id="header">
+    <div class="container-wide">
         <div class="header-inner">
-            <a href="/" class="logo-link"><img src="assets/logo/logo_horizontal.png" alt="Buurman" /></a>
-            <a href="/" class="nav-link">&larr; Home</a>
+            <a href="/" class="logo-link" aria-label="Buurman home">
+                <img src="/assets/logo/logo-wordmark.png" width="226" height="96" alt="Buurman" />
+            </a>
+
+            <nav class="nav" aria-label="Main">
+                <a href="/#features" class="nav-link">Features</a>
+                <a href="/#pricing" class="nav-link">Pricing</a>
+                <a href="/changelog" class="nav-link">What's new</a>
+                <a href="https://app.buurman.io/login" class="nav-link">Sign in</a>
+                <a href="https://app.buurman.io/login?demo=true" class="btn btn-demo" data-demo-cta="nav">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Live demo
+                </a>
+                <a href="https://app.buurman.io/register" class="btn btn-primary">Get started</a>
+            </nav>
+
+            <button class="menu-toggle" onclick="document.getElementById('header').classList.toggle('menu-open')" aria-label="Toggle menu">
+                <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
         </div>
-    </header>
+    </div>
+</header>
 
     <main>
         <div class="page">
@@ -64,7 +100,7 @@
                 <li>All prices are in Euros and include applicable taxes.</li>
                 <li>We may change prices with at least 30 days written notice.</li>
                 <li>Failed payments may result in a temporary suspension of paid features.</li>
-                <li>See our <a href="/refund.html">Refund Policy</a> for cancellations and refunds.</li>
+                <li>See our <a href="/refund">Refund Policy</a> for cancellations and refunds.</li>
             </ul>
 
             <h2>5. Acceptable Use</h2>
@@ -109,39 +145,41 @@
                     <p class="footer-tagline">Simple property management for small landlords.</p>
                 </div>
                 <div class="footer-col">
-                    <h4>Product</h4>
+                    <h3>Product</h3>
                     <ul class="footer-links">
                         <li><a href="/#features">Features</a></li>
                         <li><a href="/#pricing">Pricing</a></li>
-                        <li><a href="/changelog.html">What's New</a></li>
+                        <li><a href="https://app.buurman.io/login?demo=true" data-demo-cta="footer">Live demo</a></li>
+                        <li><a href="/changelog">What's new</a></li>
                         <li><a href="https://status.buurman.io" target="_blank" rel="noopener">Status</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Legal</h4>
+                    <h3>Legal</h3>
                     <ul class="footer-links">
-                        <li><a href="/terms.html">Terms &amp; Conditions</a></li>
-                        <li><a href="/privacy.html">Privacy Policy</a></li>
-                        <li><a href="/refund.html">Refund Policy</a></li>
+                        <li><a href="/terms">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/refund">Refund Policy</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Reach Out</h4>
+                    <h3>Get in touch</h3>
                     <ul class="footer-links">
-                        <li><a href="/contact.html">Contact</a></li>
-                        <li><a href="/support.html">Support</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/support">Support</a></li>
                         <li><a href="mailto:hello@buurman.io">hello@buurman.io</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
                 <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
-                <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe></div>
+                <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" loading="lazy" title="Buurman service status" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe></div>
                 <div class="footer-contact"><a href="mailto:hello@buurman.io">hello@buurman.io</a></div>
             </div>
         </div>
     </footer>
-<script src="assets/js/konami.js"></script>
+<script src="/assets/js/main.js" defer></script>
+<script src="/assets/js/konami.js" defer></script>
     <script src="https://uptime.betterstack.com/widgets/announcement.js" data-id="238636" async="async" type="text/javascript"></script>
 </body>
 </html>
